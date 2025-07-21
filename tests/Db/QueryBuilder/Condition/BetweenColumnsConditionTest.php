@@ -19,10 +19,10 @@ final class BetweenColumnsConditionTest extends TestCase
     {
         $betweenColumnsCondition = new BetweenColumnsCondition(42, 'BETWEEN', 'min_value', 'max_value');
 
-        $this->assertSame(42, $betweenColumnsCondition->getValue());
-        $this->assertSame('BETWEEN', $betweenColumnsCondition->getOperator());
-        $this->assertSame('min_value', $betweenColumnsCondition->getIntervalStartColumn());
-        $this->assertSame('max_value', $betweenColumnsCondition->getIntervalEndColumn());
+        $this->assertSame(42, $betweenColumnsCondition->value);
+        $this->assertSame('BETWEEN', $betweenColumnsCondition->operator);
+        $this->assertSame('min_value', $betweenColumnsCondition->intervalStartColumn);
+        $this->assertSame('max_value', $betweenColumnsCondition->intervalEndColumn);
     }
 
     public function testFromArrayDefinition(): void
@@ -32,10 +32,10 @@ final class BetweenColumnsConditionTest extends TestCase
             [42, 'min_value', 'max_value']
         );
 
-        $this->assertSame(42, $betweenColumnsCondition->getValue());
-        $this->assertSame('BETWEEN', $betweenColumnsCondition->getOperator());
-        $this->assertSame('min_value', $betweenColumnsCondition->getIntervalStartColumn());
-        $this->assertSame('max_value', $betweenColumnsCondition->getIntervalEndColumn());
+        $this->assertSame(42, $betweenColumnsCondition->value);
+        $this->assertSame('BETWEEN', $betweenColumnsCondition->operator);
+        $this->assertSame('min_value', $betweenColumnsCondition->intervalStartColumn);
+        $this->assertSame('max_value', $betweenColumnsCondition->intervalEndColumn);
     }
 
     public function testFromArrayDefinitionExceptionWithoutOperands(): void

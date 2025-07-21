@@ -19,18 +19,18 @@ final class SimpleConditionTest extends TestCase
     {
         $simpleCondition = new SimpleCondition('id', '=', 1);
 
-        $this->assertSame('id', $simpleCondition->getColumn());
-        $this->assertSame('=', $simpleCondition->getOperator());
-        $this->assertSame(1, $simpleCondition->getValue());
+        $this->assertSame('id', $simpleCondition->column);
+        $this->assertSame('=', $simpleCondition->operator);
+        $this->assertSame(1, $simpleCondition->value);
     }
 
     public function testFromArrayDefinition(): void
     {
         $simpleCondition = SimpleCondition::fromArrayDefinition('=', ['id', 1]);
 
-        $this->assertSame('id', $simpleCondition->getColumn());
-        $this->assertSame('=', $simpleCondition->getOperator());
-        $this->assertSame(1, $simpleCondition->getValue());
+        $this->assertSame('id', $simpleCondition->column);
+        $this->assertSame('=', $simpleCondition->operator);
+        $this->assertSame(1, $simpleCondition->value);
     }
 
     public function testFromArrayDefinitionColumnException(): void
@@ -63,11 +63,11 @@ final class SimpleConditionTest extends TestCase
     {
         $condition = SimpleCondition::fromArrayDefinition('=', ['id', null]);
 
-        $this->assertNull($condition->getValue());
+        $this->assertNull($condition->value);
 
         $condition2 = new SimpleCondition('name', 'IS NOT', null);
 
-        $this->assertSame('IS NOT', $condition2->getOperator());
-        $this->assertNull($condition2->getValue());
+        $this->assertSame('IS NOT', $condition2->operator);
+        $this->assertNull($condition2->value);
     }
 }

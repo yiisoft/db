@@ -19,18 +19,18 @@ final class InConditionTest extends TestCase
     {
         $inCondition = new InCondition('id', 'IN', [1, 2, 3]);
 
-        $this->assertSame('id', $inCondition->getColumn());
-        $this->assertSame('IN', $inCondition->getOperator());
-        $this->assertSame([1, 2, 3], $inCondition->getValues());
+        $this->assertSame('id', $inCondition->column);
+        $this->assertSame('IN', $inCondition->operator);
+        $this->assertSame([1, 2, 3], $inCondition->values);
     }
 
     public function testFromArrayDefinition(): void
     {
         $inCondition = InCondition::fromArrayDefinition('IN', ['id', [1, 2, 3]]);
 
-        $this->assertSame('id', $inCondition->getColumn());
-        $this->assertSame('IN', $inCondition->getOperator());
-        $this->assertSame([1, 2, 3], $inCondition->getValues());
+        $this->assertSame('id', $inCondition->column);
+        $this->assertSame('IN', $inCondition->operator);
+        $this->assertSame([1, 2, 3], $inCondition->values);
     }
 
     public function testFromArrayDefinitionException(): void

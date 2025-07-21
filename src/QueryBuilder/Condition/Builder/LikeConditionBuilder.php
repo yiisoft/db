@@ -57,7 +57,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $values = $expression->getValue();
+        $values = $expression->value;
         $escape = $expression->getEscapingReplacements();
 
         if ($escape === []) {
@@ -97,7 +97,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      */
     protected function prepareColumn(LikeCondition $expression, array &$params): string
     {
-        $column = $expression->getColumn();
+        $column = $expression->column;
 
         if ($column instanceof ExpressionInterface) {
             return $this->queryBuilder->buildExpression($column, $params);
@@ -143,7 +143,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      */
     protected function parseOperator(LikeCondition $expression): array
     {
-        $operator = strtoupper($expression->getOperator());
+        $operator = strtoupper($expression->operator);
         if (!preg_match('/^(AND |OR |)((NOT |)I?LIKE)/', $operator, $matches)) {
             throw new InvalidArgumentException("Invalid operator in like condition: \"$operator\"");
         }

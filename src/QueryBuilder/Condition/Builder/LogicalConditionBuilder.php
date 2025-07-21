@@ -10,7 +10,8 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\AbstractConjunctionCondition;
+use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
+use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function count;
@@ -19,20 +20,21 @@ use function is_array;
 use function reset;
 
 /**
- * Build an object of {@see AbstractConjunctionCondition} into SQL expressions.
+ * Build an object of {@see AndCondition} or {@see OrCondition} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<AbstractConjunctionCondition>
+ * @implements ExpressionBuilderInterface<AndCondition|OrCondition>
  */
-class ConjunctionConditionBuilder implements ExpressionBuilderInterface
+final class LogicalConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
-    {
+    public function __construct(
+        private readonly QueryBuilderInterface $queryBuilder
+    ) {
     }
 
     /**
-     * Build SQL for {@see AbstractConjunctionCondition}.
+     * Build SQL for {@see AndCondition} or {@see OrCondition}.
      *
-     * @param AbstractConjunctionCondition $expression
+     * @param AndCondition|OrCondition $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -41,34 +43,36 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        /** @psalm-var string[] $parts */
-        $parts = $this->buildExpressionsFrom($expression, $params);
+        $parts = $this->buildExpressions($expression->expressions, $params);
 
         if (empty($parts)) {
             return '';
         }
 
         if (count($parts) === 1) {
-            return reset($parts);
+            return (string) reset($parts);
         }
 
-        return '(' . implode(") {$expression->getOperator()} (", $parts) . ')';
+        $operator = match ($expression::class) {
+            AndCondition::class => 'AND',
+            OrCondition::class => 'OR',
+        };
+
+        return '(' . implode(") $operator (", $parts) . ')';
     }
 
     /**
-     * Builds expressions, that are stored in `$condition`.
-     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
+     *
+     * @psalm-param array<array|ExpressionInterface|scalar> $expressions
+     * @psalm-return list<scalar>
      */
-    private function buildExpressionsFrom(AbstractConjunctionCondition $condition, array &$params = []): array
+    private function buildExpressions(array $expressions, array &$params = []): array
     {
         $parts = [];
-
-        /** @psalm-var array<array-key, array|ExpressionInterface|string> $expressions */
-        $expressions = $condition->getExpressions();
 
         foreach ($expressions as $conditionValue) {
             if (is_array($conditionValue)) {

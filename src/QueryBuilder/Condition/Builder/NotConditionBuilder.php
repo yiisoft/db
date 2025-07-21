@@ -36,7 +36,7 @@ class NotConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operand = $expression->getCondition();
+        $operand = $expression->condition;
 
         if ($operand === '') {
             return '';

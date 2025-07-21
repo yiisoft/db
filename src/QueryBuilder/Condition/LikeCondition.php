@@ -20,20 +20,19 @@ final class LikeCondition implements ConditionInterface
 {
     protected array|null $escapingReplacements = [];
 
-    public function __construct(
-        private readonly string|ExpressionInterface $column,
-        private readonly string $operator,
-        private readonly array|int|string|Iterator|ExpressionInterface|null $value,
-        private readonly ?bool $caseSensitive = null,
-    ) {
-    }
-
     /**
-     * @return ExpressionInterface|string The column name.
+     * @param ExpressionInterface|string $column The column name.
+     * @param string $operator The operator to use such as `>` or `<=`.
+     * @param array|ExpressionInterface|int|Iterator|string|null $value The value to the right of {@see operator}.
+     * @param bool|null $caseSensitive Whether the comparison is case-sensitive. `null` means using the default
+     * behavior.
      */
-    public function getColumn(): string|ExpressionInterface
-    {
-        return $this->column;
+    public function __construct(
+        public readonly string|ExpressionInterface $column,
+        public readonly string $operator,
+        public readonly array|int|string|Iterator|ExpressionInterface|null $value,
+        public readonly ?bool $caseSensitive = null,
+    ) {
     }
 
     /**
@@ -42,30 +41,6 @@ final class LikeCondition implements ConditionInterface
     public function getEscapingReplacements(): ?array
     {
         return $this->escapingReplacements;
-    }
-
-    /**
-     * @return string The operator to use such as `>` or `<=`.
-     */
-    public function getOperator(): string
-    {
-        return $this->operator;
-    }
-
-    /**
-     * @return array|ExpressionInterface|int|Iterator|string|null The value to the right of {@see operator}.
-     */
-    public function getValue(): array|int|string|Iterator|ExpressionInterface|null
-    {
-        return $this->value;
-    }
-
-    /**
-     * @return bool|null Whether the comparison is case-sensitive. `null` means using the default behavior.
-     */
-    public function getCaseSensitive(): ?bool
-    {
-        return $this->caseSensitive;
     }
 
     /**

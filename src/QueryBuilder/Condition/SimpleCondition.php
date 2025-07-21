@@ -14,35 +14,16 @@ use function array_key_exists;
  */
 final class SimpleCondition implements ConditionInterface
 {
+    /**
+     * @param ExpressionInterface|string $column The column name or an expression.
+     * @param string $operator The operator to use such as `>` or `<=`.
+     * @param mixed $value The value to the right of {@see $operator}.
+     */
     public function __construct(
-        private string|ExpressionInterface $column,
-        private string $operator,
-        private mixed $value
+        public readonly string|ExpressionInterface $column,
+        public readonly string $operator,
+        public readonly mixed $value
     ) {
-    }
-
-    /**
-     * @return ExpressionInterface|string The column name or an Expression.
-     */
-    public function getColumn(): string|ExpressionInterface
-    {
-        return $this->column;
-    }
-
-    /**
-     * @return string The operator to use such as `>` or `<=`.
-     */
-    public function getOperator(): string
-    {
-        return $this->operator;
-    }
-
-    /**
-     * @return mixed The value to the right of {@see operator}.
-     */
-    public function getValue(): mixed
-    {
-        return $this->value;
     }
 
     /**

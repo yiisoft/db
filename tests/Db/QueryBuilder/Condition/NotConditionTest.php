@@ -19,14 +19,14 @@ final class NotConditionTest extends TestCase
     {
         $notCondition = new NotCondition('id = 1');
 
-        $this->assertSame('id = 1', $notCondition->getCondition());
+        $this->assertSame('id = 1', $notCondition->condition);
     }
 
     public function testFromArrayDefinition(): void
     {
         $notCondition = NotCondition::fromArrayDefinition('NOT', ['id = 1']);
 
-        $this->assertSame('id = 1', $notCondition->getCondition());
+        $this->assertSame('id = 1', $notCondition->condition);
     }
 
     public function testFromArrayDefinitionException(): void

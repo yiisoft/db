@@ -15,26 +15,14 @@ use function is_string;
  */
 abstract class AbstractOverlapsCondition implements ConditionInterface
 {
+    /**
+     * @param ExpressionInterface|string $column The column name or an expression.
+     * @param ExpressionInterface|iterable $values An array of values that {@see $columns} value should overlap.
+     */
     public function __construct(
-        private string|ExpressionInterface $column,
-        private iterable|ExpressionInterface $values,
+        public readonly string|ExpressionInterface $column,
+        public readonly iterable|ExpressionInterface $values,
     ) {
-    }
-
-    /**
-     * @return ExpressionInterface|string The column name or an Expression.
-     */
-    public function getColumn(): string|ExpressionInterface
-    {
-        return $this->column;
-    }
-
-    /**
-     * @return ExpressionInterface|iterable An array of values that {@see columns} value should overlap.
-     */
-    public function getValues(): iterable|ExpressionInterface
-    {
-        return $this->values;
     }
 
     /**

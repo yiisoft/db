@@ -12,24 +12,14 @@ use Yiisoft\Db\Query\QueryInterface;
  */
 final class ExistsCondition implements ConditionInterface
 {
-    public function __construct(private string $operator, private QueryInterface $query)
-    {
-    }
-
     /**
-     * @return string The operator to use (for example, `EXISTS` or `NOT EXISTS`).
+     * @param string $operator The operator to use (for example, `EXISTS` or `NOT EXISTS`).
+     * @param QueryInterface $query The {@see QueryInterfacee} implementation representing the sub-query.
      */
-    public function getOperator(): string
-    {
-        return $this->operator;
-    }
-
-    /**
-     * @return QueryInterface The {@see Query} object representing the sub-query.
-     */
-    public function getQuery(): QueryInterface
-    {
-        return $this->query;
+    public function __construct(
+        public readonly string $operator,
+        public readonly QueryInterface $query,
+    ) {
     }
 
     /**

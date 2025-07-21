@@ -4,16 +4,26 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition;
 
+use Yiisoft\Db\Expression\ExpressionInterface;
+
 /**
  * Condition that connects two or more SQL expressions with the `AND` operator.
  */
-final class AndCondition extends AbstractConjunctionCondition
+final class AndCondition implements ConditionInterface
 {
     /**
-     * @return string The operator that's represented by this condition class, such as `AND`, `OR`.
+     * @param array $expressions The expressions that are connected by this condition.
+     *
+     * @psalm-param array<array|ExpressionInterface|scalar> $expressions
      */
-    public function getOperator(): string
+    public function __construct(
+        public readonly array $expressions,
+    ) {
+    }
+
+    public static function fromArrayDefinition(string $operator, array $operands): self
     {
-        return 'AND';
+        /** @psalm-var array<array|ExpressionInterface|scalar> $operands */
+        return new self($operands);
     }
 }

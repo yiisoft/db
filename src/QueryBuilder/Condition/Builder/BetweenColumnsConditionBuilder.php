@@ -39,10 +39,10 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operator = $expression->getOperator();
-        $startColumn = $this->escapeColumnName($expression->getIntervalStartColumn(), $params);
-        $endColumn = $this->escapeColumnName($expression->getIntervalEndColumn(), $params);
-        $value = $this->createPlaceholder($expression->getValue(), $params);
+        $operator = $expression->operator;
+        $startColumn = $this->escapeColumnName($expression->intervalStartColumn, $params);
+        $endColumn = $this->escapeColumnName($expression->intervalEndColumn, $params);
+        $value = $this->createPlaceholder($expression->value, $params);
         return "$value $operator $startColumn AND $endColumn";
     }
 

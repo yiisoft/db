@@ -18,13 +18,13 @@ final class HashConditionTest extends TestCase
     {
         $hashCondition = new HashCondition(['expired' => false, 'active' => true]);
 
-        $this->assertSame(['expired' => false, 'active' => true], $hashCondition->getHash());
+        $this->assertSame(['expired' => false, 'active' => true], $hashCondition->hash);
     }
 
     public function testFromArrayDefinition(): void
     {
         $hashCondition = HashCondition::fromArrayDefinition('AND', ['expired' => false, 'active' => true]);
 
-        $this->assertSame(['expired' => false, 'active' => true], $hashCondition->getHash());
+        $this->assertSame(['expired' => false, 'active' => true], $hashCondition->hash);
     }
 }
