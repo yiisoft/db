@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\QueryBuilder\Condition\Conjunction;
+namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;

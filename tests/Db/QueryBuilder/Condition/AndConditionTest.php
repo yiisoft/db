@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition\Conjunction;
+namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\QueryBuilder\Condition\Conjunction\AndCondition;
+use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
 
 /**
  * @group db

@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition\Builder;
 
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
-use Yiisoft\Db\QueryBuilder\Condition\LikeConditionBuilder;
+use Yiisoft\Db\QueryBuilder\Condition\Builder\LikeConditionBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\Tests\Support\TestTrait;
 

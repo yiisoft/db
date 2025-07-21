@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\QueryBuilder\Condition\Overlaps;
+namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;

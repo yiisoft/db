@@ -277,7 +277,7 @@ so it's possible to combine formats in a single condition:
 
 ```php
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
-use Yiisoft\Db\QueryBuilder\Condition\Conjunction\OrCondition;
+use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
 use Yiisoft\Db\Query\Query;
 
 /** @var Query $query */
