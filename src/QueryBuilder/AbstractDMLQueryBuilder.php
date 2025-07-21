@@ -8,7 +8,7 @@ use Iterator;
 use IteratorAggregate;
 use Traversable;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -421,7 +421,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Prepare column names and constraints for "upsert" operation.
      *
-     * @param IndexConstraint[] $constraints
+     * @param Index[] $constraints
      *
      * @psalm-param array<string, mixed>|QueryInterface $insertColumns
      *
@@ -457,59 +457,59 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @param string $name The table name, may contain schema name if any. Don't quote the table name.
      * @param string[] $columns Source column list.
-     * @param IndexConstraint[] $constraints This parameter optionally receives a matched constraint list.
+     * @param Index[] $indexes This parameter optionally receives a matched index list.
      * The constraints will be unique by their column names.
      *
      * @return string[] The column names.
     */
-    private function getTableUniqueColumnNames(string $name, array $columns, array &$constraints = []): array
+    private function getTableUniqueColumnNames(string $name, array $columns, array &$indexes = []): array
     {
         $primaryKey = $this->schema->getTablePrimaryKey($name);
 
         if ($primaryKey !== null) {
-            $constraints[] = $primaryKey;
+            $indexes[] = $primaryKey;
         }
 
         $tableIndexes = $this->schema->getTableIndexes($name);
 
-        foreach ($tableIndexes as $constraint) {
-            if ($constraint->isUnique()) {
-                $constraints[] = $constraint;
+        foreach ($tableIndexes as $index) {
+            if ($index->isUnique) {
+                $indexes[] = $index;
             }
         }
 
-        $constraints = array_merge($constraints, $this->schema->getTableUniques($name));
+        $indexes = array_merge($indexes, $this->schema->getTableUniques($name));
 
         /**
          * Remove duplicates
          *
-         * @var IndexConstraint[] $constraints
+         * @var Index[] $indexes
          */
-        $constraints = array_combine(
+        $indexes = array_combine(
             array_map(
-                static function (IndexConstraint $constraint): string {
-                    $columns = $constraint->getColumnNames();
+                static function (Index $index): string {
+                    $columns = $index->columnNames;
                     sort($columns, SORT_STRING);
                     return json_encode($columns, JSON_THROW_ON_ERROR);
                 },
-                $constraints
+                $indexes
             ),
-            $constraints
+            $indexes
         );
 
         $columnNames = [];
 
-        // Remove all constraints which don't cover the specified column list.
-        $constraints = array_values(
+        // Remove all indexes which don't cover the specified column list.
+        $indexes = array_values(
             array_filter(
-                $constraints,
-                static function (IndexConstraint $constraint) use ($columns, &$columnNames): bool {
-                    $constraintColumnNames = $constraint->getColumnNames();
+                $indexes,
+                static function (Index $index) use ($columns, &$columnNames): bool {
+                    $indexColumnNames = $index->columnNames;
 
-                    $result = empty(array_diff($constraintColumnNames, $columns));
+                    $result = empty(array_diff($indexColumnNames, $columns));
 
                     if ($result) {
-                        $columnNames = array_merge($columnNames, $constraintColumnNames);
+                        $columnNames = array_merge($columnNames, $indexColumnNames);
                     }
 
                     return $result;

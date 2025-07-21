@@ -370,30 +370,30 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
-        $dmlBuilder = Assert::getInaccessibleProperty($qb, 'dmlBuilder');
-        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+        $dmlBuilder = Assert::getPropertyValue($qb, 'dmlBuilder');
+        $typecasting = Assert::getPropertyValue($dmlBuilder, 'typecasting');
 
         $this->assertTrue($typecasting);
 
         $dmlBuilder = $dmlBuilder->withTypecasting(false);
-        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+        $typecasting = Assert::getPropertyValue($dmlBuilder, 'typecasting');
 
         $this->assertFalse($typecasting);
 
         $dmlBuilder = $dmlBuilder->withTypecasting();
-        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+        $typecasting = Assert::getPropertyValue($dmlBuilder, 'typecasting');
 
         $this->assertTrue($typecasting);
 
         $qb = $qb->withTypecasting(false);
-        $dmlBuilder = Assert::getInaccessibleProperty($qb, 'dmlBuilder');
-        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+        $dmlBuilder = Assert::getPropertyValue($qb, 'dmlBuilder');
+        $typecasting = Assert::getPropertyValue($dmlBuilder, 'typecasting');
 
         $this->assertFalse($typecasting);
 
         $qb = $qb->withTypecasting();
-        $dmlBuilder = Assert::getInaccessibleProperty($qb, 'dmlBuilder');
-        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+        $dmlBuilder = Assert::getPropertyValue($qb, 'dmlBuilder');
+        $typecasting = Assert::getPropertyValue($dmlBuilder, 'typecasting');
 
         $this->assertTrue($typecasting);
 

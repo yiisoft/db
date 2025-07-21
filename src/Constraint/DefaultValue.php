@@ -16,36 +16,18 @@ namespace Yiisoft\Db\Constraint;
  * evaluated by the database, and can be used in migrations to define the default value for a column when creating or
  * modifying a table.
  */
-final class DefaultValueConstraint extends AbstractConstraint
+final class DefaultValue extends AbstractConstraint
 {
     /**
      * @param string $name The constraint name.
      * @param string[] $columnNames The list of column names the constraint belongs to.
      * @param mixed $value The default value as returned by the DBMS.
      */
-    public function __construct(string $name = '', array $columnNames = [], private mixed $value = null)
-    {
+    public function __construct(
+        string $name = '',
+        array $columnNames = [],
+        public readonly mixed $value = null,
+    ) {
         parent::__construct($name, $columnNames);
-    }
-
-    /**
-     * @return mixed The default value as returned by the DBMS.
-     *
-     * @psalm-immutable
-     */
-    public function getValue(): mixed
-    {
-        return $this->value;
-    }
-
-    /**
-     * Set the default value as returned by the DBMS.
-     *
-     * @param mixed $value The default value as returned by the DBMS.
-     */
-    public function value(mixed $value): self
-    {
-        $this->value = $value;
-        return $this;
     }
 }

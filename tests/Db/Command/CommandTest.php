@@ -692,7 +692,7 @@ final class CommandTest extends AbstractCommandTest
         $handler = static fn (): bool => true;
         $command->setRetryHandler($handler);
 
-        $this->assertSame($handler, Assert::getInaccessibleProperty($command, 'retryHandler'));
+        $this->assertSame($handler, Assert::getPropertyValue($command, 'retryHandler'));
     }
 
     public function testTruncateTable(): void
@@ -759,15 +759,15 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
         $command = $db->createCommand();
 
-        $this->assertTrue(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
+        $this->assertTrue(Assert::getPropertyValue($command, 'dbTypecasting'));
 
         $command = $command->withDbTypecasting(false);
 
-        $this->assertFalse(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
+        $this->assertFalse(Assert::getPropertyValue($command, 'dbTypecasting'));
 
         $command = $command->withDbTypecasting();
 
-        $this->assertTrue(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
+        $this->assertTrue(Assert::getPropertyValue($command, 'dbTypecasting'));
     }
 
     public function testWithPhpTypecasting(): void
@@ -775,15 +775,15 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
         $command = $db->createCommand();
 
-        $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+        $this->assertFalse(Assert::getPropertyValue($command, 'phpTypecasting'));
 
         $command = $command->withPhpTypecasting();
 
-        $this->assertTrue(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+        $this->assertTrue(Assert::getPropertyValue($command, 'phpTypecasting'));
 
         $command = $command->withPhpTypecasting(false);
 
-        $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+        $this->assertFalse(Assert::getPropertyValue($command, 'phpTypecasting'));
     }
 
     public function testWithTypecasting(): void
@@ -791,17 +791,17 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
         $command = $db->createCommand();
 
-        $this->assertTrue(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
-        $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+        $this->assertTrue(Assert::getPropertyValue($command, 'dbTypecasting'));
+        $this->assertFalse(Assert::getPropertyValue($command, 'phpTypecasting'));
 
         $command = $command->withTypecasting(false);
 
-        $this->assertFalse(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
-        $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+        $this->assertFalse(Assert::getPropertyValue($command, 'dbTypecasting'));
+        $this->assertFalse(Assert::getPropertyValue($command, 'phpTypecasting'));
 
         $command = $command->withTypecasting();
 
-        $this->assertTrue(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
-        $this->assertTrue(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+        $this->assertTrue(Assert::getPropertyValue($command, 'dbTypecasting'));
+        $this->assertTrue(Assert::getPropertyValue($command, 'phpTypecasting'));
     }
 }

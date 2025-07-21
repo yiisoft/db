@@ -8,10 +8,10 @@ use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\AbstractConstraint;
-use Yiisoft\Db\Constraint\CheckConstraint;
-use Yiisoft\Db\Constraint\DefaultValueConstraint;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
-use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\Constraint\Check;
+use Yiisoft\Db\Constraint\DefaultValue;
+use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
@@ -49,7 +49,7 @@ abstract class AbstractSchema implements SchemaInterface
     private array $schemaNames = [];
     /** @var string[][] */
     private array $tableNames = [];
-    /** @var (AbstractConstraint[]|IndexConstraint|TableSchemaInterface|null)[][] */
+    /** @var (AbstractConstraint[]|Index|TableSchemaInterface|null)[][] */
     private array $tableMetadata = [];
 
     public function __construct(protected ConnectionInterface $db, private SchemaCache $schemaCache)
@@ -89,7 +89,7 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $tableName The table name.
      *
-     * @return CheckConstraint[] The check constraints for the given table.
+     * @return Check[] The check constraints for the given table.
      */
     abstract protected function loadTableChecks(string $tableName): array;
 
@@ -98,7 +98,7 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $tableName The table name.
      *
-     * @return DefaultValueConstraint[] The default value constraints for the given table.
+     * @return DefaultValue[] The default value constraints for the given table.
      */
     abstract protected function loadTableDefaultValues(string $tableName): array;
 
@@ -107,7 +107,7 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $tableName The table name.
      *
-     * @return ForeignKeyConstraint[] The foreign keys for the given table.
+     * @return ForeignKey[] The foreign keys for the given table.
      */
     abstract protected function loadTableForeignKeys(string $tableName): array;
 
@@ -116,7 +116,7 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $tableName The table name.
      *
-     * @return IndexConstraint[] The indexes for the given table.
+     * @return Index[] The indexes for the given table.
      */
     abstract protected function loadTableIndexes(string $tableName): array;
 
@@ -125,16 +125,16 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $tableName The table name.
      *
-     * @return IndexConstraint|null The primary key for the given table. `null` if the table has no primary key.
+     * @return Index|null The primary key for the given table. `null` if the table has no primary key.
      */
-    abstract protected function loadTablePrimaryKey(string $tableName): IndexConstraint|null;
+    abstract protected function loadTablePrimaryKey(string $tableName): Index|null;
 
     /**
      * Loads all unique constraints for the given table.
      *
      * @param string $tableName The table name.
      *
-     * @return IndexConstraint[] The unique constraints for the given table.
+     * @return Index[] The unique constraints for the given table.
      */
     abstract protected function loadTableUniques(string $tableName): array;
 
@@ -199,25 +199,25 @@ abstract class AbstractSchema implements SchemaInterface
 
     public function getSchemaChecks(string $schema = '', bool $refresh = false): array
     {
-        /** @var CheckConstraint[] */
+        /** @var Check[] */
         return $this->getSchemaMetadata($schema, SchemaInterface::CHECKS, $refresh);
     }
 
     public function getSchemaDefaultValues(string $schema = '', bool $refresh = false): array
     {
-        /** @var DefaultValueConstraint[] */
+        /** @var DefaultValue[] */
         return $this->getSchemaMetadata($schema, SchemaInterface::DEFAULT_VALUES, $refresh);
     }
 
     public function getSchemaForeignKeys(string $schema = '', bool $refresh = false): array
     {
-        /** @var ForeignKeyConstraint[] */
+        /** @var ForeignKey[] */
         return $this->getSchemaMetadata($schema, SchemaInterface::FOREIGN_KEYS, $refresh);
     }
 
     public function getSchemaIndexes(string $schema = '', bool $refresh = false): array
     {
-        /** @var IndexConstraint[] */
+        /** @var Index[] */
         return $this->getSchemaMetadata($schema, SchemaInterface::INDEXES, $refresh);
     }
 
@@ -232,37 +232,37 @@ abstract class AbstractSchema implements SchemaInterface
 
     public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array
     {
-        /** @var IndexConstraint[] */
+        /** @var Index[] */
         return $this->getSchemaMetadata($schema, SchemaInterface::PRIMARY_KEY, $refresh);
     }
 
     public function getSchemaUniques(string $schema = '', bool $refresh = false): array
     {
-        /** @var IndexConstraint[] */
+        /** @var Index[] */
         return $this->getSchemaMetadata($schema, SchemaInterface::UNIQUES, $refresh);
     }
 
     public function getTableChecks(string $name, bool $refresh = false): array
     {
-        /** @var CheckConstraint[] */
+        /** @var Check[] */
         return $this->getTableMetadata($name, SchemaInterface::CHECKS, $refresh);
     }
 
     public function getTableDefaultValues(string $name, bool $refresh = false): array
     {
-        /** @var DefaultValueConstraint[] */
+        /** @var DefaultValue[] */
         return $this->getTableMetadata($name, SchemaInterface::DEFAULT_VALUES, $refresh);
     }
 
     public function getTableForeignKeys(string $name, bool $refresh = false): array
     {
-        /** @var ForeignKeyConstraint[] */
+        /** @var ForeignKey[] */
         return $this->getTableMetadata($name, SchemaInterface::FOREIGN_KEYS, $refresh);
     }
 
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
-        /** @var IndexConstraint[] */
+        /** @var Index[] */
         return $this->getTableMetadata($name, SchemaInterface::INDEXES, $refresh);
     }
 
@@ -275,9 +275,9 @@ abstract class AbstractSchema implements SchemaInterface
         return $this->tableNames[$schema];
     }
 
-    public function getTablePrimaryKey(string $name, bool $refresh = false): IndexConstraint|null
+    public function getTablePrimaryKey(string $name, bool $refresh = false): Index|null
     {
-        /** @var IndexConstraint|null */
+        /** @var Index|null */
         return $this->getTableMetadata($name, SchemaInterface::PRIMARY_KEY, $refresh);
     }
 
@@ -295,7 +295,7 @@ abstract class AbstractSchema implements SchemaInterface
 
     public function getTableUniques(string $name, bool $refresh = false): array
     {
-        /** @var IndexConstraint[] */
+        /** @var Index[] */
         return $this->getTableMetadata($name, SchemaInterface::UNIQUES, $refresh);
     }
 
@@ -368,7 +368,7 @@ abstract class AbstractSchema implements SchemaInterface
      * @param bool $refresh Whether to fetch the latest available table metadata. If this is `false`, cached data may be
      * returned if available.
      *
-     * @return AbstractConstraint[][]|IndexConstraint[]|TableSchemaInterface[] The metadata of the given type for all
+     * @return AbstractConstraint[][]|Index[]|TableSchemaInterface[] The metadata of the given type for all
      * tables in the given schema.
      */
     protected function getSchemaMetadata(string $schema, string $type, bool $refresh): array
@@ -402,13 +402,13 @@ abstract class AbstractSchema implements SchemaInterface
      * @param string $type The metadata type.
      * @param bool $refresh whether to reload the table metadata even if it's found in the cache.
      *
-     * @return AbstractConstraint[]|IndexConstraint|TableSchemaInterface|null The metadata of the given type for the given table.
+     * @return AbstractConstraint[]|Index|TableSchemaInterface|null The metadata of the given type for the given table.
      */
     protected function getTableMetadata(
         string $name,
         string $type,
         bool $refresh = false,
-    ): array|IndexConstraint|TableSchemaInterface|null {
+    ): array|Index|TableSchemaInterface|null {
         $rawName = $this->db->getQuoter()->getRawTableName($name);
 
         if (!isset($this->tableMetadata[$rawName])) {
@@ -426,9 +426,9 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * This method returns the desired metadata type for the table name.
      *
-     * @return AbstractConstraint[]|IndexConstraint|TableSchemaInterface|null
+     * @return AbstractConstraint[]|Index|TableSchemaInterface|null
      */
-    protected function loadTableTypeMetadata(string $type, string $name): array|IndexConstraint|TableSchemaInterface|null
+    protected function loadTableTypeMetadata(string $type, string $name): array|Index|TableSchemaInterface|null
     {
         return match ($type) {
             SchemaInterface::SCHEMA => $this->loadTableSchema($name),
@@ -445,13 +445,13 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * This method returns the desired metadata type for table name (with refresh if needed).
      *
-     * @return AbstractConstraint[]|IndexConstraint|TableSchemaInterface|null
+     * @return AbstractConstraint[]|Index|TableSchemaInterface|null
      */
     protected function getTableTypeMetadata(
         string $type,
         string $name,
         bool $refresh = false
-    ): array|IndexConstraint|TableSchemaInterface|null {
+    ): array|Index|TableSchemaInterface|null {
         return match ($type) {
             SchemaInterface::SCHEMA => $this->getTableSchema($name, $refresh),
             SchemaInterface::PRIMARY_KEY => $this->getTablePrimaryKey($name, $refresh),
@@ -483,12 +483,12 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $rawName The raw table name.
      * @param string $type The metadata type.
-     * @param AbstractConstraint[]|IndexConstraint|TableSchemaInterface|null $data The metadata to set.
+     * @param AbstractConstraint[]|Index|TableSchemaInterface|null $data The metadata to set.
      */
     protected function setTableMetadata(
         string $rawName,
         string $type,
-        array|IndexConstraint|TableSchemaInterface|null $data,
+        array|Index|TableSchemaInterface|null $data,
     ): void {
         $this->tableMetadata[$rawName][$type] = $data;
     }
@@ -515,7 +515,7 @@ abstract class AbstractSchema implements SchemaInterface
         }
 
         unset($metadata[self::CACHE_VERSION]);
-        /** @var (AbstractConstraint[]|IndexConstraint|TableSchemaInterface|null)[] $metadata */
+        /** @var (AbstractConstraint[]|Index|TableSchemaInterface|null)[] $metadata */
         $this->tableMetadata[$rawName] = $metadata;
     }
 

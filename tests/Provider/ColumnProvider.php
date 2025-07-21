@@ -12,7 +12,7 @@ use PDO;
 use stdClass;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
@@ -847,7 +847,7 @@ class ColumnProvider
             ['notNull', false, 'isNotNull', false],
             ['primaryKey', true, 'isPrimaryKey', true],
             ['primaryKey', false, 'isPrimaryKey', false],
-            ['reference', $fk = new ForeignKeyConstraint(), 'getReference', $fk],
+            ['reference', $fk = new ForeignKey(), 'getReference', $fk],
             ['reference', null, 'getReference', null],
             ['scale', 2, 'getScale', 2],
             ['scale', null, 'getScale', null],
