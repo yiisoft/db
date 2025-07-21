@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Constraint;
 
 use PHPUnit\Framework\TestCase;
-use stdClass;
 use Yiisoft\Db\Constraint\DefaultValue;
 
 /**

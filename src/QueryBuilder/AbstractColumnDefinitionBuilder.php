@@ -6,7 +6,6 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
-use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function in_array;
