@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema;
 
-use Yiisoft\Db\Constraint\CheckConstraint;
-use Yiisoft\Db\Constraint\DefaultValueConstraint;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
-use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\Constraint\Check;
+use Yiisoft\Db\Constraint\DefaultValue;
+use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\TableSchemaInterface;
@@ -50,106 +50,70 @@ final class SchemaTest extends AbstractSchemaTest
     {
         $db = $this->getConnection();
 
-        $checkConstraint = [
-            (new CheckConstraint())
-                ->columnNames(['col1', 'col2'])
-                ->expression('col1 > col2')
-                ->name('check_1'),
-        ];
+        $checks = [new Check('check_1', ['col1', 'col2'], 'col1 > col2')];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableChecks'])
             ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
-        $schemaMock->expects($this->once())->method('loadTableChecks')->willReturn($checkConstraint);
+        $schemaMock->expects($this->once())->method('loadTableChecks')->willReturn($checks);
         $tableChecks = $schemaMock->getSchemaChecks();
 
-        $this->assertIsArray($tableChecks);
-
-        foreach ($tableChecks as $checks) {
-            $this->assertIsArray($checks);
-            $this->assertContainsOnlyInstancesOf(CheckConstraint::class, $checks);
-        }
+        $this->assertSame([$checks], $tableChecks);
     }
 
     public function testGetSchemaDefaultValues(): void
     {
         $db = $this->getConnection();
 
-        $defaultValuesConstraint = [
-            (new DefaultValueConstraint())
-                ->columnNames(['C_default'])
-                ->name('DF__T_constra__C_def__6203C3C6')
-                ->value('((0))'),
-        ];
+        $defaultValues = [new DefaultValue('DF__T_constra__C_def__6203C3C6', ['C_default'], '((0))')];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableDefaultValues'])
             ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
-        $schemaMock->expects($this->once())->method('loadTableDefaultValues')->willReturn($defaultValuesConstraint);
+        $schemaMock->expects($this->once())->method('loadTableDefaultValues')->willReturn($defaultValues);
         $tableDefaultValues = $schemaMock->getSchemaDefaultValues();
 
-        $this->assertIsArray($tableDefaultValues);
-
-        foreach ($tableDefaultValues as $defaultValues) {
-            $this->assertIsArray($defaultValues);
-            $this->assertContainsOnlyInstancesOf(DefaultValueConstraint::class, $defaultValues);
-        }
+        $this->assertSame([$defaultValues], $tableDefaultValues);
     }
 
     public function testGetSchemaForeignKeys(): void
     {
         $db = $this->getConnection();
 
-        $foreingKeysConstraint = [
-            (new ForeignKeyConstraint())
-                ->name('CN_constraints_3')
-                ->columnNames(['C_fk_id_1, C_fk_id_2'])
-                ->foreignTableName('T_constraints_2')
-                ->foreignColumnNames(['C_id_1', 'C_id_2']),
-        ];
+        $foreignKeys = [new ForeignKey(
+            'CN_constraints_3',
+            ['C_fk_id_1, C_fk_id_2'],
+            'dev',
+            'T_constraints_2',
+            ['C_id_1', 'C_id_2'],
+        )];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableForeignKeys'])
             ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
-        $schemaMock->expects($this->once())->method('loadTableForeignKeys')->willReturn($foreingKeysConstraint);
+        $schemaMock->expects($this->once())->method('loadTableForeignKeys')->willReturn($foreignKeys);
         $tableForeignKeys = $schemaMock->getSchemaForeignKeys();
 
-        $this->assertIsArray($tableForeignKeys);
-
-        foreach ($tableForeignKeys as $foreignKeys) {
-            $this->assertIsArray($foreignKeys);
-            $this->assertContainsOnlyInstancesOf(ForeignKeyConstraint::class, $foreignKeys);
-        }
+        $this->assertSame([$foreignKeys], $tableForeignKeys);
     }
 
     public function testGetSchemaIndexes(): void
     {
         $db = $this->getConnection();
 
-        $indexConstraint = [
-            (new IndexConstraint())
-                ->name('PK__T_constr__A9FAE80AC2B18E65')
-                ->columnNames(['"C_id'])
-                ->unique(true)
-                ->primaryKey(true),
-        ];
+        $indexes = [new Index('PK__T_constr__A9FAE80AC2B18E65', ['"C_id'], true, true)];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableIndexes'])
             ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
-        $schemaMock->expects($this->once())->method('loadTableIndexes')->willReturn($indexConstraint);
+        $schemaMock->expects($this->once())->method('loadTableIndexes')->willReturn($indexes);
         $tableIndexes = $schemaMock->getSchemaIndexes();
 
-        $this->assertIsArray($tableIndexes);
-
-        foreach ($tableIndexes as $indexes) {
-            $this->assertIsArray($indexes);
-            $this->assertContainsOnlyInstancesOf(IndexConstraint::class, $indexes);
-        }
+        $this->assertSame([$indexes], $tableIndexes);
     }
 
     public function testGetSchemaNames(): void
@@ -171,7 +135,7 @@ final class SchemaTest extends AbstractSchemaTest
         $db = $this->getConnection();
 
         $schema = $db->getSchema();
-        Assert::setInaccessibleProperty($schema, 'schemaNames', ['dbo', 'public']);
+        Assert::setPropertyValue($schema, 'schemaNames', ['dbo', 'public']);
 
         $this->assertSame(['dbo', 'public'], $schema->getSchemaNames());
     }
@@ -181,7 +145,7 @@ final class SchemaTest extends AbstractSchemaTest
         $db = $this->getConnection();
 
         $schema = $db->getSchema();
-        Assert::setInaccessibleProperty($schema, 'schemaNames', ['dbo', 'public']);
+        Assert::setPropertyValue($schema, 'schemaNames', ['dbo', 'public']);
 
         $this->assertTrue($schema->hasSchema('dbo'));
         $this->assertTrue($schema->hasSchema('public'));
@@ -194,7 +158,7 @@ final class SchemaTest extends AbstractSchemaTest
     {
         $db = $this->getConnection();
 
-        $pksConstraint = new IndexConstraint('PK__T_constr__A9FAE80AC2B18E65', ['"C_id'], true, true);
+        $pksConstraint = new Index('PK__T_constr__A9FAE80AC2B18E65', ['"C_id'], true, true);
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTablePrimaryKey'])
             ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
@@ -204,14 +168,14 @@ final class SchemaTest extends AbstractSchemaTest
         $tablePks = $schemaMock->getSchemaPrimaryKeys();
 
         $this->assertIsArray($tablePks);
-        $this->assertContainsOnlyInstancesOf(IndexConstraint::class, $tablePks);
+        $this->assertContainsOnlyInstancesOf(Index::class, $tablePks);
     }
 
     public function testGetSchemaUniques(): void
     {
         $db = $this->getConnection();
 
-        $uniquesConstraint = [new IndexConstraint('CN_unique', ['C_unique'], true)];
+        $uniquesConstraint = [new Index('CN_unique', ['C_unique'], true)];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableUniques'])
             ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
@@ -224,7 +188,7 @@ final class SchemaTest extends AbstractSchemaTest
 
         foreach ($tableUniques as $uniques) {
             $this->assertIsArray($uniques);
-            $this->assertContainsOnlyInstancesOf(IndexConstraint::class, $uniques);
+            $this->assertContainsOnlyInstancesOf(Index::class, $uniques);
         }
     }
 
@@ -338,15 +302,10 @@ final class SchemaTest extends AbstractSchemaTest
 
         $schema = $db->getSchema();
 
-        $checkConstraint = [
-            (new CheckConstraint())
-                ->columnNames(['col1', 'col2'])
-                ->expression('col1 > col2')
-                ->name('check_1'),
-        ];
-        Assert::invokeMethod($schema, 'setTableMetadata', ['T_constraints_1', 'checks', $checkConstraint]);
+        $check = [new Check('check_1', ['col1', 'col2'], 'col1 > col2')];
+        Assert::invokeMethod($schema, 'setTableMetadata', ['T_constraints_1', 'checks', $check]);
 
-        $this->assertSame($checkConstraint, $schema->getTableChecks('T_constraints_1'));
+        $this->assertSame($check, $schema->getTableChecks('T_constraints_1'));
     }
 
     public function testGetResultColumn(): void

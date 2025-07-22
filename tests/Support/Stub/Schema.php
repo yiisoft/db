@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support\Stub;
 
-use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\AbstractSchema;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
@@ -77,7 +77,7 @@ class Schema extends AbstractSchema
     /**
      * @throws NotSupportedException
      */
-    protected function loadTablePrimaryKey(string $tableName): IndexConstraint|null
+    protected function loadTablePrimaryKey(string $tableName): Index|null
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }

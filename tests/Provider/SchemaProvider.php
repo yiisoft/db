@@ -7,9 +7,9 @@ namespace Yiisoft\Db\Tests\Provider;
 use PDO;
 use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\ReferentialAction;
-use Yiisoft\Db\Constraint\CheckConstraint;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
-use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\Constraint\Check;
+use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 class SchemaProvider
@@ -30,24 +30,24 @@ class SchemaProvider
             '1: primary key' => [
                 'T_constraints_1',
                 SchemaInterface::PRIMARY_KEY,
-                new IndexConstraint('', ['C_id'], true, true),
+                new Index('', ['C_id'], true, true),
             ],
             '1: check' => [
                 'T_constraints_1',
                 SchemaInterface::CHECKS,
-                [new CheckConstraint('', ['C_check'], "C_check <> ''")],
+                [new Check('', ['C_check'], "C_check <> ''")],
             ],
             '1: unique' => [
                 'T_constraints_1',
                 SchemaInterface::UNIQUES,
-                [new IndexConstraint('CN_unique', ['C_unique'], true)],
+                [new Index('CN_unique', ['C_unique'], true)],
             ],
             '1: index' => [
                 'T_constraints_1',
                 SchemaInterface::INDEXES,
                 [
-                    new IndexConstraint('', ['C_id'], true, true),
-                    new IndexConstraint('CN_unique', ['C_unique'], true),
+                    new Index('', ['C_id'], true, true),
+                    new Index('CN_unique', ['C_unique'], true),
                 ],
             ],
             '1: default' => ['T_constraints_1', SchemaInterface::DEFAULT_VALUES, false],
@@ -55,20 +55,20 @@ class SchemaProvider
             '2: primary key' => [
                 'T_constraints_2',
                 SchemaInterface::PRIMARY_KEY,
-                new IndexConstraint('CN_pk', ['C_id_1', 'C_id_2'], true, true),
+                new Index('CN_pk', ['C_id_1', 'C_id_2'], true, true),
             ],
             '2: unique' => [
                 'T_constraints_2',
                 SchemaInterface::UNIQUES,
-                [new IndexConstraint('CN_constraints_2_multi', ['C_index_2_1', 'C_index_2_2'], true)],
+                [new Index('CN_constraints_2_multi', ['C_index_2_1', 'C_index_2_2'], true)],
             ],
             '2: index' => [
                 'T_constraints_2',
                 SchemaInterface::INDEXES,
                 [
-                    new IndexConstraint('CN_pk', ['C_id_1', 'C_id_2'], true, true),
-                    new IndexConstraint('CN_constraints_2_single', ['C_index_1']),
-                    new IndexConstraint('CN_constraints_2_multi', ['C_index_2_1', 'C_index_2_2'], true),
+                    new Index('CN_pk', ['C_id_1', 'C_id_2'], true, true),
+                    new Index('CN_constraints_2_single', ['C_index_1']),
+                    new Index('CN_constraints_2_multi', ['C_index_2_1', 'C_index_2_2'], true),
                 ],
             ],
             '2: check' => ['T_constraints_2', SchemaInterface::CHECKS, []],
@@ -79,9 +79,10 @@ class SchemaProvider
                 'T_constraints_3',
                 SchemaInterface::FOREIGN_KEYS,
                 [
-                    new ForeignKeyConstraint(
+                    new ForeignKey(
                         'CN_constraints_3',
                         ['C_fk_id_1', 'C_fk_id_2'],
+                        '',
                         'T_constraints_2',
                         ['C_id_1', 'C_id_2'],
                         ReferentialAction::CASCADE,
@@ -93,7 +94,7 @@ class SchemaProvider
             '3: index' => [
                 'T_constraints_3',
                 SchemaInterface::INDEXES,
-                [new IndexConstraint('CN_constraints_3', ['C_fk_id_1', 'C_fk_id_2'])],
+                [new Index('CN_constraints_3', ['C_fk_id_1', 'C_fk_id_2'])],
             ],
             '3: check' => ['T_constraints_3', SchemaInterface::CHECKS, []],
             '3: default' => ['T_constraints_3', SchemaInterface::DEFAULT_VALUES, false],
@@ -101,12 +102,12 @@ class SchemaProvider
             '4: primary key' => [
                 'T_constraints_4',
                 SchemaInterface::PRIMARY_KEY,
-                new IndexConstraint('', ['C_id'], true, true),
+                new Index('', ['C_id'], true, true),
             ],
             '4: unique' => [
                 'T_constraints_4',
                 SchemaInterface::UNIQUES,
-                [new IndexConstraint('CN_constraints_4', ['C_col_1', 'C_col_2'], true)],
+                [new Index('CN_constraints_4', ['C_col_1', 'C_col_2'], true)],
             ],
             '4: check' => ['T_constraints_4', SchemaInterface::CHECKS, []],
             '4: default' => ['T_constraints_4', SchemaInterface::DEFAULT_VALUES, false],

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema\Column;
 
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
@@ -231,7 +231,7 @@ final class ColumnTest extends AbstractColumnTest
     public function testReference(): void
     {
         $column = new Column();
-        $fk = new ForeignKeyConstraint();
+        $fk = new ForeignKey();
 
         $this->assertNull($column->getReference());
         $this->assertSame($column, $column->reference($fk));

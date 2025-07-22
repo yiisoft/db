@@ -23,7 +23,7 @@ interface ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
-     * @return CheckConstraint[] The check constraints for all tables in the database.
+     * @return Check[] The check constraints for all tables in the database.
      */
     public function getSchemaChecks(string $schema = '', bool $refresh = false): array;
 
@@ -35,7 +35,7 @@ interface ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
-     * @return DefaultValueConstraint[] The default value constraints for all tables in the database.
+     * @return DefaultValue[] The default value constraints for all tables in the database.
      */
     public function getSchemaDefaultValues(string $schema = '', bool $refresh = false): array;
 
@@ -47,7 +47,7 @@ interface ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
-     * @return ForeignKeyConstraint[] The foreign keys for all tables in the database.
+     * @return ForeignKey[] The foreign keys for all tables in the database.
      */
     public function getSchemaForeignKeys(string $schema = '', bool $refresh = false): array;
 
@@ -59,7 +59,7 @@ interface ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available table schemas. If this is false, cached data may be
      * returned if available.
      *
-     * @return IndexConstraint[] The indexes for all tables in the database.
+     * @return Index[] The indexes for all tables in the database.
      */
     public function getSchemaIndexes(string $schema = '', bool $refresh = false): array;
 
@@ -71,7 +71,7 @@ interface ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
-     * @return IndexConstraint[] The primary keys for all tables in the database.
+     * @return Index[] The primary keys for all tables in the database.
      */
     public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array;
 
@@ -83,7 +83,7 @@ interface ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
-     * @return IndexConstraint[] The unique constraints for all tables in the database.
+     * @return Index[] The unique constraints for all tables in the database.
      */
     public function getSchemaUniques(string $schema = '', bool $refresh = false): array;
 
@@ -93,7 +93,7 @@ interface ConstraintSchemaInterface
      * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
      * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
-     * @return CheckConstraint[] The information metadata for the check constraints of the named table.
+     * @return Check[] The information metadata for the check constraints of the named table.
      */
     public function getTableChecks(string $name, bool $refresh = false): array;
 
@@ -103,7 +103,7 @@ interface ConstraintSchemaInterface
      * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
      * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
-     * @return DefaultValueConstraint[] The information metadata for the default value constraints of the named table.
+     * @return DefaultValue[] The information metadata for the default value constraints of the named table.
      */
     public function getTableDefaultValues(string $name, bool $refresh = false): array;
 
@@ -113,7 +113,7 @@ interface ConstraintSchemaInterface
      * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
      * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
-     * @return ForeignKeyConstraint[] The information metadata for the foreign keys of the named table.
+     * @return ForeignKey[] The information metadata for the foreign keys of the named table.
      */
     public function getTableForeignKeys(string $name, bool $refresh = false): array;
 
@@ -123,7 +123,7 @@ interface ConstraintSchemaInterface
      * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
      * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
-     * @return IndexConstraint[] The information metadata for the indexes of the named table.
+     * @return Index[] The information metadata for the indexes of the named table.
      */
     public function getTableIndexes(string $name, bool $refresh = false): array;
 
@@ -133,9 +133,9 @@ interface ConstraintSchemaInterface
      * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
      * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
-     * @return IndexConstraint|null The information metadata for the primary key of the named table.
+     * @return Index|null The information metadata for the primary key of the named table.
      */
-    public function getTablePrimaryKey(string $name, bool $refresh = false): IndexConstraint|null;
+    public function getTablePrimaryKey(string $name, bool $refresh = false): Index|null;
 
     /**
      * Obtains the unique constraints' information for the named table.
@@ -143,7 +143,7 @@ interface ConstraintSchemaInterface
      * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
      * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
-     * @return IndexConstraint[] The information metadata for the unique constraints of the named table.
+     * @return Index[] The information metadata for the unique constraints of the named table.
      */
     public function getTableUniques(string $name, bool $refresh = false): array;
 }

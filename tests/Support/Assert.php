@@ -10,6 +10,7 @@ use ReflectionException;
 use ReflectionObject;
 use ReflectionProperty;
 
+use function array_key_exists;
 use function is_array;
 use function is_object;
 use function ltrim;
@@ -40,10 +41,8 @@ final class Assert extends TestCase
 
     /**
      * Gets an inaccessible object property.
-     *
-     * @param bool $revoke whether to make property inaccessible after getting.
      */
-    public static function getInaccessibleProperty(object $object, string $propertyName, bool $revoke = true): mixed
+    public static function getPropertyValue(object $object, string $propertyName): mixed
     {
         $class = new ReflectionClass($object);
 
@@ -51,18 +50,7 @@ final class Assert extends TestCase
             $class = $class->getParentClass();
         }
 
-        $property = $class->getProperty($propertyName);
-
-        $property->setAccessible(true);
-
-        /** @psalm-var mixed $result */
-        $result = $property->getValue($object);
-
-        if ($revoke) {
-            $property->setAccessible(false);
-        }
-
-        return $result;
+        return $class->getProperty($propertyName)->getValue($object);
     }
 
     /**
@@ -72,7 +60,7 @@ final class Assert extends TestCase
      * @param string $propertyName The name of the property to set.
      * @param mixed $value The value to set.
      */
-    public static function setInaccessibleProperty(object $object, string $propertyName, mixed $value): void
+    public static function setPropertyValue(object &$object, string $propertyName, mixed $value): void
     {
         $class = new ReflectionClass($object);
 
@@ -81,8 +69,40 @@ final class Assert extends TestCase
         }
 
         $property = $class->getProperty($propertyName);
-        $property->setAccessible(true);
-        $property->setValue($object, $value);
+
+        if ($property->isReadOnly()) {
+            $object = self::cloneObjectWith($object, [$propertyName => $value]);
+        } else {
+            $property->setValue($object, $value);
+        }
+    }
+
+    public static function cloneObjectWith(object $object, array $values): object
+    {
+        $class = new ReflectionClass($object);
+        $new = $class->newInstanceWithoutConstructor();
+
+        $setProperty = fn (string $name, mixed $value) => $this->$name = $value;
+
+        foreach ($class->getProperties() as $property) {
+            if (array_key_exists($property->name, $values)) {
+                $value = $values[$property->name];
+            } elseif ($property->isInitialized($object)) {
+                $value = $property->getValue($object);
+            } else {
+                continue;
+            }
+
+            $propertyClass = $property->getDeclaringClass()->name;
+
+            if ($propertyClass === $object::class) {
+                $property->setValue($new, $value);
+            } else {
+                $setProperty->bindTo($new, $propertyClass)($property->name, $value);
+            }
+        }
+
+        return $new;
     }
 
     /**
@@ -98,7 +118,6 @@ final class Assert extends TestCase
     {
         $reflection = new ReflectionObject($object);
         $method = $reflection->getMethod($method);
-        $method->setAccessible(true);
 
         return $method->invokeArgs($object, $args);
     }
