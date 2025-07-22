@@ -12,7 +12,7 @@ namespace Yiisoft\Db\Constraint;
  * It has information about the table and column(s) that the constraint applies to, as well as whether the index is
  * unique.
  */
-final class Index extends AbstractConstraint
+final class Index
 {
     /**
      * @param string $name The constraint name.
@@ -21,11 +21,10 @@ final class Index extends AbstractConstraint
      * @param bool $isPrimaryKey Whether the index was created for a primary key.
      */
     public function __construct(
-        string $name = '',
-        array $columnNames = [],
+        public readonly string $name = '',
+        public readonly array $columnNames = [],
         public readonly bool $isUnique = false,
         public readonly bool $isPrimaryKey = false,
     ) {
-        parent::__construct($name, $columnNames);
     }
 }

@@ -16,7 +16,7 @@ namespace Yiisoft\Db\Constraint;
  * evaluated by the database, and can be used in migrations to define the default value for a column when creating or
  * modifying a table.
  */
-final class DefaultValue extends AbstractConstraint
+final class DefaultValue
 {
     /**
      * @param string $name The constraint name.
@@ -24,10 +24,9 @@ final class DefaultValue extends AbstractConstraint
      * @param mixed $value The default value as returned by the DBMS.
      */
     public function __construct(
-        string $name = '',
-        array $columnNames = [],
+        public readonly string $name = '',
+        public readonly array $columnNames = [],
         public readonly mixed $value = null,
     ) {
-        parent::__construct($name, $columnNames);
     }
 }

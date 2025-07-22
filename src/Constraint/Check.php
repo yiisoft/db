@@ -13,7 +13,7 @@ namespace Yiisoft\Db\Constraint;
  * The constraint checks that the value of a specified column or expression meets a certain condition, if the condition
  * isn't met, an error will be thrown, and the data won't be inserted or updated.
  */
-final class Check extends AbstractConstraint
+final class Check
 {
     /**
      * @param string $name The constraint name.
@@ -21,10 +21,9 @@ final class Check extends AbstractConstraint
      * @param string $expression The SQL of the `CHECK` constraint.
      */
     public function __construct(
-        string $name = '',
-        array $columnNames = [],
+        public readonly string $name = '',
+        public readonly array $columnNames = [],
         public readonly string $expression = '',
     ) {
-        parent::__construct($name, $columnNames);
     }
 }

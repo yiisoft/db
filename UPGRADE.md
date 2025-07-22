@@ -92,9 +92,9 @@ and the following changes were made:
 
 ### Changes in constraint classes
 
-- Rename `Constraint` class to `AbstractConstraint` and make it abstract;
+- Remove `Constraint` class;
 - Rename classes `CheckConstraint`, `DefaultValueConstraint`, `ForeignKeyConstraint` and `IndexConstraint`
-  to `Check`, `DefaultValue`, `ForeignKey` and `Index`
+  to `Check`, `DefaultValue`, `ForeignKey` and `Index`;
 - Move properties to constructor and make them `public readonly`;
 - Remove all methods - use constructor to initialize values and properties to get values;
 

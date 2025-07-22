@@ -14,7 +14,7 @@ use Yiisoft\Db\Constant\ReferentialAction;
  * It has information about the table and column(s) that the constraint applies to, as well as any actions that
  * should be taken when a referenced record is deleted or updated.
  */
-final class ForeignKey extends AbstractConstraint
+final class ForeignKey
 {
     /**
      * @param string $name The constraint name.
@@ -29,14 +29,13 @@ final class ForeignKey extends AbstractConstraint
      * @psalm-param ReferentialAction::*|null $onUpdate
      */
     public function __construct(
-        string $name = '',
-        array $columnNames = [],
+        public readonly string $name = '',
+        public readonly array $columnNames = [],
         public readonly string $foreignSchemaName = '',
         public readonly string $foreignTableName = '',
         public readonly array $foreignColumnNames = [],
         public readonly string|null $onDelete = null,
         public readonly string|null $onUpdate = null,
     ) {
-        parent::__construct($name, $columnNames);
     }
 }

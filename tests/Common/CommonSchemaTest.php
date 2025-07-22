@@ -11,7 +11,6 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constraint\Check;
-use Yiisoft\Db\Constraint\AbstractConstraint;
 use Yiisoft\Db\Constraint\DefaultValue;
 use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Constraint\Index;
@@ -292,7 +291,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $tablePks = $schema->getSchemaPrimaryKeys();
 
         $this->assertIsArray($tablePks);
-        $this->assertContainsOnlyInstancesOf(AbstractConstraint::class, $tablePks);
+        $this->assertContainsOnlyInstancesOf(Index::class, $tablePks);
 
         $db->close();
     }
@@ -308,7 +307,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         foreach ($tableUniques as $uniques) {
             $this->assertIsArray($uniques);
-            $this->assertContainsOnlyInstancesOf(AbstractConstraint::class, $uniques);
+            $this->assertContainsOnlyInstancesOf(Index::class, $uniques);
         }
 
         $db->close();
@@ -706,8 +705,10 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         return $result;
     }
 
-    protected function assertMetadataEquals($expected, $actual): void
-    {
+    protected function assertMetadataEquals(
+        array|Check|DefaultValue|ForeignKey|Index|null $expected,
+        array|Check|DefaultValue|ForeignKey|Index|null $actual,
+    ): void {
         match (gettype($expected)) {
             'object' => $this->assertIsObject($actual),
             'array' => $this->assertIsArray($actual),
@@ -767,19 +768,23 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $array = array_values($newArray);
     }
 
-    private function normalizeConstraints($expected, &$actual): void
-    {
+    private function normalizeConstraints(
+        array|Check|DefaultValue|ForeignKey|Index|null $expected,
+        array|Check|DefaultValue|ForeignKey|Index|null &$actual,
+    ): void {
         if (is_array($expected)) {
             foreach ($expected as $key => $value) {
                 $this->normalizeConstraintPair($value, $actual[$key]);
             }
-        } elseif ($expected instanceof AbstractConstraint && $actual instanceof AbstractConstraint) {
+        } elseif ($expected !== null && $actual !== null) {
             $this->normalizeConstraintPair($expected, $actual);
         }
     }
 
-    private function normalizeConstraintPair(AbstractConstraint $expectedConstraint, AbstractConstraint &$actualConstraint): void
-    {
+    private function normalizeConstraintPair(
+        Check|DefaultValue|ForeignKey|Index $expectedConstraint,
+        Check|DefaultValue|ForeignKey|Index &$actualConstraint,
+    ): void {
         if ($expectedConstraint::class !== $actualConstraint::class) {
             return;
         }
