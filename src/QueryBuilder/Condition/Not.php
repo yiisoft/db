@@ -15,7 +15,7 @@ use function is_string;
 /**
  * Condition that represents `NOT` operator (negation).
  */
-final class NotCondition implements ConditionInterface
+final class Not implements ConditionInterface
 {
     /**
      * @param array|ExpressionInterface|string|null $condition The condition to negate.

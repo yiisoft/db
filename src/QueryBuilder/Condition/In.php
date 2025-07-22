@@ -12,7 +12,7 @@ use Yiisoft\Db\Query\QueryInterface;
 /**
  * Condition that represents `IN` operator.
  */
-final class InCondition implements ConditionInterface
+final class In implements ConditionInterface
 {
     /**
      * @param array|ExpressionInterface|Iterator|string $column The column name. If it's an array, a composite `IN` condition

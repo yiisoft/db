@@ -12,7 +12,7 @@ use function array_key_exists;
 /**
  * Represents a simple condition like `"column" operator value`.
  */
-final class SimpleCondition implements ConditionInterface
+final class Simple implements ConditionInterface
 {
     /**
      * @param ExpressionInterface|string $column The column name or an expression.

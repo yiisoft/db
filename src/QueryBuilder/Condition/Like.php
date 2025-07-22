@@ -16,7 +16,7 @@ use function is_string;
 /**
  * Condition that represents `LIKE` operator.
  */
-final class LikeCondition implements ConditionInterface
+final class Like implements ConditionInterface
 {
     protected array|null $escapingReplacements = [];
 

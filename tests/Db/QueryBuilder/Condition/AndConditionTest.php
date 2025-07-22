@@ -9,8 +9,6 @@ use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class AndConditionTest extends TestCase
 {

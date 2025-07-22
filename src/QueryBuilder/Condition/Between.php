@@ -10,7 +10,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 /**
  * Condition that's represented `BETWEEN` operator is used to check if a value is between two values.
  */
-final class BetweenCondition implements ConditionInterface
+final class Between implements ConditionInterface
 {
     /**
      * @param ExpressionInterface|string $column The column name.

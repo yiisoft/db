@@ -6,18 +6,16 @@ namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition;
 
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
-use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\BetweenColumns;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
-final class BetweenColumnsConditionTest extends TestCase
+final class BetweenColumnsTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $betweenColumnsCondition = new BetweenColumnsCondition(42, 'BETWEEN', 'min_value', 'max_value');
+        $betweenColumnsCondition = new BetweenColumns(42, 'BETWEEN', 'min_value', 'max_value');
 
         $this->assertSame(42, $betweenColumnsCondition->value);
         $this->assertSame('BETWEEN', $betweenColumnsCondition->operator);
@@ -27,7 +25,7 @@ final class BetweenColumnsConditionTest extends TestCase
 
     public function testFromArrayDefinition(): void
     {
-        $betweenColumnsCondition = BetweenColumnsCondition::fromArrayDefinition(
+        $betweenColumnsCondition = BetweenColumns::fromArrayDefinition(
             'BETWEEN',
             [42, 'min_value', 'max_value']
         );
@@ -43,7 +41,7 @@ final class BetweenColumnsConditionTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'between' requires three operands.");
 
-        BetweenColumnsCondition::fromArrayDefinition('between', []);
+        BetweenColumns::fromArrayDefinition('between', []);
     }
 
     public function testFromArrayDefinitionExceptionOperandsValue(): void
@@ -53,7 +51,7 @@ final class BetweenColumnsConditionTest extends TestCase
             "Operator 'between' requires value to be array, int, string, Iterator or ExpressionInterface."
         );
 
-        BetweenColumnsCondition::fromArrayDefinition('between', [false, 'min_value', 'max_value']);
+        BetweenColumns::fromArrayDefinition('between', [false, 'min_value', 'max_value']);
     }
 
     public function testFromArrayDefinitionExceptionOperandsIntervalStartColumn(): void
@@ -63,7 +61,7 @@ final class BetweenColumnsConditionTest extends TestCase
             "Operator 'between' requires interval start column to be string or ExpressionInterface."
         );
 
-        BetweenColumnsCondition::fromArrayDefinition('between', [42, false, 'max_value']);
+        BetweenColumns::fromArrayDefinition('between', [42, false, 'max_value']);
     }
 
     public function testFromArrayDefinitionExceptionOperandsIntervalEndColumn(): void
@@ -73,6 +71,6 @@ final class BetweenColumnsConditionTest extends TestCase
             "Operator 'between' requires interval end column to be string or ExpressionInterface."
         );
 
-        BetweenColumnsCondition::fromArrayDefinition('between', [42, 'min_value', false]);
+        BetweenColumns::fromArrayDefinition('between', [42, 'min_value', false]);
     }
 }

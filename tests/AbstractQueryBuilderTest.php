@@ -23,10 +23,10 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
-use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition;
-use Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlaps;
+use Yiisoft\Db\QueryBuilder\Condition\JsonOverlaps;
 use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
-use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Simple;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
@@ -1613,13 +1613,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $condition = $qb->createConditionFromArray(['array overlaps', 'column', [1, 2, 3]]);
 
-        $this->assertInstanceOf(ArrayOverlapsCondition::class, $condition);
+        $this->assertInstanceOf(ArrayOverlaps::class, $condition);
         $this->assertSame('column', $condition->column);
         $this->assertSame([1, 2, 3], $condition->values);
 
         $condition = $qb->createConditionFromArray(['json overlaps', 'column', [1, 2, 3]]);
 
-        $this->assertInstanceOf(JsonOverlapsCondition::class, $condition);
+        $this->assertInstanceOf(JsonOverlaps::class, $condition);
         $this->assertSame('column', $condition->column);
         $this->assertSame([1, 2, 3], $condition->values);
     }
@@ -1916,7 +1916,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
 
-        $simpleCondition = new SimpleCondition('a', '=', 1);
+        $simpleCondition = new Simple('a', '=', 1);
 
         $this->assertInstanceOf(
             ExpressionBuilderInterface::class,

@@ -6,16 +6,14 @@ namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition\Builder;
 
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
-use Yiisoft\Db\QueryBuilder\Condition\Builder\LikeConditionBuilder;
-use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Builder\LikeBuilder;
+use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
-final class LikeConditionBuilderTest extends TestCase
+final class LikeBuilderTest extends TestCase
 {
     use TestTrait;
 
@@ -23,11 +21,11 @@ final class LikeConditionBuilderTest extends TestCase
     {
         $db = $this->getConnection();
 
-        $likeCondition = new LikeCondition('column', 'invalid', 'value');
+        $likeCondition = new Like('column', 'invalid', 'value');
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid operator in like condition: "INVALID"');
 
-        (new LikeConditionBuilder($db->getQueryBuilder()))->build($likeCondition);
+        (new LikeBuilder($db->getQueryBuilder()))->build($likeCondition);
     }
 }

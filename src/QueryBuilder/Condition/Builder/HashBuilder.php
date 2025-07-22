@@ -10,8 +10,8 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
-use Yiisoft\Db\QueryBuilder\Condition\InCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Hash;
+use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -20,20 +20,20 @@ use function implode;
 use function is_iterable;
 
 /**
- * Build an object of {@see HashCondition} into SQL expressions.
+ * Build an object of {@see Hash} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<HashCondition>
+ * @implements ExpressionBuilderInterface<Hash>
  */
-class HashConditionBuilder implements ExpressionBuilderInterface
+class HashBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * Build SQL for {@see HashCondition}.
+     * Build SQL for {@see Hash}.
      *
-     * @param HashCondition $expression
+     * @param Hash $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -51,7 +51,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
         foreach ($hash as $column => $value) {
             if (is_iterable($value) || $value instanceof QueryInterface) {
                 /** IN condition */
-                $parts[] = $this->queryBuilder->buildCondition(new InCondition($column, 'IN', $value), $params);
+                $parts[] = $this->queryBuilder->buildCondition(new In($column, 'IN', $value), $params);
             } else {
                 $column = $this->queryBuilder->getQuoter()->quoteColumnName($column);
 

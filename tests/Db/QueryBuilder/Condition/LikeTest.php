@@ -7,16 +7,16 @@ namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
-use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Like;
 
 /**
  * @group db
  */
-final class LikeConditionTest extends TestCase
+final class LikeTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $likeCondition = new LikeCondition('id', 'LIKE', 'test');
+        $likeCondition = new Like('id', 'LIKE', 'test');
 
         $this->assertSame('id', $likeCondition->column);
         $this->assertSame('LIKE', $likeCondition->operator);
@@ -26,7 +26,7 @@ final class LikeConditionTest extends TestCase
 
     public function testFromArrayDefinition(): void
     {
-        $likeCondition = LikeCondition::fromArrayDefinition('LIKE', ['id', 'test']);
+        $likeCondition = Like::fromArrayDefinition('LIKE', ['id', 'test']);
 
         $this->assertSame('id', $likeCondition->column);
         $this->assertSame('LIKE', $likeCondition->operator);
@@ -39,7 +39,7 @@ final class LikeConditionTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'LIKE' requires two operands.");
 
-        LikeCondition::fromArrayDefinition('LIKE', []);
+        Like::fromArrayDefinition('LIKE', []);
     }
 
     public function testFromArrayDefinitionExceptionColumn(): void
@@ -47,7 +47,7 @@ final class LikeConditionTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'LIKE' requires column to be string or ExpressionInterface.");
 
-        LikeCondition::fromArrayDefinition('LIKE', [false, 'test']);
+        Like::fromArrayDefinition('LIKE', [false, 'test']);
     }
 
     public function testFromArrayDefinitionExceptionValue(): void
@@ -57,12 +57,12 @@ final class LikeConditionTest extends TestCase
             "Operator 'LIKE' requires value to be string, array, Iterator or ExpressionInterface."
         );
 
-        LikeCondition::fromArrayDefinition('LIKE', ['id', false]);
+        Like::fromArrayDefinition('LIKE', ['id', false]);
     }
 
     public function testFromArrayDefinitionSetEscapingReplacements(): void
     {
-        $likeCondition = LikeCondition::fromArrayDefinition('LIKE', ['id', 'test', ['%' => '\%', '_' => '\_']]);
+        $likeCondition = Like::fromArrayDefinition('LIKE', ['id', 'test', ['%' => '\%', '_' => '\_']]);
 
         $this->assertSame('id', $likeCondition->column);
         $this->assertSame('LIKE', $likeCondition->operator);
@@ -72,7 +72,7 @@ final class LikeConditionTest extends TestCase
 
     public function testSetEscapingReplacements(): void
     {
-        $likeCondition = new LikeCondition('id', 'LIKE', 'test');
+        $likeCondition = new Like('id', 'LIKE', 'test');
         $likeCondition->setEscapingReplacements(['%' => '\%', '_' => '\_']);
 
         $this->assertSame(['%' => '\%', '_' => '\_'], $likeCondition->getEscapingReplacements());
@@ -83,7 +83,7 @@ final class LikeConditionTest extends TestCase
     #[TestWith([false])]
     public function testFromArrayDefinitionCaseSensitive(?bool $caseSensitive): void
     {
-        $likeCondition = LikeCondition::fromArrayDefinition('LIKE', ['id', 'test', 'caseSensitive' => $caseSensitive]);
+        $likeCondition = Like::fromArrayDefinition('LIKE', ['id', 'test', 'caseSensitive' => $caseSensitive]);
 
         $this->assertSame('id', $likeCondition->column);
         $this->assertSame('LIKE', $likeCondition->operator);

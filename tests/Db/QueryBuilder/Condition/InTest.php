@@ -6,18 +6,16 @@ namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition;
 
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
-use Yiisoft\Db\QueryBuilder\Condition\InCondition;
+use Yiisoft\Db\QueryBuilder\Condition\In;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
-final class InConditionTest extends TestCase
+final class InTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $inCondition = new InCondition('id', 'IN', [1, 2, 3]);
+        $inCondition = new In('id', 'IN', [1, 2, 3]);
 
         $this->assertSame('id', $inCondition->column);
         $this->assertSame('IN', $inCondition->operator);
@@ -26,7 +24,7 @@ final class InConditionTest extends TestCase
 
     public function testFromArrayDefinition(): void
     {
-        $inCondition = InCondition::fromArrayDefinition('IN', ['id', [1, 2, 3]]);
+        $inCondition = In::fromArrayDefinition('IN', ['id', [1, 2, 3]]);
 
         $this->assertSame('id', $inCondition->column);
         $this->assertSame('IN', $inCondition->operator);
@@ -38,7 +36,7 @@ final class InConditionTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'IN' requires two operands.");
 
-        InCondition::fromArrayDefinition('IN', []);
+        In::fromArrayDefinition('IN', []);
     }
 
     public function testFromArrayDefinitionExceptionColumn(): void
@@ -46,7 +44,7 @@ final class InConditionTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'IN' requires column to be string, array or Iterator.");
 
-        InCondition::fromArrayDefinition('IN', [1, [1, 2, 3]]);
+        In::fromArrayDefinition('IN', [1, [1, 2, 3]]);
     }
 
     public function testFromArrayDefinitionExceptionValues(): void
@@ -56,6 +54,6 @@ final class InConditionTest extends TestCase
             "Operator 'IN' requires values to be array, Iterator, int or QueryInterface."
         );
 
-        InCondition::fromArrayDefinition('IN', ['id', false]);
+        In::fromArrayDefinition('IN', ['id', false]);
     }
 }

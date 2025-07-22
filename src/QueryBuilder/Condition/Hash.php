@@ -7,7 +7,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 /**
  * Condition based on column-value pairs.
  */
-final class HashCondition implements ConditionInterface
+final class Hash implements ConditionInterface
 {
     /**
      * @param array $hash The condition specification.

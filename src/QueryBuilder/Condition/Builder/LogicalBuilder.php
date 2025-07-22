@@ -24,7 +24,7 @@ use function reset;
  *
  * @implements ExpressionBuilderInterface<AndCondition|OrCondition>
  */
-final class LogicalConditionBuilder implements ExpressionBuilderInterface
+final class LogicalBuilder implements ExpressionBuilderInterface
 {
     public function __construct(
         private readonly QueryBuilderInterface $queryBuilder

@@ -12,7 +12,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function implode;
@@ -23,11 +23,11 @@ use function strtoupper;
 use function strtr;
 
 /**
- * Build an object of {@see LikeCondition} into SQL expressions.
+ * Build an object of {@see Like} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<LikeCondition>
+ * @implements ExpressionBuilderInterface<Like>
  */
-class LikeConditionBuilder implements ExpressionBuilderInterface
+class LikeBuilder implements ExpressionBuilderInterface
 {
     public function __construct(
         private readonly QueryBuilderInterface $queryBuilder,
@@ -46,9 +46,9 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     ];
 
     /**
-     * Build SQL for {@see LikeCondition}.
+     * Build SQL for {@see Like}.
      *
-     * @param LikeCondition $expression
+     * @param Like $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -95,7 +95,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    protected function prepareColumn(LikeCondition $expression, array &$params): string
+    protected function prepareColumn(Like $expression, array &$params): string
     {
         $column = $expression->column;
 
@@ -121,7 +121,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      */
     protected function preparePlaceholderName(
         string|ExpressionInterface $value,
-        LikeCondition $expression,
+        Like $expression,
         array|null $escape,
         array &$params,
     ): string {
@@ -141,7 +141,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      *
      * @psalm-return array{0: string, 1: bool, 2: string}
      */
-    protected function parseOperator(LikeCondition $expression): array
+    protected function parseOperator(Like $expression): array
     {
         $operator = strtoupper($expression->operator);
         if (!preg_match('/^(AND |OR |)((NOT |)I?LIKE)/', $operator, $matches)) {

@@ -13,7 +13,7 @@ use function is_string;
 /**
  * The base class for classes representing the array and JSON overlaps conditions.
  */
-abstract class AbstractOverlapsCondition implements ConditionInterface
+abstract class AbstractOverlaps implements ConditionInterface
 {
     /**
      * @param ExpressionInterface|string $column The column name or an expression.

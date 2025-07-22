@@ -10,24 +10,24 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\ExistsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Exists;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * Build an object of {@see ExistsCondition} into SQL expressions.
+ * Build an object of {@see Exists} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<ExistsCondition>
+ * @implements ExpressionBuilderInterface<Exists>
  */
-class ExistsConditionBuilder implements ExpressionBuilderInterface
+class ExistsBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * Build SQL for {@see ExistsCondition}.
+     * Build SQL for {@see Exists}.
      *
-     * @param ExistsCondition $expression
+     * @param Exists $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException

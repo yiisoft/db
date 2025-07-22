@@ -5,25 +5,23 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Hash;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
-final class HashConditionTest extends TestCase
+final class HashTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $hashCondition = new HashCondition(['expired' => false, 'active' => true]);
+        $hashCondition = new Hash(['expired' => false, 'active' => true]);
 
         $this->assertSame(['expired' => false, 'active' => true], $hashCondition->hash);
     }
 
     public function testFromArrayDefinition(): void
     {
-        $hashCondition = HashCondition::fromArrayDefinition('AND', ['expired' => false, 'active' => true]);
+        $hashCondition = Hash::fromArrayDefinition('AND', ['expired' => false, 'active' => true]);
 
         $this->assertSame(['expired' => false, 'active' => true], $hashCondition->hash);
     }

@@ -37,7 +37,7 @@ use function is_string;
  * // NOW() NOT BETWEEN (SELECT time FROM log ORDER BY id ASC LIMIT 1) AND update_time
  * ```
  */
-final class BetweenColumnsCondition implements ConditionInterface
+final class BetweenColumns implements ConditionInterface
 {
     /**
      * @param array|ExpressionInterface|int|Iterator|string $value The value to compare against.

@@ -8,14 +8,12 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use InvalidArgumentException;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\QueryBuilder\Condition\ExistsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Exists;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
-final class ExistsConditionTest extends TestCase
+final class ExistsTest extends TestCase
 {
     public function testConstructor(): void
     {
@@ -23,7 +21,7 @@ final class ExistsConditionTest extends TestCase
             ->select('id')
             ->from('users')
             ->where(['active' => 1]);
-        $existCondition = new ExistsCondition('EXISTS', $query);
+        $existCondition = new Exists('EXISTS', $query);
 
         $this->assertSame('EXISTS', $existCondition->operator);
         $this->assertSame($query, $existCondition->query);
@@ -35,7 +33,7 @@ final class ExistsConditionTest extends TestCase
             ->select('id')
             ->from('users')
             ->where(['active' => 1]);
-        $existCondition = ExistsCondition::fromArrayDefinition('EXISTS', [$query]);
+        $existCondition = Exists::fromArrayDefinition('EXISTS', [$query]);
 
         $this->assertSame('EXISTS', $existCondition->operator);
         $this->assertSame($query, $existCondition->query);
@@ -46,6 +44,6 @@ final class ExistsConditionTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Sub query for EXISTS operator must be a Query object.');
 
-        ExistsCondition::fromArrayDefinition('EXISTS', []);
+        Exists::fromArrayDefinition('EXISTS', []);
     }
 }

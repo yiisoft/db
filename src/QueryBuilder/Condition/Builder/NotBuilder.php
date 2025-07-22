@@ -10,24 +10,24 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\NotCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Not;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * Build an object of {@see NotCondition} into SQL expressions.
+ * Build an object of {@see Not} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<NotCondition>
+ * @implements ExpressionBuilderInterface<Not>
  */
-class NotConditionBuilder implements ExpressionBuilderInterface
+class NotBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * Build SQL for {@see NotCondition}.
+     * Build SQL for {@see Not}.
      *
-     * @param NotCondition $expression
+     * @param Not $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException

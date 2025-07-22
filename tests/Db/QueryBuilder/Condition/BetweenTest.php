@@ -6,18 +6,16 @@ namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition;
 
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
-use Yiisoft\Db\QueryBuilder\Condition\BetweenCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Between;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
-final class BetweenConditionTest extends TestCase
+final class BetweenTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $betweenCondition = new BetweenCondition('date', 'BETWEEN', 1, 2);
+        $betweenCondition = new Between('date', 'BETWEEN', 1, 2);
 
         $this->assertSame('date', $betweenCondition->column);
         $this->assertSame('BETWEEN', $betweenCondition->operator);
@@ -27,7 +25,7 @@ final class BetweenConditionTest extends TestCase
 
     public function testFromArrayDefinition(): void
     {
-        $betweenCondition = BetweenCondition::fromArrayDefinition('BETWEEN', ['date', 1, 2]);
+        $betweenCondition = Between::fromArrayDefinition('BETWEEN', ['date', 1, 2]);
 
         $this->assertSame('date', $betweenCondition->column);
         $this->assertSame('BETWEEN', $betweenCondition->operator);
@@ -40,7 +38,7 @@ final class BetweenConditionTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'between' requires three operands.");
 
-        BetweenCondition::fromArrayDefinition('between', []);
+        Between::fromArrayDefinition('between', []);
     }
 
     public function testFromArrayDefinitionExceptionColumns(): void
@@ -48,6 +46,6 @@ final class BetweenConditionTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'between' requires column to be string or ExpressionInterface.");
 
-        BetweenCondition::fromArrayDefinition('between', [1, 'min_value', 'max_value']);
+        Between::fromArrayDefinition('between', [1, 'min_value', 'max_value']);
     }
 }

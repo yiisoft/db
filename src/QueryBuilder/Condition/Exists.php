@@ -10,7 +10,7 @@ use Yiisoft\Db\Query\QueryInterface;
 /**
  * Condition that represents `EXISTS` operator that checks whether a sub-query returns any rows
  */
-final class ExistsCondition implements ConditionInterface
+final class Exists implements ConditionInterface
 {
     /**
      * @param string $operator The operator to use (for example, `EXISTS` or `NOT EXISTS`).

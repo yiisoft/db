@@ -251,7 +251,7 @@ Internamente, os formatos descritos são convertidos implicitamente para o forma
 então é possível combinar formatos em uma única condição:
 
 ```php
-use Yiisoft\Db\QueryBuilder\Condition\InCondition;
+use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
 use Yiisoft\Db\Query\Query;
 
@@ -260,7 +260,7 @@ use Yiisoft\Db\Query\Query;
 $query->andWhere(
     new OrCondition(
         [
-            new InCondition('type', 'in', $types),
+            new In('type', 'in', $types),
             ['like', 'name', '%good%'],
             'disabled=false',
         ],

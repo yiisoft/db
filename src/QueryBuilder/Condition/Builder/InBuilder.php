@@ -13,7 +13,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\InCondition;
+use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -31,20 +31,20 @@ use function str_contains;
 use function strtoupper;
 
 /**
- * Build an object of {@see InCondition} into SQL expressions.
+ * Build an object of {@see In} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<InCondition>
+ * @implements ExpressionBuilderInterface<In>
  */
-class InConditionBuilder implements ExpressionBuilderInterface
+class InBuilder implements ExpressionBuilderInterface
 {
     public function __construct(protected QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * Build SQL for {@see InCondition}.
+     * Build SQL for {@see In}.
      *
-     * @param InCondition $expression
+     * @param In $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -131,7 +131,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Builds `$values` to use in {@see InCondition}.
+     * Builds `$values` to use in {@see In}.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -143,7 +143,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @psalm-suppress MixedArrayTypeCoercion
      * @psalm-suppress MixedArrayOffset
      */
-    protected function buildValues(InCondition $condition, iterable $values, array &$params = []): array
+    protected function buildValues(In $condition, iterable $values, array &$params = []): array
     {
         $sqlValues = [];
         $column = $condition->column;
