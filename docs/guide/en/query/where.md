@@ -297,12 +297,13 @@ Conversion from operator format into object format is performed according
 to `Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder::conditionClasses` property
 that maps operator names to representative class names.
 
-- `AND`, `OR` => `Yiisoft\Db\QueryBuilder\Condition\ConjunctionCondition`;
-- `NOT` => `Yiisoft\Db\QueryBuilder\Condition\NotCondition`;
-- `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\InCondition`;
-- `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\BetweenCondition`;
-- `ARRAY OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition`;
-- `JSON OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition`.
+- `AND` => `Yiisoft\Db\QueryBuilder\Condition\AndCondition`;
+- `OR` => `Yiisoft\Db\QueryBuilder\Condition\OrCondition`;
+- `NOT` => `Yiisoft\Db\QueryBuilder\Condition\Not`;
+- `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\In`;
+- `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\Between`;
+- `ARRAY OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\ArrayOverlaps`;
+- `JSON OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\JsonOverlaps`.
 
 ## Appending conditions
 

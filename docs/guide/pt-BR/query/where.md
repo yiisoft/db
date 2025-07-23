@@ -272,10 +272,13 @@ A conversão do formato operador para o formato objeto é realizada de acordo
 com a propriedade `Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder::conditionClasses`
 que mapeia nomes de operadores para nomes de classes representativos.
 
-- `AND`, `OR` => `Yiisoft\Db\QueryBuilder\Condition\ConjunctionCondition`.
-- `NOT` => `Yiisoft\Db\QueryBuilder\Condition\NotCondition`.
-- `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\InCondition`.
-- `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\BetweenCondition`.
+- `AND` => `Yiisoft\Db\QueryBuilder\Condition\AndCondition`;
+- `OR` => `Yiisoft\Db\QueryBuilder\Condition\OrCondition`;
+- `NOT` => `Yiisoft\Db\QueryBuilder\Condition\Not`;
+- `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\In`;
+- `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\Between`;
+- `ARRAY OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\ArrayOverlaps`;
+- `JSON OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\JsonOverlaps`.
 
 ## Anexando condições
 

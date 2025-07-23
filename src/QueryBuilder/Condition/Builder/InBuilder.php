@@ -80,7 +80,6 @@ class InBuilder implements ExpressionBuilderInterface
                 return $this->buildCompositeInCondition($operator, $column, $values, $params);
             }
 
-            /** @psalm-var mixed $column */
             $column = reset($column);
         }
 
@@ -90,7 +89,6 @@ class InBuilder implements ExpressionBuilderInterface
             }
 
             $column->rewind();
-            /** @psalm-var mixed $column */
             $column = $column->current();
         }
 
