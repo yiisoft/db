@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Schema\Column;
 use InvalidArgumentException;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Constraint\ForeignKey;
 
 use function array_key_exists;
 use function property_exists;
@@ -67,7 +67,7 @@ abstract class AbstractColumn implements ColumnInterface
      * @param bool $primaryKey Whether the column is a primary key.
      * @param string|null $name The column's name.
      * @param bool|null $notNull Whether the column is not nullable.
-     * @param ForeignKeyConstraint|null $reference The foreign key constraint.
+     * @param ForeignKey|null $reference The foreign key constraint.
      * @param int|null $scale The number of digits to the right of the decimal point.
      * @param int|null $size The column's size.
      * @param bool $unique Whether the column is unique.
@@ -89,7 +89,7 @@ abstract class AbstractColumn implements ColumnInterface
         private bool $primaryKey = false,
         private string|null $name = null,
         private bool|null $notNull = null,
-        private ForeignKeyConstraint|null $reference = null,
+        private ForeignKey|null $reference = null,
         private int|null $scale = null,
         private int|null $size = null,
         private bool $unique = false,
@@ -226,7 +226,7 @@ abstract class AbstractColumn implements ColumnInterface
     }
 
     /** @psalm-mutation-free */
-    public function getReference(): ForeignKeyConstraint|null
+    public function getReference(): ForeignKey|null
     {
         return $this->reference;
     }
@@ -335,7 +335,7 @@ abstract class AbstractColumn implements ColumnInterface
         return $this;
     }
 
-    public function reference(ForeignKeyConstraint|null $reference): static
+    public function reference(ForeignKey|null $reference): static
     {
         $this->reference = $reference;
         return $this;

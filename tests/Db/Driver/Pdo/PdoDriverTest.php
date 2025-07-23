@@ -24,7 +24,7 @@ final class PdoDriverTest extends TestCase
 
         $this->assertSame(
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION],
-            Assert::getInaccessibleProperty($pdoDriver, 'attributes'),
+            Assert::getPropertyValue($pdoDriver, 'attributes'),
         );
     }
 

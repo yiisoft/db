@@ -7,8 +7,8 @@ namespace Yiisoft\Db\Constant;
 /**
  * `ReferentialAction` represents the possible foreign key actions that can be performed on the referenced table.
  *
- * The constants are used to specify `ON DELETE` and `ON UPDATE` actions by {@see ForeignKeyConstraint::onDelete()},
- * {@see ForeignKeyConstraint::onUpdate()}, {@see DDLQueryBuilderInterface::addForeignKey()}
+ * The constants are used to specify `ON DELETE` and `ON UPDATE` actions by {@see ForeignKey::onDelete()},
+ * {@see ForeignKey::onUpdate()}, {@see DDLQueryBuilderInterface::addForeignKey()}
  * and {@see CommandInterface::addForeignKey()}.
  *
  * MSSQL does not support `RESTRICT` keyword but uses this behavior by default (if no action is specified).

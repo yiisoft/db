@@ -78,7 +78,7 @@ and the following changes were made:
 - `withName(string|null $name)` method is added;
 - `check(string|null $check)` method is added;
 - `getCheck()` method is added;
-- `reference(ForeignKeyConstraint|null $reference)` method is added;
+- `reference(ForeignKey|null $reference)` method is added;
 - `getReference()` method is added;
 - `notNull(bool $notNull = true)` method is added;
 - `null()` method is added;
@@ -89,6 +89,14 @@ and the following changes were made:
 - all `AbstractColumn` class properties except `$type` moved to constructor;
 - added `DEFAULT_TYPE` constant to `AbstractColumn` class;
 - added method chaining.
+
+### Changes in constraint classes
+
+- Remove `Constraint` class;
+- Rename classes `CheckConstraint`, `DefaultValueConstraint`, `ForeignKeyConstraint` and `IndexConstraint`
+  to `Check`, `DefaultValue`, `ForeignKey` and `Index`;
+- Move properties to constructor and make them `public readonly`;
+- Remove all methods - use constructor to initialize values and properties to get values;
 
 ### New classes with constants
 
@@ -184,7 +192,6 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `AbstractDQLQueryBuilder::hasOffset()` - use `!empty($offset)` instead;
 - `BatchQueryResultInterface::reset()` - use `BatchQueryResultInterface::rewind()` instead;
 - `BatchQueryResult::reset()` - use `BatchQueryResult::rewind()` instead;
-- `ForeignKeyConstraint::getForeignSchemaName()` and `ForeignKeyConstraint::foreignSchemaName()` methods;
 
 ### Remove deprecated parameters
 
@@ -245,8 +252,6 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Remove `$params` parameter from `upsert()` method in `CommandInterface` and `AbstractCommand` class;
 - Add default value to `$updateColumns` and `$params` parameters of `upsert()` method in `DMLQueryBuilderInterface` and 
   `AbstractDMLQueryBuilder` and `AbstractQueryBuilder` classes;
-- Rename `Constraint` class to `AbstractConstraint` and make it abstract;
-- Rename `IndexConstraint::isPrimary()` to `IndexConstraint::isPrimaryKey()` method;
 - Remove `ParamInterface`, use `Param` class instead;
 - Remove `getType()` and `getValue()` methods from `Param` class, use `$type` and `$value` properties instead;
 - Remove specific condition interfaces: `BetweenColumnsConditionInterface`, `BetweenConditionInterface`,

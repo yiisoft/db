@@ -101,15 +101,15 @@ final class QueryTest extends AbstractQueryTest
 
         $query = (new Query($db));
 
-        $this->assertFalse(Assert::getInaccessibleProperty($query, 'typecasting'));
+        $this->assertFalse(Assert::getPropertyValue($query, 'typecasting'));
 
         $query = $query->withTypecasting();
 
-        $this->assertTrue(Assert::getInaccessibleProperty($query, 'typecasting'));
+        $this->assertTrue(Assert::getPropertyValue($query, 'typecasting'));
 
         $query = $query->withTypecasting(false);
 
-        $this->assertFalse(Assert::getInaccessibleProperty($query, 'typecasting'));
+        $this->assertFalse(Assert::getPropertyValue($query, 'typecasting'));
     }
 
     public function testCreateCommandWithTypecasting(): void
@@ -119,11 +119,11 @@ final class QueryTest extends AbstractQueryTest
         $query = (new Query($db));
         $command = $query->createCommand();
 
-        $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+        $this->assertFalse(Assert::getPropertyValue($command, 'phpTypecasting'));
 
         $command = $query->withTypecasting()->createCommand();
 
-        $this->assertTrue(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+        $this->assertTrue(Assert::getPropertyValue($command, 'phpTypecasting'));
     }
 
     public static function dataFor(): iterable

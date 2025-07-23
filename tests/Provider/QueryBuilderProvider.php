@@ -11,7 +11,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constant\ReferentialAction;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
@@ -21,6 +21,7 @@ use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\IntEnum;
 use Yiisoft\Db\Tests\Support\JsonSerializableObject;
@@ -1598,14 +1599,14 @@ class QueryBuilderProvider
 
     public static function buildColumnDefinition(): array
     {
-        $reference = new ForeignKeyConstraint();
-        $reference->foreignColumnNames(['id']);
-        $reference->foreignTableName('ref_table');
-        $reference->onDelete(ReferentialAction::CASCADE);
-        $reference->onUpdate(ReferentialAction::CASCADE);
+        $reference = new ForeignKey(
+            foreignTableName: 'ref_table',
+            foreignColumnNames: ['id'],
+            onDelete:ReferentialAction::SET_NULL,
+            onUpdate: ReferentialAction::CASCADE,
+        );
 
-        $referenceWithSchema = clone $reference;
-        $referenceWithSchema->foreignTableName('ref_schema.ref_table');
+        $referenceWithSchema = Assert::cloneObjectWith($reference, ['foreignSchemaName' => 'ref_schema']);
 
         return [
             PseudoType::PK => ['integer PRIMARY KEY AUTOINCREMENT', PseudoType::PK],
@@ -1719,7 +1720,7 @@ class QueryBuilderProvider
             'reference($reference)' => [
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    integer REFERENCES [[ref_table]] ([[id]]) ON DELETE CASCADE ON UPDATE CASCADE
+                    integer REFERENCES [[ref_table]] ([[id]]) ON DELETE SET NULL ON UPDATE CASCADE
                     SQL,
                     static::$driverName,
                 ),
@@ -1728,7 +1729,7 @@ class QueryBuilderProvider
             'reference($referenceWithSchema)' => [
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    integer REFERENCES [[ref_schema]].[[ref_table]] ([[id]]) ON DELETE CASCADE ON UPDATE CASCADE
+                    integer REFERENCES [[ref_schema]].[[ref_table]] ([[id]]) ON DELETE SET NULL ON UPDATE CASCADE
                     SQL,
                     static::$driverName,
                 ),

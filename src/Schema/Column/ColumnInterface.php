@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Constraint\ForeignKey;
 
 /**
  * This interface defines a set of methods that must be implemented by a class that represents a database table column.
@@ -226,7 +226,7 @@ interface ColumnInterface
      * @see reference()
      * @psalm-mutation-free
      */
-    public function getReference(): ForeignKeyConstraint|null;
+    public function getReference(): ForeignKey|null;
 
     /**
      * @return int|null The scale of the column.
@@ -377,7 +377,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function reference(ForeignKeyConstraint|null $reference): static;
+    public function reference(ForeignKey|null $reference): static;
 
     /**
      * The scale is the number of digits to the right of the decimal point and is only meaningful when {@see type} is

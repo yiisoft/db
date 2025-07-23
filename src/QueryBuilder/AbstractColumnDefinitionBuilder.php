@@ -224,27 +224,28 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     protected function buildReferenceDefinition(ColumnInterface $column): string
     {
         $reference = $column->getReference();
-        $table = $reference?->getForeignTableName() ?? '';
 
-        if ($table === '') {
+        if ($reference === null || $reference->foreignTableName === '') {
             return '';
         }
 
         $quoter = $this->queryBuilder->getQuoter();
-        $sql = $quoter->quoteTableName($table);
 
-        $columns = $reference?->getForeignColumnNames();
+        $sql = $reference->foreignSchemaName === ''
+            ? $quoter->quoteTableName($reference->foreignTableName)
+            : $quoter->quoteTableName($reference->foreignSchemaName)
+                . '.' . $quoter->quoteTableName($reference->foreignTableName);
 
-        if (!empty($columns)) {
-            $sql .= ' (' . $this->queryBuilder->buildColumns($columns) . ')';
+        if (!empty($reference->foreignColumnNames)) {
+            $sql .= ' (' . $this->queryBuilder->buildColumns($reference->foreignColumnNames) . ')';
         }
 
-        if (null !== $onDelete = $reference?->getOnDelete()) {
-            $sql .= $this->buildOnDelete($onDelete);
+        if ($reference->onDelete !== null) {
+            $sql .= $this->buildOnDelete($reference->onDelete);
         }
 
-        if (null !== $onUpdate = $reference?->getOnUpdate()) {
-            $sql .= $this->buildOnUpdate($onUpdate);
+        if ($reference->onUpdate !== null) {
+            $sql .= $this->buildOnUpdate($reference->onUpdate);
         }
 
         return $sql;

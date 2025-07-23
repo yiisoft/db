@@ -74,7 +74,7 @@ final class SchemaCacheTest extends TestCase
 
         $schemaCache->setExclude(['table1', 'table2']);
 
-        $this->assertSame(['table1', 'table2'], Assert::getInaccessibleProperty($schemaCache, 'exclude'));
+        $this->assertSame(['table1', 'table2'], Assert::getPropertyValue($schemaCache, 'exclude'));
     }
 
     public function testWithFailSetCache(): void

@@ -2230,8 +2230,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
         $qb->setConditionClasses(['stdClass' => stdClass::class]);
-        $dqlBuilder = Assert::getInaccessibleProperty($qb, 'dqlBuilder');
-        $conditionClasses = Assert::getInaccessibleProperty($dqlBuilder, 'conditionClasses');
+        $dqlBuilder = Assert::getPropertyValue($qb, 'dqlBuilder');
+        $conditionClasses = Assert::getPropertyValue($dqlBuilder, 'conditionClasses');
 
         $this->assertSame(stdClass::class, $conditionClasses['stdClass']);
     }
@@ -2242,8 +2242,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
         $qb->setExpressionBuilders(['stdClass' => stdClass::class]);
-        $dqlBuilder = Assert::getInaccessibleProperty($qb, 'dqlBuilder');
-        $expressionBuilders = Assert::getInaccessibleProperty($dqlBuilder, 'expressionBuilders');
+        $dqlBuilder = Assert::getPropertyValue($qb, 'dqlBuilder');
+        $expressionBuilders = Assert::getPropertyValue($dqlBuilder, 'expressionBuilders');
 
         $this->assertSame(stdClass::class, $expressionBuilders['stdClass']);
     }
