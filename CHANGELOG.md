@@ -111,7 +111,7 @@
 - Chg #1001: Remove `ParamInterface` (@vjik)
 - Chg #1001: Add public properties `$type` and `$value` to `Param` class instead of `getType()` and `getValue()` methods that were removed (@vjik)
 - Chg #1002: Remove specific condition interfaces (@vjik)
-- Chg #1003, #1005: Refactor namespace of condition objects and use promoted properties instead of getters (@vjik)
+- Chg #1003, #1006: Refactor namespace of condition objects and use promoted properties instead of getters (@vjik)
 
 ## 1.3.0 March 21, 2024
 
