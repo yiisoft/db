@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Driver\Pdo;
 
 use PDO;
+use SensitiveParameter;
+use Stringable;
 
 /**
  * Serves as the base class for creating PDO (PHP Data Objects) drivers.
@@ -16,14 +18,16 @@ use PDO;
  */
 abstract class AbstractPdoDriver implements PdoDriverInterface
 {
+    protected string $dsn;
     protected string|null $charset = null;
 
     public function __construct(
-        protected string $dsn,
+        string|Stringable $dsn,
         protected string $username = '',
-        #[\SensitiveParameter] protected string $password = '',
+        #[SensitiveParameter] protected string $password = '',
         protected array $attributes = []
     ) {
+        $this->dsn = (string) $dsn;
     }
 
     public function attributes(array $attributes): void
@@ -61,7 +65,7 @@ abstract class AbstractPdoDriver implements PdoDriverInterface
         return $this->username;
     }
 
-    public function password(#[\SensitiveParameter] string $password): void
+    public function password(#[SensitiveParameter] string $password): void
     {
         $this->password = $password;
     }
