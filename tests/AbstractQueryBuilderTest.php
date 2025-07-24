@@ -22,10 +22,10 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
+use Yiisoft\Db\QueryBuilder\Condition\AndX;
 use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlaps;
 use Yiisoft\Db\QueryBuilder\Condition\JsonOverlaps;
-use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
+use Yiisoft\Db\QueryBuilder\Condition\OrX;
 use Yiisoft\Db\QueryBuilder\Condition\Simple;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
@@ -1573,33 +1573,33 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $this->getConnection()->getQueryBuilder();
 
         $condition = $qb->createConditionFromArray(['and', 'a = 1', 'b = 2']);
-        $this->assertInstanceOf(AndCondition::class, $condition);
+        $this->assertInstanceOf(AndX::class, $condition);
         $this->assertSame(['a = 1', 'b = 2'], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(['or', 'a = 1', 'b = 2']);
-        $this->assertInstanceOf(OrCondition::class, $condition);
+        $this->assertInstanceOf(OrX::class, $condition);
         $this->assertSame(['a = 1', 'b = 2'], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(['and', 'a = 1', ['or', 'b = 2', 'c = 3']]);
-        $this->assertInstanceOf(AndCondition::class, $condition);
+        $this->assertInstanceOf(AndX::class, $condition);
         $this->assertSame(['a = 1', ['or', 'b = 2', 'c = 3']], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(['or', 'a = 1', ['and', 'b = 2', 'c = 3']]);
-        $this->assertInstanceOf(OrCondition::class, $condition);
+        $this->assertInstanceOf(OrX::class, $condition);
         $this->assertSame(['a = 1', ['and', 'b = 2', 'c = 3']], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(['and', 'a = 1', ['or', 'b = 2', ['and', 'c = 3', 'd = 4']]]);
-        $this->assertInstanceOf(AndCondition::class, $condition);
+        $this->assertInstanceOf(AndX::class, $condition);
         $this->assertSame(['a = 1', ['or', 'b = 2', ['and', 'c = 3', 'd = 4']]], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(['or', 'a = 1', ['and', 'b = 2', ['or', 'c = 3', 'd = 4']]]);
-        $this->assertInstanceOf(OrCondition::class, $condition);
+        $this->assertInstanceOf(OrX::class, $condition);
         $this->assertSame(['a = 1', ['and', 'b = 2', ['or', 'c = 3', 'd = 4']]], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(
             ['and', 'a = 1', ['or', 'b = 2', ['and', 'c = 3', ['or', 'd = 4', 'e = 5']]]]
         );
-        $this->assertInstanceOf(AndCondition::class, $condition);
+        $this->assertInstanceOf(AndX::class, $condition);
         $this->assertSame(
             ['a = 1', ['or', 'b = 2', ['and', 'c = 3', ['or', 'd = 4', 'e = 5']]]],
             $condition->expressions,

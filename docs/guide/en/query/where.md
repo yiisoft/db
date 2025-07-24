@@ -277,13 +277,13 @@ so it's possible to combine formats in a single condition:
 
 ```php
 use Yiisoft\Db\QueryBuilder\Condition\In;
-use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
+use Yiisoft\Db\QueryBuilder\Condition\OrX;
 use Yiisoft\Db\Query\Query;
 
 /** @var Query $query */
 
 $query->andWhere(
-    new OrCondition(
+    new OrX(
         [
             new In('type', 'in', $types),
             ['like', 'name', '%good%'],
@@ -297,8 +297,8 @@ Conversion from operator format into object format is performed according
 to `Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder::conditionClasses` property
 that maps operator names to representative class names.
 
-- `AND` => `Yiisoft\Db\QueryBuilder\Condition\AndCondition`;
-- `OR` => `Yiisoft\Db\QueryBuilder\Condition\OrCondition`;
+- `AND` => `Yiisoft\Db\QueryBuilder\Condition\AndX`;
+- `OR` => `Yiisoft\Db\QueryBuilder\Condition\OrX`;
 - `NOT` => `Yiisoft\Db\QueryBuilder\Condition\Not`;
 - `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\In`;
 - `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\Between`;

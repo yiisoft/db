@@ -10,8 +10,8 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
-use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
+use Yiisoft\Db\QueryBuilder\Condition\AndX;
+use Yiisoft\Db\QueryBuilder\Condition\OrX;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function count;
@@ -20,9 +20,9 @@ use function is_array;
 use function reset;
 
 /**
- * Build an object of {@see AndCondition} or {@see OrCondition} into SQL expressions.
+ * Build an object of {@see AndX} or {@see OrX} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<AndCondition|OrCondition>
+ * @implements ExpressionBuilderInterface<AndX|OrX>
  */
 final class LogicalBuilder implements ExpressionBuilderInterface
 {
@@ -32,9 +32,9 @@ final class LogicalBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see AndCondition} or {@see OrCondition}.
+     * Build SQL for {@see AndX} or {@see OrX}.
      *
-     * @param AndCondition|OrCondition $expression
+     * @param AndX|OrX $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -54,8 +54,8 @@ final class LogicalBuilder implements ExpressionBuilderInterface
         }
 
         $operator = match ($expression::class) {
-            AndCondition::class => 'AND',
-            OrCondition::class => 'OR',
+            AndX::class => 'AND',
+            OrX::class => 'OR',
         };
 
         return '(' . implode(") $operator (", $parts) . ')';

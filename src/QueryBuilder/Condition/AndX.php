@@ -9,7 +9,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 /**
  * Condition that connects two or more SQL expressions with the `AND` operator.
  */
-final class OrCondition implements ConditionInterface
+final class AndX implements ConditionInterface
 {
     /**
      * @param array $expressions The expressions that are connected by this condition.

@@ -504,8 +504,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     {
         return [
             'NOT' => Condition\Not::class,
-            'AND' => Condition\AndCondition::class,
-            'OR' => Condition\OrCondition::class,
+            'AND' => Condition\AndX::class,
+            'OR' => Condition\OrX::class,
             'BETWEEN' => Condition\Between::class,
             'NOT BETWEEN' => Condition\Between::class,
             'IN' => Condition\In::class,
@@ -537,8 +537,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Param::class => ParamBuilder::class,
             Expression::class => ExpressionBuilder::class,
             Condition\Not::class => Condition\Builder\NotBuilder::class,
-            Condition\AndCondition::class => Condition\Builder\LogicalBuilder::class,
-            Condition\OrCondition::class => Condition\Builder\LogicalBuilder::class,
+            Condition\AndX::class => Condition\Builder\LogicalBuilder::class,
+            Condition\OrX::class => Condition\Builder\LogicalBuilder::class,
             Condition\Between::class => Condition\Builder\BetweenBuilder::class,
             Condition\In::class => Condition\Builder\InBuilder::class,
             Condition\Like::class => Condition\Builder\LikeBuilder::class,
