@@ -7,7 +7,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
- * Condition that connects two or more SQL expressions with the `AND` operator.
+ * Condition that connects two or more SQL expressions with the `OR` operator.
  */
 final class OrX implements ConditionInterface
 {
