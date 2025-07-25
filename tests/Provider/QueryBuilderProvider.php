@@ -16,9 +16,9 @@ use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
-use Yiisoft\Db\QueryBuilder\Condition\InCondition;
-use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
+use Yiisoft\Db\QueryBuilder\Condition\BetweenColumns;
+use Yiisoft\Db\QueryBuilder\Condition\In;
+use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -347,27 +347,27 @@ class QueryBuilderProvider
                 [':qp0' => 123],
             ],
             [
-                new BetweenColumnsCondition('2018-02-11', 'BETWEEN', 'create_time', 'update_time'),
+                new BetweenColumns('2018-02-11', 'BETWEEN', 'create_time', 'update_time'),
                 ':qp0 BETWEEN [[create_time]] AND [[update_time]]',
                 [':qp0' => '2018-02-11'],
             ],
             [
-                new BetweenColumnsCondition('2018-02-11', 'NOT BETWEEN', 'NOW()', 'update_time'),
+                new BetweenColumns('2018-02-11', 'NOT BETWEEN', 'NOW()', 'update_time'),
                 ':qp0 NOT BETWEEN NOW() AND [[update_time]]',
                 [':qp0' => '2018-02-11'],
             ],
             [
-                new BetweenColumnsCondition(new Expression('NOW()'), 'BETWEEN', 'create_time', 'update_time'),
+                new BetweenColumns(new Expression('NOW()'), 'BETWEEN', 'create_time', 'update_time'),
                 'NOW() BETWEEN [[create_time]] AND [[update_time]]',
                 [],
             ],
             [
-                new BetweenColumnsCondition(new Expression('NOW()'), 'NOT BETWEEN', 'create_time', 'update_time'),
+                new BetweenColumns(new Expression('NOW()'), 'NOT BETWEEN', 'create_time', 'update_time'),
                 'NOW() NOT BETWEEN [[create_time]] AND [[update_time]]',
                 [],
             ],
             [
-                new BetweenColumnsCondition(
+                new BetweenColumns(
                     new Expression('NOW()'),
                     'NOT BETWEEN',
                     (new Query(static::getDb()))->select('min_date')->from('some_table'),
@@ -377,7 +377,7 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                new BetweenColumnsCondition(
+                new BetweenColumns(
                     new Expression('NOW()'),
                     'NOT BETWEEN',
                     new Expression('min_date'),
@@ -489,17 +489,17 @@ class QueryBuilderProvider
             ],
 
             /* in object conditions */
-            [new InCondition('id', 'in', 1), '[[id]]=:qp0', [':qp0' => 1]],
-            [new InCondition('id', 'in', [1]), '[[id]]=:qp0', [':qp0' => 1]],
-            [new InCondition('id', 'not in', 1), '[[id]]<>:qp0', [':qp0' => 1]],
-            [new InCondition('id', 'not in', [1]), '[[id]]<>:qp0', [':qp0' => 1]],
-            [new InCondition('id', 'in', [1, 2]), '[[id]] IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
-            [new InCondition('id', 'not in', [1, 2]), '[[id]] NOT IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
-            [new InCondition([], 'in', 1), '0=1', []],
-            [new InCondition([], 'in', [1]), '0=1', []],
-            'inCondition-custom-1' => [new InCondition(['id', 'name'], 'in', []), '0=1', []],
+            [new In('id', 'in', 1), '[[id]]=:qp0', [':qp0' => 1]],
+            [new In('id', 'in', [1]), '[[id]]=:qp0', [':qp0' => 1]],
+            [new In('id', 'not in', 1), '[[id]]<>:qp0', [':qp0' => 1]],
+            [new In('id', 'not in', [1]), '[[id]]<>:qp0', [':qp0' => 1]],
+            [new In('id', 'in', [1, 2]), '[[id]] IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
+            [new In('id', 'not in', [1, 2]), '[[id]] NOT IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
+            [new In([], 'in', 1), '0=1', []],
+            [new In([], 'in', [1]), '0=1', []],
+            'inCondition-custom-1' => [new In(['id', 'name'], 'in', []), '0=1', []],
             'inCondition-custom-2' => [
-                new InCondition(
+                new In(
                     ['id'],
                     'in',
                     (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
@@ -508,22 +508,22 @@ class QueryBuilderProvider
                 [],
             ],
             'inCondition-custom-3' => [
-                new InCondition(['id', 'name'], 'in', [['id' => 1]]),
+                new In(['id', 'name'], 'in', [['id' => 1]]),
                 '([[id]], [[name]]) IN ((:qp0, NULL))',
                 [':qp0' => 1],
             ],
             'inCondition-custom-4' => [
-                new InCondition(['id', 'name'], 'in', [['name' => 'John Doe']]),
+                new In(['id', 'name'], 'in', [['name' => 'John Doe']]),
                 '([[id]], [[name]]) IN ((NULL, :qp0))',
                 [':qp0' => 'John Doe'],
             ],
             'inCondition-custom-5' => [
-                new InCondition(['id', 'name'], 'in', [['id' => 1, 'name' => 'John Doe']]),
+                new In(['id', 'name'], 'in', [['id' => 1, 'name' => 'John Doe']]),
                 '([[id]], [[name]]) IN ((:qp0, :qp1))',
                 [':qp0' => 1, ':qp1' => 'John Doe'],
             ],
             'inCondition-custom-6' => [
-                new InCondition(
+                new In(
                     [new Expression('id')],
                     'in',
                     (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
@@ -590,7 +590,7 @@ class QueryBuilderProvider
                 [':qp0' => 0],
             ],
 
-            /* hash condition */
+            /* columns */
             [['a' => 1, 'b' => 2], '([[a]]=1) AND ([[b]]=2)', []],
             [
                 ['a' => new Expression('CONCAT(col1, col2)'), 'b' => 2],
@@ -832,41 +832,41 @@ class QueryBuilderProvider
 
             /* like object conditions */
             [
-                new LikeCondition('name', 'like', new Expression('CONCAT("test", name, "%")')),
+                new Like('name', 'like', new Expression('CONCAT("test", name, "%")')),
                 '[[name]] LIKE CONCAT("test", name, "%")',
                 [],
             ],
             [
-                new LikeCondition('name', 'not like', new Expression('CONCAT("test", name, "%")')),
+                new Like('name', 'not like', new Expression('CONCAT("test", name, "%")')),
                 '[[name]] NOT LIKE CONCAT("test", name, "%")',
                 [],
             ],
             [
-                new LikeCondition('name', 'or like', new Expression('CONCAT("test", name, "%")')),
+                new Like('name', 'or like', new Expression('CONCAT("test", name, "%")')),
                 '[[name]] LIKE CONCAT("test", name, "%")',
                 [],
             ],
             [
-                new LikeCondition('name', 'or not like', new Expression('CONCAT("test", name, "%")')),
+                new Like('name', 'or not like', new Expression('CONCAT("test", name, "%")')),
                 '[[name]] NOT LIKE CONCAT("test", name, "%")',
                 [],
             ],
             [
-                new LikeCondition('name', 'like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                new Like('name', 'like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
                 '[[name]] LIKE CONCAT("test", name, "%") AND [[name]] LIKE :qp0',
                 [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
-                new LikeCondition('name', 'not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                new Like('name', 'not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
                 '[[name]] NOT LIKE CONCAT("test", name, "%") AND [[name]] NOT LIKE :qp0',
                 [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
-                new LikeCondition('name', 'or like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                new Like('name', 'or like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
                 '[[name]] LIKE CONCAT("test", name, "%") OR [[name]] LIKE :qp0', [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
-                new LikeCondition('name', 'or not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                new Like('name', 'or not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
                 '[[name]] NOT LIKE CONCAT("test", name, "%") OR [[name]] NOT LIKE :qp0', [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
 

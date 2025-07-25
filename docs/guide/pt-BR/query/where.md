@@ -251,16 +251,16 @@ Internamente, os formatos descritos são convertidos implicitamente para o forma
 então é possível combinar formatos em uma única condição:
 
 ```php
-use Yiisoft\Db\QueryBuilder\Condition\InCondition;
-use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
+use Yiisoft\Db\QueryBuilder\Condition\In;
+use Yiisoft\Db\QueryBuilder\Condition\OrX;
 use Yiisoft\Db\Query\Query;
 
 /** @var Query $query */
 
 $query->andWhere(
-    new OrCondition(
+    new OrX(
         [
-            new InCondition('type', 'in', $types),
+            new In('type', 'in', $types),
             ['like', 'name', '%good%'],
             'disabled=false',
         ],
@@ -272,10 +272,13 @@ A conversão do formato operador para o formato objeto é realizada de acordo
 com a propriedade `Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder::conditionClasses`
 que mapeia nomes de operadores para nomes de classes representativos.
 
-- `AND`, `OR` => `Yiisoft\Db\QueryBuilder\Condition\ConjunctionCondition`.
-- `NOT` => `Yiisoft\Db\QueryBuilder\Condition\NotCondition`.
-- `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\InCondition`.
-- `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\BetweenCondition`.
+- `AND` => `Yiisoft\Db\QueryBuilder\Condition\AndX`;
+- `OR` => `Yiisoft\Db\QueryBuilder\Condition\OrX`;
+- `NOT` => `Yiisoft\Db\QueryBuilder\Condition\Not`;
+- `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\In`;
+- `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\Between`;
+- `ARRAY OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\ArrayOverlaps`;
+- `JSON OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\JsonOverlaps`.
 
 ## Anexando condições
 

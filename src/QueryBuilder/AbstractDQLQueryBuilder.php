@@ -22,9 +22,9 @@ use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\CaseExpressionBuilder;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\StructuredExpressionBuilder;
-use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Columns;
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Simple;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryExpressionBuilder;
 use Yiisoft\Db\Query\QueryInterface;
@@ -445,12 +445,15 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         /** operator format: operator, operand 1, operand 2, ... */
         if (isset($condition[0])) {
             $operator = strtoupper((string) array_shift($condition));
-            $className = $this->conditionClasses[$operator] ?? SimpleCondition::class;
+            $className = $this->conditionClasses[$operator] ?? Simple::class;
             return $className::fromArrayDefinition($operator, $condition);
         }
 
-        /** hash format: 'column1' => 'value1', 'column2' => 'value2', ... */
-        return new HashCondition($condition);
+        /**
+         * Key-value format: 'column1' => 'value1', 'column2' => 'value2', ...
+         * @psalm-var array<string, mixed> $condition
+         */
+        return new Columns($condition);
     }
 
     public function getExpressionBuilder(ExpressionInterface $expression): object
@@ -503,21 +506,21 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     protected function defaultConditionClasses(): array
     {
         return [
-            'NOT' => Condition\NotCondition::class,
-            'AND' => Condition\AndCondition::class,
-            'OR' => Condition\OrCondition::class,
-            'BETWEEN' => Condition\BetweenCondition::class,
-            'NOT BETWEEN' => Condition\BetweenCondition::class,
-            'IN' => Condition\InCondition::class,
-            'NOT IN' => Condition\InCondition::class,
-            'LIKE' => Condition\LikeCondition::class,
-            'NOT LIKE' => Condition\LikeCondition::class,
-            'OR LIKE' => Condition\LikeCondition::class,
-            'OR NOT LIKE' => Condition\LikeCondition::class,
-            'EXISTS' => Condition\ExistsCondition::class,
-            'NOT EXISTS' => Condition\ExistsCondition::class,
-            'ARRAY OVERLAPS' => Condition\ArrayOverlapsCondition::class,
-            'JSON OVERLAPS' => Condition\JsonOverlapsCondition::class,
+            'NOT' => Condition\Not::class,
+            'AND' => Condition\AndX::class,
+            'OR' => Condition\OrX::class,
+            'BETWEEN' => Condition\Between::class,
+            'NOT BETWEEN' => Condition\Between::class,
+            'IN' => Condition\In::class,
+            'NOT IN' => Condition\In::class,
+            'LIKE' => Condition\Like::class,
+            'NOT LIKE' => Condition\Like::class,
+            'OR LIKE' => Condition\Like::class,
+            'OR NOT LIKE' => Condition\Like::class,
+            'EXISTS' => Condition\Exists::class,
+            'NOT EXISTS' => Condition\Exists::class,
+            'ARRAY OVERLAPS' => Condition\ArrayOverlaps::class,
+            'JSON OVERLAPS' => Condition\JsonOverlaps::class,
         ];
     }
 
@@ -536,16 +539,16 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Query::class => QueryExpressionBuilder::class,
             Param::class => ParamBuilder::class,
             Expression::class => ExpressionBuilder::class,
-            Condition\NotCondition::class => Condition\Builder\NotConditionBuilder::class,
-            Condition\AndCondition::class => Condition\Builder\LogicalConditionBuilder::class,
-            Condition\OrCondition::class => Condition\Builder\LogicalConditionBuilder::class,
-            Condition\BetweenCondition::class => Condition\Builder\BetweenConditionBuilder::class,
-            Condition\InCondition::class => Condition\Builder\InConditionBuilder::class,
-            Condition\LikeCondition::class => Condition\Builder\LikeConditionBuilder::class,
-            Condition\ExistsCondition::class => Condition\Builder\ExistsConditionBuilder::class,
-            SimpleCondition::class => Condition\Builder\SimpleConditionBuilder::class,
-            HashCondition::class => Condition\Builder\HashConditionBuilder::class,
-            Condition\BetweenColumnsCondition::class => Condition\Builder\BetweenColumnsConditionBuilder::class,
+            Condition\Not::class => Condition\Builder\NotBuilder::class,
+            Condition\AndX::class => Condition\Builder\LogicalBuilder::class,
+            Condition\OrX::class => Condition\Builder\LogicalBuilder::class,
+            Condition\Between::class => Condition\Builder\BetweenBuilder::class,
+            Condition\In::class => Condition\Builder\InBuilder::class,
+            Condition\Like::class => Condition\Builder\LikeBuilder::class,
+            Condition\Exists::class => Condition\Builder\ExistsBuilder::class,
+            Simple::class => Condition\Builder\SimpleBuilder::class,
+            Columns::class => Condition\Builder\ColumnsBuilder::class,
+            Condition\BetweenColumns::class => Condition\Builder\BetweenColumnsBuilder::class,
             JsonExpression::class => JsonExpressionBuilder::class,
             ArrayExpression::class => ArrayExpressionBuilder::class,
             StructuredExpression::class => StructuredExpressionBuilder::class,
