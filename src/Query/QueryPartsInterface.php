@@ -644,10 +644,10 @@ interface QueryPartsInterface
      *
      * The `$condition` specified as an array can be in one of the following two formats:
      *
-     * - hash format: `['column1' => value1, 'column2' => value2, ...]`
+     * - key-value format: `['column1' => value1, 'column2' => value2, ...]`
      * - operator format: `[operator, operand1, operand2, ...]`
      *
-     * A condition in hash format represents the following SQL expression in general:
+     * A condition in key-value format represents the following SQL expression in general:
      * `column1=value1 AND column2=value2 AND ...`. In case when a value is an array,
      * an `IN` expression will be generated. And if a value is `null`, `IS NULL` will be used in the generated
      * expression. Below are some examples:

@@ -22,7 +22,7 @@ use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\CaseExpressionBuilder;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\StructuredExpressionBuilder;
-use Yiisoft\Db\QueryBuilder\Condition\Hash;
+use Yiisoft\Db\QueryBuilder\Condition\Columns;
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Simple;
 use Yiisoft\Db\Query\Query;
@@ -449,8 +449,11 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             return $className::fromArrayDefinition($operator, $condition);
         }
 
-        /** hash format: 'column1' => 'value1', 'column2' => 'value2', ... */
-        return new Hash($condition);
+        /**
+         * Key-value format: 'column1' => 'value1', 'column2' => 'value2', ...
+         * @psalm-var array<string, mixed> $condition
+         */
+        return new Columns($condition);
     }
 
     public function getExpressionBuilder(ExpressionInterface $expression): object
@@ -544,7 +547,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Condition\Like::class => Condition\Builder\LikeBuilder::class,
             Condition\Exists::class => Condition\Builder\ExistsBuilder::class,
             Simple::class => Condition\Builder\SimpleBuilder::class,
-            Hash::class => Condition\Builder\HashBuilder::class,
+            Columns::class => Condition\Builder\ColumnsBuilder::class,
             Condition\BetweenColumns::class => Condition\Builder\BetweenColumnsBuilder::class,
             JsonExpression::class => JsonExpressionBuilder::class,
             ArrayExpression::class => ArrayExpressionBuilder::class,

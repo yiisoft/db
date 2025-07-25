@@ -53,7 +53,7 @@ abstract class AbstractQueryTest extends TestCase
     }
 
     /**
-     * @depends testFilterWhereWithHashFormat
+     * @depends testFilterWhereWithKeyValueFormat
      * @depends testFilterWhereWithOperatorFormat
      *
      * @throws NotSupportedException
@@ -111,10 +111,7 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame(['and', ['>', 'id', 1], ['>', 'id', 2]], $query->getHaving());
     }
 
-    /**
-     * @throws NotSupportedException
-     */
-    public function testAndFilterHavingWithHashFormat(): void
+    public function testAndFilterHavingWithKeyValueFormat(): void
     {
         $db = $this->getConnection();
 
@@ -209,10 +206,7 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame([], $column);
     }
 
-    /**
-     * @throws NotSupportedException
-     */
-    public function testFilterHavingWithHashFormat(): void
+    public function testFilterHavingWithKeyValueFormat(): void
     {
         $db = $this->getConnection();
 
@@ -298,7 +292,7 @@ abstract class AbstractQueryTest extends TestCase
     /**
      * @throws NotSupportedException
      */
-    public function testFilterWhereWithHashFormat(): void
+    public function testFilterWhereWithKeyValueFormat(): void
     {
         $db = $this->getConnection();
 
@@ -464,10 +458,7 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame(5, $query->getOffset());
     }
 
-    /**
-     * @throws NotSupportedException
-     */
-    public function testOrFilterHavingHashFormat(): void
+    public function testOrFilterHavingKeyValueFormat(): void
     {
         $db = $this->getConnection();
 
@@ -477,10 +468,7 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame(['status' => 1], $query->getHaving());
     }
 
-    /**
-     * @throws NotSupportedException
-     */
-    public function testOrFilterWhereHashFormat(): void
+    public function testOrFilterWhereKeyValueFormat(): void
     {
         $db = $this->getConnection();
 

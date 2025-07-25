@@ -590,7 +590,7 @@ class QueryBuilderProvider
                 [':qp0' => 0],
             ],
 
-            /* hash condition */
+            /* columns */
             [['a' => 1, 'b' => 2], '([[a]]=1) AND ([[b]]=2)', []],
             [
                 ['a' => new Expression('CONCAT(col1, col2)'), 'b' => 2],

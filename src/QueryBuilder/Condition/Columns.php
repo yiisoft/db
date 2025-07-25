@@ -7,13 +7,15 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 /**
  * Condition based on column-value pairs.
  */
-final class Hash implements ConditionInterface
+final class Columns implements ConditionInterface
 {
     /**
-     * @param array $hash The condition specification.
+     * @param array $values The condition specification.
+     *
+     * @psalm-param array<string, mixed> $values
      */
     public function __construct(
-        public readonly array $hash = [],
+        public readonly array $values = [],
     ) {
     }
 
@@ -22,6 +24,7 @@ final class Hash implements ConditionInterface
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
+        /** @psalm-var array<string, mixed> $operands */
         return new self($operands);
     }
 }

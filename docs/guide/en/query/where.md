@@ -4,7 +4,7 @@ The `Yiisoft\Db\Query\Query::where()` method specifies the `WHERE` fragment of a
 You can use one of the four formats to specify a `WHERE` condition.
 
 - string format, `status=1`.
-- hash format, `['status' => 1, 'type' => 2]`.
+- key-value format, `['status' => 1, 'type' => 2]`.
 - operator format, `['like', 'name', 'test']`.
 - object format, `new LikeCondition('name', 'LIKE', 'test')`.
 
@@ -60,7 +60,7 @@ WHERE (`status` = 10) AND (`type` IS NULL) AND (`id` IN (4, 8, 15))
 
 As you can see, the query builder is intelligent enough to handle values that are nulls or arrays.
 
-You can also use subqueries with hash format like the following.
+You can also use subqueries with key-value format like the following.
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -78,7 +78,7 @@ The relevant part of SQL is:
 WHERE `id` IN (SELECT `id` FROM `user`)
 ```
 
-Using the hash format, Yii DB internally applies parameter binding for values, so in contrast to the string format,
+Using the key-value format, Yii DB internally applies parameter binding for values, so in contrast to the string format,
 here you don't have to add parameters manually.
 
 However, note that Yii DB never escapes column names, so if you pass a variable obtained from the user side as a column
@@ -104,7 +104,7 @@ Operator format allows you to specify arbitrary conditions in a programmatic way
 ['operator', 'operand1', 'operand2', ...]
 ```
 
-Where the operands can each be specified in string format, hash format or operator format recursively,
+Where the operands can each be specified in string format, key-value format or operator format recursively,
 while the operator can be one of the following:
 
 ### and
@@ -344,7 +344,7 @@ $query->filterWhere(['username' => $username, 'email' => $email]);
 ```
 
 The only difference between `Yiisoft\Db\Query\Query::filterWhere()` and `Yiisoft\Db\Query\Query::where()`
-is that the former will ignore empty values provided in the condition in hash format.
+is that the former will ignore empty values provided in the condition in key-value format.
 
 So, if `$email` is empty while `$username` isn't,
 the above code will result in the SQL condition `WHERE username=:username`.
