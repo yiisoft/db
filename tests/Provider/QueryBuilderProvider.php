@@ -550,7 +550,7 @@ class QueryBuilderProvider
             ],
 
             /* simple conditions */
-            [['=', 'a', 'b'], '[[a]] = :qp0', [':qp0' => 'b']],
+            [['=', 'a', 'b'], '[[a]]=:qp0', [':qp0' => new Param('b', DataType::STRING)]],
             [['>', 'a', 1], '[[a]] > :qp0', [':qp0' => 1]],
             [['>=', 'a', 'b'], '[[a]] >= :qp0', [':qp0' => 'b']],
             [['<', 'a', 2], '[[a]] < :qp0', [':qp0' => 2]],
@@ -573,21 +573,21 @@ class QueryBuilderProvider
                     'date',
                     (new Query(static::getDb()))->select('max(date)')->from('test')->where(['id' => 5]),
                 ],
-                '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]]=5)',
+                '[[date]]=(SELECT max(date) FROM [[test]] WHERE [[id]]=5)',
                 [],
             ],
-            [['=', 'a', null], '[[a]] = NULL', []],
+            [['=', 'a', null], '[[a]] IS NULL', []],
 
             /* operand1 is Expression */
             [
                 ['=', new Expression('date'), '2019-08-01'],
-                'date = :qp0',
-                [':qp0' => '2019-08-01'],
+                'date=:qp0',
+                [':qp0' => new Param('2019-08-01', DataType::STRING)],
             ],
             [
                 ['=', (new Query(static::getDb()))->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
-                '(SELECT COUNT(*) FROM [[test]] WHERE [[id]]=6) = :qp0',
-                [':qp0' => 0],
+                '(SELECT COUNT(*) FROM [[test]] WHERE [[id]]=6)=0',
+                [],
             ],
 
             /* columns */
@@ -628,7 +628,7 @@ class QueryBuilderProvider
             /* json conditions */
             'search by property in JSON column' => [
                 ['=', new Expression("(json_col->>'$.someKey')"), 42],
-                "(json_col->>'$.someKey') = :qp0", [':qp0' => 42],
+                "(json_col->>'$.someKey')=42", [],
             ],
         ];
 
@@ -1888,11 +1888,11 @@ class QueryBuilderProvider
                     ),
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    CASE WHEN [[column_name]] = :qp0 THEN :qp1 WHEN [[column_name]] = 2 THEN (SELECT :pv2) END
+                    CASE WHEN [[column_name]]=1 THEN :qp0 WHEN [[column_name]] = 2 THEN (SELECT :pv1) END
                     SQL,
                     static::getDriverName(),
                 ),
-                [':qp0' => 1, ':qp1' => $paramA, ':pv2' => $paramB],
+                [':qp0' => $paramA, ':pv1' => $paramB],
                 'b',
             ],
         ];
