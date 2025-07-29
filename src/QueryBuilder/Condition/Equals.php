@@ -42,7 +42,7 @@ final class Equals implements ConditionInterface
         [$column, $value] = $operands;
 
         if (!is_string($column) && !$column instanceof ExpressionInterface) {
-            throw new InvalidArgumentException( "Operator '$operator' requires column to be string or ExpressionInterface.");
+            throw new InvalidArgumentException("Operator '$operator' requires column to be string or ExpressionInterface.");
         }
 
         return new self($column, $value);
