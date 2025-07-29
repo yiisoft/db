@@ -882,9 +882,7 @@ class Query implements QueryInterface
 
         if (!isset($condition[0])) {
             /**
-             * Hash format: 'column1' => 'value1', 'column2' => 'value2', ...
-             *
-             * @psalm-var mixed $value
+             * Key-value format: 'column1' => 'value1', 'column2' => 'value2', ...
              */
             foreach ($condition as $name => $value) {
                 if ($this->isEmpty($value)) {
