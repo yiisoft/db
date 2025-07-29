@@ -12,8 +12,6 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Equals;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
-use function str_contains;
-
 /**
  * Build an object of {@see Equals} into SQL expressions.
  *
