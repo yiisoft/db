@@ -517,7 +517,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             'NOT' => Condition\Not::class,
             'AND' => Condition\AndX::class,
             'OR' => Condition\OrX::class,
-            'EQUALS' => Condition\Equals::class,
+            '=' => Condition\Equals::class,
             'BETWEEN' => Condition\Between::class,
             'NOT BETWEEN' => Condition\Between::class,
             'IN' => Condition\In::class,
