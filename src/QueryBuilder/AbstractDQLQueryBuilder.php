@@ -22,8 +22,10 @@ use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\CaseExpressionBuilder;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\StructuredExpressionBuilder;
-use Yiisoft\Db\QueryBuilder\Condition\Columns;
+use Yiisoft\Db\QueryBuilder\Condition\AndX;
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\Equals;
+use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Simple;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryExpressionBuilder;
@@ -33,6 +35,7 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use function array_filter;
 use function array_merge;
 use function array_shift;
+use function count;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -449,11 +452,19 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             return $className::fromArrayDefinition($operator, $condition);
         }
 
-        /**
-         * Key-value format: 'column1' => 'value1', 'column2' => 'value2', ...
-         * @psalm-var array<string, mixed> $condition
-         */
-        return new Columns($condition);
+        $conditions = [];
+        foreach ($condition as $column => $value) {
+            if (is_int($column)) {
+                throw new InvalidArgumentException('Condition array must have string keys.');
+            }
+            if (is_iterable($value) || $value instanceof QueryInterface) {
+                $conditions[] = new In($column, 'IN', $value);
+                continue;
+            }
+            $conditions[] = new Equals($column, $value);
+        }
+
+        return count($conditions) === 1 ? $conditions[0] : new AndX($conditions);
     }
 
     public function getExpressionBuilder(ExpressionInterface $expression): object
@@ -549,7 +560,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Condition\Equals::class => Condition\Builder\EqualsBuilder::class,
             Condition\Exists::class => Condition\Builder\ExistsBuilder::class,
             Simple::class => Condition\Builder\SimpleBuilder::class,
-            Columns::class => Condition\Builder\ColumnsBuilder::class,
             Condition\BetweenColumns::class => Condition\Builder\BetweenColumnsBuilder::class,
             JsonExpression::class => JsonExpressionBuilder::class,
             ArrayExpression::class => ArrayExpressionBuilder::class,
