@@ -451,7 +451,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
         $conditions = [];
         foreach ($condition as $column => $value) {
-            if (is_int($column)) {
+            if (!is_string($column)) {
                 throw new InvalidArgumentException('Condition array must have string keys.');
             }
             if (is_iterable($value) || $value instanceof QueryInterface) {
