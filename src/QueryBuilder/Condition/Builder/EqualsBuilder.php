@@ -76,10 +76,6 @@ class EqualsBuilder implements ExpressionBuilderInterface
             return null;
         }
 
-        if ($value instanceof ExpressionInterface) {
-            return $this->queryBuilder->buildExpression($value, $params);
-        }
-
         return $this->queryBuilder->buildValue($value, $params);
     }
 }
