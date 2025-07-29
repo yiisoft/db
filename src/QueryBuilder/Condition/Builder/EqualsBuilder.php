@@ -38,11 +38,9 @@ class EqualsBuilder implements ExpressionBuilderInterface
         $column = $this->prepareColumn($expression->column, $params);
         $value = $this->prepareValue($expression->value, $params);
 
-        if ($value === null) {
-            return $column . ' IS NULL';
-        }
-
-        return $column . '=' . $value;
+        return $value === null
+            ? "$column IS NULL"
+            : "$column = $value";
     }
 
     /**
@@ -59,11 +57,6 @@ class EqualsBuilder implements ExpressionBuilderInterface
         return $this->queryBuilder->getQuoter()->quoteColumnName($column);
     }
 
-    /**
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws Exception
-     */
     private function prepareValue(mixed $value, array &$params): string|null
     {
         if ($value === null) {

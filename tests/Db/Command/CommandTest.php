@@ -307,7 +307,7 @@ final class CommandTest extends AbstractCommandTest
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                DELETE FROM [[table]] WHERE [[column]]=:qp0
+                DELETE FROM [[table]] WHERE [[column]] = :qp0
                 SQL,
                 $db->getDriverName(),
             ),
@@ -720,7 +720,7 @@ final class CommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $command->update('{{table}}', ['name' => 'John'], ['id' => 1]);
 
-        $this->assertSame('UPDATE [table] SET [name]=:qp0 WHERE [id]=1', $command->getSql());
+        $this->assertSame('UPDATE [table] SET [name]=:qp0 WHERE [id] = 1', $command->getSql());
         $this->assertSame([':qp0' => 'John'], $command->getParams());
     }
 

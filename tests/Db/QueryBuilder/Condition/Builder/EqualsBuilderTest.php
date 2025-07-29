@@ -31,7 +31,7 @@ final class EqualsBuilderTest extends TestCase
 
         $result = (new EqualsBuilder($qb))->build($equalsCondition, $params);
 
-        assertSame('[id]=42', $result);
+        assertSame('[id] = 42', $result);
         assertSame([], $params);
     }
 
@@ -44,7 +44,7 @@ final class EqualsBuilderTest extends TestCase
 
         $result = (new EqualsBuilder($qb))->build($equalsCondition, $params);
 
-        assertSame('UPPER(name)=:qp0', $result);
+        assertSame('UPPER(name) = :qp0', $result);
         assertEquals([':qp0' => new Param('JOHN', DataType::STRING)], $params);
     }
 
@@ -56,7 +56,7 @@ final class EqualsBuilderTest extends TestCase
 
         $result = (new EqualsBuilder($qb))->build($equalsCondition, $params);
 
-        assertSame('COUNT(*)=5', $result);
+        assertSame('COUNT(*) = 5', $result);
         assertSame([], $params);
     }
 
@@ -81,7 +81,7 @@ final class EqualsBuilderTest extends TestCase
 
         $result = (new EqualsBuilder($qb))->build($equalsCondition, $params);
 
-        assertSame('[created_at]=NOW()', $result);
+        assertSame('[created_at] = NOW()', $result);
         assertSame([], $params);
     }
 
@@ -103,7 +103,7 @@ final class EqualsBuilderTest extends TestCase
 
         $result = (new EqualsBuilder($qb))->build($equalsCondition, $params);
 
-        assertSame($expectedColumn . '=5', $result);
+        assertSame($expectedColumn . ' = 5', $result);
         assertSame([], $params);
     }
 
@@ -128,7 +128,7 @@ final class EqualsBuilderTest extends TestCase
 
         ($value === null)
             ? assertSame('[column] IS NULL', $result)
-            : assertSame('[column]=' . $expectedValue, $result);
+            : assertSame('[column] = ' . $expectedValue, $result);
         assertEquals($expectedParams, $params);
     }
 
@@ -142,7 +142,7 @@ final class EqualsBuilderTest extends TestCase
 
         $result = (new EqualsBuilder($qb))->build($equalsCondition, $params);
 
-        assertSame('COALESCE(name, :default)=UPPER(:value)', $result);
+        assertSame('COALESCE(name, :default) = UPPER(:value)', $result);
         assertSame([':default' => 'Unknown', ':value' => 'john'], $params);
     }
 }

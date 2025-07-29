@@ -435,7 +435,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                HAVING [[id]]=1
+                HAVING [[id]] = 1
                 SQL,
                 $db->getDriverName(),
             ),
@@ -1520,7 +1520,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (([[w]].[[merchant_id]]=6) AND ([[w]].[[user_id]]=210)))) AND ([[t]].[[some_column]]=:qp0)
+                SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (([[w]].[[merchant_id]] = 6) AND ([[w]].[[user_id]] = 210)))) AND ([[t]].[[some_column]] = :qp0)
                 SQL,
                 $db->getDriverName(),
             ),
@@ -2423,7 +2423,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals([':id', ':qp2', ':qp2_0',], array_keys($command->getParams()));
         $this->assertEquals(
             DbHelper::replaceQuotes(
-                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]]=\'test1\')',
+                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]] = \'test1\')',
                 $db->getDriverName()
             ),
             $command->getRawSql()
@@ -2449,7 +2449,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals([':qp1', ':qp1_0',], array_keys($command->getParams()));
         $this->assertEquals(
             DbHelper::replaceQuotes(
-                'SELECT * FROM [[animal]] WHERE (id = 1) AND ([[type]]=\'test2\')',
+                'SELECT * FROM [[animal]] WHERE (id = 1) AND ([[type]] = \'test2\')',
                 $db->getDriverName()
             ),
             $command->getRawSql()
