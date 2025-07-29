@@ -51,8 +51,8 @@ final class EqualsTest extends TestCase
     public function testFromArrayDefinitionInvalidColumn(mixed $column): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Operator 'EQUALS' requires column to be string or ExpressionInterface.");
+        $this->expectExceptionMessage("Operator '=' requires column to be string or ExpressionInterface.");
 
-        Equals::fromArrayDefinition('EQUALS', [$column, 'value']);
+        Equals::fromArrayDefinition('=', [$column, 'value']);
     }
 }
