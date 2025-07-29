@@ -1648,13 +1648,20 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
     public function testCreateOverlapsConditionFromArrayWithInvalidValues(): void
     {
-        $db = $this->getConnection();
-        $qb = $db->getQueryBuilder();
+        $qb = $this->getConnection()->getQueryBuilder();
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires values to be iterable or ExpressionInterface.');
-
         $qb->createConditionFromArray(['json overlaps', 'column', 1]);
+    }
+
+    public function testCreateConditionFromArrayWithIntegerKeys(): void
+    {
+        $qb = $this->getConnection()->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Condition array must have string keys.');
+        $qb->createConditionFromArray(['id' => 45, 9 => 'hello']);
     }
 
     /**
