@@ -18,7 +18,7 @@ final class EqualsTest extends TestCase
 {
     public function testFromArrayDefinition(): void
     {
-        $condition = Equals::fromArrayDefinition('EQUALS', ['id', 25]);
+        $condition = Equals::fromArrayDefinition('=', ['id', 25]);
 
         assertSame('id', $condition->column);
         assertSame(25, $condition->value);
