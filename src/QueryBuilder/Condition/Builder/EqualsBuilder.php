@@ -58,10 +58,6 @@ class EqualsBuilder implements ExpressionBuilderInterface
             return $this->queryBuilder->buildExpression($column, $params);
         }
 
-        if (str_contains($column, '(')) {
-            return $column;
-        }
-
         return $this->queryBuilder->getQuoter()->quoteColumnName($column);
     }
 
