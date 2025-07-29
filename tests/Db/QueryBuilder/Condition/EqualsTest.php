@@ -35,9 +35,9 @@ final class EqualsTest extends TestCase
     public function testFromArrayDefinitionMissingSecondOperand(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Operator 'EQUALS' requires second operand as value.");
+        $this->expectExceptionMessage("Operator '=' requires second operand as value.");
 
-        Equals::fromArrayDefinition('EQUALS', ['column']);
+        Equals::fromArrayDefinition('=', ['column']);
     }
 
     public static function dataFromArrayDefinitionInvalidColumn(): iterable
