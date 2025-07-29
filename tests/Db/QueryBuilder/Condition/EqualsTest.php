@@ -27,9 +27,9 @@ final class EqualsTest extends TestCase
     public function testFromArrayDefinitionMissingFirstOperand(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Operator 'EQUALS' requires first operand as column.");
+        $this->expectExceptionMessage("Operator '=' requires first operand as column.");
 
-        Equals::fromArrayDefinition('EQUALS', []);
+        Equals::fromArrayDefinition('=', []);
     }
 
     public function testFromArrayDefinitionMissingSecondOperand(): void
