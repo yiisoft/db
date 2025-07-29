@@ -22,10 +22,7 @@ use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\CaseExpressionBuilder;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\StructuredExpressionBuilder;
-use Yiisoft\Db\QueryBuilder\Condition\AndX;
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Equals;
-use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Simple;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryExpressionBuilder;
@@ -458,13 +455,13 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                 throw new InvalidArgumentException('Condition array must have string keys.');
             }
             if (is_iterable($value) || $value instanceof QueryInterface) {
-                $conditions[] = new In($column, 'IN', $value);
+                $conditions[] = new Condition\In($column, 'IN', $value);
                 continue;
             }
-            $conditions[] = new Equals($column, $value);
+            $conditions[] = new Condition\Equals($column, $value);
         }
 
-        return count($conditions) === 1 ? $conditions[0] : new AndX($conditions);
+        return count($conditions) === 1 ? $conditions[0] : new Condition\AndX($conditions);
     }
 
     public function getExpressionBuilder(ExpressionInterface $expression): object
@@ -518,13 +515,13 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     {
         return [
             'NOT' => Condition\Not::class,
-            'AND' => AndX::class,
+            'AND' => Condition\AndX::class,
             'OR' => Condition\OrX::class,
-            'EQUALS' => Equals::class,
+            'EQUALS' => Condition\Equals::class,
             'BETWEEN' => Condition\Between::class,
             'NOT BETWEEN' => Condition\Between::class,
-            'IN' => In::class,
-            'NOT IN' => In::class,
+            'IN' => Condition\In::class,
+            'NOT IN' => Condition\In::class,
             'LIKE' => Condition\Like::class,
             'NOT LIKE' => Condition\Like::class,
             'OR LIKE' => Condition\Like::class,
@@ -552,12 +549,12 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Param::class => ParamBuilder::class,
             Expression::class => ExpressionBuilder::class,
             Condition\Not::class => Condition\Builder\NotBuilder::class,
-            AndX::class => Condition\Builder\LogicalBuilder::class,
+            Condition\AndX::class => Condition\Builder\LogicalBuilder::class,
             Condition\OrX::class => Condition\Builder\LogicalBuilder::class,
             Condition\Between::class => Condition\Builder\BetweenBuilder::class,
-            In::class => Condition\Builder\InBuilder::class,
+            Condition\In::class => Condition\Builder\InBuilder::class,
             Condition\Like::class => Condition\Builder\LikeBuilder::class,
-            Equals::class => Condition\Builder\EqualsBuilder::class,
+            Condition\Equals::class => Condition\Builder\EqualsBuilder::class,
             Condition\Exists::class => Condition\Builder\ExistsBuilder::class,
             Simple::class => Condition\Builder\SimpleBuilder::class,
             Condition\BetweenColumns::class => Condition\Builder\BetweenColumnsBuilder::class,
