@@ -72,10 +72,12 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      *
      * @psalm-param ColumnClassMap $columnClassMap
      * @psalm-param TypeMap $typeMap
+     * @psalm-param array<ColumnType::*, array<string, mixed>> $defaultColumnsParams
      */
     public function __construct(
         protected array $columnClassMap = [],
         protected array $typeMap = [],
+        protected array $defaultColumnsParams = [],
     ) {
     }
 
@@ -169,10 +171,11 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
         $columnClass = $this->mapType($this->columnClassMap, $type, $info)
             ?? $this->getColumnClass($type, $info);
 
-        $column = new $columnClass($type, ...$info);
+        $columnParams = $info + ($this->defaultColumnsParams[$type] ?? []);
+        $column = new $columnClass($type, ...$columnParams);
 
-        if (array_key_exists('defaultValueRaw', $info)) {
-            $column->defaultValue($this->normalizeDefaultValue($info['defaultValueRaw'], $column));
+        if (array_key_exists('defaultValueRaw', $columnParams)) {
+            $column->defaultValue($this->normalizeDefaultValue($columnParams['defaultValueRaw'], $column));
         }
 
         return $column;
