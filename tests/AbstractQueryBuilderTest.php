@@ -435,7 +435,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                HAVING [[id]]=1
+                HAVING [[id]] = 1
                 SQL,
                 $db->getDriverName(),
             ),
@@ -1520,7 +1520,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (([[w]].[[merchant_id]]=6) AND ([[w]].[[user_id]]=210)))) AND ([[t]].[[some_column]]=:qp0)
+                SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (([[w]].[[merchant_id]] = 6) AND ([[w]].[[user_id]] = 210)))) AND ([[t]].[[some_column]] = :qp0)
                 SQL,
                 $db->getDriverName(),
             ),
@@ -1648,13 +1648,20 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
     public function testCreateOverlapsConditionFromArrayWithInvalidValues(): void
     {
-        $db = $this->getConnection();
-        $qb = $db->getQueryBuilder();
+        $qb = $this->getConnection()->getQueryBuilder();
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires values to be iterable or ExpressionInterface.');
-
         $qb->createConditionFromArray(['json overlaps', 'column', 1]);
+    }
+
+    public function testCreateConditionFromArrayWithIntegerKeys(): void
+    {
+        $qb = $this->getConnection()->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Condition array must have string keys.');
+        $qb->createConditionFromArray(['id' => 45, 9 => 'hello']);
     }
 
     /**
@@ -2416,7 +2423,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals([':id', ':qp2', ':qp2_0',], array_keys($command->getParams()));
         $this->assertEquals(
             DbHelper::replaceQuotes(
-                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]]=\'test1\')',
+                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]] = \'test1\')',
                 $db->getDriverName()
             ),
             $command->getRawSql()
@@ -2442,7 +2449,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals([':qp1', ':qp1_0',], array_keys($command->getParams()));
         $this->assertEquals(
             DbHelper::replaceQuotes(
-                'SELECT * FROM [[animal]] WHERE (id = 1) AND ([[type]]=\'test2\')',
+                'SELECT * FROM [[animal]] WHERE (id = 1) AND ([[type]] = \'test2\')',
                 $db->getDriverName()
             ),
             $command->getRawSql()

@@ -107,7 +107,7 @@
 - Enh #991: Improve types in `ConnectionInterface::transaction()` (@kikara)
 - Chg #998: Add `yiisoft/db-implementation` virtual package as dependency (@vjik)
 - Chg #999: Remove `requireTransaction()` method and `$isolationLevel` property from `AbstractCommand` (@vjik)
-- Enh #1000: Prepare values in `Columns` (@vjik)
+- Chg #1000, #1007: Add `Equals` condition. Remove `Hash` condition in favor `Equals` and `In` usage (@vjik)
 - Chg #1001: Remove `ParamInterface` (@vjik)
 - Chg #1001: Add public properties `$type` and `$value` to `Param` class instead of `getType()` and `getValue()` methods that were removed (@vjik)
 - Chg #1002: Remove specific condition interfaces (@vjik)

@@ -314,7 +314,7 @@ class QueryBuilderProvider
                     ['expired' => false],
                     (new Query(static::getDb()))->select('count(*) > 1')->from('queue'),
                 ],
-                '([[expired]]=FALSE) AND ((SELECT count(*) > 1 FROM [[queue]]))',
+                '([[expired]] = FALSE) AND ((SELECT count(*) > 1 FROM [[queue]]))',
                 [],
             ],
 
@@ -404,7 +404,7 @@ class QueryBuilderProvider
                     'id',
                     (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ],
-                '[[id]] IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=1)',
+                '[[id]] IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
             ],
             [
@@ -413,7 +413,7 @@ class QueryBuilderProvider
                     'id',
                     (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ],
-                '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=1)',
+                '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
             ],
             [['in', 'id', 1], '[[id]]=:qp0', [':qp0' => 1]],
@@ -504,7 +504,7 @@ class QueryBuilderProvider
                     'in',
                     (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ),
-                '([[id]]) IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=1)',
+                '([[id]]) IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
             ],
             'inCondition-custom-3' => [
@@ -528,7 +528,7 @@ class QueryBuilderProvider
                     'in',
                     (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ),
-                '(id) IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=1)',
+                '(id) IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
             ],
 
@@ -538,7 +538,7 @@ class QueryBuilderProvider
                     'exists',
                     (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ],
-                'EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=1)',
+                'EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
             ],
             [
@@ -546,11 +546,11 @@ class QueryBuilderProvider
                     'not exists',
                     (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ],
-                'NOT EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=1)', [],
+                'NOT EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)', [],
             ],
 
             /* simple conditions */
-            [['=', 'a', 'b'], '[[a]] = :qp0', [':qp0' => 'b']],
+            [['=', 'a', 'b'], '[[a]] = :qp0', [':qp0' => new Param('b', DataType::STRING)]],
             [['>', 'a', 1], '[[a]] > :qp0', [':qp0' => 1]],
             [['>=', 'a', 'b'], '[[a]] >= :qp0', [':qp0' => 'b']],
             [['<', 'a', 2], '[[a]] < :qp0', [':qp0' => 2]],
@@ -573,28 +573,28 @@ class QueryBuilderProvider
                     'date',
                     (new Query(static::getDb()))->select('max(date)')->from('test')->where(['id' => 5]),
                 ],
-                '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]]=5)',
+                '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]] = 5)',
                 [],
             ],
-            [['=', 'a', null], '[[a]] = NULL', []],
+            [['=', 'a', null], '[[a]] IS NULL', []],
 
             /* operand1 is Expression */
             [
                 ['=', new Expression('date'), '2019-08-01'],
                 'date = :qp0',
-                [':qp0' => '2019-08-01'],
+                [':qp0' => new Param('2019-08-01', DataType::STRING)],
             ],
             [
                 ['=', (new Query(static::getDb()))->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
-                '(SELECT COUNT(*) FROM [[test]] WHERE [[id]]=6) = :qp0',
-                [':qp0' => 0],
+                '(SELECT COUNT(*) FROM [[test]] WHERE [[id]] = 6) = 0',
+                [],
             ],
 
             /* columns */
-            [['a' => 1, 'b' => 2], '([[a]]=1) AND ([[b]]=2)', []],
+            [['a' => 1, 'b' => 2], '([[a]] = 1) AND ([[b]] = 2)', []],
             [
                 ['a' => new Expression('CONCAT(col1, col2)'), 'b' => 2],
-                '([[a]]=CONCAT(col1, col2)) AND ([[b]]=2)',
+                '([[a]] = CONCAT(col1, col2)) AND ([[b]] = 2)',
                 [],
             ],
             [['a' => null], '[[a]] IS NULL', []],
@@ -628,7 +628,7 @@ class QueryBuilderProvider
             /* json conditions */
             'search by property in JSON column' => [
                 ['=', new Expression("(json_col->>'$.someKey')"), 42],
-                "(json_col->>'$.someKey') = :qp0", [':qp0' => 42],
+                "(json_col->>'$.someKey') = 42", [],
             ],
         ];
 
@@ -983,7 +983,7 @@ class QueryBuilderProvider
                 ['is_enabled' => false, 'power' => new Expression('WRONG_POWER()')],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    DELETE FROM [[user]] WHERE ([[is_enabled]]=FALSE) AND ([[power]]=WRONG_POWER())
+                    DELETE FROM [[user]] WHERE ([[is_enabled]] = FALSE) AND ([[power]] = WRONG_POWER())
                     SQL,
                     static::$driverName,
                 ),
@@ -1076,7 +1076,7 @@ class QueryBuilderProvider
                 [':phBar' => 'bar'],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) SELECT [[email]], [[name]], [[address]], [[is_active]], [[related_id]] FROM [[customer]] WHERE ([[email]]=:qp1) AND ([[name]]=:qp2) AND ([[address]]=:qp3) AND ([[is_active]]=FALSE) AND ([[related_id]] IS NULL) AND ([[col]]=CONCAT(:phFoo, :phBar))
+                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) SELECT [[email]], [[name]], [[address]], [[is_active]], [[related_id]] FROM [[customer]] WHERE ([[email]] = :qp1) AND ([[name]] = :qp2) AND ([[address]] = :qp3) AND ([[is_active]] = FALSE) AND ([[related_id]] IS NULL) AND ([[col]] = CONCAT(:phFoo, :phBar))
                     SQL,
                     static::$driverName,
                 ),
@@ -1113,7 +1113,7 @@ class QueryBuilderProvider
                 [],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    INSERT INTO [[customer]] ([[email]], [[name]]) SELECT email as email, name FROM [[customer]] WHERE [[email]]=:qp0
+                    INSERT INTO [[customer]] ([[email]], [[name]]) SELECT email as email, name FROM [[customer]] WHERE [[email]] = :qp0
                     SQL,
                     static::$driverName,
                 ),
@@ -1188,7 +1188,7 @@ class QueryBuilderProvider
                 [],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]]=1
+                    UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]] = 1
                     SQL,
                     static::$driverName,
                 ),
@@ -1203,7 +1203,7 @@ class QueryBuilderProvider
                 ['id' => 'boolean'],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=1
+                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]] = 1
                     SQL,
                     static::$driverName,
                 ),
@@ -1219,7 +1219,7 @@ class QueryBuilderProvider
                 [],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    UPDATE [[customer]] SET [[status]]=:qp0, [[updated_at]]=now() WHERE [[id]]=100
+                    UPDATE [[customer]] SET [[status]]=:qp0, [[updated_at]]=now() WHERE [[id]] = 100
                     SQL,
                     static::$driverName,
                 ),
@@ -1888,11 +1888,11 @@ class QueryBuilderProvider
                     ),
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    CASE WHEN [[column_name]] = :qp0 THEN :qp1 WHEN [[column_name]] = 2 THEN (SELECT :pv2) END
+                    CASE WHEN [[column_name]] = 1 THEN :qp0 WHEN [[column_name]] = 2 THEN (SELECT :pv1) END
                     SQL,
                     static::getDriverName(),
                 ),
-                [':qp0' => 1, ':qp1' => $paramA, ':pv2' => $paramB],
+                [':qp0' => $paramA, ':pv1' => $paramB],
                 'b',
             ],
         ];
