@@ -59,17 +59,17 @@ testsuite-%:
 	--entrypoint "vendor/bin/phpunit --testsuite $(subst testsuite-,,$@) $(RUN_ARGS)" \
 	php
 
-mutation: CMD="\
+infection: CMD="\
 vendor/bin/roave-infection-static-analysis-plugin \
 --threads=2 \
 --min-msi=0 \
 --min-covered-msi=100 \
 --ignore-msi-with-no-mutations \
 --only-covered" ## Run mutation tests using Infection.
-mutation: run
+infection: run
 
-static-analysis: CMD="vendor/bin/psalm --no-cache" ## Run static analysis using Psalm.
-static-analysis: run
+psalm: CMD="vendor/bin/psalm --no-cache" ## Run static analysis using Psalm.
+psalm: run
 
 rector: CMD="vendor/bin/rector" ## Check code style using Rector.
 rector: run
