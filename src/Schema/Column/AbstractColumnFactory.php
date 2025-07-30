@@ -72,7 +72,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      *
      * @psalm-param ColumnClassMap $columnClassMap
      * @psalm-param TypeMap $typeMap
-     * @psalm-param array<ColumnType::*, array<string, mixed>> $defaultColumnsParams
+     * @psalm-param array<ColumnType::*, ColumnInfo> $defaultColumnsParams
      */
     public function __construct(
         protected array $columnClassMap = [],
