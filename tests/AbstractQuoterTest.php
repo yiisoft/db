@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Tests\Provider\QuoterProvider;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class AbstractQuoterTest extends TestCase
 {
     use TestTrait;
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::ensureColumnName
-     */
+    #[DataProviderExternal(QuoterProvider::class, 'ensureColumnName')]
     public function testEnsureColumnName(string $columnName, string $expected): void
     {
         $db = $this->getConnection();
@@ -21,9 +21,7 @@ abstract class AbstractQuoterTest extends TestCase
         $this->assertSame($expected, $db->getQuoter()->ensureColumnName($columnName));
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::ensureNameQuoted
-     */
+    #[DataProviderExternal(QuoterProvider::class, 'ensureNameQuoted')]
     public function testEnsureNameQuoted(string $name, string $expected): void
     {
         $db = $this->getConnection();
@@ -31,9 +29,7 @@ abstract class AbstractQuoterTest extends TestCase
         $this->assertSame($expected, $db->getQuoter()->ensureNameQuoted($name));
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::rawTableNames
-     */
+    #[DataProviderExternal(QuoterProvider::class, 'rawTableNames')]
     public function testGetRawTableName(string $tableName, string $expected, string $tablePrefix = ''): void
     {
         $db = $this->getConnection();
@@ -43,19 +39,15 @@ abstract class AbstractQuoterTest extends TestCase
         $this->assertSame($expected, $db->getQuoter()->getRawTableName($tableName));
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::tableNameParts
-     */
-    public function testGetTableNameParts(string $tableName, string ...$expected): void
+    #[DataProviderExternal(QuoterProvider::class, 'tableNameParts')]
+    public function testGetTableNameParts(string $tableName, array $expected): void
     {
         $db = $this->getConnection();
 
-        $this->assertSame($expected, array_reverse($db->getQuoter()->getTableNameParts($tableName)));
+        $this->assertSame($expected, $db->getQuoter()->getTableNameParts($tableName));
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::columnNames
-     */
+    #[DataProviderExternal(QuoterProvider::class, 'columnNames')]
     public function testQuoteColumnName(string $columnName, string $expected): void
     {
         $db = $this->getConnection();
@@ -63,9 +55,7 @@ abstract class AbstractQuoterTest extends TestCase
         $this->assertSame($expected, $db->getQuoter()->quoteColumnName($columnName));
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::simpleColumnNames
-     */
+    #[DataProviderExternal(QuoterProvider::class, 'simpleColumnNames')]
     public function testQuoteSimpleColumnName(
         string $columnName,
         string $expectedQuotedColumnName,
@@ -83,9 +73,7 @@ abstract class AbstractQuoterTest extends TestCase
         $this->assertSame($expectedUnQuotedColumnName, $unQuoted);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::simpleTableNames
-     */
+    #[DataProviderExternal(QuoterProvider::class, 'simpleTableNames')]
     public function testQuoteTableName(string $tableName, string $expected): void
     {
         $db = $this->getConnection();
