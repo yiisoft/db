@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Closure;
+use InvalidArgumentException;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
@@ -13,6 +14,7 @@ use Yiisoft\Db\Syntax\ColumnDefinitionParser;
 use function array_diff_key;
 use function array_key_exists;
 use function array_merge;
+use function is_array;
 use function is_callable;
 use function is_numeric;
 use function preg_match;
@@ -26,7 +28,8 @@ use const PHP_INT_SIZE;
  *
  * @psalm-import-type ColumnInfo from ColumnFactoryInterface
  *
- * @psalm-type ColumnClassMap = array<ColumnType::*, class-string<ColumnInterface>|Closure(ColumnType::*, ColumnInfo): (class-string<ColumnInterface>|null)>
+ * @psalm-type ColumnClassNameDefinition = class-string<ColumnInterface>|Closure(ColumnType::*, ColumnInfo): (class-string<ColumnInterface>|null)
+ * @psalm-type ColumnClassMap = array<ColumnType::*, ColumnClassNameDefinition>
  * @psalm-type TypeMap = array<string, ColumnType::*|Closure(string, ColumnInfo): (ColumnType::*|null)>
  */
 abstract class AbstractColumnFactory implements ColumnFactoryInterface
@@ -37,6 +40,16 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      * @psalm-var array<string, ColumnType::*>
      */
     protected const TYPE_MAP = [];
+
+    /**
+     * @psalm-var ColumnClassMap
+     */
+    protected readonly array $columnClassMap;
+
+    /**
+     * @psalm-var array<ColumnType::*, ColumnInfo>
+     */
+    protected readonly array $columnClassDefaults;
 
     /**
      * @param array $columnClassMap The mapping from abstract column types to the classes implementing them. Where
@@ -70,15 +83,33 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      * $columnFactory = new ColumnFactory($classMap, $typeMap);
      * ```
      *
-     * @psalm-param ColumnClassMap $columnClassMap
+     * @psalm-param array<ColumnType::*, ColumnClassNameDefinition|(list{ColumnClassNameDefinition}&ColumnInfo)> $columnClassMap
      * @psalm-param TypeMap $typeMap
-     * @psalm-param array<ColumnType::*, ColumnInfo> $defaultColumnsParams
      */
     public function __construct(
-        protected array $columnClassMap = [],
+        array $columnClassMap = [],
         protected array $typeMap = [],
-        protected array $defaultColumnsParams = [],
     ) {
+        $resultColumnClassMap = [];
+        $resultColumnClassDefaults = [];
+        foreach ($columnClassMap as $type => $value) {
+            if (is_array($value)) {
+                if (!isset($value[0])) {
+                    throw new InvalidArgumentException(
+                        'The first element of the array must be a class name definition.'
+                    );
+                }
+                $resultColumnClassMap[$type] = $value[0];
+                unset($value[0]);
+                if (!empty($value)) {
+                    $resultColumnClassDefaults[$type] = $value;
+                }
+                continue;
+            }
+            $resultColumnClassMap[$type] = $value;
+        }
+        $this->columnClassMap = $resultColumnClassMap;
+        $this->columnClassDefaults = $resultColumnClassDefaults;
     }
 
     public function fromDbType(string $dbType, array $info = []): ColumnInterface
@@ -171,7 +202,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
         $columnClass = $this->mapType($this->columnClassMap, $type, $info)
             ?? $this->getColumnClass($type, $info);
 
-        $columnParams = $info + ($this->defaultColumnsParams[$type] ?? []);
+        $columnParams = $info + ($this->columnClassDefaults[$type] ?? []);
         $column = new $columnClass($type, ...$columnParams);
 
         if (array_key_exists('defaultValueRaw', $columnParams)) {
