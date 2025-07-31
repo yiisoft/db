@@ -96,11 +96,21 @@ class Quoter implements QuoterInterface
         return $name;
     }
 
+    /** @psalm-return array{schemaName?: string, name: string} */
     public function getTableNameParts(string $name): array
     {
-        $parts = array_slice(explode('.', $name), -2, 2);
+        $parts = array_reverse(array_slice(explode('.', $name), -2, 2));
+        /** @var string[] */
+        $parts = array_map($this->unquoteSimpleTableName(...), $parts);
 
-        return array_map($this->unquoteSimpleTableName(...), $parts);
+        if (!isset($parts[1])) {
+            return ['name' => $parts[0]];
+        }
+
+        return [
+            'schemaName' => $parts[1],
+            'name' => $parts[0],
+        ];
     }
 
     public function ensureNameQuoted(string $name): string
