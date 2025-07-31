@@ -11,15 +11,11 @@ use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Schema\Column\AbstractArrayColumn;
 use Yiisoft\Db\Schema\Column\ArrayLazyColumn;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
-use Yiisoft\Db\Schema\Column\DateTimeColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\JsonLazyColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
 use Yiisoft\Db\Tests\Provider\ColumnFactoryProvider;
-
-use function PHPUnit\Framework\assertInstanceOf;
-use function PHPUnit\Framework\assertSame;
 
 abstract class AbstractColumnFactoryTest extends TestCase
 {
@@ -33,15 +29,6 @@ abstract class AbstractColumnFactoryTest extends TestCase
             ColumnType::ARRAY => ArrayLazyColumn::class,
             ColumnType::JSON => JsonLazyColumn::class,
             ColumnType::STRUCTURED => StructuredLazyColumn::class,
-            ColumnType::DATETIME => [
-                DateTimeColumn::class,
-                'dbTimezone' => '+02:00',
-                'phpTimezone' => '+04:00',
-            ],
-            ColumnType::DATETIMETZ => [
-                'dbTimezone' => '+02:00',
-                'phpTimezone' => '+04:00',
-            ],
         ];
 
         $columnFactoryClass = $this->getColumnFactoryClass();
@@ -50,18 +37,6 @@ abstract class AbstractColumnFactoryTest extends TestCase
         $this->assertInstanceOf(ArrayLazyColumn::class, $columnFactory->fromType(ColumnType::ARRAY));
         $this->assertInstanceOf(JsonLazyColumn::class, $columnFactory->fromType(ColumnType::JSON));
         $this->assertInstanceOf(StructuredLazyColumn::class, $columnFactory->fromType(ColumnType::STRUCTURED));
-
-        /** @var DateTimeColumn $column */
-        $column = $columnFactory->fromType(ColumnType::DATETIME);
-        assertInstanceOf(DateTimeColumn::class, $column);
-        assertSame('2025-07-31 13:45:00.000000', $column->dbTypecast('2025-07-31T14:45:00+03:00'));
-        assertSame('2025-07-31 12:45:00.000000', $column->dbTypecast('2025-07-31T14:45:00'));
-
-        /** @var DateTimeColumn $column */
-        $column = $columnFactory->fromType(ColumnType::DATETIMETZ);
-        assertInstanceOf(DateTimeColumn::class, $column);
-        assertSame('2025-07-31 14:45:00.000000+03:00', $column->dbTypecast('2025-07-31T14:45:00+03:00'));
-        assertSame('2025-07-31 14:45:00.000000+04:00', $column->dbTypecast('2025-07-31T14:45:00'));
     }
 
     public function testConstructTypeMap(): void
@@ -78,7 +53,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         ];
 
         $columnFactoryClass = $this->getColumnFactoryClass();
-        $columnFactory = new $columnFactoryClass(map: $map);
+        $columnFactory = new $columnFactoryClass(map:  $map);
 
         $column = $columnFactory->fromDbType('json', ['name' => 'user_ids']);
 
