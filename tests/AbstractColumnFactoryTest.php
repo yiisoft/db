@@ -32,7 +32,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         ];
 
         $columnFactoryClass = $this->getColumnFactoryClass();
-        $columnFactory = new $columnFactoryClass($classMap);
+        $columnFactory = new $columnFactoryClass(classMap: $classMap);
 
         $this->assertInstanceOf(ArrayLazyColumn::class, $columnFactory->fromType(ColumnType::ARRAY));
         $this->assertInstanceOf(JsonLazyColumn::class, $columnFactory->fromType(ColumnType::JSON));
