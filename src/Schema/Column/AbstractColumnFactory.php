@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Closure;
+use InvalidArgumentException;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
@@ -13,8 +14,10 @@ use Yiisoft\Db\Syntax\ColumnDefinitionParser;
 use function array_diff_key;
 use function array_key_exists;
 use function array_merge;
+use function is_array;
 use function is_callable;
 use function is_numeric;
+use function is_string;
 use function preg_match;
 use function str_replace;
 use function substr;
@@ -26,7 +29,8 @@ use const PHP_INT_SIZE;
  *
  * @psalm-import-type ColumnInfo from ColumnFactoryInterface
  *
- * @psalm-type ColumnClassMap = array<ColumnType::*, class-string<ColumnInterface>|Closure(ColumnType::*, ColumnInfo): (class-string<ColumnInterface>|null)>
+ * @psalm-type ColumnClassNameDefinition = class-string<ColumnInterface>|Closure(ColumnType::*, ColumnInfo): (class-string<ColumnInterface>|null)
+ * @psalm-type ColumnClassMap = array<ColumnType::*, ColumnClassNameDefinition>
  * @psalm-type TypeMap = array<string, ColumnType::*|Closure(string, ColumnInfo): (ColumnType::*|null)>
  */
 abstract class AbstractColumnFactory implements ColumnFactoryInterface
@@ -39,24 +43,33 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     protected const TYPE_MAP = [];
 
     /**
-     * @param array $classMap The mapping from abstract column types to the classes implementing them. Where
-     * array keys are abstract column types and values are corresponding class names or PHP callable with the following
-     * signature: `function (string $type, array &$info): string|null`. The callable should return the class name based
-     * on the abstract type and the column information or `null` if the class name cannot be determined.
-     * @param array $typeMap The mapping from physical column types to abstract column types. Where array keys
+     * @psalm-var ColumnClassMap
+     */
+    protected readonly array $classMap;
+
+    /**
+     * @psalm-var array<ColumnType::*, array>
+     */
+    protected readonly array $classDefaults;
+
+    /**
+     * @param array $map The mapping from physical column types to abstract column types. Where array keys
      * are physical column types and values are corresponding abstract column types or PHP callable with the following
      * signature: `function (string $dbType, array &$info): string|null`. The callable should return the abstract type
      * based on the physical type and the column information or `null` if the abstract type cannot be determined.
+     * @param array $definitions Definitions of column classes that implement the abstract column types.
+     * Keys are abstract column types represented by {@see ColumnType::*}.
+     * Values can be:
+     *  - a string specifying the class name that implements {@see ColumnInterface}.
+     *  - a callable with the signature `Closure(string $type, array &$info): (class-string<ColumnInterface>|null)` that
+     *    returns the class name based on the column type and metadata.
+     *  - an array where:
+     *      - index `0` (optional) contains a class name or a callable as described above.
+     *      - remaining elements provide default parameters for the column class constructor.
      *
      * For example:
      *
-     * ```php
-     * $classMap = [
-     *     ColumnType::ARRAY => ArrayLazyColumn::class,
-     *     ColumnType::JSON => JsonLazyColumn::class,
-     * ];
-     *
-     * $typeMap = [
+     * $map = [
      *     'json' => function (string $dbType, array &$info): string|null {
      *         if (str_ends_with($info['name'], '_ids')) {
      *             $info['column'] = new IntegerColumn();
@@ -67,18 +80,43 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      *     },
      * ];
      *
-     * $columnFactory = new ColumnFactory($classMap, $typeMap);
+     * ```php
+     * $definitions = [
+     *     ColumnType::ARRAY => ArrayLazyColumn::class,
+     *     ColumnType::JSON => JsonLazyColumn::class,
+     *     ColumnType::DATETIME => [
+     *         'dbTimezone' => '+02:00',
+     *         'phpTimezone' => 'Europe/Berlin',
+     *     ],
+     * ];
+     *
+     * $columnFactory = new ColumnFactory($map, $definitions);
      * ```
      *
-     * @psalm-param TypeMap $typeMap
-     * @psalm-param ColumnClassMap $classMap
-     * @psalm-param array<ColumnType::*, ColumnInfo> $classDefaults
+     * @psalm-param TypeMap $map
+     * @psalm-param array<ColumnType::*, ColumnClassNameDefinition|(array{0?:ColumnClassNameDefinition, ...})> $definitions
      */
     public function __construct(
-        protected array $typeMap = [],
-        protected array $classMap = [],
-        protected array $classDefaults = [],
+        protected array $map = [],
+        array $definitions = [],
     ) {
+        $classMap = [];
+        $classDefaults = [];
+        foreach ($definitions as $type => $value) {
+            if (is_array($value)) {
+                if (array_key_exists(0, $value)) {
+                    $classMap[$type] = $value[0];
+                    unset($value[0]);
+                }
+                if (!empty($value)) {
+                    $classDefaults[$type] = $value;
+                }
+                continue;
+            }
+            $classMap[$type] = $value;
+        }
+        $this->classMap = $classMap;
+        $this->classDefaults = $classDefaults;
     }
 
     public function fromDbType(string $dbType, array $info = []): ColumnInterface
@@ -86,7 +124,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
         $info['dbType'] = $dbType;
         /** @psalm-var ColumnType::* $type */
         $type = $info['type']
-            ?? $this->mapType($this->typeMap, $dbType, $info)
+            ?? $this->mapType($this->map, $dbType, $info)
             ?? $this->getType($dbType, $info);
 
         return $this->fromType($type, $info);
@@ -174,8 +212,8 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
         $columnParams = $info + ($this->classDefaults[$type] ?? []);
         $column = new $columnClass($type, ...$columnParams);
 
-        if (array_key_exists('defaultValueRaw', $columnParams)) {
-            $column->defaultValue($this->normalizeDefaultValue($columnParams['defaultValueRaw'], $column));
+        if (array_key_exists('defaultValueRaw', $info)) {
+            $column->defaultValue($this->normalizeDefaultValue($info['defaultValueRaw'], $column));
         }
 
         return $column;
