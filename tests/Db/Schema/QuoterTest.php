@@ -82,7 +82,7 @@ final class QuoterTest extends AbstractQuoterTest
     {
         $quoter = new Quoter('`', '"');
 
-        $this->assertSame(['schema', 'table'], $quoter->getTableNameParts('"schema"."table"'));
+        $this->assertSame(['schemaName' => 'schema', 'name' => 'table'], $quoter->getTableNameParts('"schema"."table"'));
     }
 
     public function testQuoteSqlWithTablePrefix(): void
