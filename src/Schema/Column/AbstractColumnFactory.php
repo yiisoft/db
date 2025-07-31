@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Closure;
-use InvalidArgumentException;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
@@ -17,7 +16,6 @@ use function array_merge;
 use function is_array;
 use function is_callable;
 use function is_numeric;
-use function is_string;
 use function preg_match;
 use function str_replace;
 use function substr;
