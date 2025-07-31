@@ -7,8 +7,6 @@ namespace Yiisoft\Db\Tests\Db\Schema\Column;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Schema\Column\ArrayLazyColumn;
 use Yiisoft\Db\Schema\Column\DateTimeColumn;
-use Yiisoft\Db\Schema\Column\JsonLazyColumn;
-use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
 use Yiisoft\Db\Tests\AbstractColumnFactoryTest;
 use Yiisoft\Db\Tests\Support\Stub\ColumnFactory;
 use Yiisoft\Db\Tests\Support\TestTrait;
