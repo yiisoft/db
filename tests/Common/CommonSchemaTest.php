@@ -24,13 +24,7 @@ use Yiisoft\Db\Tests\Provider\SchemaProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 
 use function count;
-use function gettype;
-use function is_array;
-use function json_encode;
-use function ksort;
 use function mb_chr;
-use function str_replace;
-use function strtolower;
 
 abstract class CommonSchemaTest extends AbstractSchemaTest
 {

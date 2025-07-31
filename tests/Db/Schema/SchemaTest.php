@@ -312,7 +312,7 @@ final class SchemaTest extends AbstractSchemaTest
     private function createTableSchemaStub(): TableSchemaInterface
     {
         // defined table T_constraints_1
-        return (new TableSchema('T_constraints_1','dbo'))
+        return (new TableSchema('T_constraints_1', 'dbo'))
             ->columns([
                 'C_id' => ColumnBuilder::primaryKey()->dbType('int'),
                 'C_not_null' => ColumnBuilder::integer()->dbType('int'),

@@ -49,7 +49,7 @@ abstract class AbstractSchema implements SchemaInterface
     private array $schemaNames = [];
     /** @var string[][] */
     private array $tableNames = [];
-    /** @var (Check[]|DefaultValue[]|ForeignKey[]|Index[]|Index|TableSchemaInterface|null)[][] */
+    /** @var (Check[]|DefaultValue[]|ForeignKey[]|Index|Index[]|TableSchemaInterface|null)[][] */
     private array $tableMetadata = [];
 
     public function __construct(protected ConnectionInterface $db, private SchemaCache $schemaCache)
@@ -386,7 +386,7 @@ abstract class AbstractSchema implements SchemaInterface
      * @param bool $refresh Whether to fetch the latest available table metadata. If this is `false`, cached data may be
      * returned if available.
      *
-     * @return Check[][]|DefaultValue[][]|ForeignKey[][]|Index[][]|Index[]|TableSchemaInterface[] The metadata of the given type for all
+     * @return Check[][]|DefaultValue[][]|ForeignKey[][]|Index[]|Index[][]|TableSchemaInterface[] The metadata of the given type for all
      * tables in the given schema.
      */
     protected function getSchemaMetadata(string $schema, string $type, bool $refresh): array
@@ -420,7 +420,7 @@ abstract class AbstractSchema implements SchemaInterface
      * @param string $type The metadata type.
      * @param bool $refresh whether to reload the table metadata even if it's found in the cache.
      *
-     * @return Check[]|DefaultValue[]|ForeignKey[]|Index[]|Index|TableSchemaInterface|null The metadata of the given type
+     * @return Check[]|DefaultValue[]|ForeignKey[]|Index|Index[]|TableSchemaInterface|null The metadata of the given type
      * for the given table.
      *
      * @psalm-return (
@@ -469,7 +469,7 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * This method returns the desired metadata type for table name (with refresh if needed).
      *
-     * @return Check[]|DefaultValue[]|ForeignKey[]|Index[]|Index|TableSchemaInterface|null
+     * @return Check[]|DefaultValue[]|ForeignKey[]|Index|Index[]|TableSchemaInterface|null
      */
     protected function getTableTypeMetadata(
         string $type,
@@ -532,7 +532,7 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $rawName The raw table name.
      * @param string $type The metadata type.
-     * @param Check[]|DefaultValue[]|ForeignKey[]|Index[]|Index|TableSchemaInterface|null $data The metadata to set.
+     * @param Check[]|DefaultValue[]|ForeignKey[]|Index|Index[]|TableSchemaInterface|null $data The metadata to set.
      */
     protected function setTableMetadata(
         string $rawName,
@@ -564,7 +564,7 @@ abstract class AbstractSchema implements SchemaInterface
         }
 
         unset($metadata[self::CACHE_VERSION]);
-        /** @var (Check[]|DefaultValue[]|ForeignKey[]|Index[]|Index|TableSchemaInterface|null)[] $metadata */
+        /** @var (Check[]|DefaultValue[]|ForeignKey[]|Index|Index[]|TableSchemaInterface|null)[] $metadata */
         $this->tableMetadata[$rawName] = $metadata;
     }
 

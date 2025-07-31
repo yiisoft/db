@@ -16,8 +16,6 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbUuidHelper;
@@ -32,9 +30,7 @@ use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
 use function array_filter;
-use function array_key_first;
 use function is_string;
-use function reset;
 use function setlocale;
 use function str_starts_with;
 
