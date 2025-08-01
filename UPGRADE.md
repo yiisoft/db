@@ -265,3 +265,4 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change namespace of condition and condition builder classes;
 - Remove `AbstractDsn` and `AbstractDsnSocket` classes and `DsnInterface` interface;
 - Remove `Hash` condition;
+- Remove `AbstractTableSchema` and add `TableSchema` instead;
