@@ -296,9 +296,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const TYPE_JSON = 'json';
 
     /**
-     * @return string|null The default schema name.
+     * @return string The default schema name.
      */
-    public function getDefaultSchema(): string|null;
+    public function getDefaultSchema(): string;
 
     /**
      * Determines the SQL data type for the given PHP data value.
@@ -356,6 +356,8 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param TableSchemaInterface $table The table metadata.
      *
      * @return string[][] All unique indexes for the given table.
+     *
+     * @deprecated Use {@see getTableUniques()}. Will be removed in version 3.0
      */
     public function findUniqueIndexes(TableSchemaInterface $table): array;
 

@@ -17,7 +17,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
  *
  * ```php
  * $expression = new Expression('NOW()');
- * $now = (new \Yiisoft\Db\Query\Query)->select($expression)->scalar();  // SELECT NOW();
+ * $now = $db->select($expression)->scalar();  // SELECT NOW();
  * echo $now; // prints the current date
  * ```
  *

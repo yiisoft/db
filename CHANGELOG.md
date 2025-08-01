@@ -113,6 +113,8 @@
 - Chg #1002: Remove specific condition interfaces (@vjik)
 - Chg #1003, #1006: Refactor namespace of condition objects and use promoted properties instead of getters (@vjik)
 - Enh #1010: Improve `Quoter::getTableNameParts()` method (@Tigrov)
+- Enh #1011: Refactor `TableSchemaInterface` and `AbstractSchema` (@Tigrov)
+- Enh #1011: Remove `AbstractTableSchema` and add `TableSchema` instead (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

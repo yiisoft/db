@@ -16,8 +16,6 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbUuidHelper;
@@ -38,11 +36,6 @@ use function str_starts_with;
 
 abstract class CommonCommandTest extends AbstractCommandTest
 {
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testAddCheck(): void
     {
         $db = $this->getConnection();
@@ -62,17 +55,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertMatchesRegularExpression(
             '/^.*int1.*>.*1.*$/',
-            $schema->getTableChecks('{{test_ck}}', true)[0]->expression
+            $schema->getTableChecks('{{test_ck}}')['test_ck_constraint']->expression
         );
 
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testAddColumn(): void
     {
         $db = $this->getConnection(true);
@@ -89,11 +77,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testAddCommentOnColumn(): void
     {
         $db = $this->getConnection(true);
@@ -111,11 +94,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testAddCommentOnTable(): void
     {
         $db = $this->getConnection(true);
@@ -145,11 +123,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testAddDefaultValue(): void
     {
         $db = $this->getConnection();
@@ -163,25 +136,19 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable('{{test_def}}', ['int1' => ColumnType::INTEGER])->execute();
 
-        $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}', true));
+        $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}'));
 
         $command->addDefaultValue('{{test_def}}', '{{test_def_constraint}}', 'int1', 41)->execute();
 
         $this->assertMatchesRegularExpression(
             '/^.*41.*$/',
-            $schema->getTableDefaultValues('{{test_def}}', true)[0]->value,
+            $schema->getTableDefaultValues('{{test_def}}')['test_def_constraint']->value,
         );
 
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addForeignKey
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
+    #[DataProviderExternal(CommandProvider::class, 'addForeignKey')]
     public function testAddForeignKey(
         string $name,
         string $tableName,
@@ -210,10 +177,10 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ],
         )->execute();
 
-        $this->assertEmpty($schema->getTableForeignKeys($tableName, true));
+        $this->assertEmpty($schema->getTableForeignKeys($tableName));
 
         $command->addForeignKey($tableName, $name, $column1, $tableName, $column2)->execute();
-        $foreignKey = $schema->getTableForeignKeys($tableName, true)[0];
+        $foreignKey = $schema->getTableForeignKeys($tableName)[$db->getQuoter()->getRawTableName($name)];
 
         $this->assertSame($expectedName, $foreignKey->name);
 
@@ -232,13 +199,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addPrimaryKey
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
+    #[DataProviderExternal(CommandProvider::class, 'addPrimaryKey')]
     public function testAddPrimaryKey(string $name, string $tableName, array|string $column): void
     {
         $db = $this->getConnection();
@@ -252,7 +213,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable($tableName, ['int1' => 'integer not null', 'int2' => 'integer not null'])->execute();
 
-        $this->assertNull($schema->getTablePrimaryKey($tableName, true));
+        $this->assertNull($schema->getTablePrimaryKey($tableName));
 
         $db->createCommand()->addPrimaryKey($tableName, $name, $column)->execute();
 
@@ -260,18 +221,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $column = [$column];
         }
 
-        $this->assertSame($column, $schema->getTablePrimaryKey($tableName, true)->columnNames);
+        $this->assertSame($column, $schema->getTablePrimaryKey($tableName)->columnNames);
 
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addUnique
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
+    #[DataProviderExternal(CommandProvider::class, 'addUnique')]
     public function testAddUnique(string $name, string $tableName, array|string $column): void
     {
         $db = $this->getConnection();
@@ -285,7 +240,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable($tableName, ['int1' => 'integer not null', 'int2' => 'integer not null'])->execute();
 
-        $this->assertEmpty($schema->getTableUniques($tableName, true));
+        $this->assertEmpty($schema->getTableUniques($tableName));
 
         $command->addUnique($tableName, $name, $column)->execute();
 
@@ -293,7 +248,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $column = [$column];
         }
 
-        $this->assertSame($column, $schema->getTableUniques($tableName, true)[0]->columnNames);
+        $unique = $schema->getTableUniques($tableName)[$db->getQuoter()->getRawTableName($name)];
+
+        $this->assertSame($column, $unique->columnNames);
 
         $db->close();
     }
@@ -329,10 +286,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
      * Ensure double is inserted with `.` decimal separator.
      *
      * @link https://github.com/yiisoft/yii2/issues/6526
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
      */
     public function testBatchInsertDataTypesLocale(): void
     {
@@ -399,11 +352,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testBatchInsertWithDuplicates(): void
     {
         $db = $this->getConnection(true);
@@ -429,11 +377,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testBatchInsertWithManyData(): void
     {
         $db = $this->getConnection(true);
@@ -457,11 +400,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testBatchInsertWithYield(): void
     {
         $db = $this->getConnection(true);
@@ -501,7 +439,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertCount($count + 1, $schema->getTableIndexes($tableName));
 
-        $index = array_filter($schema->getTableIndexes($tableName), static fn ($index) => !$index->isPrimaryKey)[0];
+        $index = array_filter($schema->getTableIndexes($tableName), static fn ($index) => !$index->isPrimaryKey)[$indexName];
 
         $this->assertSame($indexColumns, $index->columnNames);
 
@@ -514,11 +452,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testCreateTable(): void
     {
         $db = $this->getConnection();
@@ -553,11 +486,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testCreateView(): void
     {
         $db = $this->getConnection();
@@ -594,11 +522,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDataReaderRewindException(): void
     {
         $db = $this->getConnection(true);
@@ -650,11 +573,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDelete(): void
     {
         $db = $this->getConnection(true);
@@ -676,11 +594,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDropCheck(): void
     {
         $db = $this->getConnection();
@@ -694,27 +607,22 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable('{{test_ck}}', ['int1' => 'integer'])->execute();
 
-        $this->assertEmpty($schema->getTableChecks('{{test_ck}}', true));
+        $this->assertEmpty($schema->getTableChecks('{{test_ck}}'));
 
         $command->addCheck('{{test_ck}}', '{{test_ck_constraint}}', '[[int1]] > 1')->execute();
 
         $this->assertMatchesRegularExpression(
             '/^.*int1.*>.*1.*$/',
-            $schema->getTableChecks('{{test_ck}}', true)[0]->expression,
+            $schema->getTableChecks('{{test_ck}}')['test_ck_constraint']->expression,
         );
 
         $command->dropCheck('{{test_ck}}', '{{test_ck_constraint}}')->execute();
 
-        $this->assertEmpty($schema->getTableChecks('{{test_ck}}', true));
+        $this->assertEmpty($schema->getTableChecks('{{test_ck}}'));
 
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDropColumn(): void
     {
         $db = $this->getConnection();
@@ -742,11 +650,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDropCommentFromColumn(): void
     {
         $db = $this->getConnection(true);
@@ -769,11 +672,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDropCommentFromTable(): void
     {
         $db = $this->getConnection(true);
@@ -795,11 +693,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDropDefaultValue(): void
     {
         $db = $this->getConnection();
@@ -819,21 +712,16 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertMatchesRegularExpression(
             '/^.*41.*$/',
-            $schema->getTableDefaultValues('{{test_def}}', true)[0]->value,
+            $schema->getTableDefaultValues('{{test_def}}')['test_def_constraint']->value,
         );
 
         $command->dropDefaultValue('{{test_def}}', '{{test_def_constraint}}')->execute();
 
-        $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}', true));
+        $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}'));
 
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDropForeignKey(): void
     {
         $db = $this->getConnection();
@@ -860,11 +748,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDropIndex(): void
     {
         $db = $this->getConnection();
@@ -878,25 +761,21 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable('{{test_idx}}', ['int1' => 'integer not null', 'int2' => 'integer not null'])->execute();
 
-        $this->assertEmpty($schema->getTableIndexes('{[test_idx}}', true));
+        $this->assertEmpty($schema->getTableIndexes('{[test_idx}}'));
 
         $command->createIndex('{{test_idx}}', '{{test_idx_constraint}}', ['int1', 'int2'], 'UNIQUE')->execute();
+        $index = $schema->getTableIndexes('{{test_idx}}')['test_idx_constraint'];
 
-        $this->assertSame(['int1', 'int2'], $schema->getTableIndexes('{{test_idx}}', true)[0]->columnNames);
-        $this->assertTrue($schema->getTableIndexes('{{test_idx}}', true)[0]->isUnique);
+        $this->assertSame(['int1', 'int2'], $index->columnNames);
+        $this->assertTrue($index->isUnique);
 
         $command->dropIndex('{{test_idx}}', '{{test_idx_constraint}}')->execute();
 
-        $this->assertEmpty($schema->getTableIndexes('{{test_idx}}', true));
+        $this->assertEmpty($schema->getTableIndexes('{{test_idx}}'));
 
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDropPrimaryKey(): void
     {
         $db = $this->getConnection();
@@ -1017,11 +896,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDropUnique(): void
     {
         $db = $this->getConnection();
@@ -1035,24 +909,19 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable('{{test_uq}}', ['int1' => 'integer not null', 'int2' => 'integer not null'])->execute();
 
-        $this->assertEmpty($schema->getTableUniques('{{test_uq}}', true));
+        $this->assertEmpty($schema->getTableUniques('{{test_uq}}'));
 
         $command->addUnique('{{test_uq}}', '{{test_uq_constraint}}', ['int1'])->execute();
 
-        $this->assertSame(['int1'], $schema->getTableUniques('{{test_uq}}', true)[0]->columnNames);
+        $this->assertSame(['int1'], $schema->getTableUniques('{{test_uq}}')['test_uq_constraint']->columnNames);
 
         $command->dropUnique('{{test_uq}}', '{{test_uq_constraint}}')->execute();
 
-        $this->assertEmpty($schema->getTableUniques('{{test_uq}}', true));
+        $this->assertEmpty($schema->getTableUniques('{{test_uq}}'));
 
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDropView(): void
     {
         $db = $this->getConnection(true);
@@ -1071,11 +940,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testExecute(): void
     {
         $db = $this->getConnection(true);
@@ -1110,11 +974,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->execute();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testExecuteWithoutSql(): void
     {
         $db = $this->getConnection();
@@ -1230,12 +1089,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidCallException
-     * @throws Throwable
-     */
     public function testsInsertQueryAsColumnValue(): void
     {
         $db = $this->getConnection(true);
@@ -1284,11 +1137,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testInsertSelect(): void
     {
         $db = $this->getConnection(true);
@@ -1335,11 +1183,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testInsertSelectAlias(): void
     {
         $db = $this->getConnection(true);
@@ -1388,12 +1231,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     /**
      * Test INSERT INTO ... SELECT SQL statement with wrong query object.
-     *
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::invalidSelectColumns
-     *
-     * @throws Exception
-     * @throws Throwable
      */
+    #[DataProviderExternal(CommandProvider::class, 'invalidSelectColumns')]
     public function testInsertSelectFailed(array|ExpressionInterface|string $invalidSelectColumns): void
     {
         $db = $this->getConnection();
@@ -1408,11 +1247,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->insert('{{customer}}', $query)->execute();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testInsertToBlob(): void
     {
         $db = $this->getConnection(true);
@@ -1511,11 +1345,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testIntegrityViolation(): void
     {
         $db = $this->getConnection(true);
@@ -1531,12 +1360,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->execute();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidCallException
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testNoTablenameReplacement(): void
     {
         $db = $this->getConnection(true);
@@ -1581,11 +1404,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testQuery(): void
     {
         $db = $this->getConnection(true);
@@ -1617,11 +1435,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->query();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testQueryAll(): void
     {
         $db = $this->getConnection(true);
@@ -1658,11 +1471,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testQueryColumn(): void
     {
         $db = $this->getConnection(true);
@@ -1698,11 +1506,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testQueryOne(): void
     {
         $db = $this->getConnection(true);
@@ -1734,11 +1537,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testQueryScalar(): void
     {
         $db = $this->getConnection(true);
@@ -1768,11 +1566,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testRenameColumn(): void
     {
         $db = $this->getConnection(true);
@@ -1788,11 +1581,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testRenameTable(): void
     {
         $db = $this->getConnection(true);
@@ -1898,12 +1686,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::update
-     *
-     * @throws Exception
-     * @throws Throwable
-     */
+    #[DataProviderExternal(CommandProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
@@ -1964,14 +1747,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         ], $command->getParams());
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::upsert
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws Throwable
-     */
+    #[DataProviderExternal(CommandProvider::class, 'upsert')]
     public function testUpsert(array $firstData, array $secondData): void
     {
         $db = $this->getConnection(true);
@@ -2026,11 +1802,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->prepare();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     protected function performAndCompareUpsertResult(PdoConnectionInterface $db, array $data): void
     {
         $params = [];
