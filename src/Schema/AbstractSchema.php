@@ -103,7 +103,7 @@ abstract class AbstractSchema implements SchemaInterface
     abstract protected function loadTableDefaultValues(string $tableName): array;
 
     /**
-     * Loads all foreign keys for the given table indexed by constraint name.
+     * Loads all foreign keys for the given table.
      *
      * @param string $tableName The table name.
      *
@@ -500,7 +500,7 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * Find and initialize table constraints.
      *
-     * @param TableSchemaInterface $table The table metadata
+     * @param TableSchemaInterface $table The table metadata.
      */
     protected function findConstraints(TableSchemaInterface $table): void
     {

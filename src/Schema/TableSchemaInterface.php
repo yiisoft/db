@@ -27,14 +27,14 @@ interface TableSchemaInterface
     public function checks(Check ...$checks): static;
 
     /**
-     * Set one column metadata of this table.
+     * Set metadata for a column specified.
      *
      * @param string $name The column name.
      */
     public function column(string $name, ColumnInterface $column): static;
 
     /**
-     * Set columns metadata of this table, indexed by column names.
+     * Set metadata for multiple columns.
      *
      * @param ColumnInterface[] $columns The columns metadata indexed by column names.
      * @psalm-param array<string, ColumnInterface> $columns
@@ -42,7 +42,7 @@ interface TableSchemaInterface
     public function columns(array $columns): static;
 
     /**
-     * Set the comment of the table or `null` if no comment.
+     * Set the comment of the table or `null` if there is no comment.
      * Not all DBMS support this.
      */
     public function comment(string|null $comment): static;
@@ -114,7 +114,7 @@ interface TableSchemaInterface
     public function getForeignKeys(): array;
 
     /**
-     * Returns the full name of this table includes the schema name.
+     * Returns the full name of this table including the schema name.
      */
     public function getFullName(): string;
 
