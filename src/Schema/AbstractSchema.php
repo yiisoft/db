@@ -227,25 +227,25 @@ abstract class AbstractSchema implements SchemaInterface
     public function getTableChecks(string $name, bool $refresh = false): array
     {
         /** @var Check[] */
-        return $this->getTableMetadata($this->clarifyFullName($name), SchemaInterface::CHECKS, $refresh);
+        return $this->getTableMetadata($this->clearFullName($name), SchemaInterface::CHECKS, $refresh);
     }
 
     public function getTableDefaultValues(string $name, bool $refresh = false): array
     {
         /** @var DefaultValue[] */
-        return $this->getTableMetadata($this->clarifyFullName($name), SchemaInterface::DEFAULT_VALUES, $refresh);
+        return $this->getTableMetadata($this->clearFullName($name), SchemaInterface::DEFAULT_VALUES, $refresh);
     }
 
     public function getTableForeignKeys(string $name, bool $refresh = false): array
     {
         /** @var ForeignKey[] */
-        return $this->getTableMetadata($this->clarifyFullName($name), SchemaInterface::FOREIGN_KEYS, $refresh);
+        return $this->getTableMetadata($this->clearFullName($name), SchemaInterface::FOREIGN_KEYS, $refresh);
     }
 
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
         /** @var Index[] */
-        return $this->getTableMetadata($this->clarifyFullName($name), SchemaInterface::INDEXES, $refresh);
+        return $this->getTableMetadata($this->clearFullName($name), SchemaInterface::INDEXES, $refresh);
     }
 
     public function getTableNames(string $schema = '', bool $refresh = false): array
@@ -270,7 +270,7 @@ abstract class AbstractSchema implements SchemaInterface
 
     public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null
     {
-        $rawName = $this->clarifyFullName($name);
+        $rawName = $this->clearFullName($name);
 
         if ($refresh) {
             // Some constraints are loading and caching together.
@@ -312,7 +312,7 @@ abstract class AbstractSchema implements SchemaInterface
 
     public function refreshTableSchema(string $name): void
     {
-        $rawName = $this->clarifyFullName($name);
+        $rawName = $this->clearFullName($name);
 
         unset($this->tableMetadata[$rawName]);
 
@@ -489,10 +489,10 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * Clarifies the full name. Removes the schema name if it is the default schema name, removes curly brackets
+     * Clears the full name. Removes the schema name if it is the default schema name, removes curly brackets
      * from the name, and replaces the percentage character '%' with {@see ConnectionInterface::getTablePrefix()}.
      */
-    protected function clarifyFullName(string $fullName): string
+    protected function clearFullName(string $fullName): string
     {
         return $this->resolveFullName(...$this->db->getQuoter()->getTableNameParts($fullName));
     }
