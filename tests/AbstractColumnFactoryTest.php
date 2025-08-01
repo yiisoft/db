@@ -25,14 +25,14 @@ abstract class AbstractColumnFactoryTest extends TestCase
 
     public function testConstructColumnClassMap(): void
     {
-        $classMap = [
+        $definitions = [
             ColumnType::ARRAY => ArrayLazyColumn::class,
             ColumnType::JSON => JsonLazyColumn::class,
             ColumnType::STRUCTURED => StructuredLazyColumn::class,
         ];
 
         $columnFactoryClass = $this->getColumnFactoryClass();
-        $columnFactory = new $columnFactoryClass($classMap);
+        $columnFactory = new $columnFactoryClass(definitions: $definitions);
 
         $this->assertInstanceOf(ArrayLazyColumn::class, $columnFactory->fromType(ColumnType::ARRAY));
         $this->assertInstanceOf(JsonLazyColumn::class, $columnFactory->fromType(ColumnType::JSON));
@@ -41,7 +41,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
 
     public function testConstructTypeMap(): void
     {
-        $typeMap = [
+        $map = [
             'json' => function (string $dbType, array &$info): string|null {
                 if (str_ends_with($info['name'], '_ids')) {
                     $info['column'] = new IntegerColumn();
@@ -53,7 +53,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         ];
 
         $columnFactoryClass = $this->getColumnFactoryClass();
-        $columnFactory = new $columnFactoryClass(typeMap:  $typeMap);
+        $columnFactory = new $columnFactoryClass(map:  $map);
 
         $column = $columnFactory->fromDbType('json', ['name' => 'user_ids']);
 
