@@ -57,6 +57,10 @@ final class StringableStream implements Stringable
      */
     public function __toString(): string
     {
+        /**
+         * @psalm-suppress PossiblyFalsePropertyAssignmentValue, PossiblyInvalidArgument
+         * @var string
+         */
         return match (gettype($this->value)) {
             GettypeResult::RESOURCE => $this->value = stream_get_contents($this->value),
             GettypeResult::RESOURCE_CLOSED => throw new InvalidArgumentException('Resource is closed.'),
