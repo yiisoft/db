@@ -58,7 +58,6 @@ class LikeBuilder implements ExpressionBuilderInterface
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $values = $expression->value;
-        $escapingReplacements = $expression->escape ? $this->escapingReplacements : null;
 
         [$andor, $not, $operator] = $this->parseOperator($expression);
 
@@ -76,7 +75,7 @@ class LikeBuilder implements ExpressionBuilderInterface
 
         /** @psalm-var list<string|ExpressionInterface> $values */
         foreach ($values as $value) {
-            $placeholderName = $this->preparePlaceholderName($value, $escapingReplacements, $params);
+            $placeholderName = $this->preparePlaceholderName($value, $expression, $params);
             $parts[] = "$column $operator $placeholderName$this->escapeSql";
         }
 
@@ -91,9 +90,9 @@ class LikeBuilder implements ExpressionBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    protected function prepareColumn(Like $expression, array &$params): string
+    protected function prepareColumn(Like $condition, array &$params): string
     {
-        $column = $expression->column;
+        $column = $condition->column;
 
         if ($column instanceof ExpressionInterface) {
             return $this->queryBuilder->buildExpression($column, $params);
@@ -117,7 +116,7 @@ class LikeBuilder implements ExpressionBuilderInterface
      */
     protected function preparePlaceholderName(
         string|ExpressionInterface $value,
-        array|null $escapingReplacements,
+        Like $condition,
         array &$params,
     ): string {
         if ($value instanceof ExpressionInterface) {
@@ -125,9 +124,9 @@ class LikeBuilder implements ExpressionBuilderInterface
         }
         return $this->queryBuilder->bindParam(
             new Param(
-                $escapingReplacements === null
-                    ? $value
-                    : ('%' . strtr($value, $escapingReplacements) . '%'),
+                $condition->escape
+                    ? ('%' . strtr($value, $this->escapingReplacements) . '%')
+                    : $value,
                 DataType::STRING,
             ),
             $params
@@ -141,9 +140,9 @@ class LikeBuilder implements ExpressionBuilderInterface
      *
      * @psalm-return array{0: string, 1: bool, 2: string}
      */
-    protected function parseOperator(Like $expression): array
+    protected function parseOperator(Like $condition): array
     {
-        $operator = strtoupper($expression->operator);
+        $operator = strtoupper($condition->operator);
         if (!preg_match('/^(AND |OR |)((NOT |)I?LIKE)/', $operator, $matches)) {
             throw new InvalidArgumentException("Invalid operator in like condition: \"$operator\"");
         }
