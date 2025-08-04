@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Rector\CodeQuality\Rector\Class_\InlineConstructorDefaultToPropertyRector;
 use Rector\Config\RectorConfig;
 use Rector\Php74\Rector\Property\RestoreDefaultNullToNullableTypePropertyRector;
+use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Php80\Rector\Class_\StringableForToStringRector;
 use Rector\Php80\Rector\Ternary\GetDebugTypeRector;
 use Rector\Php81\Rector\Property\ReadOnlyPropertyRector;
@@ -20,6 +21,9 @@ return RectorConfig::configure()
         InlineConstructorDefaultToPropertyRector::class,
     ])
     ->withSkip([
+        ClassPropertyAssignToConstructorPromotionRector::class => [
+            __DIR__ . '/src/Schema/Data/StringableStream.php',
+        ],
         RestoreDefaultNullToNullableTypePropertyRector::class => [
             __DIR__ . '/src/Expression/CaseExpression.php',
         ],
