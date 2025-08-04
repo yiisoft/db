@@ -40,7 +40,10 @@ class SchemaProvider
             '1: unique' => [
                 'T_constraints_1',
                 SchemaInterface::UNIQUES,
-                [new Index('CN_unique', ['C_unique'], true)],
+                [
+                    new Index('', ['C_id'], true, true),
+                    new Index('CN_unique', ['C_unique'], true),
+                ],
             ],
             '1: index' => [
                 'T_constraints_1',
@@ -60,7 +63,10 @@ class SchemaProvider
             '2: unique' => [
                 'T_constraints_2',
                 SchemaInterface::UNIQUES,
-                [new Index('CN_constraints_2_multi', ['C_index_2_1', 'C_index_2_2'], true)],
+                [
+                    new Index('CN_pk', ['C_id_1', 'C_id_2'], true, true),
+                    new Index('CN_constraints_2_multi', ['C_index_2_1', 'C_index_2_2'], true),
+                ],
             ],
             '2: index' => [
                 'T_constraints_2',
@@ -107,7 +113,10 @@ class SchemaProvider
             '4: unique' => [
                 'T_constraints_4',
                 SchemaInterface::UNIQUES,
-                [new Index('CN_constraints_4', ['C_col_1', 'C_col_2'], true)],
+                [
+                    new Index('', ['C_id'], true, true),
+                    new Index('CN_constraints_4', ['C_col_1', 'C_col_2'], true),
+                ],
             ],
             '4: check' => ['T_constraints_4', SchemaInterface::CHECKS, []],
             '4: default' => ['T_constraints_4', SchemaInterface::DEFAULT_VALUES, false],

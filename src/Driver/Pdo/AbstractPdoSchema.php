@@ -35,7 +35,7 @@ abstract class AbstractPdoSchema extends AbstractSchema
 
     protected function getCacheKey(string $name): array
     {
-        return [static::class, ...$this->generateCacheKey(), $this->db->getQuoter()->getRawTableName($name)];
+        return [static::class, ...$this->generateCacheKey(), $name];
     }
 
     protected function getCacheTag(): string

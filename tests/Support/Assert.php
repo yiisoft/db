@@ -9,11 +9,19 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionObject;
 use ReflectionProperty;
+use Yiisoft\Db\Constraint\Check;
+use Yiisoft\Db\Constraint\DefaultValue;
+use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Constraint\Index;
 
 use function array_key_exists;
+use function array_values;
 use function is_array;
 use function is_object;
+use function json_encode;
+use function ksort;
 use function ltrim;
+use function strtolower;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -195,5 +203,56 @@ final class Assert extends TestCase
         } while ($reflectionClass = $reflectionClass->getParentClass());
 
         return $properties;
+    }
+
+    public static function constraintsEquals(
+        array|Check|DefaultValue|ForeignKey|Index|null $expected,
+        array|Check|DefaultValue|ForeignKey|Index|null $actual,
+    ): void {
+        if ($expected === null) {
+            self::assertNull($actual);
+            return;
+        }
+
+        if (is_array($expected)) {
+            self::assertIsArray($actual);
+            self::sortConstrains($expected);
+            self::sortConstrains($actual);
+
+            foreach ($expected as $key => $constraint) {
+                self::normalizeConstraints($constraint, $actual[$key]);
+            }
+        } else {
+            self::assertIsObject($actual);
+            self::normalizeConstraints($expected, $actual);
+        }
+
+        self::assertEquals($expected, $actual);
+    }
+
+    private static function sortConstrains(array &$array): void
+    {
+        $sort = [];
+
+        foreach ($array as $constraint) {
+            $key = (array) $constraint;
+            unset($key['name']);
+
+            $sort[strtolower(json_encode($key))] = $constraint;
+        }
+
+        ksort($sort, SORT_STRING);
+        $array = array_values($sort);
+    }
+
+    private static function normalizeConstraints(
+        Check|DefaultValue|ForeignKey|Index $expected,
+        Check|DefaultValue|ForeignKey|Index &$actual,
+    ): void {
+        self::assertInstanceOf($expected::class, $actual);
+
+        if ($expected->name === '') {
+            self::setPropertyValue($actual, 'name', '');
+        }
     }
 }

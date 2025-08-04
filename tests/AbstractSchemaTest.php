@@ -23,7 +23,7 @@ abstract class AbstractSchemaTest extends TestCase
 
         $schema = $db->getSchema();
 
-        $this->assertNull($schema->getDefaultSchema());
+        $this->assertSame('', $schema->getDefaultSchema());
     }
 
     public function testGetDataType(): void
