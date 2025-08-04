@@ -115,6 +115,8 @@
 - Enh #1010: Improve `Quoter::getTableNameParts()` method (@Tigrov)
 - Enh #1011: Refactor `TableSchemaInterface` and `AbstractSchema` (@Tigrov)
 - Enh #1011: Remove `AbstractTableSchema` and add `TableSchema` instead (@Tigrov)
+- Chg #1014: Replace `getEscapingReplacements()`/`setEscapingReplacements()` methods with `escape` constructor parameter 
+  in `Like` condition (@vjik)
 
 ## 1.3.0 March 21, 2024
 

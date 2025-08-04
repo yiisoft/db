@@ -195,6 +195,8 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `AbstractDQLQueryBuilder::hasOffset()` - use `!empty($offset)` instead;
 - `BatchQueryResultInterface::reset()` - use `BatchQueryResultInterface::rewind()` instead;
 - `BatchQueryResult::reset()` - use `BatchQueryResult::rewind()` instead;
+- `Like::getEscapingReplacements()`/`LikeCondition::setEscapingReplacements()` - use `escape` constructor parameter
+  instead;
 
 ### Remove deprecated parameters
 
