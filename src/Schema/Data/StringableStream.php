@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Data;
 
-use InvalidArgumentException;
+use LogicException;
 use Stringable;
 use Yiisoft\Db\Constant\GettypeResult;
 
@@ -28,7 +28,7 @@ use function stream_get_contents;
 final class StringableStream implements Stringable
 {
     /**
-     * @param resource|string $value The resource stream or the result of reading the stream.
+     * @param closed-resource|resource|string $value The resource stream or the result of reading the stream.
      */
     public function __construct(private mixed $value)
     {
@@ -63,7 +63,7 @@ final class StringableStream implements Stringable
          */
         return match (gettype($this->value)) {
             GettypeResult::RESOURCE => $this->value = stream_get_contents($this->value),
-            GettypeResult::RESOURCE_CLOSED => throw new InvalidArgumentException('Resource is closed.'),
+            GettypeResult::RESOURCE_CLOSED => throw new LogicException('Resource is closed.'),
             default => $this->value,
         };
     }

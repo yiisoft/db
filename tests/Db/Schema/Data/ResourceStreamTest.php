@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema\Data;
 
-use InvalidArgumentException;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Schema\Data\StringableStream;
@@ -67,7 +67,7 @@ final class ResourceStreamTest extends TestCase
 
         fclose($resource);
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('Resource is closed.');
 
         (string) $stringableSteam;
