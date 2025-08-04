@@ -45,7 +45,7 @@ class BinaryColumn extends AbstractColumn
 
     public function phpTypecast(mixed $value): StringableStream|string|null
     {
-        /** @var StringableStream|string|null */
+        /** @var string|StringableStream|null */
         return is_resource($value) ? new StringableStream($value) : $value;
     }
 }
