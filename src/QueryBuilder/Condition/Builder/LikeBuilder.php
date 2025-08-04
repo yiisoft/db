@@ -58,11 +58,7 @@ class LikeBuilder implements ExpressionBuilderInterface
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $values = $expression->value;
-        $escape = $expression->getEscapingReplacements();
-
-        if ($escape === []) {
-            $escape = $this->escapingReplacements;
-        }
+        $escapingReplacements = $expression->escape ? $this->escapingReplacements : null;
 
         [$andor, $not, $operator] = $this->parseOperator($expression);
 
@@ -80,7 +76,7 @@ class LikeBuilder implements ExpressionBuilderInterface
 
         /** @psalm-var list<string|ExpressionInterface> $values */
         foreach ($values as $value) {
-            $placeholderName = $this->preparePlaceholderName($value, $expression, $escape, $params);
+            $placeholderName = $this->preparePlaceholderName($value, $escapingReplacements, $params);
             $parts[] = "$column $operator $placeholderName$this->escapeSql";
         }
 
@@ -121,15 +117,19 @@ class LikeBuilder implements ExpressionBuilderInterface
      */
     protected function preparePlaceholderName(
         string|ExpressionInterface $value,
-        Like $expression,
-        array|null $escape,
+        array|null $escapingReplacements,
         array &$params,
     ): string {
         if ($value instanceof ExpressionInterface) {
             return $this->queryBuilder->buildExpression($value, $params);
         }
         return $this->queryBuilder->bindParam(
-            new Param($escape === null ? $value : ('%' . strtr($value, $escape) . '%'), DataType::STRING),
+            new Param(
+                $escapingReplacements === null
+                    ? $value
+                    : ('%' . strtr($value, $escapingReplacements) . '%'),
+                DataType::STRING,
+            ),
             $params
         );
     }

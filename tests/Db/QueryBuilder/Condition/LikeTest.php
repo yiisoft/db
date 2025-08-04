@@ -22,6 +22,7 @@ final class LikeTest extends TestCase
         $this->assertSame('LIKE', $likeCondition->operator);
         $this->assertSame('test', $likeCondition->value);
         $this->assertNull($likeCondition->caseSensitive);
+        $this->assertTrue($likeCondition->escape);
     }
 
     public function testFromArrayDefinition(): void
@@ -32,6 +33,7 @@ final class LikeTest extends TestCase
         $this->assertSame('LIKE', $likeCondition->operator);
         $this->assertSame('test', $likeCondition->value);
         $this->assertNull($likeCondition->caseSensitive);
+        $this->assertTrue($likeCondition->escape);
     }
 
     public function testFromArrayDefinitionException(): void
@@ -60,22 +62,14 @@ final class LikeTest extends TestCase
         Like::fromArrayDefinition('LIKE', ['id', false]);
     }
 
-    public function testFromArrayDefinitionSetEscapingReplacements(): void
+    public function testFromArrayDefinitionWithEscape(): void
     {
-        $likeCondition = Like::fromArrayDefinition('LIKE', ['id', 'test', ['%' => '\%', '_' => '\_']]);
+        $likeCondition = Like::fromArrayDefinition('LIKE', ['id', 'test', 'escape' => false]);
 
         $this->assertSame('id', $likeCondition->column);
         $this->assertSame('LIKE', $likeCondition->operator);
         $this->assertSame('test', $likeCondition->value);
-        $this->assertSame(['%' => '\%', '_' => '\_'], $likeCondition->getEscapingReplacements());
-    }
-
-    public function testSetEscapingReplacements(): void
-    {
-        $likeCondition = new Like('id', 'LIKE', 'test');
-        $likeCondition->setEscapingReplacements(['%' => '\%', '_' => '\_']);
-
-        $this->assertSame(['%' => '\%', '_' => '\_'], $likeCondition->getEscapingReplacements());
+        $this->assertFalse($likeCondition->escape);
     }
 
     #[TestWith([null])]
