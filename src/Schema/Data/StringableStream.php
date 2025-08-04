@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Data;
 
+use InvalidArgumentException;
 use Stringable;
+use Yiisoft\Db\Constant\GettypeResult;
 
 use function fclose;
+use function gettype;
 use function is_resource;
 use function stream_get_contents;
 
@@ -54,12 +57,11 @@ final class StringableStream implements Stringable
      */
     public function __toString(): string
     {
-        if (is_resource($this->value)) {
-            /** @var string */
-            $this->value = stream_get_contents($this->value);
-        }
-
-        return (string) $this->value;
+        return match (gettype($this->value)) {
+            GettypeResult::RESOURCE => $this->value = stream_get_contents($this->value),
+            GettypeResult::RESOURCE_CLOSED => throw new InvalidArgumentException('Resource is closed.'),
+            default => $this->value,
+        };
     }
 
     /**

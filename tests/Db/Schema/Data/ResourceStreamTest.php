@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema\Data;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Schema\Data\StringableStream;
 
+use function fclose;
 use function fopen;
 use function gettype;
 use function serialize;
@@ -56,6 +58,19 @@ final class ResourceStreamTest extends TestCase
         // Can be read twice and more
         $this->assertSame('string', (string) $stringableSteam);
         $this->assertSame('string', (string) $stringableSteam);
+    }
+
+    public function testToStringClosedResource(): void
+    {
+        $resource = fopen(__DIR__ . '/../../../Support/string.txt', 'rb');
+        $stringableSteam = new StringableStream($resource);
+
+        fclose($resource);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Resource is closed.');
+
+        (string) $stringableSteam;
     }
 
     public function testGetValue(): void

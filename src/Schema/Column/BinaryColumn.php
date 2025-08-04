@@ -33,10 +33,10 @@ class BinaryColumn extends AbstractColumn
             GettypeResult::DOUBLE => (string) $value,
             GettypeResult::BOOLEAN => $value ? '1' : '0',
             GettypeResult::OBJECT => match (true) {
-                $value instanceof StringableStream => $value->getValue(),
+                $value instanceof StringableStream => new Param($value->getValue(), PDO::PARAM_LOB),
                 $value instanceof ExpressionInterface => $value,
-                $value instanceof Stringable => (string) $value,
-                $value instanceof BackedEnum => (string) $value->value,
+                $value instanceof Stringable => new Param((string) $value, PDO::PARAM_LOB),
+                $value instanceof BackedEnum => new Param((string) $value->value, PDO::PARAM_LOB),
                 default => $this->throwWrongTypeException($value::class),
             },
             default => $this->throwWrongTypeException(gettype($value)),
