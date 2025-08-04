@@ -28,16 +28,10 @@ use function stream_get_contents;
 final class StringableStream implements Stringable
 {
     /**
-     * @var resource|string $value The resource stream or the result of reading the stream.
-     */
-    private mixed $value;
-
-    /**
      * @param resource $value The open resource stream.
      */
-    public function __construct(mixed $value)
+    public function __construct(private mixed $value)
     {
-        $this->value = $value;
     }
 
     /**
