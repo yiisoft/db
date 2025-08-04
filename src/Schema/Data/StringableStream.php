@@ -59,7 +59,7 @@ final class StringableStream implements Stringable
             $this->value = stream_get_contents($this->value);
         }
 
-        return $this->value;
+        return (string) $this->value;
     }
 
     /**
