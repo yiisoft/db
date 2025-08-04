@@ -181,15 +181,14 @@ When the value range is given as an array, many `LIKE` predicates will be genera
 
 For example, `['like', 'name', ['test', 'sample']]` will generate `name LIKE '%test%' AND name LIKE '%sample%'`.
 
-You may also give an optional third operand to specify how to escape special characters in the values.
-The operand should be an array of mappings from the special characters to their escaped counterparts.
+You may also provide an optional `escape` parameter to control whether special characters in the values should be 
+escaped. If `escape` is `true` (default), special characters like `%`, `_`, and `\` will be escaped and the values will
+be automatically wrapped with `%`. If `escape` is `false`, the values will be used as-is without any escaping or 
+wrapping.
 
-If this operand isn't provided, a default escape mapping will be used.
-
-You may use false or an empty array to indicate the values are already escaped and no escape should be applied.
-
-> Note: That when using an escape mapping (or the third operand isn't provided),
-> the values will be automatically inside within a pair of percentage characters.
+For example:
+- `['like', 'name', 'test']` will generate `name LIKE '%test%'` (default escaping)
+- `['like', 'name', 'test%', 'escape' => false]` will generate `name LIKE 'test%'` (no escaping or wrapping)
 
 Optionally, you can specify the case sensitivity of the `LIKE` condition by passing boolean value with `caseSensitive` 
 key, e.g. `['like', 'name', 'Ivan', 'caseSensitive' => true]`.
