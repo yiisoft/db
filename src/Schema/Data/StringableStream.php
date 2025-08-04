@@ -28,7 +28,7 @@ use function stream_get_contents;
 final class StringableStream implements Stringable
 {
     /**
-     * @param closed-resource|resource|string $value The resource stream or the result of reading the stream.
+     * @param resource|string $value The resource stream or the result of reading the stream.
      */
     public function __construct(private mixed $value)
     {
