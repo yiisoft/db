@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
+use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
 
 /**
  * @group db
@@ -23,6 +24,7 @@ final class LikeTest extends TestCase
         $this->assertSame('test', $likeCondition->value);
         $this->assertNull($likeCondition->caseSensitive);
         $this->assertTrue($likeCondition->escape);
+        $this->assertSame(LikeMode::Contains, $likeCondition->mode);
     }
 
     public function testFromArrayDefinition(): void
@@ -34,6 +36,7 @@ final class LikeTest extends TestCase
         $this->assertSame('test', $likeCondition->value);
         $this->assertNull($likeCondition->caseSensitive);
         $this->assertTrue($likeCondition->escape);
+        $this->assertSame(LikeMode::Contains, $likeCondition->mode);
     }
 
     public function testFromArrayDefinitionException(): void
@@ -83,5 +86,28 @@ final class LikeTest extends TestCase
         $this->assertSame('LIKE', $likeCondition->operator);
         $this->assertSame('test', $likeCondition->value);
         $this->assertSame($caseSensitive, $likeCondition->caseSensitive);
+    }
+
+    #[TestWith([LikeMode::Contains])]
+    #[TestWith([LikeMode::StartsWith])]
+    #[TestWith([LikeMode::EndsWith])]
+    public function testFromArrayDefinitionWithMode(LikeMode $mode): void
+    {
+        $likeCondition = Like::fromArrayDefinition('LIKE', ['id', 'test', 'mode' => $mode]);
+
+        $this->assertSame('id', $likeCondition->column);
+        $this->assertSame('LIKE', $likeCondition->operator);
+        $this->assertSame('test', $likeCondition->value);
+        $this->assertSame($mode, $likeCondition->mode);
+    }
+
+    public function testConstructorWithMode(): void
+    {
+        $likeCondition = new Like('id', 'LIKE', 'test', null, true, LikeMode::StartsWith);
+
+        $this->assertSame('id', $likeCondition->column);
+        $this->assertSame('LIKE', $likeCondition->operator);
+        $this->assertSame('test', $likeCondition->value);
+        $this->assertSame(LikeMode::StartsWith, $likeCondition->mode);
     }
 }

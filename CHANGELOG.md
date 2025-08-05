@@ -117,6 +117,7 @@
 - Enh #1011: Remove `AbstractTableSchema` and add `TableSchema` instead (@Tigrov)
 - Chg #1014: Replace `getEscapingReplacements()`/`setEscapingReplacements()` methods with `escape` constructor parameter 
   in `Like` condition (@vjik)
+- New #1015: Add mode parameter to `Like` condition (@vjik)
 
 ## 1.3.0 March 21, 2024
 

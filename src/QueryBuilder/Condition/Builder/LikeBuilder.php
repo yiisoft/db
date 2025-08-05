@@ -13,6 +13,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
+use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function implode;
@@ -122,15 +123,18 @@ class LikeBuilder implements ExpressionBuilderInterface
         if ($value instanceof ExpressionInterface) {
             return $this->queryBuilder->buildExpression($value, $params);
         }
-        return $this->queryBuilder->bindParam(
-            new Param(
-                $condition->escape
-                    ? ('%' . strtr($value, $this->escapingReplacements) . '%')
-                    : $value,
-                DataType::STRING,
-            ),
-            $params
-        );
+
+        if ($condition->escape) {
+            $escapedValue = strtr($value, $this->escapingReplacements);
+            $wrappedValue = match ($condition->mode) {
+                LikeMode::Contains => '%' . $escapedValue . '%',
+                LikeMode::StartsWith => $escapedValue . '%',
+                LikeMode::EndsWith => '%' . $escapedValue,
+            };
+            return $this->queryBuilder->bindParam(new Param($wrappedValue, DataType::STRING), $params);
+        }
+
+        return $this->queryBuilder->bindParam(new Param($value, DataType::STRING), $params);
     }
 
     /**
