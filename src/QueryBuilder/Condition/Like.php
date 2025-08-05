@@ -8,7 +8,6 @@ use Iterator;
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
-use function array_key_exists;
 use function is_array;
 use function is_int;
 use function is_string;
@@ -18,7 +17,7 @@ use function is_string;
  */
 final class Like implements ConditionInterface
 {
-    protected array|null $escapingReplacements = [];
+    private const DEFAULT_ESCAPE = true;
 
     /**
      * @param ExpressionInterface|string $column The column name.
@@ -26,36 +25,16 @@ final class Like implements ConditionInterface
      * @param array|ExpressionInterface|int|Iterator|string|null $value The value to the right of {@see operator}.
      * @param bool|null $caseSensitive Whether the comparison is case-sensitive. `null` means using the default
      * behavior.
+     * @param bool $escape Whether to escape the value. Defaults to `true`. If `false`, the value will be used as is
+     * without escaping.
      */
     public function __construct(
         public readonly string|ExpressionInterface $column,
         public readonly string $operator,
         public readonly array|int|string|Iterator|ExpressionInterface|null $value,
         public readonly ?bool $caseSensitive = null,
+        public readonly bool $escape = self::DEFAULT_ESCAPE,
     ) {
-    }
-
-    /**
-     * @see setEscapingReplacements()
-     */
-    public function getEscapingReplacements(): ?array
-    {
-        return $this->escapingReplacements;
-    }
-
-    /**
-     * This method allows specifying how to escape special characters in the value(s).
-     *
-     * @param array|null $escapingReplacements An array of mappings from the special characters to their escaped
-     * counterparts.
-     *
-     * You may use an empty array to indicate the values are already escaped and no escape should be applied.
-     * Note that when using an escape mapping (or the third operand isn't provided), the values will be automatically
-     * inside within a pair of percentage characters.
-     */
-    public function setEscapingReplacements(array|null $escapingReplacements): void
-    {
-        $this->escapingReplacements = $escapingReplacements;
     }
 
     /**
@@ -69,18 +48,13 @@ final class Like implements ConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
-        $condition = new self(
+        return new self(
             self::validateColumn($operator, $operands[0]),
             $operator,
             self::validateValue($operator, $operands[1]),
             isset($operands['caseSensitive']) ? (bool) $operands['caseSensitive'] : null,
+            isset($operands['escape']) ? (bool) $operands['escape'] : self::DEFAULT_ESCAPE,
         );
-
-        if (array_key_exists(2, $operands) && (is_array($operands[2]) || $operands[2] === null)) {
-            $condition->setEscapingReplacements($operands[2]);
-        }
-
-        return $condition;
     }
 
     /**

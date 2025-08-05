@@ -824,7 +824,7 @@ class QueryBuilderProvider
             /**
              * {@see https://github.com/yiisoft/yii2/issues/15630}
              */
-            [['like', 'location.title_ru', 'vi%', null], '[[location]].[[title_ru]] LIKE :qp0', [':qp0' => new Param('vi%', DataType::STRING)]],
+            [['like', 'location.title_ru', 'vi%', 'escape' => false], '[[location]].[[title_ru]] LIKE :qp0', [':qp0' => new Param('vi%', DataType::STRING)]],
 
             /* like object conditions */
             [

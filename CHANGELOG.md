@@ -116,6 +116,8 @@
 - Enh #1011: Refactor `TableSchemaInterface` and `AbstractSchema` (@Tigrov)
 - Enh #1011: Remove `AbstractTableSchema` and add `TableSchema` instead (@Tigrov)
 - New #1013: Add `StringableStream` class to cast binary column values to `string` using `(string) $value` (@Tigrov)
+- Chg #1014: Replace `getEscapingReplacements()`/`setEscapingReplacements()` methods with `escape` constructor parameter 
+  in `Like` condition (@vjik)
 
 ## 1.3.0 March 21, 2024
 
