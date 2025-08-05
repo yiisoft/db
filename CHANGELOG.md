@@ -13,7 +13,7 @@
 - Enh #806, #964: Build `Expression` instances inside `Expression::$params` when build a query using `QueryBuilder` (@Tigrov)
 - Enh #766: Allow `ColumnInterface` as column type. (@Tigrov)
 - Bug #828: Fix `float` type when use `AbstractCommand::getRawSql()` method (@Tigrov)
-- New #752, #974: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
+- New #752, #974, #1013: Implement `ColumnInterface` classes according to the data type of database table columns
   for type casting performance (@Tigrov)
 - Enh #829: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilderInterface` and `CommandInterface`
   and change parameters from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
@@ -115,6 +115,7 @@
 - Enh #1010: Improve `Quoter::getTableNameParts()` method (@Tigrov)
 - Enh #1011: Refactor `TableSchemaInterface` and `AbstractSchema` (@Tigrov)
 - Enh #1011: Remove `AbstractTableSchema` and add `TableSchema` instead (@Tigrov)
+- New #1013: Add `StringableStream` class to cast binary column values to `string` using `(string) $value` (@Tigrov)
 - Chg #1014: Replace `getEscapingReplacements()`/`setEscapingReplacements()` methods with `escape` constructor parameter 
   in `Like` condition (@vjik)
 

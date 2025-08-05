@@ -480,7 +480,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $nameCol = $schema->getTableSchema('{{testCreateTable}}', true)->getColumn('name');
 
-        $this->assertFalse($nameCol->isAllowNull());
+        $this->assertTrue($nameCol->isNotNull());
         $this->assertEquals([['id' => 1, 'bar' => 1, 'name' => 'Lilo']], $records);
 
         $db->close();
