@@ -22,6 +22,7 @@ use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Data\StringableStream;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\IntEnum;
@@ -33,11 +34,6 @@ use Yiisoft\Db\Tests\Support\TraversableObject;
 
 use function fopen;
 
-/**
- * @psalm-suppress MixedAssignment
- * @psalm-suppress MixedArgument
- * @psalm-suppress PossiblyUndefinedArrayOffset
- */
 class QueryBuilderProvider
 {
     use TestTrait;
@@ -1779,6 +1775,7 @@ class QueryBuilderProvider
             'paramInteger' => ['1', new Param(1, DataType::INTEGER)],
             'expression' => ['(1 + 2)', new Expression('(1 + 2)')],
             'expression with params' => ['(1 + 2)', new Expression('(:a + :b)', [':a' => 1, 'b' => 2])],
+            'ResourceStream' => ['0x737472696e67', new StringableStream(fopen(__DIR__ . '/../Support/string.txt', 'rb'))],
             'Stringable' => ["'string'", new Stringable('string')],
             'StringEnum' => ["'one'", StringEnum::ONE],
             'IntEnum' => ['1', IntEnum::ONE],
@@ -1804,9 +1801,9 @@ class QueryBuilderProvider
                 [':qp0' => new Param('string', DataType::STRING)],
             ],
             'binary' => [
-                $param = fopen(__DIR__ . '/../Support/string.txt', 'rb'),
+                $resource = fopen(__DIR__ . '/../Support/string.txt', 'rb'),
                 ':qp0',
-                [':qp0' => new Param($param, DataType::LOB)],
+                [':qp0' => new Param($resource, DataType::LOB)],
             ],
             'paramBinary' => [
                 $param = new Param('string', DataType::LOB),
@@ -1831,6 +1828,11 @@ class QueryBuilderProvider
                 new Expression('(:a + :b)', [':a' => 1, 'b' => 2]),
                 '(:a + :b)',
                 [':a' => 1, 'b' => 2],
+            ],
+            'ResourceStream' => [
+                new StringableStream($resource = fopen(__DIR__ . '/../Support/string.txt', 'rb')),
+                ':qp0',
+                [':qp0' => new Param($resource, DataType::LOB)],
             ],
             'Stringable' => [
                 new Stringable('string'),

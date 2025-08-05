@@ -23,6 +23,7 @@ use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Schema\Data\StringableStream;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Syntax\AbstractSqlParser;
 
@@ -279,6 +280,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             GettypeResult::OBJECT => match (true) {
                 $value instanceof Param => $this->bindParam($value, $params),
                 $value instanceof ExpressionInterface => $this->buildExpression($value, $params),
+                $value instanceof StringableStream => $this->bindParam(new Param($value->getValue(), DataType::LOB), $params),
                 $value instanceof Stringable => $this->bindParam(new Param((string) $value, DataType::STRING), $params),
                 $value instanceof BackedEnum => is_string($value->value)
                     ? $this->bindParam(new Param($value->value, DataType::STRING), $params)
@@ -475,6 +477,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                     $this->buildExpression($value, $params),
                     array_map($this->prepareValue(...), $params),
                 ),
+                $value instanceof StringableStream => $this->prepareBinary((string) $value),
                 $value instanceof BackedEnum => is_string($value->value)
                     ? $this->db->getQuoter()->quoteValue($value->value)
                     : (string) $value->value,

@@ -34,11 +34,13 @@ use Yiisoft\Db\Schema\Column\StructuredColumn;
 use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
 use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
+use Yiisoft\Db\Schema\Data\StringableStream;
 use Yiisoft\Db\Schema\Data\StructuredLazyArray;
 use Yiisoft\Db\Tests\Support\IntEnum;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\StringEnum;
 
+use function fclose;
 use function fopen;
 
 class ColumnProvider
@@ -147,10 +149,12 @@ class ColumnProvider
                     ['1', true],
                     ['0', false],
                     [new Param("\x10\x11\x12", PDO::PARAM_LOB), "\x10\x11\x12"],
-                    ['1', IntEnum::ONE],
-                    ['one', StringEnum::ONE],
-                    ['string', new Stringable('string')],
+                    [new Param('1', PDO::PARAM_LOB), IntEnum::ONE],
+                    [new Param('one', PDO::PARAM_LOB), StringEnum::ONE],
+                    [new Param('string', PDO::PARAM_LOB), new Stringable('string')],
                     [$resource = fopen('php://memory', 'rb'), $resource],
+                    [new Param($resource = fopen('php://memory', 'rb'), PDO::PARAM_LOB), new StringableStream($resource)],
+                    [new Param("\x10\x11\x12", PDO::PARAM_LOB), new StringableStream("\x10\x11\x12")],
                     [$expression = new Expression('expression'), $expression],
                 ],
             ],
@@ -473,6 +477,9 @@ class ColumnProvider
 
     public static function dbTypecastColumnsWithException(): array
     {
+        $resource = fopen('php://memory', 'rb');
+        fclose($resource);
+
         return [
             'integer array' => [new IntegerColumn(), []],
             'integer resource' => [new IntegerColumn(), fopen('php://memory', 'r')],
@@ -485,6 +492,7 @@ class ColumnProvider
             'double stdClass' => [new DoubleColumn(), new stdClass()],
             'string array' => [new StringColumn(), []],
             'string stdClass' => [new StringColumn(), new stdClass()],
+            'binary closed' => [new BinaryColumn(), $resource],
             'binary array' => [new BinaryColumn(), []],
             'binary stdClass' => [new BinaryColumn(), new stdClass()],
             'datetime array' => [new DateTimeColumn(), []],
@@ -539,7 +547,7 @@ class ColumnProvider
                     [null, null],
                     ['', ''],
                     ["\x10\x11\x12", "\x10\x11\x12"],
-                    [$resource = fopen('php://memory', 'rb'), $resource],
+                    [new StringableStream($resource = fopen('php://memory', 'rb')), $resource],
                 ],
             ],
             'bit' => [
