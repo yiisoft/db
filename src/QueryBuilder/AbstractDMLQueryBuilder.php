@@ -483,7 +483,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             return [];
         }
 
-        /** @var string[][] $columnNames */
         return array_unique(array_merge(...$columnNames));
     }
 
