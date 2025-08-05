@@ -11,6 +11,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use function is_array;
 use function is_int;
 use function is_string;
+use function sprintf;
 
 /**
  * Condition that represents `LIKE` operator.
@@ -18,6 +19,7 @@ use function is_string;
 final class Like implements ConditionInterface
 {
     private const DEFAULT_ESCAPE = true;
+    private const DEFAULT_MODE = LikeMode::Contains;
 
     /**
      * @param ExpressionInterface|string $column The column name.
@@ -27,6 +29,7 @@ final class Like implements ConditionInterface
      * behavior.
      * @param bool $escape Whether to escape the value. Defaults to `true`. If `false`, the value will be used as is
      * without escaping.
+     * @param LikeMode $mode The mode for the LIKE operation (contains, starts with, ends with or custom pattern).
      */
     public function __construct(
         public readonly string|ExpressionInterface $column,
@@ -34,6 +37,7 @@ final class Like implements ConditionInterface
         public readonly array|int|string|Iterator|ExpressionInterface|null $value,
         public readonly ?bool $caseSensitive = null,
         public readonly bool $escape = self::DEFAULT_ESCAPE,
+        public readonly LikeMode $mode = self::DEFAULT_MODE,
     ) {
     }
 
@@ -48,12 +52,29 @@ final class Like implements ConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
+        if (isset($operands['mode'])) {
+            $mode = $operands['mode'];
+            if (!$mode instanceof LikeMode) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'Operator "%s" requires "mode" to be an instance of %s. Got %s.',
+                        $operator,
+                        LikeMode::class,
+                        get_debug_type($mode),
+                    ),
+                );
+            }
+        } else {
+            $mode = self::DEFAULT_MODE;
+        }
+
         return new self(
             self::validateColumn($operator, $operands[0]),
             $operator,
             self::validateValue($operator, $operands[1]),
             isset($operands['caseSensitive']) ? (bool) $operands['caseSensitive'] : null,
             isset($operands['escape']) ? (bool) $operands['escape'] : self::DEFAULT_ESCAPE,
+            $mode,
         );
     }
 

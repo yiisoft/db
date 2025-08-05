@@ -119,6 +119,7 @@
 - Chg #1014: Replace `getEscapingReplacements()`/`setEscapingReplacements()` methods with `escape` constructor parameter 
   in `Like` condition (@vjik)
 - Enh #1016: Refactor `AbstractDMLQueryBuilder::getTableUniqueColumnNames()` method (@Tigrov)
+- New #1015: Add mode parameter to `Like` condition (@vjik)
 
 ## 1.3.0 March 21, 2024
 
