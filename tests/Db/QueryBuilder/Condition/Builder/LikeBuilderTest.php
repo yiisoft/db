@@ -14,9 +14,6 @@ use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
-use function PHPUnit\Framework\assertCount;
-use function PHPUnit\Framework\assertSame;
-
 /**
  * @group db
  */
@@ -47,11 +44,11 @@ final class LikeBuilderTest extends TestCase
         $params = [];
         $likeBuilder->build($likeCondition, $params);
 
-        assertCount(1, $params);
+        $this->assertCount(1, $params);
 
         /** @var Param $param */
         $param = reset($params);
-        assertSame($expected, $param->value);
-        assertSame(DataType::STRING, $param->type);
+        $this->assertSame($expected, $param->value);
+        $this->assertSame(DataType::STRING, $param->type);
     }
 }
