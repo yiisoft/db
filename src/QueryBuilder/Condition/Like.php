@@ -29,7 +29,7 @@ final class Like implements ConditionInterface
      * behavior.
      * @param bool $escape Whether to escape the value. Defaults to `true`. If `false`, the value will be used as is
      * without escaping.
-     * @param LikeMode $mode The mode for the LIKE operation (contains, starts with, ends with).
+     * @param LikeMode $mode The mode for the LIKE operation (contains, starts with, ends with or custom pattern).
      */
     public function __construct(
         public readonly string|ExpressionInterface $column,
