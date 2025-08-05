@@ -110,4 +110,14 @@ final class LikeTest extends TestCase
         $this->assertSame('test', $likeCondition->value);
         $this->assertSame(LikeMode::StartsWith, $likeCondition->mode);
     }
+
+    public function testFromArrayDefinitionWithInvalidMode(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Operator "LIKE" requires "mode" to be an instance of Yiisoft\Db\QueryBuilder\Condition\LikeMode. Got string.'
+        );
+
+        Like::fromArrayDefinition('LIKE', ['id', 'test', 'mode' => 'invalid']);
+    }
 }
