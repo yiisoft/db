@@ -36,6 +36,7 @@ final class LikeBuilderTest extends TestCase
     #[TestWith(['%test%', LikeMode::Contains])]
     #[TestWith(['test%', LikeMode::StartsWith])]
     #[TestWith(['%test', LikeMode::EndsWith])]
+    #[TestWith(['test', LikeMode::Custom])]
     public function testBuildWithContainsMode(string $expected, LikeMode $mode): void
     {
         $likeCondition = new Like('column', 'LIKE', 'test', mode: $mode);

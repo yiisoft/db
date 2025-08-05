@@ -12,4 +12,5 @@ enum LikeMode
     case Contains;
     case StartsWith;
     case EndsWith;
+    case Custom;
 }

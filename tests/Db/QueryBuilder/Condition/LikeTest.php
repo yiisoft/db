@@ -91,6 +91,7 @@ final class LikeTest extends TestCase
     #[TestWith([LikeMode::Contains])]
     #[TestWith([LikeMode::StartsWith])]
     #[TestWith([LikeMode::EndsWith])]
+    #[TestWith([LikeMode::Contains])]
     public function testFromArrayDefinitionWithMode(LikeMode $mode): void
     {
         $likeCondition = Like::fromArrayDefinition('LIKE', ['id', 'test', 'mode' => $mode]);

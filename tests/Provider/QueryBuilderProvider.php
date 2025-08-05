@@ -19,6 +19,7 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumns;
 use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
+use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -828,7 +829,11 @@ class QueryBuilderProvider
             /**
              * {@see https://github.com/yiisoft/yii2/issues/15630}
              */
-            [['like', 'location.title_ru', 'vi%', 'escape' => false], '[[location]].[[title_ru]] LIKE :qp0', [':qp0' => new Param('vi%', DataType::STRING)]],
+            [
+                ['like', 'location.title_ru', 'vi%', 'escape' => false, 'mode' => LikeMode::Custom],
+                '[[location]].[[title_ru]] LIKE :qp0',
+                [':qp0' => new Param('vi%', DataType::STRING)],
+            ],
 
             /* like object conditions */
             [

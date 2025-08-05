@@ -125,14 +125,15 @@ class LikeBuilder implements ExpressionBuilderInterface
         }
 
         if ($condition->escape) {
-            $escapedValue = strtr($value, $this->escapingReplacements);
-            $wrappedValue = match ($condition->mode) {
-                LikeMode::Contains => '%' . $escapedValue . '%',
-                LikeMode::StartsWith => $escapedValue . '%',
-                LikeMode::EndsWith => '%' . $escapedValue,
-            };
-            return $this->queryBuilder->bindParam(new Param($wrappedValue, DataType::STRING), $params);
+            $value = strtr($value, $this->escapingReplacements);
         }
+
+        $value = match ($condition->mode) {
+            LikeMode::Contains => '%' . $value . '%',
+            LikeMode::StartsWith => $value . '%',
+            LikeMode::EndsWith => '%' . $value,
+            LikeMode::Custom => $value,
+        };
 
         return $this->queryBuilder->bindParam(new Param($value, DataType::STRING), $params);
     }
