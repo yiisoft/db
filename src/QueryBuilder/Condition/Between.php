@@ -9,8 +9,4 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
  */
 final class Between extends AbstractBetween
 {
-    public function isNot(): bool
-    {
-        return false;
-    }
 }
