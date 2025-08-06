@@ -36,12 +36,8 @@ use function in_array;
 use function is_array;
 use function is_string;
 use function iterator_to_array;
-use function json_encode;
 use function preg_match;
 use function reset;
-use function sort;
-
-use const JSON_THROW_ON_ERROR;
 
 /**
  * It's used to manipulate data in tables.
@@ -464,39 +460,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     */
     private function getTableUniqueColumnNames(string $name, array $columns, array &$indexes = []): array
     {
-        $primaryKey = $this->schema->getTablePrimaryKey($name);
-
-        if ($primaryKey !== null) {
-            $indexes[] = $primaryKey;
-        }
-
-        $tableIndexes = $this->schema->getTableIndexes($name);
-
-        foreach ($tableIndexes as $index) {
-            if ($index->isUnique) {
-                $indexes[] = $index;
-            }
-        }
-
-        $indexes = array_merge($indexes, $this->schema->getTableUniques($name));
-
-        /**
-         * Remove duplicates
-         *
-         * @var Index[] $indexes
-         */
-        $indexes = array_combine(
-            array_map(
-                static function (Index $index): string {
-                    $columns = $index->columnNames;
-                    sort($columns, SORT_STRING);
-                    return json_encode($columns, JSON_THROW_ON_ERROR);
-                },
-                $indexes
-            ),
-            $indexes
-        );
-
+        $indexes = $this->schema->getTableUniques($name);
         $columnNames = [];
 
         // Remove all indexes which don't cover the specified column list.
@@ -504,12 +468,10 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             array_filter(
                 $indexes,
                 static function (Index $index) use ($columns, &$columnNames): bool {
-                    $indexColumnNames = $index->columnNames;
-
-                    $result = empty(array_diff($indexColumnNames, $columns));
+                    $result = empty(array_diff($index->columnNames, $columns));
 
                     if ($result) {
-                        $columnNames = array_merge($columnNames, $indexColumnNames);
+                        $columnNames[] = $index->columnNames;
                     }
 
                     return $result;
@@ -517,8 +479,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             )
         );
 
-        /** @var string[] $columnNames */
-        return array_unique($columnNames);
+        if (empty($columnNames)) {
+            return [];
+        }
+
+        return array_unique(array_merge(...$columnNames));
     }
 
     /**
