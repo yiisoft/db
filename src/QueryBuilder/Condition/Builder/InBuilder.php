@@ -14,6 +14,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\In;
+use Yiisoft\Db\QueryBuilder\Condition\NotIn;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -31,9 +32,9 @@ use function str_contains;
 use function strtoupper;
 
 /**
- * Build an object of {@see In} into SQL expressions.
+ * Build an object of {@see In} or {@see NotIn} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<In>
+ * @implements ExpressionBuilderInterface<In|NotIn>
  */
 class InBuilder implements ExpressionBuilderInterface
 {
@@ -42,9 +43,9 @@ class InBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see In}.
+     * Build SQL for {@see In} or {@see NotIn}.
      *
-     * @param In $expression
+     * @param In|NotIn $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -54,7 +55,10 @@ class InBuilder implements ExpressionBuilderInterface
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $column = $expression->column;
-        $operator = strtoupper($expression->operator);
+        $operator = match ($expression::class) {
+            In::class => 'IN',
+            NotIn::class => 'NOT IN',
+        };
         $values = $expression->values;
 
         if ($column === []) {
@@ -141,7 +145,7 @@ class InBuilder implements ExpressionBuilderInterface
      * @psalm-suppress MixedArrayTypeCoercion
      * @psalm-suppress MixedArrayOffset
      */
-    protected function buildValues(In $condition, iterable $values, array &$params = []): array
+    protected function buildValues(In|NotIn $condition, iterable $values, array &$params = []): array
     {
         $sqlValues = [];
         $column = $condition->column;

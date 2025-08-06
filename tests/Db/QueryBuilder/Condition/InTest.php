@@ -15,10 +15,9 @@ final class InTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $inCondition = new In('id', 'IN', [1, 2, 3]);
+        $inCondition = new In('id', [1, 2, 3]);
 
         $this->assertSame('id', $inCondition->column);
-        $this->assertSame('IN', $inCondition->operator);
         $this->assertSame([1, 2, 3], $inCondition->values);
     }
 
@@ -27,7 +26,6 @@ final class InTest extends TestCase
         $inCondition = In::fromArrayDefinition('IN', ['id', [1, 2, 3]]);
 
         $this->assertSame('id', $inCondition->column);
-        $this->assertSame('IN', $inCondition->operator);
         $this->assertSame([1, 2, 3], $inCondition->values);
     }
 

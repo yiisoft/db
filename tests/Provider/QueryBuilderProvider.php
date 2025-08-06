@@ -20,6 +20,7 @@ use Yiisoft\Db\QueryBuilder\Condition\BetweenColumns;
 use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
+use Yiisoft\Db\QueryBuilder\Condition\NotIn;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Data\StringableStream;
@@ -486,43 +487,41 @@ class QueryBuilderProvider
             ],
 
             /* in object conditions */
-            [new In('id', 'in', 1), '[[id]]=:qp0', [':qp0' => 1]],
-            [new In('id', 'in', [1]), '[[id]]=:qp0', [':qp0' => 1]],
-            [new In('id', 'not in', 1), '[[id]]<>:qp0', [':qp0' => 1]],
-            [new In('id', 'not in', [1]), '[[id]]<>:qp0', [':qp0' => 1]],
-            [new In('id', 'in', [1, 2]), '[[id]] IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
-            [new In('id', 'not in', [1, 2]), '[[id]] NOT IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
-            [new In([], 'in', 1), '0=1', []],
-            [new In([], 'in', [1]), '0=1', []],
-            'inCondition-custom-1' => [new In(['id', 'name'], 'in', []), '0=1', []],
+            [new In('id', 1), '[[id]]=:qp0', [':qp0' => 1]],
+            [new In('id', [1]), '[[id]]=:qp0', [':qp0' => 1]],
+            [new NotIn('id', 1), '[[id]]<>:qp0', [':qp0' => 1]],
+            [new NotIn('id', [1]), '[[id]]<>:qp0', [':qp0' => 1]],
+            [new In('id', [1, 2]), '[[id]] IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
+            [new NotIn('id', [1, 2]), '[[id]] NOT IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
+            [new In([], 1), '0=1', []],
+            [new In([], [1]), '0=1', []],
+            'inCondition-custom-1' => [new In(['id', 'name'], []), '0=1', []],
             'inCondition-custom-2' => [
                 new In(
                     ['id'],
-                    'in',
                     (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '([[id]]) IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
             ],
             'inCondition-custom-3' => [
-                new In(['id', 'name'], 'in', [['id' => 1]]),
+                new In(['id', 'name'], [['id' => 1]]),
                 '([[id]], [[name]]) IN ((:qp0, NULL))',
                 [':qp0' => 1],
             ],
             'inCondition-custom-4' => [
-                new In(['id', 'name'], 'in', [['name' => 'John Doe']]),
+                new In(['id', 'name'], [['name' => 'John Doe']]),
                 '([[id]], [[name]]) IN ((NULL, :qp0))',
                 [':qp0' => 'John Doe'],
             ],
             'inCondition-custom-5' => [
-                new In(['id', 'name'], 'in', [['id' => 1, 'name' => 'John Doe']]),
+                new In(['id', 'name'], [['id' => 1, 'name' => 'John Doe']]),
                 '([[id]], [[name]]) IN ((:qp0, :qp1))',
                 [':qp0' => 1, ':qp1' => 'John Doe'],
             ],
             'inCondition-custom-6' => [
                 new In(
                     [new Expression('id')],
-                    'in',
                     (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '(id) IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',

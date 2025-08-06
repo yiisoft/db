@@ -120,6 +120,7 @@
   in `Like` condition (@vjik)
 - Enh #1016: Refactor `AbstractDMLQueryBuilder::getTableUniqueColumnNames()` method (@Tigrov)
 - New #1015: Add mode parameter to `Like` condition (@vjik)
+- Chg #1019: Split `In` condition to `In` and `NotIn` (@vjik)
 
 ## 1.3.0 March 21, 2024
 

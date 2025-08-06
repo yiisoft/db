@@ -455,7 +455,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                 throw new InvalidArgumentException('Condition array must have string keys.');
             }
             if (is_iterable($value) || $value instanceof QueryInterface) {
-                $conditions[] = new Condition\In($column, 'IN', $value);
+                $conditions[] = new Condition\In($column, $value);
                 continue;
             }
             $conditions[] = new Condition\Equals($column, $value);
@@ -521,7 +521,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             'BETWEEN' => Condition\Between::class,
             'NOT BETWEEN' => Condition\Between::class,
             'IN' => Condition\In::class,
-            'NOT IN' => Condition\In::class,
+            'NOT IN' => Condition\NotIn::class,
             'LIKE' => Condition\Like::class,
             'NOT LIKE' => Condition\Like::class,
             'OR LIKE' => Condition\Like::class,
@@ -553,6 +553,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Condition\OrX::class => Condition\Builder\LogicalBuilder::class,
             Condition\Between::class => Condition\Builder\BetweenBuilder::class,
             Condition\In::class => Condition\Builder\InBuilder::class,
+            Condition\NotIn::class => Condition\Builder\InBuilder::class,
             Condition\Like::class => Condition\Builder\LikeBuilder::class,
             Condition\Equals::class => Condition\Builder\EqualsBuilder::class,
             Condition\Exists::class => Condition\Builder\ExistsBuilder::class,
