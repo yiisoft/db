@@ -29,7 +29,7 @@ class BetweenColumnsBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see BetweenColumns}or {@see NotBetweenColumns}.
+     * Build SQL for {@see BetweenColumns} or {@see NotBetweenColumns}.
      *
      * @param BetweenColumns|NotBetweenColumns $expression
      *
