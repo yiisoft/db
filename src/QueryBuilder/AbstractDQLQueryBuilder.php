@@ -558,6 +558,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Condition\Exists::class => Condition\Builder\ExistsBuilder::class,
             Simple::class => Condition\Builder\SimpleBuilder::class,
             Condition\BetweenColumns::class => Condition\Builder\BetweenColumnsBuilder::class,
+            Condition\NotBetweenColumns::class => Condition\Builder\BetweenColumnsBuilder::class,
             JsonExpression::class => JsonExpressionBuilder::class,
             ArrayExpression::class => ArrayExpressionBuilder::class,
             StructuredExpression::class => StructuredExpressionBuilder::class,

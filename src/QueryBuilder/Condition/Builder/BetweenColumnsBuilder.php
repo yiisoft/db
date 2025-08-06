@@ -11,15 +11,16 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumns;
+use Yiisoft\Db\QueryBuilder\Condition\NotBetweenColumns;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 use function str_contains;
 
 /**
- * Build an object of {@see BetweenColumns} into SQL expressions.
+ * Build an object of {@see BetweenColumns} or {@see NotBetweenColumns} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<BetweenColumns>
+ * @implements ExpressionBuilderInterface<BetweenColumns|NotBetweenColumns>
  */
 class BetweenColumnsBuilder implements ExpressionBuilderInterface
 {
@@ -28,9 +29,9 @@ class BetweenColumnsBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see BetweenColumns}.
+     * Build SQL for {@see BetweenColumns}or {@see NotBetweenColumns}.
      *
-     * @param BetweenColumns $expression
+     * @param BetweenColumns|NotBetweenColumns $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -39,7 +40,10 @@ class BetweenColumnsBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operator = $expression->operator;
+        $operator = match ($expression::class) {
+            BetweenColumns::class => 'BETWEEN',
+            NotBetweenColumns::class => 'NOT BETWEEN',
+        };
         $startColumn = $this->escapeColumnName($expression->intervalStartColumn, $params);
         $endColumn = $this->escapeColumnName($expression->intervalEndColumn, $params);
         $value = $this->createPlaceholder($expression->value, $params);

@@ -20,7 +20,7 @@ final class BetweenColumnsBuilderTest extends TestCase
     {
         $db = $this->getConnection();
 
-        $betweenColumnsCondition = new BetweenColumns(42, 'BETWEEN', '1', '100');
+        $betweenColumnsCondition = new BetweenColumns(42, '1', '100');
         $params = [];
 
         $this->assertSame(
