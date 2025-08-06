@@ -10,7 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Between;
+use Yiisoft\Db\QueryBuilder\Condition\AbstractBetween;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function str_contains;
@@ -18,7 +18,7 @@ use function str_contains;
 /**
  * Build an object of {@see Between} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<Between>
+ * @implements ExpressionBuilderInterface<AbstractBetween>
  */
 class BetweenBuilder implements ExpressionBuilderInterface
 {
@@ -27,9 +27,9 @@ class BetweenBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see Between}.
+     * Build SQL for {@see AbstractBetween}.
      *
-     * @param Between $expression
+     * @param AbstractBetween $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
