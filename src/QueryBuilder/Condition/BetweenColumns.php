@@ -4,14 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition;
 
-use Iterator;
-use InvalidArgumentException;
-use Yiisoft\Db\Expression\ExpressionInterface;
-
-use function is_array;
-use function is_int;
-use function is_string;
-
 /**
  * Represents a `BETWEEN` operator where values are between two columns.
  *
