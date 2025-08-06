@@ -38,7 +38,7 @@ class BetweenBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operator = $expression->operator;
+        $operator = $expression->isNot() ? 'NOT BETWEEN' : 'BETWEEN';
         $column = $expression->column;
         $column = $column instanceof ExpressionInterface
             ? $this->queryBuilder->buildExpression($column)
