@@ -29,7 +29,6 @@ use function iterator_count;
 use function reset;
 use function sprintf;
 use function str_contains;
-use function strtoupper;
 
 /**
  * Build an object of {@see In} or {@see NotIn} into SQL expressions.
