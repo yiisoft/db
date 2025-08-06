@@ -65,4 +65,3 @@ abstract class AbstractBetween implements ConditionInterface
         );
     }
 }
-
