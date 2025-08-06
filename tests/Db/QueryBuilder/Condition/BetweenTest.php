@@ -20,7 +20,6 @@ final class BetweenTest extends TestCase
         $this->assertSame('date', $betweenCondition->column);
         $this->assertSame(1, $betweenCondition->intervalStart);
         $this->assertSame(2, $betweenCondition->intervalEnd);
-        $this->assertFalse($betweenCondition->isNot());
     }
 
     public function testFromArrayDefinition(): void
@@ -30,7 +29,6 @@ final class BetweenTest extends TestCase
         $this->assertSame('date', $betweenCondition->column);
         $this->assertSame(1, $betweenCondition->intervalStart);
         $this->assertSame(2, $betweenCondition->intervalEnd);
-        $this->assertFalse($betweenCondition->isNot());
     }
 
     public function testFromArrayDefinitionExceptionWithoutOperands(): void

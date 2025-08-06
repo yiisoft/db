@@ -10,6 +10,8 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use function is_string;
 
 /**
+ * @internal
+ *
  * Condition that's represented `BETWEEN` or `NOT BETWEEN` operator is used to check if a value is between two values.
  */
 abstract class AbstractBetween implements ConditionInterface
