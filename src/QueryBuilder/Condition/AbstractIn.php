@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition;
 
-use Iterator;
 use InvalidArgumentException;
 use Traversable;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
-
-use Yiisoft\Db\Tests\Support\Stub\Transaction;
 
 use function is_array;
 use function is_string;
@@ -23,7 +20,7 @@ use function is_string;
 abstract class AbstractIn implements ConditionInterface
 {
     /**
-     * @param iterable|string|ExpressionInterface $column The column name. If it's an array, a composite
+     * @param ExpressionInterface|iterable|string $column The column name. If it's an array, a composite
      * condition will be generated.
      * @param iterable|QueryInterface $values An array of values that {@see $columns} value should be among.
      * If it's an empty array, the generated expression will be a `false` value if {@see $operator} is `IN` and empty if

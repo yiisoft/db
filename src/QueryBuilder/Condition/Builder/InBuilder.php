@@ -24,8 +24,6 @@ use function count;
 use function implode;
 use function in_array;
 use function is_array;
-use function is_string;
-use function iterator_count;
 use function reset;
 use function sprintf;
 use function str_contains;
