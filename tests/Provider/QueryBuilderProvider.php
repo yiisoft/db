@@ -16,11 +16,14 @@ use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\QueryBuilder\Condition\Between;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumns;
 use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
 use Yiisoft\Db\QueryBuilder\Condition\NotIn;
+use Yiisoft\Db\QueryBuilder\Condition\NotBetweenColumns;
+use Yiisoft\Db\QueryBuilder\Condition\NotBetween;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Data\StringableStream;
@@ -324,6 +327,8 @@ class QueryBuilderProvider
             /* between */
             [['between', 'id', 1, 10], '[[id]] BETWEEN :qp0 AND :qp1', [':qp0' => 1, ':qp1' => 10]],
             [['not between', 'id', 1, 10], '[[id]] NOT BETWEEN :qp0 AND :qp1', [':qp0' => 1, ':qp1' => 10]],
+            [new Between('id', 1, 10), '[[id]] BETWEEN :qp0 AND :qp1', [':qp0' => 1, ':qp1' => 10]],
+            [new NotBetween('id', 1, 10), '[[id]] NOT BETWEEN :qp0 AND :qp1', [':qp0' => 1, ':qp1' => 10]],
             [
                 ['between', 'date', new Expression('(NOW() - INTERVAL 1 MONTH)'), new Expression('NOW()')],
                 '[[date]] BETWEEN (NOW() - INTERVAL 1 MONTH) AND NOW()',
@@ -345,29 +350,28 @@ class QueryBuilderProvider
                 [':qp0' => 123],
             ],
             [
-                new BetweenColumns('2018-02-11', 'BETWEEN', 'create_time', 'update_time'),
+                new BetweenColumns('2018-02-11', 'create_time', 'update_time'),
                 ':qp0 BETWEEN [[create_time]] AND [[update_time]]',
-                [':qp0' => '2018-02-11'],
+                [':qp0' => new Param('2018-02-11', DataType::STRING)],
             ],
             [
-                new BetweenColumns('2018-02-11', 'NOT BETWEEN', 'NOW()', 'update_time'),
+                new NotBetweenColumns('2018-02-11', 'NOW()', 'update_time'),
                 ':qp0 NOT BETWEEN NOW() AND [[update_time]]',
-                [':qp0' => '2018-02-11'],
+                [':qp0' => new Param('2018-02-11', DataType::STRING)],
             ],
             [
-                new BetweenColumns(new Expression('NOW()'), 'BETWEEN', 'create_time', 'update_time'),
+                new BetweenColumns(new Expression('NOW()'), 'create_time', 'update_time'),
                 'NOW() BETWEEN [[create_time]] AND [[update_time]]',
                 [],
             ],
             [
-                new BetweenColumns(new Expression('NOW()'), 'NOT BETWEEN', 'create_time', 'update_time'),
+                new NotBetweenColumns(new Expression('NOW()'), 'create_time', 'update_time'),
                 'NOW() NOT BETWEEN [[create_time]] AND [[update_time]]',
                 [],
             ],
             [
-                new BetweenColumns(
+                new NotBetweenColumns(
                     new Expression('NOW()'),
-                    'NOT BETWEEN',
                     (new Query(static::getDb()))->select('min_date')->from('some_table'),
                     'max_date'
                 ),
@@ -375,9 +379,8 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                new BetweenColumns(
+                new NotBetweenColumns(
                     new Expression('NOW()'),
-                    'NOT BETWEEN',
                     new Expression('min_date'),
                     (new Query(static::getDb()))->select('max_date')->from('some_table'),
                 ),
