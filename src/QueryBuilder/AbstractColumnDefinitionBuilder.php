@@ -6,8 +6,8 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
+use Yiisoft\Db\Schema\Column\CollatableColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
-use Yiisoft\Db\Schema\Column\StringColumn;
 
 use function in_array;
 use function strtolower;
@@ -133,10 +133,11 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      */
     protected function buildCollate(ColumnInterface $column): string
     {
-        if (!$column instanceof StringColumn || empty($column->getCollation())) {
+        if (!$column instanceof CollatableColumnInterface || empty($column->getCollation())) {
             return '';
         }
 
+        /** @psalm-suppress PossiblyNullOperand */
         return ' COLLATE ' . $column->getCollation();
     }
 

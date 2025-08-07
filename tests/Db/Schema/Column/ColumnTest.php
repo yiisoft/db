@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Tests\Db\Schema\Column;
 use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
+use Yiisoft\Db\Schema\Column\CollatableColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
@@ -372,6 +373,7 @@ final class ColumnTest extends AbstractColumnTest
     {
         $stringCol = new StringColumn();
 
+        $this->assertInstanceOf(CollatableColumnInterface::class, $stringCol);
         $this->assertNull($stringCol->getCollation());
         $this->assertSame($stringCol, $stringCol->collation('utf8mb4'));
         $this->assertSame('utf8mb4', $stringCol->getCollation());

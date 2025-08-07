@@ -16,7 +16,7 @@ use function gettype;
 /**
  * Represents the metadata for a string column.
  */
-class StringColumn extends AbstractColumn
+class StringColumn extends AbstractColumn implements CollatableColumnInterface
 {
     protected const DEFAULT_TYPE = ColumnType::STRING;
 
@@ -25,9 +25,6 @@ class StringColumn extends AbstractColumn
      */
     protected string|null $collation = null;
 
-    /**
-     * Sets the collation for the column.
-     */
     public function collation(string|null $collation): static
     {
         $this->collation = $collation;
@@ -53,11 +50,7 @@ class StringColumn extends AbstractColumn
         };
     }
 
-    /**
-     * Returns the collation of the column.
-     *
-     * @psalm-mutation-free
-     */
+    /** @psalm-mutation-free */
     public function getCollation(): string|null
     {
         return $this->collation;
