@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder\Condition;
 
 /**
- * Represents a `BETWEEN` operator where values are between two columns.
+ * Represents a `NOT BETWEEN` operator where values are between two columns.
  *
  * For example:
  *
  * ```php
  * new BetweenColumnsCondition(42, 'min_value', 'max_value')
  * // Will be build to:
- * // 42 BETWEEN min_value AND max_value
+ * // 42 NOT BETWEEN min_value AND max_value
  * ```
  *
  * And a more complex example:
@@ -25,9 +25,9 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
  * );
  *
  * // Will be built to:
- * // NOW() BETWEEN (SELECT time FROM log ORDER BY id ASC LIMIT 1) AND update_time
+ * // NOW() NOT BETWEEN (SELECT time FROM log ORDER BY id ASC LIMIT 1) AND update_time
  * ```
  */
-final class BetweenColumns extends AbstractBetweenColumns
+final class NotBetweenColumns extends AbstractBetweenColumns
 {
 }

@@ -15,10 +15,9 @@ final class BetweenColumnsTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $betweenColumnsCondition = new BetweenColumns(42, 'BETWEEN', 'min_value', 'max_value');
+        $betweenColumnsCondition = new BetweenColumns(42, 'min_value', 'max_value');
 
         $this->assertSame(42, $betweenColumnsCondition->value);
-        $this->assertSame('BETWEEN', $betweenColumnsCondition->operator);
         $this->assertSame('min_value', $betweenColumnsCondition->intervalStartColumn);
         $this->assertSame('max_value', $betweenColumnsCondition->intervalEndColumn);
     }
@@ -31,7 +30,6 @@ final class BetweenColumnsTest extends TestCase
         );
 
         $this->assertSame(42, $betweenColumnsCondition->value);
-        $this->assertSame('BETWEEN', $betweenColumnsCondition->operator);
         $this->assertSame('min_value', $betweenColumnsCondition->intervalStartColumn);
         $this->assertSame('max_value', $betweenColumnsCondition->intervalEndColumn);
     }
@@ -42,16 +40,6 @@ final class BetweenColumnsTest extends TestCase
         $this->expectExceptionMessage("Operator 'between' requires three operands.");
 
         BetweenColumns::fromArrayDefinition('between', []);
-    }
-
-    public function testFromArrayDefinitionExceptionOperandsValue(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(
-            "Operator 'between' requires value to be array, int, string, Iterator or ExpressionInterface."
-        );
-
-        BetweenColumns::fromArrayDefinition('between', [false, 'min_value', 'max_value']);
     }
 
     public function testFromArrayDefinitionExceptionOperandsIntervalStartColumn(): void
