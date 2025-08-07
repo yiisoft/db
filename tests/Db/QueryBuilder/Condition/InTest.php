@@ -40,7 +40,7 @@ final class InTest extends TestCase
     public function testFromArrayDefinitionExceptionColumn(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Operator 'IN' requires column to be string, array or Iterator.");
+        $this->expectExceptionMessage("Operator 'IN' requires column to be string, ExpressionInterface or iterable.");
 
         In::fromArrayDefinition('IN', [1, [1, 2, 3]]);
     }

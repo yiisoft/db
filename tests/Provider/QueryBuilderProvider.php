@@ -388,13 +388,13 @@ class QueryBuilderProvider
             /* in */
             [
                 ['in', 'id', [1, 2, (new Query(static::getDb()))->select('three')->from('digits')]],
-                '[[id]] IN (:qp0, :qp1, (SELECT [[three]] FROM [[digits]]))',
-                [':qp0' => 1, ':qp1' => 2],
+                '[[id]] IN (1, 2, (SELECT [[three]] FROM [[digits]]))',
+                [],
             ],
             [
                 ['not in', 'id', [1, 2, 3]],
-                '[[id]] NOT IN (:qp0, :qp1, :qp2)',
-                [':qp0' => 1, ':qp1' => 2, ':qp2' => 3],
+                '[[id]] NOT IN (1, 2, 3)',
+                [],
             ],
             [
                 [
@@ -414,12 +414,12 @@ class QueryBuilderProvider
                 '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
             ],
-            [['in', 'id', [1]], '[[id]]=:qp0', [':qp0' => 1]],
-            [['in', 'id', new TraversableObject([1])], '[[id]]=:qp0', [':qp0' => 1]],
+            [['in', 'id', [1]], '[[id]]=1', []],
+            [['in', 'id', new TraversableObject([1])], '[[id]]=1', []],
             'composite in' => [
                 ['in', ['id', 'name'], [['id' => 1, 'name' => 'John Doe']]],
-                '([[id]], [[name]]) IN ((:qp0, :qp1))',
-                [':qp0' => 1, ':qp1' => 'John Doe'],
+                '([[id]], [[name]]) IN ((1, :qp0))',
+                [':qp0' => new Param('John Doe', DataType::STRING)],
             ],
             'composite in with Expression' => [
                 [
@@ -427,13 +427,13 @@ class QueryBuilderProvider
                     [new Expression('id'), new Expression('name')],
                     [['id' => 1, 'name' => 'John Doe']],
                 ],
-                '(id, name) IN ((:qp0, :qp1))',
-                [':qp0' => 1, ':qp1' => 'John Doe'],
+                '(id, name) IN ((1, :qp0))',
+                [':qp0' => new Param('John Doe', DataType::STRING)],
             ],
             'composite in (just one column)' => [
                 ['in', ['id'], [['id' => 1, 'name' => 'Name1'], ['id' => 2, 'name' => 'Name2']]],
-                '[[id]] IN (:qp0, :qp1)',
-                [':qp0' => 1, ':qp1' => 2],
+                '[[id]] IN (1, 2)',
+                [],
             ],
             'composite in using array objects (just one column)' => [
                 [
@@ -441,34 +441,36 @@ class QueryBuilderProvider
                     new TraversableObject(['id']),
                     new TraversableObject([['id' => 1, 'name' => 'Name1'], ['id' => 2, 'name' => 'Name2']]),
                 ],
-                '[[id]] IN (:qp0, :qp1)',
-                [':qp0' => 1, ':qp1' => 2],
+                '[[id]] IN (1, 2)',
+                [],
             ],
 
             /* in using array objects. */
-            [['id' => new TraversableObject([1, 2])], '[[id]] IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
+            [['id' => new TraversableObject([1, 2])], '[[id]] IN (1, 2)', []],
             [
                 ['in', 'id', new TraversableObject([1, 2, 3])],
-                '[[id]] IN (:qp0, :qp1, :qp2)',
-                [':qp0' => 1, ':qp1' => 2, ':qp2' => 3],
+                '[[id]] IN (1, 2, 3)',
+                [],
             ],
 
             /* in using array objects containing null value */
-            [['in', 'id', new TraversableObject([1, null])], '[[id]]=:qp0 OR [[id]] IS NULL', [':qp0' => 1]],
+            [['in', 'id', new TraversableObject([1, null])], '[[id]]=1 OR [[id]] IS NULL', []],
             [
                 ['in', 'id', new TraversableObject([1, 2, null])],
-                '[[id]] IN (:qp0, :qp1) OR [[id]] IS NULL', [':qp0' => 1, ':qp1' => 2],
+                '[[id]] IN (1, 2) OR [[id]] IS NULL',
+                [],
             ],
 
             /* not in using array object containing null value */
             [
                 ['not in', 'id', new TraversableObject([1, null])],
-                '[[id]]<>:qp0 AND [[id]] IS NOT NULL', [':qp0' => 1],
+                '[[id]]<>1 AND [[id]] IS NOT NULL',
+                [],
             ],
             [
                 ['not in', 'id', new TraversableObject([1, 2, null])],
-                '[[id]] NOT IN (:qp0, :qp1) AND [[id]] IS NOT NULL',
-                [':qp0' => 1, ':qp1' => 2],
+                '[[id]] NOT IN (1, 2) AND [[id]] IS NOT NULL',
+                [],
             ],
             [['not in', new Expression('id'), new TraversableObject([null])], '[[id]] IS NOT NULL', []],
 
@@ -481,15 +483,15 @@ class QueryBuilderProvider
                     new TraversableObject(['id', 'name']),
                     new TraversableObject([['id' => 1, 'name' => 'John Doe'], ['id' => 2, 'name' => 'yo']]),
                 ],
-                '([[id]], [[name]]) IN ((:qp0, :qp1), (:qp2, :qp3))',
-                [':qp0' => 1, ':qp1' => 'John Doe', ':qp2' => 2, ':qp3' => 'yo'],
+                '([[id]], [[name]]) IN ((1, :qp0), (2, :qp1))',
+                [':qp0' => new Param('John Doe', DataType::STRING), ':qp1' => new Param('yo', DataType::STRING)],
             ],
 
             /* in object conditions */
-            [new In('id', [1]), '[[id]]=:qp0', [':qp0' => 1]],
-            [new NotIn('id', [1]), '[[id]]<>:qp0', [':qp0' => 1]],
-            [new In('id', [1, 2]), '[[id]] IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
-            [new NotIn('id', [1, 2]), '[[id]] NOT IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
+            [new In('id', [1]), '[[id]]=1', []],
+            [new NotIn('id', [1]), '[[id]]<>1', []],
+            [new In('id', [1, 2]), '[[id]] IN (1, 2)', []],
+            [new NotIn('id', [1, 2]), '[[id]] NOT IN (1, 2)', []],
             [new In([], [1]), '0=1', []],
             'inCondition-custom-1' => [new In(['id', 'name'], []), '0=1', []],
             'inCondition-custom-2' => [
@@ -502,18 +504,18 @@ class QueryBuilderProvider
             ],
             'inCondition-custom-3' => [
                 new In(['id', 'name'], [['id' => 1]]),
-                '([[id]], [[name]]) IN ((:qp0, NULL))',
-                [':qp0' => 1],
+                '([[id]], [[name]]) IN ((1, NULL))',
+                [],
             ],
             'inCondition-custom-4' => [
                 new In(['id', 'name'], [['name' => 'John Doe']]),
                 '([[id]], [[name]]) IN ((NULL, :qp0))',
-                [':qp0' => 'John Doe'],
+                [':qp0' => new Param('John Doe', DataType::STRING)],
             ],
             'inCondition-custom-5' => [
                 new In(['id', 'name'], [['id' => 1, 'name' => 'John Doe']]),
-                '([[id]], [[name]]) IN ((:qp0, :qp1))',
-                [':qp0' => 1, ':qp1' => 'John Doe'],
+                '([[id]], [[name]]) IN ((1, :qp0))',
+                [':qp0' => new Param('John Doe', DataType::STRING)],
             ],
             'inCondition-custom-6' => [
                 new In(
