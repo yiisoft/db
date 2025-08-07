@@ -320,7 +320,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
-        $this->assertSame([':qp0' => '1', ':qp1' => '0'], $params);
+        $this->assertEquals(
+            [
+                ':qp0' => new Param('1', DataType::STRING),
+                ':qp1' => new Param('0', DataType::STRING),
+            ],
+            $params,
+        );
     }
 
     /**

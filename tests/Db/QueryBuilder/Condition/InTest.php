@@ -15,10 +15,9 @@ final class InTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $inCondition = new In('id', 'IN', [1, 2, 3]);
+        $inCondition = new In('id', [1, 2, 3]);
 
         $this->assertSame('id', $inCondition->column);
-        $this->assertSame('IN', $inCondition->operator);
         $this->assertSame([1, 2, 3], $inCondition->values);
     }
 
@@ -27,7 +26,6 @@ final class InTest extends TestCase
         $inCondition = In::fromArrayDefinition('IN', ['id', [1, 2, 3]]);
 
         $this->assertSame('id', $inCondition->column);
-        $this->assertSame('IN', $inCondition->operator);
         $this->assertSame([1, 2, 3], $inCondition->values);
     }
 
@@ -42,7 +40,7 @@ final class InTest extends TestCase
     public function testFromArrayDefinitionExceptionColumn(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Operator 'IN' requires column to be string, array or Iterator.");
+        $this->expectExceptionMessage("Operator 'IN' requires column to be string, ExpressionInterface or iterable.");
 
         In::fromArrayDefinition('IN', [1, [1, 2, 3]]);
     }
@@ -51,7 +49,7 @@ final class InTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            "Operator 'IN' requires values to be array, Iterator, int or QueryInterface."
+            "Operator 'IN' requires values to be iterable or QueryInterface."
         );
 
         In::fromArrayDefinition('IN', ['id', false]);
