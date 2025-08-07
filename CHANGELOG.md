@@ -121,6 +121,7 @@
 - Enh #1016: Refactor `AbstractDMLQueryBuilder::getTableUniqueColumnNames()` method (@Tigrov)
 - New #1015: Add mode parameter to `Like` condition (@vjik)
 - Chg #1017: Split `Between` condition to `Between` and `NotBetween` (@vjik)
+- New #1020: Support column's collation (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
