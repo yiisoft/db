@@ -15,10 +15,9 @@ final class BetweenTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $betweenCondition = new Between('date', 'BETWEEN', 1, 2);
+        $betweenCondition = new Between('date', 1, 2);
 
         $this->assertSame('date', $betweenCondition->column);
-        $this->assertSame('BETWEEN', $betweenCondition->operator);
         $this->assertSame(1, $betweenCondition->intervalStart);
         $this->assertSame(2, $betweenCondition->intervalEnd);
     }
@@ -28,7 +27,6 @@ final class BetweenTest extends TestCase
         $betweenCondition = Between::fromArrayDefinition('BETWEEN', ['date', 1, 2]);
 
         $this->assertSame('date', $betweenCondition->column);
-        $this->assertSame('BETWEEN', $betweenCondition->operator);
         $this->assertSame(1, $betweenCondition->intervalStart);
         $this->assertSame(2, $betweenCondition->intervalEnd);
     }

@@ -16,11 +16,13 @@ use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\QueryBuilder\Condition\Between;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumns;
 use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
 use Yiisoft\Db\QueryBuilder\Condition\NotBetweenColumns;
+use Yiisoft\Db\QueryBuilder\Condition\NotBetween;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Data\StringableStream;
@@ -324,6 +326,8 @@ class QueryBuilderProvider
             /* between */
             [['between', 'id', 1, 10], '[[id]] BETWEEN :qp0 AND :qp1', [':qp0' => 1, ':qp1' => 10]],
             [['not between', 'id', 1, 10], '[[id]] NOT BETWEEN :qp0 AND :qp1', [':qp0' => 1, ':qp1' => 10]],
+            [new Between('id', 1, 10), '[[id]] BETWEEN :qp0 AND :qp1', [':qp0' => 1, ':qp1' => 10]],
+            [new NotBetween('id', 1, 10), '[[id]] NOT BETWEEN :qp0 AND :qp1', [':qp0' => 1, ':qp1' => 10]],
             [
                 ['between', 'date', new Expression('(NOW() - INTERVAL 1 MONTH)'), new Expression('NOW()')],
                 '[[date]] BETWEEN (NOW() - INTERVAL 1 MONTH) AND NOW()',
