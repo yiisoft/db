@@ -72,13 +72,14 @@ abstract class AbstractIn implements ConditionInterface
         }
 
         if (is_array($column)) {
-            foreach ($column as $value) {
-                if (!is_string($value) && !$value instanceof ExpressionInterface) {
+            foreach ($column as $columnItem) {
+                if (!is_string($columnItem) && !$columnItem instanceof ExpressionInterface) {
                     throw new InvalidArgumentException(
                         "Operator '$operator' requires column to be string, ExpressionInterface or iterable."
                     );
                 }
             }
+            /** @psalm-var array<string|ExpressionInterface> */
             return $column;
         }
 
