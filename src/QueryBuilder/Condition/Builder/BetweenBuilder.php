@@ -11,14 +11,15 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Between;
+use Yiisoft\Db\QueryBuilder\Condition\NotBetween;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function str_contains;
 
 /**
- * Build an object of {@see Between} into SQL expressions.
+ * Build an object of {@see Between} or {@see NotBetween} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<Between>
+ * @implements ExpressionBuilderInterface<Between|NotBetween>
  */
 class BetweenBuilder implements ExpressionBuilderInterface
 {
@@ -27,9 +28,9 @@ class BetweenBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see Between}.
+     * Build SQL for {@see Between} or {@see NotBetween}.
      *
-     * @param Between $expression
+     * @param Between|NotBetween $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -38,7 +39,10 @@ class BetweenBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operator = $expression->operator;
+        $operator = match ($expression::class) {
+            Between::class => 'BETWEEN',
+            NotBetween::class => 'NOT BETWEEN',
+        };
         $column = $expression->column;
         $column = $column instanceof ExpressionInterface
             ? $this->queryBuilder->buildExpression($column)
