@@ -73,11 +73,6 @@ class InBuilder implements ExpressionBuilderInterface
             return $this->buildSubqueryInCondition($operator, $column, $values, $params);
         }
 
-        if (!is_array($values) && !is_iterable($values)) {
-            /** ensure values is an array */
-            $values = (array) $values;
-        }
-
         if (is_array($column)) {
             if (count($column) > 1) {
                 return $this->buildCompositeInCondition($operator, $column, $values, $params);
@@ -95,11 +90,9 @@ class InBuilder implements ExpressionBuilderInterface
             $column = $column->current();
         }
 
-        if (is_array($values)) {
-            $rawValues = $values;
-        } else {
-            $rawValues = $this->getRawValuesFromTraversableObject($values);
-        }
+        $rawValues = is_array($values)
+            ? $values
+            : $this->getRawValuesFromTraversableObject($values);
 
         $nullCondition = null;
         $nullConditionOperator = null;
@@ -125,7 +118,6 @@ class InBuilder implements ExpressionBuilderInterface
             $sql = (string) $column . $operator . reset($sqlValues);
         }
 
-        /** @var int|string|null $nullCondition */
         return $nullCondition !== null && $nullConditionOperator !== null
             ? sprintf('%s %s %s', $sql, $nullConditionOperator, $nullCondition)
             : $sql;

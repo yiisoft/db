@@ -21,15 +21,15 @@ use function is_string;
 abstract class AbstractIn implements ConditionInterface
 {
     /**
-     * @param array|ExpressionInterface|Iterator|string $column The column name. If it's an array, a composite `IN` condition
-     * will be generated.
-     * @param int|iterable|Iterator|QueryInterface $values An array of values that {@see $columns} value should be among.
+     * @param array|ExpressionInterface|Iterator|string $column The column name. If it's an array, a composite
+     * condition will be generated.
+     * @param iterable|QueryInterface $values An array of values that {@see $columns} value should be among.
      * If it's an empty array, the generated expression will be a `false` value if {@see $operator} is `IN` and empty if
      * operator is `NOT IN`.
      */
     final public function __construct(
         public readonly array|string|Iterator|ExpressionInterface $column,
-        public readonly int|iterable|Iterator|QueryInterface $values
+        public readonly iterable|QueryInterface $values
     ) {
     }
 
@@ -65,18 +65,18 @@ abstract class AbstractIn implements ConditionInterface
     }
 
     /**
-     * Validates the given values to be `array`, `Iterator`, `int` or `QueryInterface`.
+     * Validates the given values to be `iterable` or `QueryInterface`.
      *
-     * @throws InvalidArgumentException If the values aren't an `array`, `Iterator`, `int` or `QueryInterface`.
+     * @throws InvalidArgumentException If the values aren't an `iterable` or `QueryInterface`.
      */
-    private static function validateValues(string $operator, mixed $values): int|iterable|Iterator|QueryInterface
+    private static function validateValues(string $operator, mixed $values): iterable|QueryInterface
     {
-        if (is_array($values) || $values instanceof Iterator || is_int($values) || $values instanceof QueryInterface) {
+        if (is_iterable($values) || $values instanceof QueryInterface) {
             return $values;
         }
 
         throw new InvalidArgumentException(
-            "Operator '$operator' requires values to be array, Iterator, int or QueryInterface."
+            "Operator '$operator' requires values to be iterable or QueryInterface."
         );
     }
 }

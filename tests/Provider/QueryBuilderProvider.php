@@ -414,7 +414,6 @@ class QueryBuilderProvider
                 '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
             ],
-            [['in', 'id', 1], '[[id]]=:qp0', [':qp0' => 1]],
             [['in', 'id', [1]], '[[id]]=:qp0', [':qp0' => 1]],
             [['in', 'id', new TraversableObject([1])], '[[id]]=:qp0', [':qp0' => 1]],
             'composite in' => [
@@ -487,13 +486,10 @@ class QueryBuilderProvider
             ],
 
             /* in object conditions */
-            [new In('id', 1), '[[id]]=:qp0', [':qp0' => 1]],
             [new In('id', [1]), '[[id]]=:qp0', [':qp0' => 1]],
-            [new NotIn('id', 1), '[[id]]<>:qp0', [':qp0' => 1]],
             [new NotIn('id', [1]), '[[id]]<>:qp0', [':qp0' => 1]],
             [new In('id', [1, 2]), '[[id]] IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
             [new NotIn('id', [1, 2]), '[[id]] NOT IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
-            [new In([], 1), '0=1', []],
             [new In([], [1]), '0=1', []],
             'inCondition-custom-1' => [new In(['id', 'name'], []), '0=1', []],
             'inCondition-custom-2' => [

@@ -49,7 +49,7 @@ final class InTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            "Operator 'IN' requires values to be array, Iterator, int or QueryInterface."
+            "Operator 'IN' requires values to be iterable or QueryInterface."
         );
 
         In::fromArrayDefinition('IN', ['id', false]);
