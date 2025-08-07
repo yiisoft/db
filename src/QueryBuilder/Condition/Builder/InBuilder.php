@@ -169,9 +169,7 @@ class InBuilder implements ExpressionBuilderInterface
                     $preparedColumns[] = $this->queryBuilder->buildExpression($column);
                     continue;
                 }
-                $preparedColumns[] = str_contains($column, '(')
-                    ? $column
-                    : $this->queryBuilder->getQuoter()->quoteColumnName($column);
+                $preparedColumns[] = $this->queryBuilder->getQuoter()->quoteColumnName($column);
             }
             return '(' . implode(', ', $preparedColumns) . ") $operator $sql";
         }
