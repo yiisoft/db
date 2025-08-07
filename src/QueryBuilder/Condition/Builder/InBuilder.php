@@ -100,9 +100,7 @@ class InBuilder implements ExpressionBuilderInterface
             return $nullCondition ?? ($operator === 'IN' ? '0=1' : '');
         }
 
-        if (!str_contains($column, '(')) {
-            $column = $this->queryBuilder->getQuoter()->quoteColumnName($column);
-        }
+        $column = $this->queryBuilder->getQuoter()->quoteColumnName($column);
 
         if (count($sqlValues) > 1) {
             $sql = "$column $operator (" . implode(', ', $sqlValues) . ')';
