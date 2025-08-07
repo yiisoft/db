@@ -10,7 +10,6 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 use function is_array;
-use function is_int;
 use function is_string;
 
 /**
