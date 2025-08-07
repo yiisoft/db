@@ -42,16 +42,6 @@ final class BetweenColumnsTest extends TestCase
         BetweenColumns::fromArrayDefinition('between', []);
     }
 
-    public function testFromArrayDefinitionExceptionOperandsValue(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(
-            "Operator 'between' requires value to be array, int, string, Iterator or ExpressionInterface."
-        );
-
-        BetweenColumns::fromArrayDefinition('between', [false, 'min_value', 'max_value']);
-    }
-
     public function testFromArrayDefinitionExceptionOperandsIntervalStartColumn(): void
     {
         $this->expectException(InvalidArgumentException::class);

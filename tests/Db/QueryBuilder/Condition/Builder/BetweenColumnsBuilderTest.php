@@ -24,10 +24,9 @@ final class BetweenColumnsBuilderTest extends TestCase
         $params = [];
 
         $this->assertSame(
-            ':qp0 BETWEEN [1] AND [100]',
+            '42 BETWEEN [1] AND [100]',
             (new BetweenColumnsBuilder($db->getQueryBuilder()))->build($betweenColumnsCondition, $params)
         );
-
-        $this->assertEquals([':qp0' => 42], $params);
+        $this->assertSame([], $params);
     }
 }

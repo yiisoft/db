@@ -347,12 +347,12 @@ class QueryBuilderProvider
             [
                 new BetweenColumns('2018-02-11', 'create_time', 'update_time'),
                 ':qp0 BETWEEN [[create_time]] AND [[update_time]]',
-                [':qp0' => '2018-02-11'],
+                [':qp0' => new Param('2018-02-11', DataType::STRING)],
             ],
             [
                 new NotBetweenColumns('2018-02-11', 'NOW()', 'update_time'),
                 ':qp0 NOT BETWEEN NOW() AND [[update_time]]',
-                [':qp0' => '2018-02-11'],
+                [':qp0' => new Param('2018-02-11', DataType::STRING)],
             ],
             [
                 new BetweenColumns(new Expression('NOW()'), 'create_time', 'update_time'),

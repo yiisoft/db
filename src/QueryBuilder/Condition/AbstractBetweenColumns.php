@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition;
 
-use Iterator;
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
-use function is_array;
-use function is_int;
 use function is_string;
 
 /**
@@ -20,12 +17,12 @@ use function is_string;
 abstract class AbstractBetweenColumns implements ConditionInterface
 {
     /**
-     * @param array|ExpressionInterface|int|Iterator|string $value The value to compare against.
+     * @param mixed $value The value to compare against.
      * @param ExpressionInterface|string $intervalStartColumn The column name or expression that's the beginning of the interval.
      * @param ExpressionInterface|string $intervalEndColumn The column name or expression that's the end of the interval.
      */
     final public function __construct(
-        public readonly array|int|string|Iterator|ExpressionInterface $value,
+        public readonly mixed $value,
         public readonly string|ExpressionInterface $intervalStartColumn,
         public readonly string|ExpressionInterface $intervalEndColumn,
     ) {
@@ -43,33 +40,9 @@ abstract class AbstractBetweenColumns implements ConditionInterface
         }
 
         return new static(
-            self::validateValue($operator, $operands[0]),
+            $operands[0],
             self::validateIntervalStartColumn($operator, $operands[1]),
             self::validateIntervalEndColumn($operator, $operands[2]),
-        );
-    }
-
-    /**
-     * Validates the given value to be `array`, `int`, `string`, `Iterator` or `ExpressionInterface`.
-     *
-     * @throws InvalidArgumentException If the value isn't `array`, `int`, `string`, `Iterator` or `ExpressionInterface`.
-     */
-    private static function validateValue(
-        string $operator,
-        mixed $value
-    ): array|int|string|Iterator|ExpressionInterface {
-        if (
-            is_array($value) ||
-            is_int($value) ||
-            is_string($value) ||
-            ($value instanceof Iterator) ||
-            ($value instanceof ExpressionInterface)
-        ) {
-            return $value;
-        }
-
-        throw new InvalidArgumentException(
-            "Operator '$operator' requires value to be array, int, string, Iterator or ExpressionInterface."
         );
     }
 

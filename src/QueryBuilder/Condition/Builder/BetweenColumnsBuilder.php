@@ -46,25 +46,8 @@ class BetweenColumnsBuilder implements ExpressionBuilderInterface
         };
         $startColumn = $this->escapeColumnName($expression->intervalStartColumn, $params);
         $endColumn = $this->escapeColumnName($expression->intervalEndColumn, $params);
-        $value = $this->createPlaceholder($expression->value, $params);
+        $value = $this->queryBuilder->buildValue($expression->value, $params);
         return "$value $operator $startColumn AND $endColumn";
-    }
-
-    /**
-     * Attaches `$value` to `$params` array and return placeholder.
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
-    protected function createPlaceholder(mixed $value, array &$params): string
-    {
-        if ($value instanceof ExpressionInterface) {
-            return $this->queryBuilder->buildExpression($value, $params);
-        }
-
-        return $this->queryBuilder->bindParam($value, $params);
     }
 
     /**
