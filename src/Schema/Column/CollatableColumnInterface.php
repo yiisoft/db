@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+/**
+ * Represents a column with collation.
+ *
+ * Provides methods to set and get a collation value for the column.
+ */
 interface CollatableColumnInterface
 {
     /**
