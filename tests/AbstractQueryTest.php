@@ -14,6 +14,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class AbstractQueryTest extends TestCase
@@ -257,7 +258,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame($condition, $query->getHaving());
 
-        $query->andFilterHaving(['or like', 'id', '']);
+        $query->andFilterHaving(['like', 'id', '', 'conjunction' => LikeConjunction::Or]);
 
         $this->assertSame($condition, $query->getHaving());
 
@@ -265,7 +266,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame($condition, $query->getHaving());
 
-        $query->andFilterHaving(['or not like', 'id', null]);
+        $query->andFilterHaving(['not like', 'id', null, 'conjunction' => LikeConjunction::Or]);
 
         $this->assertSame($condition, $query->getHaving());
 
@@ -343,7 +344,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame($condition, $query->getWhere());
 
-        $query->andFilterWhere(['or like', 'id', '']);
+        $query->andFilterWhere(['like', 'id', '', 'conjunction' => LikeConjunction::Or]);
 
         $this->assertSame($condition, $query->getWhere());
 
@@ -351,7 +352,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame($condition, $query->getWhere());
 
-        $query->andFilterWhere(['or not like', 'id', null]);
+        $query->andFilterWhere(['not like', 'id', null, 'conjunction' => LikeConjunction::Or]);
 
         $this->assertSame($condition, $query->getWhere());
 

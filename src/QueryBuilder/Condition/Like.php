@@ -20,6 +20,7 @@ final class Like implements ConditionInterface
 {
     private const DEFAULT_ESCAPE = true;
     private const DEFAULT_MODE = LikeMode::Contains;
+    private const DEFAULT_CONJUNCTION = LikeConjunction::And;
 
     /**
      * @param ExpressionInterface|string $column The column name.
@@ -30,6 +31,7 @@ final class Like implements ConditionInterface
      * @param bool $escape Whether to escape the value. Defaults to `true`. If `false`, the value will be used as is
      * without escaping.
      * @param LikeMode $mode The mode for the LIKE operation (contains, starts with, ends with or custom pattern).
+     * @param LikeConjunction $conjunction The conjunction to use for combining multiple LIKE conditions.
      */
     public function __construct(
         public readonly string|ExpressionInterface $column,
@@ -38,6 +40,7 @@ final class Like implements ConditionInterface
         public readonly ?bool $caseSensitive = null,
         public readonly bool $escape = self::DEFAULT_ESCAPE,
         public readonly LikeMode $mode = self::DEFAULT_MODE,
+        public readonly LikeConjunction $conjunction = self::DEFAULT_CONJUNCTION,
     ) {
     }
 
@@ -68,6 +71,22 @@ final class Like implements ConditionInterface
             $mode = self::DEFAULT_MODE;
         }
 
+        if (isset($operands['conjunction'])) {
+            $conjunction = $operands['conjunction'];
+            if (!$conjunction instanceof LikeConjunction) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'Operator "%s" requires "conjunction" to be an instance of %s. Got %s.',
+                        $operator,
+                        LikeConjunction::class,
+                        get_debug_type($mode),
+                    ),
+                );
+            }
+        } else {
+            $conjunction = self::DEFAULT_CONJUNCTION;
+        }
+
         return new self(
             self::validateColumn($operator, $operands[0]),
             $operator,
@@ -75,6 +94,7 @@ final class Like implements ConditionInterface
             isset($operands['caseSensitive']) ? (bool) $operands['caseSensitive'] : null,
             isset($operands['escape']) ? (bool) $operands['escape'] : self::DEFAULT_ESCAPE,
             $mode,
+            $conjunction,
         );
     }
 

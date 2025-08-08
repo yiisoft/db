@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
 
 class QueryProvider
 {
@@ -14,8 +15,8 @@ class QueryProvider
             /* like */
             [['like', 'name', []], null],
             [['not like', 'name', []], null],
-            [['or like', 'name', []],  null],
-            [['or not like', 'name', []], null],
+            [['like', 'name', [], 'conjunction' => LikeConjunction::Or],  null],
+            [['not like', 'name', [], 'conjunction' => LikeConjunction::Or], null],
 
             /* not */
             [['not', ''], null],
