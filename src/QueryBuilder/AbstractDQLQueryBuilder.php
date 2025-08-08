@@ -524,8 +524,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             'NOT IN' => Condition\NotIn::class,
             'LIKE' => Condition\Like::class,
             'NOT LIKE' => Condition\Like::class,
-            'OR LIKE' => Condition\Like::class,
-            'OR NOT LIKE' => Condition\Like::class,
             'EXISTS' => Condition\Exists::class,
             'NOT EXISTS' => Condition\Exists::class,
             'ARRAY OVERLAPS' => Condition\ArrayOverlaps::class,
