@@ -13,6 +13,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
+use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
@@ -60,7 +61,7 @@ class LikeBuilder implements ExpressionBuilderInterface
     {
         $values = $expression->value;
 
-        [$andor, $not, $operator] = $this->parseOperator($expression);
+        [$not, $operator] = $this->parseOperator($expression);
 
         if (!is_array($values)) {
             $values = [$values];
@@ -80,7 +81,12 @@ class LikeBuilder implements ExpressionBuilderInterface
             $parts[] = "$column $operator $placeholderName$this->escapeSql";
         }
 
-        return implode($andor, $parts);
+        $conjunction = match ($expression->conjunction) {
+            LikeConjunction::And => ' AND ',
+            LikeConjunction::Or => ' OR ',
+        };
+
+        return implode($conjunction, $parts);
     }
 
     /**
@@ -143,19 +149,18 @@ class LikeBuilder implements ExpressionBuilderInterface
      *
      * @throws InvalidArgumentException
      *
-     * @psalm-return array{0: string, 1: bool, 2: string}
+     * @psalm-return array{0: bool, 1: string}
      */
     protected function parseOperator(Like $condition): array
     {
         $operator = strtoupper($condition->operator);
-        if (!preg_match('/^(AND |OR |)((NOT |)I?LIKE)/', $operator, $matches)) {
+        if (!preg_match('/^((NOT |)I?LIKE)/', $operator, $matches)) {
             throw new InvalidArgumentException("Invalid operator in like condition: \"$operator\"");
         }
 
-        $andor = ' ' . (!empty($matches[1]) ? $matches[1] : 'AND ');
-        $not = !empty($matches[3]);
-        $operator = $matches[2];
+        $not = !empty($matches[2]);
+        $operator = $matches[1];
 
-        return [$andor, $not, $operator];
+        return [$not, $operator];
     }
 }
