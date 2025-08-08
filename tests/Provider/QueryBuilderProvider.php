@@ -20,6 +20,7 @@ use Yiisoft\Db\QueryBuilder\Condition\Between;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumns;
 use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
+use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
 use Yiisoft\Db\QueryBuilder\Condition\NotIn;
 use Yiisoft\Db\QueryBuilder\Condition\NotBetweenColumns;
@@ -288,8 +289,8 @@ class QueryBuilderProvider
             /* empty values */
             [['like', 'name', []], '0=1', []],
             [['not like', 'name', []], '', []],
-            [['or like', 'name', []], '0=1', []],
-            [['or not like', 'name', []], '', []],
+            [['like', 'name', [], 'conjunction' => LikeConjunction::Or], '0=1', []],
+            [['not like', 'name', [], 'conjunction' => LikeConjunction::Or], '', []],
 
             /* not */
             [['not', ''], '', []],
@@ -643,8 +644,8 @@ class QueryBuilderProvider
             /* like */
             [['like', 'name', []], '', []],
             [['not like', 'name', []], '', []],
-            [['or like', 'name', []], '', []],
-            [['or not like', 'name', []], '', []],
+            [['like', 'name', [], 'conjunction' => LikeConjunction::Or], '', []],
+            [['not like', 'name', [], 'conjunction' => LikeConjunction::Or], '', []],
 
             /* not */
             [['not', ''], '', []],
@@ -755,8 +756,8 @@ class QueryBuilderProvider
             /* simple like */
             [['like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
             [['not like', 'name', 'foo%'], '[[name]] NOT LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
-            [['or like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
-            [['or not like', 'name', 'foo%'], '[[name]] NOT LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
+            [['like', 'name', 'foo%', 'conjunction' => LikeConjunction::Or], '[[name]] LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
+            [['not like', 'name', 'foo%', 'conjunction' => LikeConjunction::Or], '[[name]] NOT LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
 
             /* like for many values */
             [
@@ -770,12 +771,12 @@ class QueryBuilderProvider
                 [':qp0' => new Param('%foo\%%', DataType::STRING), ':qp1' => new Param('%[abc]%', DataType::STRING)],
             ],
             [
-                ['or like', 'name', ['foo%', '[abc]']],
+                ['like', 'name', ['foo%', '[abc]'], 'conjunction' => LikeConjunction::Or],
                 '[[name]] LIKE :qp0 OR [[name]] LIKE :qp1',
                 [':qp0' => new Param('%foo\%%', DataType::STRING), ':qp1' => new Param('%[abc]%', DataType::STRING)],
             ],
             [
-                ['or not like', 'name', ['foo%', '[abc]']],
+                ['not like', 'name', ['foo%', '[abc]'], 'conjunction' => LikeConjunction::Or],
                 '[[name]] NOT LIKE :qp0 OR [[name]] NOT LIKE :qp1',
                 [':qp0' => new Param('%foo\%%', DataType::STRING), ':qp1' => new Param('%[abc]%', DataType::STRING)],
             ],
@@ -792,12 +793,12 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                ['or like', 'name', new Expression('CONCAT("test", name, "%")')],
+                ['like', 'name', new Expression('CONCAT("test", name, "%")'), 'conjunction' => LikeConjunction::Or],
                 '[[name]] LIKE CONCAT("test", name, "%")',
                 [],
             ],
             [
-                ['or not like', 'name', new Expression('CONCAT("test", name, "%")')],
+                ['not like', 'name', new Expression('CONCAT("test", name, "%")'), 'conjunction' => LikeConjunction::Or],
                 '[[name]] NOT LIKE CONCAT("test", name, "%")',
                 [],
             ],
@@ -812,12 +813,12 @@ class QueryBuilderProvider
                 [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
-                ['or like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
+                ['like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c'], 'conjunction' => LikeConjunction::Or],
                 '[[name]] LIKE CONCAT("test", name, "%") OR [[name]] LIKE :qp0',
                 [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
-                ['or not like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
+                ['not like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c'], 'conjunction' => LikeConjunction::Or],
                 '[[name]] NOT LIKE CONCAT("test", name, "%") OR [[name]] NOT LIKE :qp0',
                 [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
@@ -843,12 +844,17 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                new Like('name', 'or like', new Expression('CONCAT("test", name, "%")')),
+                new Like('name', 'like', new Expression('CONCAT("test", name, "%")'), conjunction: LikeConjunction::Or),
                 '[[name]] LIKE CONCAT("test", name, "%")',
                 [],
             ],
             [
-                new Like('name', 'or not like', new Expression('CONCAT("test", name, "%")')),
+                new Like(
+                    'name',
+                    'not like',
+                    new Expression('CONCAT("test", name, "%")'),
+                    conjunction: LikeConjunction::Or,
+                ),
                 '[[name]] NOT LIKE CONCAT("test", name, "%")',
                 [],
             ],
@@ -863,11 +869,16 @@ class QueryBuilderProvider
                 [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
-                new Like('name', 'or like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                new Like('name', 'like', [new Expression('CONCAT("test", name, "%")'), '\ab_c'], conjunction: LikeConjunction::Or),
                 '[[name]] LIKE CONCAT("test", name, "%") OR [[name]] LIKE :qp0', [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
-                new Like('name', 'or not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                new Like(
+                    'name',
+                    'not like',
+                    [new Expression('CONCAT("test", name, "%")'), '\ab_c'],
+                    conjunction: LikeConjunction::Or,
+                ),
                 '[[name]] NOT LIKE CONCAT("test", name, "%") OR [[name]] NOT LIKE :qp0', [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
 
