@@ -31,15 +31,6 @@ use function strtr;
  */
 class LikeBuilder implements ExpressionBuilderInterface
 {
-    /**
-     * Map of condition classes to their operator data ("is not" and "operator").
-     *
-     * @psalm-var array<class-string<AbstractLike>, array{0: bool, 1: string}>
-     */
-    protected const OPERATOR_DATA = [
-        Like::class => [false, 'LIKE'],
-        NotLike::class => [true, 'NOT LIKE'],
-    ];
 
     /**
      * @var string SQL fragment to append to the end of `LIKE` conditions.
@@ -165,7 +156,20 @@ class LikeBuilder implements ExpressionBuilderInterface
      */
     protected function getOperatorData(AbstractLike $condition): array
     {
-        return static::OPERATOR_DATA[$condition::class]
-            ?? throw new InvalidArgumentException('Unsupported condition type: ' . $condition::class);
+        return match ($condition::class) {
+            Like::class => [false, 'LIKE'],
+            NotLike::class => [true, 'NOT LIKE'],
+            default => $this->throwUnsupportedConditionException($condition),
+        };
+    }
+
+    /**
+     * Throw exception for unsupported condition type.
+     *
+     * @psalm-return never
+     */
+    protected function throwUnsupportedConditionException(AbstractLike $condition): never
+    {
+        throw new InvalidArgumentException('Unsupported condition type: ' . $condition::class);
     }
 }
