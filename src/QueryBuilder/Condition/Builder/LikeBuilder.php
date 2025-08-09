@@ -12,7 +12,6 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\AbstractLike;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
@@ -27,7 +26,7 @@ use function strtr;
 /**
  * Build an object of {@see Like} or {@see NotLike} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<AbstractLike>
+ * @implements ExpressionBuilderInterface<Like|NotLike>
  */
 class LikeBuilder implements ExpressionBuilderInterface
 {
@@ -62,7 +61,7 @@ class LikeBuilder implements ExpressionBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(ExpressionInterface $expression, array &$params = []): string
+    final public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $values = $expression->value;
 
