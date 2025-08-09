@@ -840,7 +840,7 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                new NotLike('name',  new Expression('CONCAT("test", name, "%")')),
+                new NotLike('name', new Expression('CONCAT("test", name, "%")')),
                 '[[name]] NOT LIKE CONCAT("test", name, "%")',
                 [],
             ],
