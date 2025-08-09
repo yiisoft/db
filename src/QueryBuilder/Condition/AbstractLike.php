@@ -24,7 +24,7 @@ abstract class AbstractLike implements ConditionInterface
 
     /**
      * @param ExpressionInterface|string $column The column name.
-     * @param array|ExpressionInterface|int|Iterator|string|null $value The value to the right of {@see operator}.
+     * @param array|ExpressionInterface|int|Iterator|string|null $value The value to the right of operator.
      * @param bool|null $caseSensitive Whether the comparison is case-sensitive. `null` means using the default
      * behavior.
      * @param bool $escape Whether to escape the value. Defaults to `true`. If `false`, the value will be used as is
