@@ -36,11 +36,10 @@ final class CommandTest extends AbstractCommandTest
 
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD CONSTRAINT [[name]] CHECK (id > 0)
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -57,11 +56,10 @@ final class CommandTest extends AbstractCommandTest
         $columnType = $db->getQueryBuilder()->buildColumnDefinition($type);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]] {$columnType}
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -75,11 +73,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->addCommentOnColumn('customer', 'id', 'Primary key.')->getSql();
 
         $this->assertStringContainsString(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 COMMENT ON COLUMN [[customer]].[[id]] IS 'Primary key.'
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -93,11 +90,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->addCommentOnTable('table', 'comment')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 COMMENT ON TABLE [[table]] IS 'comment'
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -174,11 +170,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->alterColumn('table', 'column', ColumnType::INTEGER)->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] CHANGE [[column]] [[column]] integer
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -287,11 +282,10 @@ final class CommandTest extends AbstractCommandTest
         )->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 CREATE VIEW [[view]] AS SELECT * FROM [[table]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -305,11 +299,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->delete('table', ['column' => 'value'])->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 DELETE FROM [[table]] WHERE [[column]] = :qp0
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -323,11 +316,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->dropCheck('table', 'name')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -341,11 +333,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->dropColumn('table', 'column')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP COLUMN [[column]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -359,11 +350,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->dropCommentFromColumn('table', 'column')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 COMMENT ON COLUMN [[table]].[[column]] IS NULL
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -377,11 +367,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->dropCommentFromTable('table')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 COMMENT ON TABLE [[table]] IS NULL
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -409,11 +398,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->dropForeignKey('table', 'name')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -427,11 +415,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->dropIndex('table', 'name')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 DROP INDEX [[name]] ON [[table]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -445,11 +432,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->dropPrimaryKey('table', 'name')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -463,11 +449,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->dropView('view')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 DROP VIEW [[view]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -489,7 +474,7 @@ final class CommandTest extends AbstractCommandTest
             $command = $command->dropTable('table', ifExists: $ifExists, cascade: $cascade);
         }
 
-        $expectedSql = DbHelper::replaceQuotes($expected, $db->getDriverName());
+        $expectedSql = static::replaceQuotes($expected);
 
         $this->assertSame($expectedSql, $command->getSql());
     }
@@ -502,11 +487,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->dropUnique('table', 'name')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -645,11 +629,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $db->createCommand()->renameColumn('table', 'oldname', 'newname')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] RENAME COLUMN [[oldname]] TO [[newname]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -662,11 +645,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $db->createCommand()->renameTable('table', 'newname')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 RENAME TABLE [[table]] TO [[newname]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -703,11 +685,10 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->truncateTable('{{table}}')->getSql();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 TRUNCATE TABLE [[table]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );

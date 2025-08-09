@@ -46,11 +46,10 @@ class CommandProvider
                 'int3',
                 null,
                 null,
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -58,11 +57,10 @@ class CommandProvider
                 'int3',
                 null,
                 null,
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -70,11 +68,10 @@ class CommandProvider
                 ['int3'],
                 null,
                 null,
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -82,11 +79,10 @@ class CommandProvider
                 ['int3'],
                 ReferentialAction::CASCADE,
                 null,
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE CASCADE
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -94,11 +90,10 @@ class CommandProvider
                 ['int3'],
                 ReferentialAction::CASCADE,
                 ReferentialAction::CASCADE,
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE CASCADE ON UPDATE CASCADE
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -106,11 +101,10 @@ class CommandProvider
                 ['int3', 'int4'],
                 null,
                 null,
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -118,11 +112,10 @@ class CommandProvider
                 ['int3', 'int4'],
                 ReferentialAction::CASCADE,
                 null,
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]]) ON DELETE CASCADE
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -130,11 +123,10 @@ class CommandProvider
                 ['int3', 'int4'],
                 ReferentialAction::CASCADE,
                 ReferentialAction::CASCADE,
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]]) ON DELETE CASCADE ON UPDATE CASCADE
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -142,11 +134,10 @@ class CommandProvider
                 ['int3'],
                 ReferentialAction::NO_ACTION,
                 ReferentialAction::RESTRICT,
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE NO ACTION ON UPDATE RESTRICT
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -154,11 +145,10 @@ class CommandProvider
                 ['int3'],
                 ReferentialAction::SET_DEFAULT,
                 ReferentialAction::SET_NULL,
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE SET DEFAULT ON UPDATE SET NULL
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
         ];
@@ -180,33 +170,30 @@ class CommandProvider
                 '{{test_fk_constraint_1}}',
                 '{{test_fk}}',
                 'int1',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] PRIMARY KEY ([[int1]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
                 '{{test_fk_constraint_2}}',
                 '{{test_fk}}',
                 ['int1'],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] PRIMARY KEY ([[int1]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
                 '{{test_fk_constraint_3}}',
                 '{{test_fk}}',
                 ['int3', 'int4'],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] PRIMARY KEY ([[int3]], [[int4]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
         ];
@@ -228,44 +215,40 @@ class CommandProvider
                 '{{test_fk_constraint_1}}',
                 '{{test_fk}}',
                 'int1',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] UNIQUE ([[int1]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
                 '{{test_fk_constraint_2}}',
                 '{{test_fk}}',
                 ['int1'],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] UNIQUE ([[int1]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
                 '{{test_fk_constraint_3}}',
                 '{{test_fk}}',
                 ['int3', 'int4'],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int3]], [[int4]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
                 '{{test_fk_constraint_3}}',
                 '{{test_fk}}',
                 ['int1', 'int2'],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int1]], [[int2]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
         ];
@@ -281,11 +264,10 @@ class CommandProvider
                     [false, 0, 'test string2', false],
                 ],
                 ['int_col', 'float_col', 'char_col', 'bool_col'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (0, 0, :qp0, TRUE), (0, 0, :qp1, FALSE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => 'test string',
@@ -302,11 +284,10 @@ class CommandProvider
                  *
                  * Make sure curly bracelets (`{{..}}`) in values will not be escaped
                  */
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 1.1, :qp0, TRUE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => 'Kyiv {{city}}, Ukraine',
@@ -316,11 +297,10 @@ class CommandProvider
                 '{{%type}}',
                 'values' => [['0', '0.0', 'Kyiv {{city}}, Ukraine', false]],
                 ['{{%type}}.[[int_col]]', '[[float_col]]', 'char_col', 'bool_col'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (0, 0, :qp0, FALSE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => 'Kyiv {{city}}, Ukraine',
@@ -334,11 +314,10 @@ class CommandProvider
                  */
                 'values' => [[new Expression(':exp1', [':exp1' => 42]), 1, 'test', false]],
                 ['int_col', 'float_col', 'char_col', 'bool_col'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:exp1, 1, :qp1, FALSE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':exp1' => 42,
@@ -349,11 +328,10 @@ class CommandProvider
                 'type',
                 'values' => [['int' => '1.0', 'float' => '2', 'char' => 10, 'bool' => 1]],
                 ['int_col', 'float_col', 'char_col', 'bool_col'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -363,11 +341,10 @@ class CommandProvider
                 'type',
                 'values' => [['int' => '1.0', 'float' => '2', 'char' => 10, 'bool' => 1]],
                 ['a' => 'int_col', 'b' => 'float_col', 'c' => 'char_col', 'd' => 'bool_col'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -377,11 +354,10 @@ class CommandProvider
                 'type',
                 'values' => [['bool_col' => 1, 'char_col' => 10, 'int_col' => '1.0', 'float_col' => '2']],
                 ['int_col', 'float_col', 'char_col', 'bool_col'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -391,11 +367,10 @@ class CommandProvider
                 'type',
                 'values' => [['bool' => 1, 'char' => 10, 'int' => '1.0', 'float' => '2']],
                 ['int' => 'int_col', 'float' => 'float_col', 'char' => 'char_col', 'bool' => 'bool_col'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -405,11 +380,10 @@ class CommandProvider
                 'type',
                 'values' => [[3 => 1, 2 => 10, 0 => '1.0', 1 => '2']],
                 ['int_col', 'float_col', 'char_col', 'bool_col'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -419,11 +393,10 @@ class CommandProvider
                 'type',
                 'values' => [['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
                 [],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -433,11 +406,10 @@ class CommandProvider
                 'type',
                 'values' => [(object)['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
                 [],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -447,11 +419,10 @@ class CommandProvider
                 'type',
                 'values' => [new ArrayIterator(['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1])],
                 [],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -466,11 +437,10 @@ class CommandProvider
                     }
                 },
                 [],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -483,10 +453,9 @@ class CommandProvider
                     [2, 'b', -1.0, false, new JsonExpression(['d' => 'e', 'f' => false, 'g' => [4, 5, null]])],
                 ],
                 ['int_col', 'char_col', 'float_col', 'bool_col', 'json_col'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     'INSERT INTO [[type]] ([[int_col]], [[char_col]], [[float_col]], [[bool_col]], [[json_col]])'
-                        . ' VALUES (1, :qp0, 0, TRUE, :qp1), (2, :qp2, -1, FALSE, :qp3)',
-                    static::$driverName,
+                        . ' VALUES (1, :qp0, 0, TRUE, :qp1), (2, :qp2, -1, FALSE, :qp3)'
                 ),
                 'expectedParams' => [
                     ':qp0' => 'a',
@@ -518,11 +487,10 @@ class CommandProvider
                 'column',
                 '',
                 '',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     CREATE INDEX [[name]] ON [[table]] ([[column]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -531,11 +499,10 @@ class CommandProvider
                 ['column1', 'column2'],
                 '',
                 '',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     CREATE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -544,11 +511,10 @@ class CommandProvider
                 ['column1', 'column2'],
                 IndexType::UNIQUE,
                 '',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     CREATE UNIQUE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -557,11 +523,10 @@ class CommandProvider
                 ['column1', 'column2'],
                 'FULLTEXT',
                 '',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     CREATE FULLTEXT INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -570,11 +535,10 @@ class CommandProvider
                 ['column1', 'column2'],
                 'SPATIAL',
                 '',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     CREATE SPATIAL INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -583,11 +547,10 @@ class CommandProvider
                 ['column1', 'column2'],
                 'BITMAP',
                 '',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     CREATE BITMAP INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
         ];
@@ -606,11 +569,10 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 [':id' => 1],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -618,11 +580,10 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 ['id' => 1],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -630,11 +591,10 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 ['id' => new Param('1 OR 1=1', DataType::INTEGER)],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -642,11 +602,10 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 ['id' => null],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = NULL
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -654,11 +613,10 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = :base OR [[id]] = :basePrefix
                 SQL,
                 ['base' => 1, 'basePrefix' => 2],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             /**
@@ -669,11 +627,10 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[active]] = :active
                 SQL,
                 [':active' => false],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[active]] = FALSE
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             /**
@@ -684,11 +641,10 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] IN (:ids)
                 SQL,
                 [':ids' => new Expression(implode(', ', [1, 2]))],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] IN (1, 2)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -703,11 +659,10 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = ?
                 SQL,
                 [1],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -715,11 +670,10 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = ? OR [[id]] = ?
                 SQL,
                 [1, 2],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -727,11 +681,10 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[name]] = :name
                 SQL,
                 ['name' => new Stringable('Alfa')],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[name]] = 'Alfa'
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -739,11 +692,10 @@ class CommandProvider
                 SELECT * FROM [[product]] WHERE [[price]] = :price
                 SQL,
                 ['price' => 123.45],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[product]] WHERE [[price]] = 123.45
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
         ];

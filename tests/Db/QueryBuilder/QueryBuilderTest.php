@@ -100,7 +100,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 CREATE TABLE [[test]] (
                 \t[[id]] integer PRIMARY KEY AUTOINCREMENT,
@@ -110,8 +110,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 \t[[created_at]] datetime NOT NULL,
                 \tUNIQUE test_email_unique (email)
                 )
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->createTable(
                 'test',
@@ -341,26 +340,17 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $column = ColumnBuilder::json();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
-                "CREATE TABLE [json_table] (\n\t[json_col] json CHECK (json_valid([json_col]))\n)",
-                $db->getDriverName(),
-            ),
+            static::replaceQuotes("CREATE TABLE [json_table] (\n\t[json_col] json CHECK (json_valid([json_col]))\n)"),
             $qb->createTable('json_table', ['json_col' => $column]),
         );
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
-                'ALTER TABLE [json_table] ADD [json_col] json',
-                $db->getDriverName(),
-            ),
+            static::replaceQuotes('ALTER TABLE [json_table] ADD [json_col] json'),
             $qb->addColumn('json_table', 'json_col', $column),
         );
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
-                'ALTER TABLE [json_table] CHANGE [json_col] [json_col] json',
-                $db->getDriverName(),
-            ),
+            static::replaceQuotes('ALTER TABLE [json_table] CHANGE [json_col] [json_col] json'),
             $qb->alterColumn('json_table', 'json_col', $column),
         );
     }

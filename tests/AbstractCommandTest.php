@@ -39,11 +39,10 @@ abstract class AbstractCommandTest extends TestCase
         $command = $db->createCommand($sql);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT [[id]], [[t]].[[name]] FROM [[customer]] t
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $command->getSql(),
         );

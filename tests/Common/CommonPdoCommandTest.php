@@ -34,11 +34,10 @@ abstract class CommonPdoCommandTest extends TestCase
         $db = $this->getConnection(true);
 
         /** @psalm-var $sql */
-        $sql = DbHelper::replaceQuotes(
+        $sql = static::replaceQuotes(
             <<<SQL
             SELECT * FROM [[customer]] WHERE $field = $name
-            SQL,
-            $db->getDriverName(),
+            SQL
         );
         $command = $db->createCommand();
         $command->setSql($sql);

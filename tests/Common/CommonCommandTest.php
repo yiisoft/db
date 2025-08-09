@@ -2110,18 +2110,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $expectedValue = $db->getQuoter()->quoteValue('{"a":1,"b":2}') . $typeHint;
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
-                "INSERT INTO [[json_table]] ([[json_col]]) VALUES (:qp0$typeHint)",
-                $db->getDriverName(),
-            ),
+            static::replaceQuotes("INSERT INTO [[json_table]] ([[json_col]]) VALUES (:qp0$typeHint)"),
             $command->getSql()
         );
         $this->assertEquals([':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)], $command->getParams(false));
         $this->assertSame(
-            DbHelper::replaceQuotes(
-                "INSERT INTO [[json_table]] ([[json_col]]) VALUES ($expectedValue)",
-                $db->getDriverName(),
-            ),
+            static::replaceQuotes("INSERT INTO [[json_table]] ([[json_col]]) VALUES ($expectedValue)"),
             $command->getRawSql()
         );
         $this->assertSame(1, $command->execute());
