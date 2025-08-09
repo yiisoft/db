@@ -42,6 +42,11 @@ class LikeBuilder implements ExpressionBuilderInterface
     ];
 
     /**
+     * @var string SQL fragment to append to the end of `LIKE` conditions.
+     */
+    protected const ESCAPE_SQL = '';
+
+    /**
      * @var array Map of chars to their replacements in `LIKE` conditions. By default, it's configured to escape
      * `%`, `_` and `\` with `\`.
      */
@@ -53,7 +58,6 @@ class LikeBuilder implements ExpressionBuilderInterface
 
     public function __construct(
         private readonly QueryBuilderInterface $queryBuilder,
-        private readonly string|null $escapeSql = null
     ) {
     }
 
@@ -88,7 +92,7 @@ class LikeBuilder implements ExpressionBuilderInterface
         /** @psalm-var list<string|ExpressionInterface> $values */
         foreach ($values as $value) {
             $placeholderName = $this->preparePlaceholderName($value, $expression, $params);
-            $parts[] = "$column $operator $placeholderName$this->escapeSql";
+            $parts[] = "$column $operator $placeholderName" . static::ESCAPE_SQL;
         }
 
         $conjunction = match ($expression->conjunction) {
