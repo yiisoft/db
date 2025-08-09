@@ -30,7 +30,6 @@ use function strtr;
  */
 class LikeBuilder implements ExpressionBuilderInterface
 {
-
     /**
      * @var string SQL fragment to append to the end of `LIKE` conditions.
      */
