@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition\Builder;
 
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
-use InvalidArgumentException;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\QueryBuilder\Condition\Builder\LikeBuilder;
@@ -21,25 +20,13 @@ final class LikeBuilderTest extends TestCase
 {
     use TestTrait;
 
-    public function testOperatorException(): void
-    {
-        $db = $this->getConnection();
-
-        $likeCondition = new Like('column', 'invalid', 'value');
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid operator in like condition: "INVALID"');
-
-        (new LikeBuilder($db->getQueryBuilder()))->build($likeCondition);
-    }
-
     #[TestWith(['%test%', LikeMode::Contains])]
     #[TestWith(['test%', LikeMode::StartsWith])]
     #[TestWith(['%test', LikeMode::EndsWith])]
     #[TestWith(['test', LikeMode::Custom])]
     public function testBuildWithContainsMode(string $expected, LikeMode $mode): void
     {
-        $likeCondition = new Like('column', 'LIKE', 'test', mode: $mode);
+        $likeCondition = new Like('column', 'test', mode: $mode);
         $likeBuilder = new LikeBuilder($this->getConnection()->getQueryBuilder());
 
         $params = [];

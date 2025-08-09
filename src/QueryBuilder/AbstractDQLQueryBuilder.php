@@ -58,7 +58,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      *
      * ```php
      * return [
-     *     'LIKE' => \Yiisoft\Db\Condition\LikeCondition::class,
+     *     'LIKE' => \Yiisoft\Db\QueryBuilder\Condition\Like::class,
      * ];
      * ```
      *
@@ -523,7 +523,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             'IN' => Condition\In::class,
             'NOT IN' => Condition\NotIn::class,
             'LIKE' => Condition\Like::class,
-            'NOT LIKE' => Condition\Like::class,
+            'NOT LIKE' => Condition\NotLike::class,
             'EXISTS' => Condition\Exists::class,
             'NOT EXISTS' => Condition\Exists::class,
             'ARRAY OVERLAPS' => Condition\ArrayOverlaps::class,
@@ -554,6 +554,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Condition\In::class => Condition\Builder\InBuilder::class,
             Condition\NotIn::class => Condition\Builder\InBuilder::class,
             Condition\Like::class => Condition\Builder\LikeBuilder::class,
+            Condition\NotLike::class => Condition\Builder\LikeBuilder::class,
             Condition\Equals::class => Condition\Builder\EqualsBuilder::class,
             Condition\Exists::class => Condition\Builder\ExistsBuilder::class,
             Simple::class => Condition\Builder\SimpleBuilder::class,

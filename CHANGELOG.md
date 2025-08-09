@@ -125,6 +125,7 @@
 - Chg #1017: Split `Between` condition to `Between` and `NotBetween` (@vjik)
 - New #1020: Support column's collation (@Tigrov)
 - Chg #1021: Move conjunction type from operator string value to `Like` condition constructor parameter (@vjik)
+- Chg #1023: Split `Like` condition to `Like` and `NotLike` (@vjik)
 
 ## 1.3.0 March 21, 2024
 
