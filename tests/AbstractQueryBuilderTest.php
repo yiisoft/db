@@ -31,7 +31,6 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function PHPUnit\Framework\assertEmpty;

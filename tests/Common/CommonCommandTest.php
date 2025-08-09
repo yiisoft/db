@@ -27,7 +27,6 @@ use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 
 use function array_filter;
 use function is_string;

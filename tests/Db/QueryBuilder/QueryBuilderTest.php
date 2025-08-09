@@ -18,7 +18,6 @@ use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\QueryBuilder;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -100,7 +99,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            static::replaceQuotes(
+            self::replaceQuotes(
                 <<<SQL
                 CREATE TABLE [[test]] (
                 \t[[id]] integer PRIMARY KEY AUTOINCREMENT,
@@ -340,17 +339,17 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $column = ColumnBuilder::json();
 
         $this->assertSame(
-            static::replaceQuotes("CREATE TABLE [json_table] (\n\t[json_col] json CHECK (json_valid([json_col]))\n)"),
+            self::replaceQuotes("CREATE TABLE [json_table] (\n\t[json_col] json CHECK (json_valid([json_col]))\n)"),
             $qb->createTable('json_table', ['json_col' => $column]),
         );
 
         $this->assertSame(
-            static::replaceQuotes('ALTER TABLE [json_table] ADD [json_col] json'),
+            self::replaceQuotes('ALTER TABLE [json_table] ADD [json_col] json'),
             $qb->addColumn('json_table', 'json_col', $column),
         );
 
         $this->assertSame(
-            static::replaceQuotes('ALTER TABLE [json_table] CHANGE [json_col] [json_col] json'),
+            self::replaceQuotes('ALTER TABLE [json_table] CHANGE [json_col] [json_col] json'),
             $qb->alterColumn('json_table', 'json_col', $column),
         );
     }

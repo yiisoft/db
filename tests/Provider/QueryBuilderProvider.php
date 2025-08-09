@@ -29,7 +29,6 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Data\StringableStream;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\IntEnum;
 use Yiisoft\Db\Tests\Support\JsonSerializableObject;
 use Yiisoft\Db\Tests\Support\Stringable;

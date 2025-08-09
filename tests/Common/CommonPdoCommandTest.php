@@ -12,7 +12,6 @@ use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class CommonPdoCommandTest extends TestCase

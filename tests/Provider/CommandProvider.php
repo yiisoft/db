@@ -16,7 +16,6 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
