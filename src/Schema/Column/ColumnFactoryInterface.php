@@ -15,6 +15,7 @@ use Yiisoft\Db\Constraint\ForeignKey;
  * @psalm-type ColumnInfo = array{
  *     autoIncrement?: bool,
  *     check?: string|null,
+ *     collation?: string|null,
  *     column?: ColumnInterface|null,
  *     columns?: array<string, ColumnInterface>,
  *     comment?: string|null,

@@ -6,6 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
+use Yiisoft\Db\Schema\Column\CollatableColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function in_array;
@@ -57,6 +58,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             . $this->buildDefault($column)
             . $this->buildComment($column)
             . $this->buildCheck($column)
+            . $this->buildCollate($column)
             . $this->buildReferences($column)
             . $this->buildExtra($column);
     }
@@ -122,6 +124,21 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
         $check = $column->getCheck();
 
         return !empty($check) ? " CHECK ($check)" : '';
+    }
+
+    /**
+     * Builds the collation clause for the column.
+     *
+     * @return string A string containing the COLLATE keyword and the collation name.
+     */
+    protected function buildCollate(ColumnInterface $column): string
+    {
+        if (!$column instanceof CollatableColumnInterface || empty($column->getCollation())) {
+            return '';
+        }
+
+        /** @psalm-suppress PossiblyNullOperand */
+        return ' COLLATE ' . $column->getCollation();
     }
 
     /**

@@ -1711,6 +1711,12 @@ class QueryBuilderProvider
             ],
             "check('')" => ['integer', ColumnBuilder::integer()->check('')],
             'check(null)' => ['integer', ColumnBuilder::integer()->check(null)],
+            "collation('collation_name')" => [
+                'varchar(255) COLLATE collation_name',
+                ColumnBuilder::string()->collation('collation_name'),
+            ],
+            "collation('')" => ['varchar(255)', ColumnBuilder::string()->collation('')],
+            'collation(null)' => ['varchar(255)', ColumnBuilder::string()->collation(null)],
             "comment('comment')" => ['varchar(255)', ColumnBuilder::string()->comment('comment')],
             "comment('')" => ['varchar(255)', ColumnBuilder::string()->comment('')],
             'comment(null)' => ['varchar(255)', ColumnBuilder::string()->comment(null)],
