@@ -25,7 +25,7 @@ use function str_contains;
 use function strtr;
 
 /**
- * Build an object of {@see AbstractLike} into SQL expressions.
+ * Build an object of {@see Like} or {@see NotLike} into SQL expressions.
  *
  * @implements ExpressionBuilderInterface<AbstractLike>
  */
@@ -53,9 +53,9 @@ class LikeBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see AbstractLike}.
+     * Build SQL for {@see Like} or {@see NotLike}.
      *
-     * @param AbstractLike $expression
+     * @param Like|NotLike $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -102,7 +102,7 @@ class LikeBuilder implements ExpressionBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    protected function prepareColumn(AbstractLike $condition, array &$params): string
+    protected function prepareColumn(Like|NotLike $condition, array &$params): string
     {
         $column = $condition->column;
 
@@ -128,7 +128,7 @@ class LikeBuilder implements ExpressionBuilderInterface
      */
     protected function preparePlaceholderName(
         string|ExpressionInterface $value,
-        AbstractLike $condition,
+        Like|NotLike $condition,
         array &$params,
     ): string {
         if ($value instanceof ExpressionInterface) {
@@ -154,22 +154,11 @@ class LikeBuilder implements ExpressionBuilderInterface
      *
      * @psalm-return array{0: bool, 1: string}
      */
-    protected function getOperatorData(AbstractLike $condition): array
+    protected function getOperatorData(Like|NotLike $condition): array
     {
         return match ($condition::class) {
             Like::class => [false, 'LIKE'],
             NotLike::class => [true, 'NOT LIKE'],
-            default => $this->throwUnsupportedConditionException($condition),
         };
-    }
-
-    /**
-     * Throw exception for unsupported condition type.
-     *
-     * @psalm-return never
-     */
-    protected function throwUnsupportedConditionException(AbstractLike $condition): never
-    {
-        throw new InvalidArgumentException('Unsupported condition type: ' . $condition::class);
     }
 }
