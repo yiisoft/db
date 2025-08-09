@@ -86,23 +86,4 @@ final class DbHelper
             }
         }
     }
-
-    /**
-     * Adjust dbms specific escaping.
-     *
-     * @param string $sql string SQL statement to adjust.
-     * @param string $driverName string DBMS name.
-     *
-     * @return mixed
-     */
-    public static function replaceQuotes(string $sql, string $driverName): string
-    {
-        return match ($driverName) {
-            'mysql' => str_replace(['[[', ']]'], '`', $sql),
-            'oci', 'sqlite' => str_replace(['[[', ']]'], '"', $sql),
-            'pgsql' => str_replace(['\\[', '\\]'], ['[', ']'], preg_replace('/(\[\[)|((?<!(\[))]])/', '"', $sql)),
-            'db', 'sqlsrv' => str_replace(['[[', ']]'], ['[', ']'], $sql),
-            default => $sql,
-        };
-    }
 }
