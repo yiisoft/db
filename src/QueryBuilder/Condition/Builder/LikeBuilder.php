@@ -12,30 +12,34 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\AbstractLike;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
+use Yiisoft\Db\QueryBuilder\Condition\NotLike;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function implode;
 use function is_array;
-use function preg_match;
 use function str_contains;
-use function strtoupper;
 use function strtr;
 
 /**
- * Build an object of {@see Like} into SQL expressions.
+ * Build an object of {@see AbstractLike} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<Like>
+ * @implements ExpressionBuilderInterface<AbstractLike>
  */
 class LikeBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(
-        private readonly QueryBuilderInterface $queryBuilder,
-        private readonly string|null $escapeSql = null
-    ) {
-    }
+    /**
+     * Map of condition classes to their operator data ("is not" and "operator").
+     *
+     * @psalm-var array<class-string<AbstractLike>, array{0: bool, 1: string}>
+     */
+    protected const OPERATOR_DATA = [
+        Like::class => [false, 'LIKE'],
+        NotLike::class => [true, 'NOT LIKE'],
+    ];
 
     /**
      * @var array Map of chars to their replacements in `LIKE` conditions. By default, it's configured to escape
@@ -47,10 +51,16 @@ class LikeBuilder implements ExpressionBuilderInterface
         '\\' => '\\\\',
     ];
 
+    public function __construct(
+        private readonly QueryBuilderInterface $queryBuilder,
+        private readonly string|null $escapeSql = null
+    ) {
+    }
+
     /**
-     * Build SQL for {@see Like}.
+     * Build SQL for {@see AbstractLike}.
      *
-     * @param Like $expression
+     * @param AbstractLike $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -61,7 +71,7 @@ class LikeBuilder implements ExpressionBuilderInterface
     {
         $values = $expression->value;
 
-        [$not, $operator] = $this->parseOperator($expression);
+        [$not, $operator] = $this->getOperatorData($expression);
 
         if (!is_array($values)) {
             $values = [$values];
@@ -97,7 +107,7 @@ class LikeBuilder implements ExpressionBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    protected function prepareColumn(Like $condition, array &$params): string
+    protected function prepareColumn(AbstractLike $condition, array &$params): string
     {
         $column = $condition->column;
 
@@ -123,7 +133,7 @@ class LikeBuilder implements ExpressionBuilderInterface
      */
     protected function preparePlaceholderName(
         string|ExpressionInterface $value,
-        Like $condition,
+        AbstractLike $condition,
         array &$params,
     ): string {
         if ($value instanceof ExpressionInterface) {
@@ -145,22 +155,13 @@ class LikeBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Parses operator and returns its parts.
-     *
-     * @throws InvalidArgumentException
+     * Get operator and `not` flag for the given condition.
      *
      * @psalm-return array{0: bool, 1: string}
      */
-    protected function parseOperator(Like $condition): array
+    protected function getOperatorData(AbstractLike $condition): array
     {
-        $operator = strtoupper($condition->operator);
-        if (!preg_match('/^((NOT |)I?LIKE)/', $operator, $matches)) {
-            throw new InvalidArgumentException("Invalid operator in like condition: \"$operator\"");
-        }
-
-        $not = !empty($matches[2]);
-        $operator = $matches[1];
-
-        return [$not, $operator];
+        return static::OPERATOR_DATA[$condition::class]
+            ?? throw new InvalidArgumentException('Unsupported condition type: ' . $condition::class);
     }
 }

@@ -25,6 +25,7 @@ use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
 use Yiisoft\Db\QueryBuilder\Condition\NotIn;
 use Yiisoft\Db\QueryBuilder\Condition\NotBetweenColumns;
 use Yiisoft\Db\QueryBuilder\Condition\NotBetween;
+use Yiisoft\Db\QueryBuilder\Condition\NotLike;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Data\StringableStream;
@@ -834,24 +835,23 @@ class QueryBuilderProvider
 
             /* like object conditions */
             [
-                new Like('name', 'like', new Expression('CONCAT("test", name, "%")')),
+                new Like('name', new Expression('CONCAT("test", name, "%")')),
                 '[[name]] LIKE CONCAT("test", name, "%")',
                 [],
             ],
             [
-                new Like('name', 'not like', new Expression('CONCAT("test", name, "%")')),
+                new NotLike('name',  new Expression('CONCAT("test", name, "%")')),
                 '[[name]] NOT LIKE CONCAT("test", name, "%")',
                 [],
             ],
             [
-                new Like('name', 'like', new Expression('CONCAT("test", name, "%")'), conjunction: LikeConjunction::Or),
+                new Like('name', new Expression('CONCAT("test", name, "%")'), conjunction: LikeConjunction::Or),
                 '[[name]] LIKE CONCAT("test", name, "%")',
                 [],
             ],
             [
-                new Like(
+                new NotLike(
                     'name',
-                    'not like',
                     new Expression('CONCAT("test", name, "%")'),
                     conjunction: LikeConjunction::Or,
                 ),
@@ -859,23 +859,22 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                new Like('name', 'like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                new Like('name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
                 '[[name]] LIKE CONCAT("test", name, "%") AND [[name]] LIKE :qp0',
                 [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
-                new Like('name', 'not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                new NotLike('name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
                 '[[name]] NOT LIKE CONCAT("test", name, "%") AND [[name]] NOT LIKE :qp0',
                 [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
-                new Like('name', 'like', [new Expression('CONCAT("test", name, "%")'), '\ab_c'], conjunction: LikeConjunction::Or),
+                new Like('name', [new Expression('CONCAT("test", name, "%")'), '\ab_c'], conjunction: LikeConjunction::Or),
                 '[[name]] LIKE CONCAT("test", name, "%") OR [[name]] LIKE :qp0', [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
-                new Like(
+                new NotLike(
                     'name',
-                    'not like',
                     [new Expression('CONCAT("test", name, "%")'), '\ab_c'],
                     conjunction: LikeConjunction::Or,
                 ),
