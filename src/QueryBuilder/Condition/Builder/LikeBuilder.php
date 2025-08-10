@@ -20,7 +20,6 @@ use Yiisoft\Db\QueryBuilder\Condition\NotLike;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function implode;
-use function is_array;
 use function is_string;
 use function str_contains;
 use function strtr;
@@ -87,7 +86,7 @@ class LikeBuilder implements ExpressionBuilderInterface
 
         $parts = [];
         foreach ($values as $value) {
-            /** @var string|int|ExpressionInterface $value */
+            /** @var ExpressionInterface|int|string $value */
             $placeholderName = $this->preparePlaceholderName($value, $expression, $params);
             $parts[] = "$column $operator $placeholderName" . static::ESCAPE_SQL;
         }
