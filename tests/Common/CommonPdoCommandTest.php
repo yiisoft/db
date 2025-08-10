@@ -12,7 +12,6 @@ use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class CommonPdoCommandTest extends TestCase
@@ -34,11 +33,10 @@ abstract class CommonPdoCommandTest extends TestCase
         $db = $this->getConnection(true);
 
         /** @psalm-var $sql */
-        $sql = DbHelper::replaceQuotes(
+        $sql = static::replaceQuotes(
             <<<SQL
             SELECT * FROM [[customer]] WHERE $field = $name
-            SQL,
-            $db->getDriverName(),
+            SQL
         );
         $command = $db->createCommand();
         $command->setSql($sql);

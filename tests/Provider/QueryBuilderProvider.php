@@ -30,7 +30,6 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Data\StringableStream;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\IntEnum;
 use Yiisoft\Db\Tests\Support\JsonSerializableObject;
 use Yiisoft\Db\Tests\Support\Stringable;
@@ -63,11 +62,10 @@ class QueryBuilderProvider
                 'C_id_1',
                 ReferentialAction::CASCADE,
                 ReferentialAction::CASCADE,
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]]) REFERENCES [[$pkTableName]] ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             'add (2 columns)' => [
@@ -78,11 +76,10 @@ class QueryBuilderProvider
                 'C_id_1, C_id_2',
                 ReferentialAction::CASCADE,
                 ReferentialAction::CASCADE,
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]]) REFERENCES [[$pkTableName]] ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
         ];
@@ -98,22 +95,20 @@ class QueryBuilderProvider
                 $name,
                 $tableName,
                 'C_id_1',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             'add (2 columns)' => [
                 $name,
                 $tableName,
                 'C_id_1, C_id_2',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]], [[C_id_2]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
         ];
@@ -131,22 +126,20 @@ class QueryBuilderProvider
                 $name1,
                 $tableName1,
                 'C_unique_1',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName1]] ADD CONSTRAINT [[$name1]] UNIQUE ([[C_unique_1]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             'add (2 columns)' => [
                 $name2,
                 $tableName2,
                 'C_unique_1, C_unique_2',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName2]] ADD CONSTRAINT [[$name2]] UNIQUE ([[C_unique_1]], [[C_unique_2]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
         ];
@@ -166,11 +159,10 @@ class QueryBuilderProvider
                 'customer',
                 [['test@example.com', 'silverfire', 'Kyiv {{city}}, Ukraine']],
                 ['email', 'name', 'address'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES (:qp0, :qp1, :qp2)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => new Param('test@example.com', DataType::STRING),
@@ -182,11 +174,10 @@ class QueryBuilderProvider
                 'customer',
                 [["SQL-danger chars are escaped: '); --"]],
                 ['address'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] ([[address]]) VALUES (:qp0)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [':qp0' => new Param("SQL-danger chars are escaped: '); --", DataType::STRING)],
             ],
@@ -200,11 +191,10 @@ class QueryBuilderProvider
                 'customer',
                 [['no columns passed']],
                 [],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] VALUES (:qp0)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [':qp0' => new Param('no columns passed', DataType::STRING)],
             ],
@@ -212,11 +202,10 @@ class QueryBuilderProvider
                 'type',
                 [[false, null]],
                 ['bool_col', 'bool_col2'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (FALSE, NULL)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [],
             ],
@@ -224,11 +213,10 @@ class QueryBuilderProvider
                 '{{%type}}',
                 [[null, new Expression('now()')], [null, new Expression('now()')]],
                 ['{{%type}}.[[float_col]]', '[[time]]'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO {{%type}} ([[float_col]], [[time]]) VALUES (NULL, now()), (NULL, now())
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [],
             ],
@@ -236,11 +224,10 @@ class QueryBuilderProvider
                 '{{%type}}',
                 [[false, new Expression('now()')]],
                 ['{{%type}}.[[bool_col]]', '[[time]]'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO {{%type}} ([[bool_col]], [[time]]) VALUES (FALSE, now())
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [],
             ],
@@ -248,11 +235,10 @@ class QueryBuilderProvider
                 '{{%type}}',
                 [[true, false]],
                 ['{{%type}}.[[bool_col]]', '{{%another_table}}.[[bool_col2]]'],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO {{%type}} ([[bool_col]], [[bool_col2]]) VALUES (TRUE, FALSE)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [],
             ],
@@ -270,11 +256,10 @@ class QueryBuilderProvider
                 'non_exists_table',
                 [['1.0', '2', 10, 1]],
                 [],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[non_exists_table]] VALUES (:qp0, :qp1, 10, 1)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 'expectedParams' => [
                     ':qp0' => new Param('1.0', DataType::STRING),
@@ -633,7 +618,7 @@ class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], static::$driverName);
+            $conditions[$i][1] = static::replaceQuotes($condition[1]);
         }
 
         return $conditions;
@@ -681,7 +666,7 @@ class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], static::$driverName);
+            $conditions[$i][1] = static::replaceQuotes($condition[1]);
         }
 
         return $conditions;
@@ -692,20 +677,18 @@ class QueryBuilderProvider
         return [
             [
                 'table1',
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[table1]]
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
                 ['table1'],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[table1]]
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
@@ -722,29 +705,26 @@ class QueryBuilderProvider
             ],
             [
                 ['alias' => 'table3'],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[table3]] [[alias]]
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
                 ['alias' => new Expression('table4')],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM table4 [[alias]]
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
             ],
             [
                 ['alias' => new Expression('func(:param1, :param2)', ['param1' => 'A', 'param2' => 'B'])],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM func(:param1, :param2) [[alias]]
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 ['param1' => 'A', 'param2' => 'B'],
             ],
@@ -890,7 +870,7 @@ class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], static::$driverName);
+            $conditions[$i][1] = static::replaceQuotes($condition[1]);
 
             if (static::$likeEscapeCharSql !== '') {
                 preg_match_all('/(?P<condition>LIKE.+?)( AND| OR|$)/', $conditions[$i][1], $matches, PREG_SET_ORDER);
@@ -922,17 +902,11 @@ class QueryBuilderProvider
         return [
             [
                 'exists',
-                DbHelper::replaceQuotes(
-                    'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
-                    static::$driverName,
-                ),
+                static::replaceQuotes('SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])'),
             ],
             [
                 'not exists',
-                DbHelper::replaceQuotes(
-                    'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
-                    static::$driverName,
-                ),
+                static::replaceQuotes('SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])'),
             ],
         ];
     }
@@ -992,11 +966,10 @@ class QueryBuilderProvider
             'base' => [
                 'user',
                 ['is_enabled' => false, 'power' => new Expression('WRONG_POWER()')],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     DELETE FROM [[user]] WHERE ([[is_enabled]] = FALSE) AND ([[power]] = WRONG_POWER())
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [],
             ],
@@ -1016,11 +989,10 @@ class QueryBuilderProvider
                     'related_id' => null,
                 ],
                 [],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) VALUES (:qp0, :qp1, :qp2, :qp3, :qp4)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     ':qp0' => 'test@example.com',
@@ -1034,11 +1006,10 @@ class QueryBuilderProvider
                 '{{%type}}',
                 ['{{%type}}.[[related_id]]' => null, 'time' => new Expression('now()')],
                 [],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     INSERT INTO {{%type}} ([[related_id]], [[time]]) VALUES (:qp0, now())
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [':qp0' => null],
             ],
@@ -1053,11 +1024,10 @@ class QueryBuilderProvider
                     'col' => new Expression('CONCAT(:phFoo, :phBar)', [':phFoo' => 'foo']),
                 ],
                 [':phBar' => 'bar'],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]], [[col]]) VALUES (:qp1, :qp2, :qp3, :qp4, :qp5, CONCAT(:phFoo, :phBar))
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     ':phBar' => 'bar',
@@ -1085,11 +1055,10 @@ class QueryBuilderProvider
                         ],
                     ),
                 [':phBar' => 'bar'],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) SELECT [[email]], [[name]], [[address]], [[is_active]], [[related_id]] FROM [[customer]] WHERE ([[email]] = :qp1) AND ([[name]] = :qp2) AND ([[address]] = :qp3) AND ([[is_active]] = FALSE) AND ([[related_id]] IS NULL) AND ([[col]] = CONCAT(:phFoo, :phBar))
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     ':phBar' => 'bar',
@@ -1103,11 +1072,10 @@ class QueryBuilderProvider
                 'customer',
                 [],
                 [],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] DEFAULT VALUES
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [],
             ],
@@ -1122,11 +1090,10 @@ class QueryBuilderProvider
                         ],
                     ),
                 [],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]]) SELECT email as email, name FROM [[customer]] WHERE [[email]] = :qp0
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     ':qp0' => new Param('test@example.com', DataType::STRING),
@@ -1138,11 +1105,10 @@ class QueryBuilderProvider
                     'json_col' => new JsonExpression(['c' => 1, 'd' => 2]),
                 ],
                 [],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[json_type]] ([[json_col]]) VALUES (:qp0)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     ':qp0' => new Param('{"c":1,"d":2}', DataType::STRING),
@@ -1162,14 +1128,14 @@ class QueryBuilderProvider
     {
         return [
             [1, 'SELECT 1'],
-            ['custom_string', DbHelper::replaceQuotes('SELECT [[custom_string]]', static::$driverName)],
+            ['custom_string', static::replaceQuotes('SELECT [[custom_string]]')],
             [true, 'SELECT TRUE'],
             [false, 'SELECT FALSE'],
             [12.34, 'SELECT 12.34'],
             [[1, true, 12.34], 'SELECT 1, TRUE, 12.34'],
             [
                 ['a' => 1, 'b' => true, 12.34],
-                DbHelper::replaceQuotes('SELECT 1 AS [[a]], TRUE AS [[b]], 12.34', static::$driverName),
+                static::replaceQuotes('SELECT 1 AS [[a]], TRUE AS [[b]], 12.34'),
             ],
         ];
     }
@@ -1182,11 +1148,10 @@ class QueryBuilderProvider
                 ['name' => '{{test}}'],
                 [],
                 [],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp0
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     ':qp0' => '{{test}}',
@@ -1197,11 +1162,10 @@ class QueryBuilderProvider
                 ['name' => '{{test}}'],
                 ['id' => 1],
                 [],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]] = 1
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     ':qp0' => '{{test}}',
@@ -1212,11 +1176,10 @@ class QueryBuilderProvider
                 ['{{table}}.name' => '{{test}}'],
                 ['id' => 1],
                 ['id' => 'boolean'],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]] = 1
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     'id' => 'boolean',
@@ -1228,11 +1191,10 @@ class QueryBuilderProvider
                 ['status' => 1, 'updated_at' => new Expression('now()')],
                 ['id' => 100],
                 [],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[customer]] SET [[status]]=:qp0, [[updated_at]]=now() WHERE [[id]] = 100
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [':qp0' => 1],
             ],
@@ -1241,11 +1203,10 @@ class QueryBuilderProvider
                 ['name' => new Expression('UPPER([[name]])')],
                 '[[name]] = :name',
                 ['name' => new Expression('LOWER([[name]])')],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER([[name]])
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [],
             ],
@@ -1254,11 +1215,10 @@ class QueryBuilderProvider
                 ['price' => new Expression('[[price]] + :val', [':val' => 1])],
                 '[[start_at]] < :date',
                 ['date' => new Expression('NOW()')],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[product]] SET [[price]]=[[price]] + :val WHERE [[start_at]] < NOW()
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [':val' => 1],
             ],
@@ -1267,11 +1227,10 @@ class QueryBuilderProvider
                 ['name' => new Expression('UPPER([[name]])')],
                 '[[name]] = :name',
                 ['name' => new Expression('LOWER(:val)', [':val' => 'Apple'])],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER(:val)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [':val' => 'Apple'],
             ],
@@ -1280,11 +1239,10 @@ class QueryBuilderProvider
                 ['name' => new Expression('LOWER(:val)', ['val' => 'Apple'])],
                 '[[name]] != :name',
                 ['name' => new Expression('UPPER(:val)', ['val' => 'Banana'])],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val_0)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     'val' => 'Apple',
@@ -1296,11 +1254,10 @@ class QueryBuilderProvider
                 ['name' => new Expression('LOWER(:val)', [':val' => 'Apple'])],
                 '[[name]] != :name',
                 ['name' => new Expression('UPPER(:val)', ['val' => 'Banana'])],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val_0)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     ':val' => 'Apple',
@@ -1312,11 +1269,10 @@ class QueryBuilderProvider
                 ['price' => new Expression('[[price]] * :val + :val1', ['val' => 1.2, 'val1' => 2])],
                 '[[name]] IN :values',
                 ['values' => new Expression('(:val, :val2)', ['val' => 'Banana', 'val2' => 'Cherry'])],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[product]] SET [[price]]=[[price]] * :val + :val1 WHERE [[name]] IN (:val_0, :val2)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     'val' => 1.2,
@@ -1330,11 +1286,10 @@ class QueryBuilderProvider
                 ['name' => new Expression('LOWER(:val)', ['val' => 'Apple'])],
                 '[[name]] != :name',
                 ['name' => new Expression('UPPER(:val1)', ['val1' => 'Banana'])],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val1)
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     'val' => 'Apple',
@@ -1355,11 +1310,10 @@ class QueryBuilderProvider
                     'val_0' => new Param('F', DataType::STRING),
                     'val' => new Expression('UPPER(:val || :val_0)', ['val' => 'D', 'val_0' => 'E']),
                 ],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=LOWER(:val_2 || :val_0_1) || :val_0_0 WHERE [[name]] != UPPER(:val_1 || :val_0_2) || :val_0
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     'val_2' => 'A',
@@ -1375,11 +1329,10 @@ class QueryBuilderProvider
                 ['name' => new Expression('LOWER(?)', ['Apple'])],
                 '[[name]] != ?',
                 ['Banana'],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[product]] SET [[name]]=LOWER(?) WHERE [[name]] != ?
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 // Wrong order of params
                 ['Banana', 'Apple'],
@@ -1389,11 +1342,10 @@ class QueryBuilderProvider
                 ['price' => 10],
                 ':val',
                 [':val' => new Expression("label=':val' AND name=:val", [':val' => 'Apple'])],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[product]] SET [[price]]=:qp1 WHERE label=':val' AND name=:val_0
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     ':qp1' => 10,
@@ -1405,11 +1357,10 @@ class QueryBuilderProvider
                 ['price' => 10],
                 ':val',
                 [':val' => new Expression("label=':val'", [':val' => 'Apple'])],
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     UPDATE [[product]] SET [[price]]=:qp1 WHERE label=':val'
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 [
                     ':qp1' => 10,
@@ -1703,10 +1654,10 @@ class QueryBuilderProvider
             "extra('NOT NULL')" => ['varchar(255) NOT NULL', ColumnBuilder::string()->extra('NOT NULL')],
             "extra('')" => ['varchar(255)', ColumnBuilder::string()->extra('')],
             "check('value > 5')" => [
-                DbHelper::replaceQuotes('integer CHECK ([[check_col]] > 5)', static::$driverName),
+                static::replaceQuotes('integer CHECK ([[check_col]] > 5)'),
                 ColumnBuilder::integer()
                     ->withName('check_col')
-                    ->check(DbHelper::replaceQuotes('[[check_col]] > 5', static::$driverName)),
+                    ->check(static::replaceQuotes('[[check_col]] > 5')),
             ],
             "check('')" => ['integer', ColumnBuilder::integer()->check('')],
             'check(null)' => ['integer', ColumnBuilder::integer()->check(null)],
@@ -1735,20 +1686,18 @@ class QueryBuilderProvider
             'scale(2)' => ['decimal(10,2)', ColumnBuilder::decimal()->scale(2)],
             'integer(8)->scale(2)' => ['integer(8)', ColumnBuilder::integer(8)->scale(2)],
             'reference($reference)' => [
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     integer REFERENCES [[ref_table]] ([[id]]) ON DELETE SET NULL ON UPDATE CASCADE
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 ColumnBuilder::integer()->reference($reference),
             ],
             'reference($referenceWithSchema)' => [
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     integer REFERENCES [[ref_schema]].[[ref_table]] ([[id]]) ON DELETE SET NULL ON UPDATE CASCADE
-                    SQL,
-                    static::$driverName,
+                    SQL
                 ),
                 ColumnBuilder::integer()->reference($referenceWithSchema),
             ],
@@ -1906,14 +1855,13 @@ class QueryBuilderProvider
                 (new CaseExpression())
                     ->addWhen(['=', 'column_name', 1], $paramA = new Param('a', DataType::STRING))
                     ->addWhen(
-                        DbHelper::replaceQuotes('[[column_name]] = 2', static::getDriverName()),
+                        static::replaceQuotes('[[column_name]] = 2'),
                         (new Query(self::getDb()))->select($paramB = new Param('b', DataType::STRING))
                     ),
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     CASE WHEN [[column_name]] = 1 THEN :qp0 WHEN [[column_name]] = 2 THEN (SELECT :pv1) END
-                    SQL,
-                    static::getDriverName(),
+                    SQL
                 ),
                 [':qp0' => $paramA, ':pv1' => $paramB],
                 'b',
