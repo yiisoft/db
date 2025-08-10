@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition;
 
-use Iterator;
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
-use function is_array;
 use function is_int;
 use function is_string;
 use function sprintf;
@@ -26,7 +24,7 @@ abstract class AbstractLike implements ConditionInterface
 
     /**
      * @param ExpressionInterface|string $column The column name.
-     * @param array|ExpressionInterface|int|Iterator|string|null $value The value to the right of operator.
+     * @param iterable|ExpressionInterface|int|string|null $value The value to the right of operator.
      * @param bool|null $caseSensitive Whether the comparison is case-sensitive. `null` means using the default
      * behavior.
      * @param bool $escape Whether to escape the value. Defaults to `true`. If `false`, the value will be used as is
@@ -36,7 +34,7 @@ abstract class AbstractLike implements ConditionInterface
      */
     final public function __construct(
         public readonly string|ExpressionInterface $column,
-        public readonly array|int|string|Iterator|ExpressionInterface|null $value,
+        public readonly iterable|int|string|ExpressionInterface|null $value,
         public readonly ?bool $caseSensitive = null,
         public readonly bool $escape = self::DEFAULT_ESCAPE,
         public readonly LikeMode $mode = self::DEFAULT_MODE,
@@ -112,19 +110,18 @@ abstract class AbstractLike implements ConditionInterface
     }
 
     /**
-     * Validates the given values to be `string`, `array`, `Iterator` or `ExpressionInterface`.
+     * Validates the given values to be `string`, `int`, `iterable` or `ExpressionInterface`.
      *
-     * @throws InvalidArgumentException If the values aren't `string`, `array`, `Iterator` or `ExpressionInterface`.
+     * @throws InvalidArgumentException If the values aren't `string`, `int`, `iterable` or `ExpressionInterface`.
      */
     private static function validateValue(
         string $operator,
         mixed $value
-    ): array|int|string|Iterator|ExpressionInterface|null {
+    ): iterable|int|string|ExpressionInterface|null {
         if (
             is_string($value) ||
-            is_array($value) ||
+            is_iterable($value) ||
             is_int($value) ||
-            $value instanceof Iterator ||
             $value instanceof ExpressionInterface ||
             $value === null
         ) {

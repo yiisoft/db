@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
+use Traversable;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
@@ -20,6 +21,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function implode;
 use function is_array;
+use function is_string;
 use function str_contains;
 use function strtr;
 
@@ -66,20 +68,26 @@ class LikeBuilder implements ExpressionBuilderInterface
 
         [$not, $operator] = $this->getOperatorData($expression);
 
-        if (!is_array($values)) {
-            $values = [$values];
+        if ($values === null) {
+            return $this->buildForEmptyValue($not);
         }
 
-        if (empty($values)) {
-            return $not ? '' : '0=1';
+        if (is_iterable($values)) {
+            if ($values instanceof Traversable) {
+                $values = iterator_to_array($values);
+            }
+            if (empty($values)) {
+                return $this->buildForEmptyValue($not);
+            }
+        } else {
+            $values = [$values];
         }
 
         $column = $this->prepareColumn($expression, $params);
 
         $parts = [];
-
-        /** @psalm-var list<string|ExpressionInterface> $values */
         foreach ($values as $value) {
+            /** @var string|int|ExpressionInterface $value */
             $placeholderName = $this->preparePlaceholderName($value, $expression, $params);
             $parts[] = "$column $operator $placeholderName" . static::ESCAPE_SQL;
         }
@@ -125,7 +133,7 @@ class LikeBuilder implements ExpressionBuilderInterface
      * @return string
      */
     protected function preparePlaceholderName(
-        string|ExpressionInterface $value,
+        string|int|ExpressionInterface $value,
         Like|NotLike $condition,
         array &$params,
     ): string {
@@ -133,7 +141,7 @@ class LikeBuilder implements ExpressionBuilderInterface
             return $this->queryBuilder->buildExpression($value, $params);
         }
 
-        if ($condition->escape) {
+        if (is_string($value) && $condition->escape) {
             $value = strtr($value, $this->escapingReplacements);
         }
 
@@ -141,7 +149,7 @@ class LikeBuilder implements ExpressionBuilderInterface
             LikeMode::Contains => '%' . $value . '%',
             LikeMode::StartsWith => $value . '%',
             LikeMode::EndsWith => '%' . $value,
-            LikeMode::Custom => $value,
+            LikeMode::Custom => (string) $value,
         };
 
         return $this->queryBuilder->bindParam(new Param($value, DataType::STRING), $params);
@@ -158,5 +166,10 @@ class LikeBuilder implements ExpressionBuilderInterface
             Like::class => [false, 'LIKE'],
             NotLike::class => [true, 'NOT LIKE'],
         };
+    }
+
+    private function buildForEmptyValue(bool $not): string
+    {
+        return $not ? '' : '0=1';
     }
 }
