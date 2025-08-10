@@ -13,7 +13,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ContextInterface;
 use Yiisoft\Db\Profiler\ProfilerInterface;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -39,11 +38,10 @@ abstract class AbstractCommandTest extends TestCase
         $command = $db->createCommand($sql);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT [[id]], [[t]].[[name]] FROM [[customer]] t
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $command->getSql(),
         );

@@ -31,7 +31,6 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function PHPUnit\Framework\assertEmpty;
@@ -52,11 +51,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->addCheck('CN_check', 'T_constraints_1', '[[C_not_null]] > 100');
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[CN_check]] ADD CONSTRAINT [[T_constraints_1]] CHECK ([[C_not_null]] > 100)
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -71,11 +69,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->addColumn('table', 'column', $type);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
-                SQL . ' ' . $qb->buildColumnDefinition($type),
-                $db->getDriverName(),
+                SQL . ' ' . $qb->buildColumnDefinition($type)
             ),
             $sql,
         );
@@ -92,11 +89,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->addCommentOnColumn('customer', 'id', 'Primary key.');
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 COMMENT ON COLUMN [[customer]].[[id]] IS 'Primary key.'
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -113,11 +109,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->addCommentOnTable('customer', 'Customer table.');
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 COMMENT ON TABLE [[customer]] IS 'Customer table.'
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -135,11 +130,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->addDefaultValue('T_constraints_1', 'CN_pk', 'C_default', 1);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[T_constraints_1]] ALTER COLUMN [[C_default]] SET DEFAULT 1
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -239,7 +233,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals(
             'SELECT *'
             . ($db->getDriverName() === 'oci' ? ' FROM DUAL' : '')
-            . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
+            . (empty($expected) ? '' : ' WHERE ' . static::replaceQuotes($expected)),
             $sql
         );
         Assert::arraysEquals($expectedParams, $params);
@@ -269,7 +263,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes('[[id]], [[name]], [[email]], [[address]], [[status]]', $db->getDriverName()),
+            static::replaceQuotes('[[id]], [[name]], [[email]], [[address]], [[status]]'),
             $qb->buildColumns(['id', 'name', 'email', 'address', 'status']),
         );
     }
@@ -285,10 +279,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
-                '[[id]], [[name]], [[email]], [[address]], [[status]], COUNT(*)',
-                $db->getDriverName(),
-            ),
+            static::replaceQuotes('[[id]], [[name]], [[email]], [[address]], [[status]], COUNT(*)'),
             $qb->buildColumns(['id', 'name', 'email', 'address', 'status', new Expression('COUNT(*)')]),
         );
     }
@@ -312,11 +303,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[admin_user]] WHERE [[id]] IN (:qp0, :qp1)
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -349,7 +339,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             'SELECT *'
             . ($db->getDriverName() === 'oci' ? ' FROM DUAL' : '')
-            . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
+            . (empty($expected) ? '' : ' WHERE ' . static::replaceQuotes($expected)),
             $sql,
         );
         $this->assertSame($expectedParams, $params);
@@ -379,10 +369,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $queryBuilder->build($query);
 
         assertSame(
-            DbHelper::replaceQuotes(
-                'SELECT * FROM [[test]] FOR UPDATE OF {{t1}}',
-                $db->getDriverName(),
-            ),
+            static::replaceQuotes('SELECT * FROM [[test]] FOR UPDATE OF {{t1}}'),
             $sql
         );
         assertEmpty($params);
@@ -397,11 +384,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 FROM [[admin_user]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->buildFrom($query->getFrom(), $params),
         );
@@ -420,11 +406,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 GROUP BY [[id]], [[name]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->buildGroupBy($query->getGroupBy(), $params),
         );
@@ -439,11 +424,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 HAVING [[id]] = 1
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->buildHaving($query->getHaving(), $params),
         );
@@ -491,11 +475,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 INNER JOIN [[admin_profile]] ON admin_user.id = admin_profile.user_id
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->buildJoin($query->getJoins(), $params),
         );
@@ -516,7 +499,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             'SELECT *'
             . ($db->getDriverName() === 'oci' ? ' FROM DUAL' : '')
-            . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
+            . (empty($expected) ? '' : ' WHERE ' . static::replaceQuotes($expected)),
             $sql
         );
         $this->assertSame(array_keys($expectedParams), array_keys($params));
@@ -593,11 +576,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ORDER BY [[id]], [[name]] DESC
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->buildOrderBy($query->getOrderBy(), $params),
         );
@@ -619,18 +601,16 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ->offset(5);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[admin_user]] ORDER BY [[id]], [[name]] DESC LIMIT 10 OFFSET 5
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->buildOrderByAndLimit(
-                DbHelper::replaceQuotes(
+                static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[admin_user]]
-                    SQL,
-                    $db->getDriverName(),
+                    SQL
                 ),
                 $query->getOrderBy(),
                 $query->getLimit(),
@@ -654,11 +634,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT [[id]], [[name]], [[email]], [[address]], [[status]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->buildSelect($query->getSelect(), $params),
         );
@@ -678,11 +657,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT [[id]] AS [[a]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->buildSelect(['id as a'], $params),
         );
@@ -703,11 +681,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT DISTINCT [[id]], [[name]], [[email]], [[address]], [[status]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->buildSelect($query->getSelect(), $params, true),
         );
@@ -728,11 +705,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 UNION ( SELECT * FROM [[admin_profile]] )
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->buildUnion($query->getUnions(), $params),
         );
@@ -753,11 +729,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 WITH [[cte]] AS (SELECT * FROM [[admin_profile]])
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->buildWithQueries($query->getWithQueries(), $params),
         );
@@ -774,11 +749,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $expressionString = DbHelper::replaceQuotes(
+        $expressionString = static::replaceQuotes(
             <<<SQL
             case t.Status_Id when 1 then 'Acknowledge' when 2 then 'No Action' else 'Unknown Action' END as [[Next Action]]
-            SQL,
-            $db->getDriverName(),
+            SQL
         );
 
         $this->assertIsString($expressionString);
@@ -799,11 +773,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT [[t]].[[id]] AS [[ID]], [[gsm]].[[username]] AS [[GSM]], [[part]].[[Part]], [[t]].[[Part_Cost]] AS [[Part Cost]], st_x(location::geometry) AS [[lon]], case t.Status_Id when 1 then 'Acknowledge' when 2 then 'No Action' else 'Unknown Action' END as [[Next Action]] FROM [[tablename]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -850,11 +823,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[no_exist_table]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -880,11 +852,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM {{%user}} USE INDEX (primary)
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -898,11 +869,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM {{user}} {{t}} FORCE INDEX (primary) IGNORE INDEX FOR ORDER BY (i1) LEFT JOIN [[profile]] [[p]] ON user.id = profile.user_id USE INDEX (i2)
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -930,11 +900,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM (SELECT * FROM [[user]] WHERE account_id = accounts.id) [[activeusers]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -948,11 +917,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM (SELECT * FROM [[user]] WHERE account_id = :id) [[activeusers]] WHERE abc = :abc
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -966,11 +934,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM (SELECT * FROM user WHERE account_id = accounts.id) [[activeusers]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -995,11 +962,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] GROUP BY [[name]], [[date]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1011,11 +977,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] GROUP BY [[name]], [[date]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1031,11 +996,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] WHERE account_id = accounts.id GROUP BY SUBSTR(name, 0, 1), x
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1050,11 +1014,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] GROUP BY SUBSTR(name, 0, :to), x
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1128,11 +1091,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] ORDER BY [[name]], [[date]] DESC
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1144,11 +1106,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] ORDER BY [[name]], [[date]] DESC
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1164,11 +1125,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] WHERE account_id = accounts.id ORDER BY SUBSTR(name, 3, 4) DESC, x ASC
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1183,11 +1143,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] ORDER BY SUBSTR(name, 3, :to) DESC, x ASC
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1216,11 +1175,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 WITH [[a1]] AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1), [[a2]] AS ((SELECT [[id]] FROM [[t2]] INNER JOIN [[a1]] ON t2.id = a1.id WHERE expr = 2) UNION ( SELECT [[id]] FROM [[t3]] WHERE expr = 3 )) SELECT * FROM [[a2]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1244,11 +1202,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $qb->build($query);
 
-        $expected = DbHelper::replaceQuotes(
+        $expected = static::replaceQuotes(
             <<<SQL
             WITH RECURSIVE [[a1]] AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1) SELECT * FROM [[a1]]
-            SQL,
-            $db->getDriverName(),
+            SQL
         );
 
         if (in_array($db->getDriverName(), ['oci', 'sqlsrv'], true)) {
@@ -1270,11 +1227,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $qb->build($query);
 
-        $expectedSql = DbHelper::replaceQuotes(
+        $expectedSql = static::replaceQuotes(
             <<<SQL
             WITH $expected AS (SELECT * FROM [[t]]) SELECT * FROM [[t]]
-            SQL,
-            $db->getDriverName(),
+            SQL
         );
 
         $this->assertSame($expectedSql, $sql);
@@ -1297,11 +1253,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT 1 AS ab FROM [[tablename]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1316,11 +1271,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT 1 AS ab, 2 AS cd, 3 AS [[ef]] FROM [[tablename]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1333,11 +1287,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT SUBSTR(name, 0, :len) FROM [[tablename]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1361,11 +1314,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT *, (SELECT COUNT(*) FROM [[operations]] WHERE account_id = accounts.id) AS [[operations_count]] FROM [[accounts]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1413,11 +1365,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build((new Query($db))->select('*')->from('table'));
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[table]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql
         );
@@ -1427,12 +1378,11 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build((new Query($db))->select('*')->from('table'));
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT *
                 FROM [[table]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1463,11 +1413,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($firtsQuery);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 (SELECT [[id]] FROM [[TotalExample]] [[t1]] WHERE (w > 0) AND (x < 2)) UNION ( SELECT [[id]] FROM [[TotalTotalExample]] [[t2]] WHERE w > 5 ) UNION ALL ( SELECT [[id]] FROM [[TotalTotalExample]] [[t3]] WHERE w = 3 )
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1524,11 +1473,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (([[w]].[[merchant_id]] = 6) AND ([[w]].[[user_id]] = 210)))) AND ([[t]].[[some_column]] = :qp0)
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1563,11 +1511,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (w.merchant_id = :merchant_id))) AND (t.some_column = :some_value)
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -1694,7 +1641,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         }
 
         $this->assertSame(
-            DbHelper::replaceQuotes($expected, $db->getDriverName()),
+            static::replaceQuotes($expected),
             $qb->createView('animal_view', (new Query($db))->select('1')),
         );
     }
@@ -1719,11 +1666,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[T_constraints_1]] DROP CONSTRAINT [[CN_check]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->dropCheck('T_constraints_1', 'CN_check'),
         );
@@ -1736,11 +1682,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[customer]] DROP COLUMN [[id]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->dropColumn('customer', 'id'),
         );
@@ -1753,11 +1698,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 COMMENT ON COLUMN [customer].[id] IS NULL
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->dropCommentFromColumn('customer', 'id'),
         );
@@ -1770,11 +1714,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 COMMENT ON TABLE [[customer]] IS NULL
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->dropCommentFromTable('customer'),
         );
@@ -1791,11 +1734,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[T_constraints_1]] ALTER COLUMN [[C_default]] DROP DEFAULT
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->dropDefaultValue('T_constraints_1', 'CN_pk'),
         );
@@ -1808,11 +1750,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[T_constraints_3]] DROP CONSTRAINT [[CN_constraints_3]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->dropForeignKey('T_constraints_3', 'CN_constraints_3'),
         );
@@ -1825,11 +1766,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 DROP INDEX [[CN_constraints_2_single]] ON [[T_constraints_2]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->dropIndex('T_constraints_2', 'CN_constraints_2_single'),
         );
@@ -1842,11 +1782,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[T_constraints_1]] DROP CONSTRAINT [[CN_pk]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->dropPrimaryKey('T_constraints_1', 'CN_pk'),
         );
@@ -1881,7 +1820,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql = $qb->dropTable('customer', ifExists: $ifExists, cascade: $cascade);
         }
 
-        $expectedSql = DbHelper::replaceQuotes($expected, $db->getDriverName());
+        $expectedSql = static::replaceQuotes($expected);
 
         $this->assertSame($expectedSql, $sql);
     }
@@ -1893,11 +1832,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[test_uq]] DROP CONSTRAINT [[test_uq_constraint]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->dropUnique('test_uq', 'test_uq_constraint'),
         );
@@ -1910,11 +1848,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 DROP VIEW [[animal_view]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->dropview('animal_view'),
         );
@@ -1992,11 +1929,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->renameColumn('alpha', 'string_identifier', 'string_identifier_test');
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[alpha]] RENAME COLUMN [[string_identifier]] TO [[string_identifier_test]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -2010,11 +1946,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->renameTable('alpha', 'alpha-test');
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 RENAME TABLE [[alpha]] TO [[alpha-test]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -2122,13 +2057,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
-        $sql = DbHelper::replaceQuotes('SELECT 1 FROM [[customer]] WHERE [[id]] = 1', $db->getDriverName());
+        $sql = static::replaceQuotes('SELECT 1 FROM [[customer]] WHERE [[id]] = 1');
         // Alias required to avoid memory leaking on MySQL. Other DBMS have the same alias for consistency.
         // @link https://github.com/yiisoft/yii2/issues/20385
-        $expected = DbHelper::replaceQuotes(
-            'SELECT EXISTS(SELECT 1 FROM [[customer]] WHERE [[id]] = 1) AS [[0]]',
-            $db->getDriverName()
-        );
+        $expected = static::replaceQuotes('SELECT EXISTS(SELECT 1 FROM [[customer]] WHERE [[id]] = 1) AS [[0]]');
 
         $this->assertSame($expected, $qb->selectExists($sql));
     }
@@ -2148,11 +2080,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $qb->build($query);
 
-        $expected = DbHelper::replaceQuotes(
+        $expected = static::replaceQuotes(
             <<<SQL
             SELECT 1 AS ab FROM [[tablename]]
-            SQL,
-            $db->getDriverName(),
+            SQL
         );
 
         $this->assertSame($expected, $sql);
@@ -2166,11 +2097,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $qb->build($query);
 
-        $expected = DbHelper::replaceQuotes(
+        $expected = static::replaceQuotes(
             <<<SQL
             SELECT 1 AS ab, 2 AS cd, 3 AS [[ef]] FROM [[tablename]]
-            SQL,
-            $db->getDriverName(),
+            SQL
         );
 
         $this->assertSame($expected, $sql);
@@ -2182,11 +2112,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $qb->build($query);
 
-        $expected = DbHelper::replaceQuotes(
+        $expected = static::replaceQuotes(
             <<<SQL
             SELECT SUBSTR(name, 0, :len) FROM [[tablename]]
-            SQL,
-            $db->getDriverName(),
+            SQL
         );
 
         $this->assertSame($expected, $sql);
@@ -2204,11 +2133,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $expected = DbHelper::replaceQuotes(
+        $expected = static::replaceQuotes(
             <<<SQL
             SELECT *, (SELECT COUNT(*) FROM [[operations]] WHERE account_id = accounts.id) AS [[operations_count]] FROM [[accounts]]
-            SQL,
-            $db->getDriverName(),
+            SQL
         );
         $subquery = (new Query($db))->select('COUNT(*)')->from('operations')->where('account_id = accounts.id');
         $query = (new Query($db))->select('*')->from('accounts')->addSelect(['operations_count' => $subquery]);
@@ -2276,11 +2204,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build((new Query($db))->select('*')->from('table'));
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[table]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql
         );
@@ -2290,12 +2217,11 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build((new Query($db))->select('*')->from('table'));
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 SELECT *
                 FROM [[table]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -2310,11 +2236,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->truncateTable('customer');
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 TRUNCATE TABLE [[customer]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -2322,11 +2247,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->truncateTable('T_constraints_1');
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
                 TRUNCATE TABLE [[T_constraints_1]]
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $sql,
         );
@@ -2428,10 +2352,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertCount(3, $command->getParams());
         $this->assertEquals([':id', ':qp2', ':qp2_0',], array_keys($command->getParams()));
         $this->assertEquals(
-            DbHelper::replaceQuotes(
-                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]] = \'test1\')',
-                $db->getDriverName()
-            ),
+            static::replaceQuotes('SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]] = \'test1\')'),
             $command->getRawSql()
         );
     }
@@ -2454,10 +2375,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertCount(2, $command->getParams());
         $this->assertEquals([':qp1', ':qp1_0',], array_keys($command->getParams()));
         $this->assertEquals(
-            DbHelper::replaceQuotes(
-                'SELECT * FROM [[animal]] WHERE (id = 1) AND ([[type]] = \'test2\')',
-                $db->getDriverName()
-            ),
+            static::replaceQuotes('SELECT * FROM [[animal]] WHERE (id = 1) AND ([[type]] = \'test2\')'),
             $command->getRawSql()
         );
     }
