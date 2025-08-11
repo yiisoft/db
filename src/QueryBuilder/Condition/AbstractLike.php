@@ -77,7 +77,7 @@ abstract class AbstractLike implements ConditionInterface
                         'Operator "%s" requires "conjunction" to be an instance of %s. Got %s.',
                         $operator,
                         LikeConjunction::class,
-                        get_debug_type($mode),
+                        get_debug_type($conjunction),
                     ),
                 );
             }
