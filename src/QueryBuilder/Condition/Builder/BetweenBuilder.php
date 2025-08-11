@@ -14,8 +14,6 @@ use Yiisoft\Db\QueryBuilder\Condition\Between;
 use Yiisoft\Db\QueryBuilder\Condition\NotBetween;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
-use function str_contains;
-
 /**
  * Build an object of {@see Between} or {@see NotBetween} into SQL expressions.
  *
