@@ -129,7 +129,7 @@ abstract class AbstractLike implements ConditionInterface
         }
 
         throw new InvalidArgumentException(
-            "Operator '$operator' requires value to be string, array, Iterator or ExpressionInterface."
+            "Operator '$operator' requires value to be string, int, iterable or ExpressionInterface."
         );
     }
 }
