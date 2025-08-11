@@ -139,9 +139,31 @@ Operand 1 should be the column name, and operand 2 and 3 should be the starting 
 
 For example, `['between', 'id', 1,10]` will generate `id BETWEEN 1 AND 10`.
 
+You can also use `Yiisoft\Db\Expression\ColumnName` and `Yiisoft\Db\Expression\Value` expressions:
+
+```php
+use Yiisoft\Db\Expression\ColumnName;
+use Yiisoft\Db\Expression\Value;
+
+['between', new Value('2025-08-11'), new ColumnName('start_date'), new ColumnName('end_date')]
+```
+
+The `ColumnName` expression ensures proper quoting of column names, while `Value` expressions ensure proper parameter 
+binding for values.
+
 ### not between
 
 Similar to `between` except the `BETWEEN` is replaced with `NOT BETWEEN` in the generated condition.
+
+Like with `between`, you can use `Yiisoft\Db\Expression\ColumnName` and `Yiisoft\Db\Expression\Value` expressions:
+
+```php
+use Yiisoft\Db\Expression\ColumnName;
+use Yiisoft\Db\Expression\Value;
+
+// Using expressions with not between
+['not between', new ColumnName('age'), new Value(18), new Value(65)]
+```
 
 ### in
 
