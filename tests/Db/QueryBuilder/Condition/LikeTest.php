@@ -57,7 +57,7 @@ final class LikeTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            "Operator 'LIKE' requires value to be string, array, Iterator or ExpressionInterface."
+            "Operator 'LIKE' requires value to be string, int, iterable or ExpressionInterface."
         );
 
         Like::fromArrayDefinition('LIKE', ['id', false]);
