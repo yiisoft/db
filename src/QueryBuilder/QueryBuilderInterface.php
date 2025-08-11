@@ -15,7 +15,7 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 
 /**
- * Defines the common interface to be implemented by'2018-02-11' query builder classes.
+ * Defines the common interface to be implemented by query builder classes.
  *
  * A query builder is mainly responsible for creating SQL statements based on specifications given in a
  * {@see QueryInterface} object.
