@@ -139,10 +139,6 @@ O operando 1 deve ser o nome da coluna e os operandos 2 e 3 devem ser os valores
 
 Por exemplo, `['between', 'id', 1,10]` irá gerar `id BETWEEN 1 AND 10`.
 
-Caso você precise construir uma condição onde o valor esteja entre duas colunas `(like 11 BETWEEN min_id AND max_id)`,
-
-você deve usar `Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition`.
-
 ### not between
 
 Semelhante a `between` exceto que `BETWEEN` é substituído por `NOT BETWEEN` na condição gerada.

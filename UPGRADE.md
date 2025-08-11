@@ -268,3 +268,4 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Remove `AbstractDsn` and `AbstractDsnSocket` classes and `DsnInterface` interface;
 - Remove `Hash` condition;
 - Remove `AbstractTableSchema` and add `TableSchema` instead;
+- Remove `BetweenColumns` condition;
