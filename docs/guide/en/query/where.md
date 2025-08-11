@@ -155,16 +155,6 @@ binding for values.
 
 Similar to `between` except the `BETWEEN` is replaced with `NOT BETWEEN` in the generated condition.
 
-Like with `between`, you can use `Yiisoft\Db\Expression\ColumnName` and `Yiisoft\Db\Expression\Value` expressions:
-
-```php
-use Yiisoft\Db\Expression\ColumnName;
-use Yiisoft\Db\Expression\Value;
-
-// Using expressions with not between
-['not between', new ColumnName('age'), new Value(18), new Value(65)]
-```
-
 ### in
 
 Operand 1 should be a column or DB expression.
