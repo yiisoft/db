@@ -17,10 +17,9 @@ final class LikeTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $likeCondition = new Like('id', 'LIKE', 'test');
+        $likeCondition = new Like('id', 'test');
 
         $this->assertSame('id', $likeCondition->column);
-        $this->assertSame('LIKE', $likeCondition->operator);
         $this->assertSame('test', $likeCondition->value);
         $this->assertNull($likeCondition->caseSensitive);
         $this->assertTrue($likeCondition->escape);
@@ -32,7 +31,6 @@ final class LikeTest extends TestCase
         $likeCondition = Like::fromArrayDefinition('LIKE', ['id', 'test']);
 
         $this->assertSame('id', $likeCondition->column);
-        $this->assertSame('LIKE', $likeCondition->operator);
         $this->assertSame('test', $likeCondition->value);
         $this->assertNull($likeCondition->caseSensitive);
         $this->assertTrue($likeCondition->escape);
@@ -59,7 +57,7 @@ final class LikeTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            "Operator 'LIKE' requires value to be string, array, Iterator or ExpressionInterface."
+            "Operator 'LIKE' requires value to be string, int, iterable or ExpressionInterface."
         );
 
         Like::fromArrayDefinition('LIKE', ['id', false]);
@@ -70,7 +68,6 @@ final class LikeTest extends TestCase
         $likeCondition = Like::fromArrayDefinition('LIKE', ['id', 'test', 'escape' => false]);
 
         $this->assertSame('id', $likeCondition->column);
-        $this->assertSame('LIKE', $likeCondition->operator);
         $this->assertSame('test', $likeCondition->value);
         $this->assertFalse($likeCondition->escape);
     }
@@ -83,7 +80,6 @@ final class LikeTest extends TestCase
         $likeCondition = Like::fromArrayDefinition('LIKE', ['id', 'test', 'caseSensitive' => $caseSensitive]);
 
         $this->assertSame('id', $likeCondition->column);
-        $this->assertSame('LIKE', $likeCondition->operator);
         $this->assertSame('test', $likeCondition->value);
         $this->assertSame($caseSensitive, $likeCondition->caseSensitive);
     }
@@ -97,17 +93,15 @@ final class LikeTest extends TestCase
         $likeCondition = Like::fromArrayDefinition('LIKE', ['id', 'test', 'mode' => $mode]);
 
         $this->assertSame('id', $likeCondition->column);
-        $this->assertSame('LIKE', $likeCondition->operator);
         $this->assertSame('test', $likeCondition->value);
         $this->assertSame($mode, $likeCondition->mode);
     }
 
     public function testConstructorWithMode(): void
     {
-        $likeCondition = new Like('id', 'LIKE', 'test', null, true, LikeMode::StartsWith);
+        $likeCondition = new Like('id', 'test', null, true, LikeMode::StartsWith);
 
         $this->assertSame('id', $likeCondition->column);
-        $this->assertSame('LIKE', $likeCondition->operator);
         $this->assertSame('test', $likeCondition->value);
         $this->assertSame(LikeMode::StartsWith, $likeCondition->mode);
     }
