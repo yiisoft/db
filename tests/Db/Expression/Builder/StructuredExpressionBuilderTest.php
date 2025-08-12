@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Expression;
+namespace Yiisoft\Db\Tests\Db\Expression\Builder;
 
 use ArrayIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\StructuredExpression;
-use Yiisoft\Db\Expression\StructuredExpressionBuilder;
+use Yiisoft\Db\Expression\Builder\StructuredExpressionBuilder;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\AbstractStructuredColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;

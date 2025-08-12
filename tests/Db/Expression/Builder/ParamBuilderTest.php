@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Command;
+namespace Yiisoft\Db\Tests\Db\Expression\Builder;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Command\ParamBuilder;
+use Yiisoft\Db\Expression\Builder\ParamBuilder;
 use Yiisoft\Db\Expression\Expression;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class ParamBuilderTest extends TestCase
 {

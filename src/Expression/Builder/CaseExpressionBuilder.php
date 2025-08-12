@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expression;
+namespace Yiisoft\Db\Expression\Builder;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Constant\GettypeResult;
+use Yiisoft\Db\Expression\CaseExpression;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function gettype;

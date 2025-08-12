@@ -10,7 +10,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use PDO;
 use stdClass;
-use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Expression\ArrayExpression;

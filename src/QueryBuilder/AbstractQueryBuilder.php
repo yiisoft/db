@@ -10,7 +10,7 @@ use JsonSerializable;
 use Stringable;
 use Traversable;
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
