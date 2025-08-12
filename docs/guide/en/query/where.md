@@ -139,9 +139,17 @@ Operand 1 should be the column name, and operand 2 and 3 should be the starting 
 
 For example, `['between', 'id', 1,10]` will generate `id BETWEEN 1 AND 10`.
 
-In case you need to build a condition where value is between two columns `(like 11 BETWEEN min_id AND max_id)`,
+You can also use `Yiisoft\Db\Expression\ColumnName` and `Yiisoft\Db\Expression\Value` expressions:
 
-you should use `Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition`.
+```php
+use Yiisoft\Db\Expression\ColumnName;
+use Yiisoft\Db\Expression\Value;
+
+['between', new Value('2025-08-11'), new ColumnName('start_date'), new ColumnName('end_date')]
+```
+
+The `ColumnName` expression ensures proper quoting of column names, while `Value` expressions ensure proper parameter 
+binding for values.
 
 ### not between
 

@@ -12,6 +12,8 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\ArrayExpressionBuilder;
+use Yiisoft\Db\Expression\ColumnName;
+use Yiisoft\Db\Expression\ColumnNameBuilder;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilder;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
@@ -22,6 +24,8 @@ use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\CaseExpressionBuilder;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\StructuredExpressionBuilder;
+use Yiisoft\Db\Expression\Value;
+use Yiisoft\Db\Expression\ValueBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Simple;
 use Yiisoft\Db\Query\Query;
@@ -558,12 +562,12 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Condition\Equals::class => Condition\Builder\EqualsBuilder::class,
             Condition\Exists::class => Condition\Builder\ExistsBuilder::class,
             Simple::class => Condition\Builder\SimpleBuilder::class,
-            Condition\BetweenColumns::class => Condition\Builder\BetweenColumnsBuilder::class,
-            Condition\NotBetweenColumns::class => Condition\Builder\BetweenColumnsBuilder::class,
             JsonExpression::class => JsonExpressionBuilder::class,
             ArrayExpression::class => ArrayExpressionBuilder::class,
             StructuredExpression::class => StructuredExpressionBuilder::class,
             CaseExpression::class => CaseExpressionBuilder::class,
+            ColumnName::class => ColumnNameBuilder::class,
+            Value::class => ValueBuilder::class,
         ];
     }
 

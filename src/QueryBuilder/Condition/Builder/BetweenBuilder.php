@@ -14,8 +14,6 @@ use Yiisoft\Db\QueryBuilder\Condition\Between;
 use Yiisoft\Db\QueryBuilder\Condition\NotBetween;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
-use function str_contains;
-
 /**
  * Build an object of {@see Between} or {@see NotBetween} into SQL expressions.
  *
@@ -43,14 +41,9 @@ class BetweenBuilder implements ExpressionBuilderInterface
             Between::class => 'BETWEEN',
             NotBetween::class => 'NOT BETWEEN',
         };
-        $column = $expression->column;
-        $column = $column instanceof ExpressionInterface
-            ? $this->queryBuilder->buildExpression($column)
-            : $column;
-
-        if (!str_contains($column, '(')) {
-            $column = $this->queryBuilder->getQuoter()->quoteColumnName($column);
-        }
+        $column = $expression->column instanceof ExpressionInterface
+            ? $this->queryBuilder->buildExpression($expression->column, $params)
+            : $this->queryBuilder->getQuoter()->quoteColumnName($expression->column);
 
         $phName1 = $this->createPlaceholder($expression->intervalStart, $params);
         $phName2 = $this->createPlaceholder($expression->intervalEnd, $params);
