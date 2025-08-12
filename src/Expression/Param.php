@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Command;
+namespace Yiisoft\Db\Expression;
 
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\ExpressionInterface;

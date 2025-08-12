@@ -127,6 +127,7 @@
 - Chg #1021: Move conjunction type from operator string value to `Like` condition constructor parameter (@vjik)
 - Chg #1023: Split `Like` condition to `Like` and `NotLike` (@vjik)
 - New #1024: Add `ColumnName` and `Value` expressions (@vjik)  
+- Chg #1025: Move expression builders to `Yiisoft\Db\Expression\Builder` namespace (@vjik)
 
 ## 1.3.0 March 21, 2024
 

@@ -8,7 +8,7 @@ use ArrayIterator;
 use IteratorAggregate;
 use Traversable;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\ReferentialAction;

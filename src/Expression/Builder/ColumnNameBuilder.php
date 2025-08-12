@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expression;
+namespace Yiisoft\Db\Expression\Builder;
 
+use Yiisoft\Db\Expression\ColumnName;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**

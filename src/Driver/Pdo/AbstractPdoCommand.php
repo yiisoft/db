@@ -13,7 +13,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Command\AbstractCommand;
-use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;

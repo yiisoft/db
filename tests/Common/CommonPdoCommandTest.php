@@ -8,7 +8,7 @@ use PDO;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;

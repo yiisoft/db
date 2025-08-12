@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expression;
+namespace Yiisoft\Db\Expression\Builder;
 
-use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Constant\DataType;
+use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Expression\Builder\AbstractArrayExpressionBuilder;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Schema\Data\LazyArray;

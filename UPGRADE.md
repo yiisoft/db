@@ -269,3 +269,4 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Remove `Hash` condition;
 - Remove `AbstractTableSchema` and add `TableSchema` instead;
 - Remove `BetweenColumns` condition;
+- Move expression builders to `Yiisoft\Db\Expression\Builder` namespace;

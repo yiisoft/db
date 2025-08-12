@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests\Common;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\CaseExpression;
