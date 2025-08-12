@@ -16,12 +16,12 @@ use function is_object;
 abstract class AbstractColumnTest extends TestCase
 {
     #[DataProviderExternal(ColumnProvider::class, 'predefinedTypes')]
-    public function testPredefinedType(string $className, string $type, string $phpType)
+    public function testPredefinedType(string $className, string $type)
     {
+        /** @var ColumnInterface $column */
         $column = new $className();
 
         $this->assertSame($type, $column->getType());
-        $this->assertSame($phpType, $column->getPhpType());
     }
 
     #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumns')]

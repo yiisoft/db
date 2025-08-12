@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Constraint\ForeignKey;
 
 /**
@@ -203,24 +202,6 @@ interface ColumnInterface
     public function getName(): string|null;
 
     /**
-     * @return int|null The precision of the column.
-     *
-     * @see precision()
-     *
-     * @deprecated Use {@see getSize()} instead. Will be removed in version 2.0.
-     * @psalm-mutation-free
-     */
-    public function getPrecision(): int|null;
-
-    /**
-     * Returns the PHP type of the column. Used for generating properties of a related model class.
-     *
-     * @return string The PHP type of the column.
-     * @psalm-mutation-free
-     */
-    public function getPhpType(): string;
-
-    /**
      * Returns the reference to the foreign key constraint.
      *
      * @see reference()
@@ -334,24 +315,9 @@ interface ColumnInterface
     public function null(): static;
 
     /**
-     * Converts the input value according to {@see phpType} after retrieval from the database.
-     *
-     * If the value is `null` or an {@see Expression}, there is no conversion.
+     * Converts the input value after retrieval from the database.
      */
     public function phpTypecast(mixed $value): mixed;
-
-    /**
-     * The precision is the total number of digits that represent the value.
-     * This is only meaningful when {@see type} is `decimal`.
-     *
-     * ```php
-     * $columns = [
-     *     'price' => ColumnBuilder::decimal(10, 2)->precision(10),
-     * ];
-     *
-     * @deprecated Use {@see size()} instead. Will be removed in version 2.0.
-     */
-    public function precision(int|null $precision): static;
 
     /**
      * The primary key is a column or set of columns that uniquely identifies each row in a table.

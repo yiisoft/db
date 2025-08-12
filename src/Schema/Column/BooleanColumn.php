@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Constant\PhpType;
 
 /**
  * Represents the metadata for a boolean column.
@@ -23,12 +22,6 @@ class BooleanColumn extends AbstractColumn
             null, '' => null,
             default => $value instanceof ExpressionInterface ? $value : (bool) $value,
         };
-    }
-
-    /** @psalm-mutation-free */
-    public function getPhpType(): string
-    {
-        return PhpType::BOOL;
     }
 
     public function phpTypecast(mixed $value): bool|null

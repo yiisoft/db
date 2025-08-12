@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Schema\Column;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Constraint\ForeignKey;
 
 use function array_key_exists;
@@ -210,21 +209,6 @@ abstract class AbstractColumn implements ColumnInterface
         return $this->name;
     }
 
-    /**
-     * @deprecated Use {@see getSize()} instead. Will be removed in version 2.0.
-     * @psalm-mutation-free
-     */
-    public function getPrecision(): int|null
-    {
-        return $this->getSize();
-    }
-
-    /** @psalm-mutation-free */
-    public function getPhpType(): string
-    {
-        return PhpType::MIXED;
-    }
-
     /** @psalm-mutation-free */
     public function getReference(): ForeignKey|null
     {
@@ -319,14 +303,6 @@ abstract class AbstractColumn implements ColumnInterface
     {
         $this->notNull = false;
         return $this;
-    }
-
-    /**
-     * @deprecated Use {@see size()} instead. Will be removed in version 2.0.
-     */
-    public function precision(int|null $precision): static
-    {
-        return $this->size($precision);
     }
 
     public function primaryKey(bool $primaryKey = true): static
