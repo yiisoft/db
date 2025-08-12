@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression\Builder;
 
-use Yiisoft\Db\Expression\ExpressionInterface as T;
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * This interface defines the methods to build database expressions, such as conditions for a SELECT statement or values
@@ -18,7 +18,7 @@ use Yiisoft\Db\Expression\ExpressionInterface as T;
  *
  * @see ExpressionInterface
  *
- * @template T as T
+ * @template T as ExpressionInterface
  */
 interface ExpressionBuilderInterface
 {
@@ -26,12 +26,12 @@ interface ExpressionBuilderInterface
      * Method builds the raw SQL from the expression that will not be additionally
      * escaped or quoted.
      *
-     * @param T $expression The expression to be built.
+     * @param ExpressionInterface $expression The expression to be built.
      * @param array $params The binding parameters.
      * @throws \InvalidArgumentException If builder can't handle expression passed.
      * @return string The raw SQL that will not be additionally escaped or quoted.
      *
      * @psalm-param T $expression
      */
-    public function build(T $expression, array &$params = []): string;
+    public function build(ExpressionInterface $expression, array &$params = []): string;
 }
