@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Expression;
 
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * Represents a parameter used in building an SQL statement.

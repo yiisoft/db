@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Expression\Builder;
 use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\ArrayExpression;
-use Yiisoft\Db\Expression\Builder\AbstractArrayExpressionBuilder;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Schema\Data\LazyArray;

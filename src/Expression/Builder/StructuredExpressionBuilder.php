@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Expression\Builder;
 
 use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Expression\Builder\AbstractStructuredExpressionBuilder;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
