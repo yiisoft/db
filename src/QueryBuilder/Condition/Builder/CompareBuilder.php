@@ -25,7 +25,6 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  */
 class CompareBuilder implements ExpressionBuilderInterface
 {
-
     public function __construct(
         private readonly QueryBuilderInterface $queryBuilder,
     ) {
