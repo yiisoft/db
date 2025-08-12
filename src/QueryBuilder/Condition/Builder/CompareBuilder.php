@@ -9,25 +9,32 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\AbstractCompare;
 use Yiisoft\Db\QueryBuilder\Condition\Equals;
+use Yiisoft\Db\QueryBuilder\Condition\GreaterThan;
+use Yiisoft\Db\QueryBuilder\Condition\GreaterThanOrEqual;
+use Yiisoft\Db\QueryBuilder\Condition\LessThan;
+use Yiisoft\Db\QueryBuilder\Condition\LessThanOrEqual;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * Build an object of {@see Equals} into SQL expressions.
+ * Build objects of {@see Equals}, {@see GreaterThan}, {@see GreaterThanOrEqual}, {@see LessThan},
+ * or {@see LessThanOrEqual} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<Equals>
+ * @implements ExpressionBuilderInterface<Equals|GreaterThan|GreaterThanOrEqual|LessThan|LessThanOrEqual>
  */
-class EqualsBuilder implements ExpressionBuilderInterface
+class CompareBuilder implements ExpressionBuilderInterface
 {
+
     public function __construct(
         private readonly QueryBuilderInterface $queryBuilder,
     ) {
     }
 
     /**
-     * Build SQL for {@see Equals}.
+     * Build SQL for comparison conditions.
      *
-     * @param Equals $expression
+     * @param Equals|GreaterThan|GreaterThanOrEqual|LessThan|LessThanOrEqual $expression
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -38,9 +45,17 @@ class EqualsBuilder implements ExpressionBuilderInterface
         $column = $this->prepareColumn($expression->column, $params);
         $value = $this->prepareValue($expression->value, $params);
 
+        $operator = $this->getOperator($expression);
+
+        if ($operator === '=') {
+            return $value === null
+                ? "$column IS NULL"
+                : "$column = $value";
+        }
+
         return $value === null
-            ? "$column IS NULL"
-            : "$column = $value";
+            ? '0=1'
+            : "$column $operator $value";
     }
 
     /**
@@ -64,5 +79,16 @@ class EqualsBuilder implements ExpressionBuilderInterface
         }
 
         return $this->queryBuilder->buildValue($value, $params);
+    }
+
+    private function getOperator(AbstractCompare $expression): string
+    {
+        return match ($expression::class) {
+            Equals::class => '=',
+            GreaterThan::class => '>',
+            GreaterThanOrEqual::class => '>=',
+            LessThan::class => '<',
+            LessThanOrEqual::class => '<=',
+        };
     }
 }
