@@ -1,0 +1,119 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Yiisoft\Db\Tests\Db\Expression\Function;
+
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\DataType;
+use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Expression\Function\ArrayMerge;
+use Yiisoft\Db\Expression\Function\Greatest;
+use Yiisoft\Db\Expression\Function\Least;
+use Yiisoft\Db\Expression\Function\Longest;
+use Yiisoft\Db\Expression\Function\MultiOperandFunction;
+use Yiisoft\Db\Expression\Function\Shortest;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
+use Yiisoft\Db\Tests\Support\TestTrait;
+
+final class MultiOperandFunctionTest extends TestCase
+{
+    use TestTrait;
+
+    public static function dataClasses(): array
+    {
+        return [
+            ArrayMerge::class => [ArrayMerge::class],
+            Greatest::class => [Greatest::class],
+            Least::class => [Least::class],
+            Longest::class => [Longest::class],
+            Shortest::class => [Shortest::class],
+        ];
+    }
+
+    public static function dataOperands(): array
+    {
+        $stringValue = new Param('string', DataType::STRING);
+        $query = self::getDb()->select('column')->from('table')->where(['id' => 1]);
+
+        return [
+            ArrayMerge::class => [ArrayMerge::class, [
+                [[1, 2, 3]],
+                [new ArrayExpression([1, 2, 3])],
+                [$query],
+                [[1, 2, 3], '[1,2,3]', new ArrayExpression([1, 2, 3]), $query],
+            ]],
+            Greatest::class => [Greatest::class, [
+                [1],
+                [1.5],
+                ['1 + 2'],
+                [$query],
+                [1, 1.5, '1 + 2', $query],
+            ]],
+            Least::class => [Least::class, [
+                [1],
+                [1.5],
+                ['1 + 2'],
+                [$query],
+                [1, 1.5, '1 + 2', $query],
+            ]],
+            Longest::class => [Longest::class, [
+                ['expression'],
+                [$stringValue],
+                [$query],
+                ['expression', $stringValue, $query],
+            ]],
+            Shortest::class => [Shortest::class, [
+                ['expression'],
+                [$stringValue],
+                [$query],
+                ['expression', $stringValue, $query],
+            ]],
+        ];
+    }
+
+    #[DataProvider('dataOperands')]
+    public function testConstruct(string $class, array $operandLists): void
+    {
+        $expression = new $class();
+        $this->assertInstanceOf(MultiOperandFunction::class, $expression);
+        $this->assertSame([], $expression->getOperands());
+
+        foreach ($operandLists as $operands) {
+            $expression = new $class(...$operands);
+
+            $this->assertSame($operands, $expression->getOperands());
+        }
+    }
+
+    #[DataProvider('dataOperands')]
+    public function testOperands(string $class, array $operandLists): void
+    {
+        foreach ($operandLists as $operands) {
+            $expression = new $class();
+            $this->assertSame([], $expression->getOperands());
+
+            foreach ($operands as $operand) {
+                $expression->addOperand($operand);
+            }
+
+            $this->assertSame($operands, $expression->getOperands());
+        }
+    }
+
+    #[DataProvider('dataClasses')]
+    public function testType(string $class): void
+    {
+        $expression = new $class();
+
+        $this->assertSame('', $expression->getType());
+        $this->assertSame($expression, $expression->type('integer'));
+        $this->assertSame('integer', $expression->getType());
+
+        $intColumn = new IntegerColumn();
+        $this->assertSame($expression, $expression->type($intColumn));
+        $this->assertSame($intColumn, $expression->getType());
+    }
+}
