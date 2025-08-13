@@ -34,7 +34,7 @@ class CompareBuilder implements ExpressionBuilderInterface
     /**
      * Build SQL for comparison conditions.
      *
-     * @param Equals|NotEquals|GreaterThan|GreaterThanOrEqual|LessThan|LessThanOrEqual $expression
+     * @param Equals|GreaterThan|GreaterThanOrEqual|LessThan|LessThanOrEqual|NotEquals $expression
      *
      * @throws Exception
      * @throws InvalidConfigException
