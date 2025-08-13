@@ -535,12 +535,12 @@ class QueryBuilderProvider
 
             /* simple conditions */
             [['=', 'a', 'b'], '[[a]] = :qp0', [':qp0' => new Param('b', DataType::STRING)]],
-            [['>', 'a', 1], '[[a]] > :qp0', [':qp0' => 1]],
-            [['>=', 'a', 'b'], '[[a]] >= :qp0', [':qp0' => 'b']],
-            [['<', 'a', 2], '[[a]] < :qp0', [':qp0' => 2]],
-            [['<=', 'a', 'b'], '[[a]] <= :qp0', [':qp0' => 'b']],
-            [['<>', 'a', 3], '[[a]] <> :qp0', [':qp0' => 3]],
-            [['!=', 'a', 'b'], '[[a]] != :qp0', [':qp0' => 'b']],
+            [['>', 'a', 1], '[[a]] > 1', []],
+            [['>=', 'a', 'b'], '[[a]] >= :qp0', [':qp0' => new Param('b', DataType::STRING)]],
+            [['<', 'a', 2], '[[a]] < 2', []],
+            [['<=', 'a', 'b'], '[[a]] <= :qp0', [':qp0' => new Param('b', DataType::STRING)]],
+            [['<>', 'a', 3], '[[a]] <> 3', []],
+            [['!=', 'a', 'b'], '[[a]] <> :qp0', [':qp0' => new Param('b', DataType::STRING)]],
             [
                 ['>=', 'date', new Expression('DATE_SUB(NOW(), INTERVAL 1 MONTH)')],
                 '[[date]] >= DATE_SUB(NOW(), INTERVAL 1 MONTH)',
