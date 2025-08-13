@@ -124,6 +124,7 @@ final class CompareBuilderTest extends TestCase
     public static function dataBuildWithExpressionValue(): iterable
     {
         yield 'equals' => [Equals::class, '='];
+        yield 'not equals' => [NotEquals::class, '<>'];
         yield 'greater than' => [GreaterThan::class, '>'];
         yield 'greater than or equal' => [GreaterThanOrEqual::class, '>='];
         yield 'less than' => [LessThan::class, '<'];
@@ -148,6 +149,7 @@ final class CompareBuilderTest extends TestCase
     {
         $operators = [
             'equals' => [Equals::class, '='],
+            'not equals' => [NotEquals::class, '<>'],
             'greater than' => [GreaterThan::class, '>'],
             'greater than or equal' => [GreaterThanOrEqual::class, '>='],
             'less than' => [LessThan::class, '<'],
@@ -195,6 +197,7 @@ final class CompareBuilderTest extends TestCase
     {
         $operators = [
             'equals' => [Equals::class, '='],
+            'not equals' => [NotEquals::class, '<>'],
             'greater than' => [GreaterThan::class, '>'],
             'greater than or equal' => [GreaterThanOrEqual::class, '>='],
             'less than' => [LessThan::class, '<'],
@@ -243,6 +246,7 @@ final class CompareBuilderTest extends TestCase
     public static function dataBuildWithComplexExpression(): iterable
     {
         yield 'equals' => [Equals::class, '='];
+        yield 'not equals' => [NotEquals::class, '<>'];
         yield 'greater than' => [GreaterThan::class, '>'];
         yield 'greater than or equal' => [GreaterThanOrEqual::class, '>='];
         yield 'less than' => [LessThan::class, '<'];
