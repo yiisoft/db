@@ -97,10 +97,10 @@ final class CompareBuilderTest extends TestCase
     public static function dataBuildWithNullValue(): iterable
     {
         yield 'equals' => [Equals::class, '[status] IS NULL'];
-        yield 'greater than' => [GreaterThan::class, '0=1'];
-        yield 'greater than or equal' => [GreaterThanOrEqual::class, '0=1'];
-        yield 'less than' => [LessThan::class, '0=1'];
-        yield 'less than or equal' => [LessThanOrEqual::class, '0=1'];
+        yield 'greater than' => [GreaterThan::class, '[status] > NULL'];
+        yield 'greater than or equal' => [GreaterThanOrEqual::class, '[status] >= NULL'];
+        yield 'less than' => [LessThan::class, '[status] < NULL'];
+        yield 'less than or equal' => [LessThanOrEqual::class, '[status] <= NULL'];
     }
 
     #[DataProvider('dataBuildWithNullValue')]

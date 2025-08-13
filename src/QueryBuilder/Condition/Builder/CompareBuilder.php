@@ -53,7 +53,7 @@ class CompareBuilder implements ExpressionBuilderInterface
         }
 
         return $value === null
-            ? '0=1'
+            ? "$column $operator NULL"
             : "$column $operator $value";
     }
 
