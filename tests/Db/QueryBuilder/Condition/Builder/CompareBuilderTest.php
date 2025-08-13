@@ -15,6 +15,7 @@ use Yiisoft\Db\QueryBuilder\Condition\GreaterThan;
 use Yiisoft\Db\QueryBuilder\Condition\GreaterThanOrEqual;
 use Yiisoft\Db\QueryBuilder\Condition\LessThan;
 use Yiisoft\Db\QueryBuilder\Condition\LessThanOrEqual;
+use Yiisoft\Db\QueryBuilder\Condition\NotEquals;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function PHPUnit\Framework\assertEquals;
@@ -30,6 +31,7 @@ final class CompareBuilderTest extends TestCase
     public static function dataBuildWithStringColumn(): iterable
     {
         yield 'equals' => [Equals::class, '='];
+        yield 'not equals' => [NotEquals::class, '<>'];
         yield 'greater than' => [GreaterThan::class, '>'];
         yield 'greater than or equal' => [GreaterThanOrEqual::class, '>='];
         yield 'less than' => [LessThan::class, '<'];
@@ -52,6 +54,7 @@ final class CompareBuilderTest extends TestCase
     public static function dataBuildWithExpressionColumn(): iterable
     {
         yield 'equals' => [Equals::class, '='];
+        yield 'not equals' => [NotEquals::class, '<>'];
         yield 'greater than' => [GreaterThan::class, '>'];
         yield 'greater than or equal' => [GreaterThanOrEqual::class, '>='];
         yield 'less than' => [LessThan::class, '<'];
@@ -75,6 +78,7 @@ final class CompareBuilderTest extends TestCase
     public static function dataBuildWithFunctionColumn(): iterable
     {
         yield 'equals' => [Equals::class, '='];
+        yield 'not equals' => [NotEquals::class, '<>'];
         yield 'greater than' => [GreaterThan::class, '>'];
         yield 'greater than or equal' => [GreaterThanOrEqual::class, '>='];
         yield 'less than' => [LessThan::class, '<'];
@@ -97,6 +101,7 @@ final class CompareBuilderTest extends TestCase
     public static function dataBuildWithNullValue(): iterable
     {
         yield 'equals' => [Equals::class, '[status] IS NULL'];
+        yield 'not equals' => [NotEquals::class, '[status] IS NOT NULL'];
         yield 'greater than' => [GreaterThan::class, '[status] > NULL'];
         yield 'greater than or equal' => [GreaterThanOrEqual::class, '[status] >= NULL'];
         yield 'less than' => [LessThan::class, '[status] < NULL'];
