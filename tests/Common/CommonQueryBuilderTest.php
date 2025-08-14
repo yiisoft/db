@@ -13,7 +13,6 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Length;
-use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
