@@ -69,7 +69,7 @@ class NotBuilder implements ExpressionBuilderInterface
         }
 
         $sql = $this->queryBuilder->buildCondition($condition, $params);
-        return "NOT ($sql)";
+        return $sql === '' ? '' : "NOT ($sql)";
     }
 
     protected function tryCreateNegatedCondition(ConditionInterface $condition): array|string|ExpressionInterface|null

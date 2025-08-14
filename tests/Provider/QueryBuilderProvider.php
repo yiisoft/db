@@ -307,6 +307,8 @@ class QueryBuilderProvider
                 '[[name]] LIKE :qp0' . static::$likeEscapeCharSql,
                 [':qp0' => new Param('%test%', DataType::STRING)],
             ],
+            'not: not empty string' => [new Not(new Not('')), '', []],
+            'not: not null' => [new Not(new Not(null)), '', []],
             [new Not(new Not('id=1')), 'id=1', []],
             [new Not(['=', 'status', 'active']), '[[status]] <> :qp0', [':qp0' => new Param('active', DataType::STRING)]],
             [new Not(['!=', 'status', 'inactive']), '[[status]] = :qp0', [':qp0' => new Param('inactive', DataType::STRING)]],
