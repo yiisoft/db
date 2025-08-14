@@ -6,10 +6,10 @@ namespace Yiisoft\Db\Tests\Db\Expression\Function;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Length;
+use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 final class LengthTest extends TestCase

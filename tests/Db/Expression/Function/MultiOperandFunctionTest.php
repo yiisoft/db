@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Tests\Db\Expression\Function;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
@@ -15,6 +14,7 @@ use Yiisoft\Db\Expression\Function\Least;
 use Yiisoft\Db\Expression\Function\Longest;
 use Yiisoft\Db\Expression\Function\MultiOperandFunction;
 use Yiisoft\Db\Expression\Function\Shortest;
+use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
