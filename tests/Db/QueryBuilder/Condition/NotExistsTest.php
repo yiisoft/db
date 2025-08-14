@@ -26,7 +26,7 @@ final class NotExistsTest extends TestCase
 
     public function testFromArrayDefinition(): void
     {
-        $query = new Query($this->createMock(ConnectionInterface::class));
+        $query = new Query($this->getDb());
 
         $condition = NotExists::fromArrayDefinition('NOT EXISTS', [$query]);
 
