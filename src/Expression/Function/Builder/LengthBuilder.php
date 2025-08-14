@@ -13,6 +13,8 @@ use function is_string;
 
 /**
  * Builds SQL LENGTH() function expressions for {@see Length} objects.
+ *
+ * @implements ExpressionBuilderInterface<Length>
  */
 final class LengthBuilder implements ExpressionBuilderInterface
 {
