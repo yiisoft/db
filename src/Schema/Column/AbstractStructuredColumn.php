@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\StructuredExpression;
 
@@ -47,12 +46,6 @@ abstract class AbstractStructuredColumn extends AbstractColumn
     public function getColumns(): array
     {
         return $this->columns;
-    }
-
-    /** @psalm-mutation-free */
-    public function getPhpType(): string
-    {
-        return PhpType::ARRAY;
     }
 
     /**

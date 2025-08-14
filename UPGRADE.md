@@ -74,7 +74,6 @@ The interface and the abstract implementation `AbstractColumn` were moved to `Yi
 and the following changes were made:
 
 - `getName()` method can return `string` or `null`;
-- `getPhpType()` method must return `string` PHP type of the column which used for generating related model properties;
 - `withName(string|null $name)` method is added;
 - `check(string|null $check)` method is added;
 - `getCheck()` method is added;
@@ -86,6 +85,8 @@ and the following changes were made:
 - `unique(bool $unique = true)` method is added;
 - `isUnique()` method is added;
 - `hasDefaultValue()` method is added;
+- `getPrecision()` and `precision()` methods are removed;
+- `getPhpType()` and `phpType()` methods are removed;
 - all `AbstractColumn` class properties except `$type` moved to constructor;
 - added `DEFAULT_TYPE` constant to `AbstractColumn` class;
 - added method chaining.
@@ -100,7 +101,6 @@ and the following changes were made:
 
 ### New classes with constants
 
-- `Yiisoft\Db\Constant\PhpType` with PHP types constants;
 - `Yiisoft\Db\Constant\GettypeResult` with `gettype()` function results constants;
 - `Yiisoft\Db\Constant\ColumnType` with abstract column types constants;
 - `Yiisoft\Db\Constant\PseudoType` with column pseudo-types constants;
@@ -184,7 +184,6 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `AbstractSchema::normalizeRowKeyCase()` - use `array_change_key_case()` instead;
 - `Quoter::unquoteParts()`;
 - `AbstractPdoCommand::logQuery()`;
-- `ColumnSchemaInterface::phpType()`;
 - `ConnectionInterface::getServerVersion()` - use `ConnectionInterface::getServerInfo()` instead;
 - `DbArrayHelper::getColumn()` - use `array_column()` instead;
 - `DbArrayHelper::getValueByPath()`;

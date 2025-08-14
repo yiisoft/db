@@ -130,6 +130,7 @@
 - Chg #1023: Split `Like` condition to `Like` and `NotLike` (@vjik)
 - New #1024: Add `ColumnName` and `Value` expressions (@vjik)  
 - Chg #1025: Move expression builders to `Yiisoft\Db\Expression\Builder` namespace (@vjik)
+- Chg #1026: Remove `precision()`, `getPrecision()` and `getPhpType()` methods from `ColumnInterface` (@vjik)
 
 ## 1.3.0 March 21, 2024
 

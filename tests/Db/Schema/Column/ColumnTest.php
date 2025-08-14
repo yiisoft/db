@@ -200,19 +200,6 @@ final class ColumnTest extends AbstractColumnTest
         $this->assertFalse($column->isNotNull());
     }
 
-    public function testPrecision(): void
-    {
-        $column = new Column();
-
-        $this->assertNull($column->getPrecision());
-        $this->assertSame($column, $column->precision(10));
-        $this->assertSame(10, $column->getPrecision());
-
-        $column->precision(0);
-
-        $this->assertSame(0, $column->getPrecision());
-    }
-
     public function testPrimaryKey(): void
     {
         $column = new Column();

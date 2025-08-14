@@ -111,12 +111,6 @@ class DateTimeColumn extends AbstractColumn
         };
     }
 
-    /** @psalm-mutation-free */
-    public function getPhpType(): string
-    {
-        return DateTimeImmutable::class;
-    }
-
     /**
      * Converts the value from the database format to PHP `DateTimeImmutable` object.
      * If the database type does not have time zone information, the time zone will be set to the current PHP time zone.

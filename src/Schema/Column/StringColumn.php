@@ -9,7 +9,6 @@ use Stringable;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\GettypeResult;
-use Yiisoft\Db\Constant\PhpType;
 
 use function gettype;
 
@@ -54,12 +53,6 @@ class StringColumn extends AbstractColumn implements CollatableColumnInterface
     public function getCollation(): string|null
     {
         return $this->collation;
-    }
-
-    /** @psalm-mutation-free */
-    public function getPhpType(): string
-    {
-        return PhpType::STRING;
     }
 
     public function phpTypecast(mixed $value): string|null

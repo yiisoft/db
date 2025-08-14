@@ -370,8 +370,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     }
 
     /**
-     * Converts column's default value according to {@see ColumnInterface::getPhpType()} after retrieval from the
-     * database.
+     * Converts column's default value after retrieval from the database.
      *
      * @param string|null $defaultValue The default value retrieved from the database.
      * @param ColumnInterface $column The column object.
@@ -394,7 +393,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     }
 
     /**
-     * Converts a not null default value according to {@see ColumnInterface::getPhpType()}.
+     * Converts a not null default value.
      */
     protected function normalizeNotNullDefaultValue(string $defaultValue, ColumnInterface $column): mixed
     {

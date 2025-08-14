@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
@@ -25,12 +24,6 @@ class BitColumn extends AbstractColumn
             null, '' => null,
             default => $value instanceof ExpressionInterface ? $value : (int) $value,
         };
-    }
-
-    /** @psalm-mutation-free */
-    public function getPhpType(): string
-    {
-        return PhpType::INT;
     }
 
     public function phpTypecast(mixed $value): int|null

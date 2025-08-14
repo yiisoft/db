@@ -16,7 +16,6 @@ use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
-use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\ArrayLazyColumn;
@@ -49,17 +48,17 @@ class ColumnProvider
     {
         return [
             // [class, type, phpType]
-            'integer' => [IntegerColumn::class, ColumnType::INTEGER, PhpType::INT],
-            'bigint' => [BigIntColumn::class, ColumnType::BIGINT, PhpType::STRING],
-            'double' => [DoubleColumn::class, ColumnType::DOUBLE, PhpType::FLOAT],
-            'string' => [StringColumn::class, ColumnType::STRING, PhpType::STRING],
-            'binary' => [BinaryColumn::class, ColumnType::BINARY, PhpType::MIXED],
-            'bit' => [BitColumn::class, ColumnType::BIT, PhpType::INT],
-            'boolean' => [BooleanColumn::class, ColumnType::BOOLEAN, PhpType::BOOL],
-            'datetime' => [DateTimeColumn::class, ColumnType::DATETIME, DateTimeImmutable::class],
-            'array' => [ArrayColumn::class, ColumnType::ARRAY, PhpType::ARRAY],
-            'structured' => [StructuredColumn::class, ColumnType::STRUCTURED, PhpType::ARRAY],
-            'json' => [JsonColumn::class, ColumnType::JSON, PhpType::MIXED],
+            'integer' => [IntegerColumn::class, ColumnType::INTEGER],
+            'bigint' => [BigIntColumn::class, ColumnType::BIGINT],
+            'double' => [DoubleColumn::class, ColumnType::DOUBLE],
+            'string' => [StringColumn::class, ColumnType::STRING],
+            'binary' => [BinaryColumn::class, ColumnType::BINARY],
+            'bit' => [BitColumn::class, ColumnType::BIT],
+            'boolean' => [BooleanColumn::class, ColumnType::BOOLEAN],
+            'datetime' => [DateTimeColumn::class, ColumnType::DATETIME],
+            'array' => [ArrayColumn::class, ColumnType::ARRAY],
+            'structured' => [StructuredColumn::class, ColumnType::STRUCTURED],
+            'json' => [JsonColumn::class, ColumnType::JSON],
         ];
     }
 

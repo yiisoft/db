@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -70,12 +69,6 @@ abstract class AbstractArrayColumn extends AbstractColumn
     public function getDimension(): int
     {
         return $this->dimension;
-    }
-
-    /** @psalm-mutation-free */
-    public function getPhpType(): string
-    {
-        return PhpType::ARRAY;
     }
 
     /**
