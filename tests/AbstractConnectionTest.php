@@ -15,6 +15,7 @@ use Yiisoft\Db\Profiler\ContextInterface;
 use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\ColumnFactory;
@@ -25,9 +26,6 @@ abstract class AbstractConnectionTest extends TestCase
 {
     use TestTrait;
 
-    /**
-     * @throws Exception
-     */
     public function testConnection(): void
     {
         $this->assertInstanceOf(PdoConnectionInterface::class, $this->getConnection());
@@ -42,10 +40,6 @@ abstract class AbstractConnectionTest extends TestCase
         $this->assertInstanceOf(BatchQueryResult::class, $db->createBatchQueryResult($query));
     }
 
-    /**
-     * @throws InvalidConfigException
-     * @throws \Yiisoft\Db\Exception\Exception
-     */
     public function testCreateCommand(): void
     {
         $db = $this->getConnection();
@@ -68,9 +62,6 @@ abstract class AbstractConnectionTest extends TestCase
         $this->assertSame($this->getDriverName(), $db->getDriverName());
     }
 
-    /**
-     * @throws Throwable
-     */
     public function testNestedTransactionNotSupported(): void
     {
         $db = $this->getConnection();
@@ -159,6 +150,15 @@ abstract class AbstractConnectionTest extends TestCase
     private function getProfiler(): ProfilerInterface
     {
         return $this->createMock(ProfilerInterface::class);
+    }
+
+    public function getColumnBuilderClass(): void
+    {
+        $db = $this->getConnection();
+
+        $this->assertSame(ColumnBuilder::class, $db->getColumnBuilderClass());
+
+        $db->close();
     }
 
     public function testGetColumnFactory(): void
