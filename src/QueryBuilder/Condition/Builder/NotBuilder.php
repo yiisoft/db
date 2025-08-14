@@ -64,7 +64,7 @@ class NotBuilder implements ExpressionBuilderInterface
         if ($condition instanceof ConditionInterface) {
             $negatedCondition = $this->tryCreateNegatedCondition($condition);
             if ($negatedCondition !== null) {
-                return $this->queryBuilder->buildCondition($condition, $params);
+                return $this->queryBuilder->buildCondition($negatedCondition, $params);
             }
         }
 
@@ -94,6 +94,7 @@ class NotBuilder implements ExpressionBuilderInterface
             Equals::class => new NotEquals($condition->column, $condition->value),
             NotEquals::class => new Equals($condition->column, $condition->value),
             Exists::class => new NotExists($condition->query),
+            NotExists::class => new Exists($condition->query),
             Like::class => new NotLike(
                 $condition->column,
                 $condition->value,

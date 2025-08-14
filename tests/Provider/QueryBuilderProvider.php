@@ -19,12 +19,21 @@ use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\Value;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\Between;
+use Yiisoft\Db\QueryBuilder\Condition\Equals;
+use Yiisoft\Db\QueryBuilder\Condition\Exists;
+use Yiisoft\Db\QueryBuilder\Condition\GreaterThan;
+use Yiisoft\Db\QueryBuilder\Condition\GreaterThanOrEqual;
 use Yiisoft\Db\QueryBuilder\Condition\In;
+use Yiisoft\Db\QueryBuilder\Condition\LessThan;
+use Yiisoft\Db\QueryBuilder\Condition\LessThanOrEqual;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
-use Yiisoft\Db\QueryBuilder\Condition\NotIn;
+use Yiisoft\Db\QueryBuilder\Condition\Not;
 use Yiisoft\Db\QueryBuilder\Condition\NotBetween;
+use Yiisoft\Db\QueryBuilder\Condition\NotEquals;
+use Yiisoft\Db\QueryBuilder\Condition\NotExists;
+use Yiisoft\Db\QueryBuilder\Condition\NotIn;
 use Yiisoft\Db\QueryBuilder\Condition\NotLike;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
@@ -289,6 +298,32 @@ class QueryBuilderProvider
                 ],
                 'NOT ((SELECT [[exists]] FROM [[some_table]]))', [],
             ],
+            [new Not(''), '', []],
+
+            /* Not object conditions - testing NotBuilder optimization paths */
+            [new Not(new Between('id', 1, 10)), '[[id]] NOT BETWEEN :qp0 AND :qp1', [':qp0' => 1, ':qp1' => 10]],
+            [new Not(new NotBetween('id', 1, 10)), '[[id]] BETWEEN :qp0 AND :qp1', [':qp0' => 1, ':qp1' => 10]],
+            [new Not(new In('id', [1, 2, 3])), '[[id]] NOT IN (1, 2, 3)', []],
+            [new Not(new NotIn('id', [1, 2, 3])), '[[id]] IN (1, 2, 3)', []],
+            [new Not(new Like('name', 'test')), '[[name]] NOT LIKE :qp0', [':qp0' => new Param('%test%', DataType::STRING)]],
+            [new Not(new NotLike('name', 'test')), '[[name]] LIKE :qp0', [':qp0' => new Param('%test%', DataType::STRING)]],
+            [new Not(new Not('id=1')), 'id=1', []],
+            [new Not(['=', 'status', 'active']), '[[status]] <> :qp0', [':qp0' => new Param('active', DataType::STRING)]],
+            [new Not(['!=', 'status', 'inactive']), '[[status]] = :qp0', [':qp0' => new Param('inactive', DataType::STRING)]],
+            [new Not(['<', 'score', 50]), '[[score]] >= 50', []],
+            [new Not(['<=', 'score', 50]), '[[score]] > 50', []],
+            [new Not(['>', 'score', 50]), '[[score]] <= 50', []],
+            [new Not(['>=', 'score', 50]), '[[score]] < 50', []],
+            [
+                new Not(['exists', (new Query(static::getDb()))->select('id')->from('users')]),
+                'NOT EXISTS (SELECT [[id]] FROM [[users]])',
+                []
+            ],
+
+            /* Not with non-optimizable conditions - testing fallback path */
+            [new Not('custom_condition'), 'NOT (custom_condition)', []],
+            [new Not(['and', 'id=1', 'name="test"']), 'NOT ((id=1) AND (name="test"))', []],
+            [new Not(new Expression('COMPLEX_FUNCTION()')), 'NOT (COMPLEX_FUNCTION())', []],
 
             /* and */
             [['and', '', ''], '', []],
