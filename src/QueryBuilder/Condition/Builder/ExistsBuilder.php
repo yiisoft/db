@@ -11,12 +11,13 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Exists;
+use Yiisoft\Db\QueryBuilder\Condition\NotExists;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * Build an object of {@see Exists} into SQL expressions.
+ * Build an object of {@see Exists} or {@see NotExists} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<Exists>
+ * @implements ExpressionBuilderInterface<Exists|NotExists>
  */
 class ExistsBuilder implements ExpressionBuilderInterface
 {
@@ -25,9 +26,9 @@ class ExistsBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see Exists}.
+     * Build SQL for {@see Exists} or {@see NotExists}.
      *
-     * @param Exists $expression
+     * @param Exists|NotExists $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -36,8 +37,13 @@ class ExistsBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        return $expression->operator
-            . ' '
-            . $this->queryBuilder->buildExpression($expression->query, $params);
+        $operator = match ($expression::class) {
+            Exists::class => 'EXISTS',
+            NotExists::class => 'NOT EXISTS',
+        };
+
+        $sql = $this->queryBuilder->buildExpression($expression->query, $params);
+
+        return "$operator $sql";
     }
 }

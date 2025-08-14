@@ -122,6 +122,7 @@
 - Enh #1016: Refactor `AbstractDMLQueryBuilder::getTableUniqueColumnNames()` method (@Tigrov)
 - New #1015: Add mode parameter to `Like` condition (@vjik)
 - Chg #1019: Split `In` condition to `In` and `NotIn` (@vjik)
+- Chg #1028: Split `Exists` condition to `Exists` and `NotExists` (@vjik)
 - Chg #1018, #1024: Remove `BetweenColumns` in favor `Between` with `ColumnName` usage (@vjik)
 - Chg #1017: Split `Between` condition to `Between` and `NotBetween` (@vjik)
 - New #1020: Support column's collation (@Tigrov)

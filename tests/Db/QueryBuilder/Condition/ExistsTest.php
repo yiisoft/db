@@ -21,9 +21,8 @@ final class ExistsTest extends TestCase
             ->select('id')
             ->from('users')
             ->where(['active' => 1]);
-        $existCondition = new Exists('EXISTS', $query);
+        $existCondition = new Exists($query);
 
-        $this->assertSame('EXISTS', $existCondition->operator);
         $this->assertSame($query, $existCondition->query);
     }
 
@@ -35,14 +34,13 @@ final class ExistsTest extends TestCase
             ->where(['active' => 1]);
         $existCondition = Exists::fromArrayDefinition('EXISTS', [$query]);
 
-        $this->assertSame('EXISTS', $existCondition->operator);
         $this->assertSame($query, $existCondition->query);
     }
 
     public function testFromArrayDefinitionExceptionQuery(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Sub query for EXISTS operator must be a Query object.');
+        $this->expectExceptionMessage('Sub-query for EXISTS operator must be a Query object.');
 
         Exists::fromArrayDefinition('EXISTS', []);
     }
