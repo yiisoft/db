@@ -37,7 +37,7 @@ abstract class AbstractExists implements ConditionInterface
 
         throw new InvalidArgumentException(
             sprintf(
-                'Sub query for %s operator must be a Query object.',
+                'Sub-query for %s operator must be a Query object.',
                 $operator
             )
         );
