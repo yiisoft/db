@@ -299,8 +299,6 @@ class QueryBuilderProvider
                 'NOT ((SELECT [[exists]] FROM [[some_table]]))', [],
             ],
             [new Not(''), '', []],
-
-            /* Not object conditions - testing NotBuilder optimization paths */
             [new Not(new Between('id', 1, 10)), '[[id]] NOT BETWEEN :qp0 AND :qp1', [':qp0' => 1, ':qp1' => 10]],
             [new Not(new NotBetween('id', 1, 10)), '[[id]] BETWEEN :qp0 AND :qp1', [':qp0' => 1, ':qp1' => 10]],
             [new Not(new In('id', [1, 2, 3])), '[[id]] NOT IN (1, 2, 3)', []],
@@ -319,8 +317,11 @@ class QueryBuilderProvider
                 'NOT EXISTS (SELECT [[id]] FROM [[users]])',
                 []
             ],
-
-            /* Not with non-optimizable conditions - testing fallback path */
+            [
+                new Not(['not exists', (new Query(static::getDb()))->select('id')->from('users')]),
+                'EXISTS (SELECT [[id]] FROM [[users]])',
+                []
+            ],
             [new Not('custom_condition'), 'NOT (custom_condition)', []],
             [new Not(['and', 'id=1', 'name="test"']), 'NOT ((id=1) AND (name="test"))', []],
             [new Not(new Expression('COMPLEX_FUNCTION()')), 'NOT (COMPLEX_FUNCTION())', []],
