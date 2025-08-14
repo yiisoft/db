@@ -17,7 +17,7 @@ final class NotExistsTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $query = new Query($this->createMock(ConnectionInterface::class));
+        $query = new Query($this->getDb());
 
         $condition = new NotExists($query);
 
