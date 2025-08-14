@@ -19,20 +19,13 @@ use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\Value;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\Between;
-use Yiisoft\Db\QueryBuilder\Condition\Equals;
 use Yiisoft\Db\QueryBuilder\Condition\Exists;
-use Yiisoft\Db\QueryBuilder\Condition\GreaterThan;
-use Yiisoft\Db\QueryBuilder\Condition\GreaterThanOrEqual;
 use Yiisoft\Db\QueryBuilder\Condition\In;
-use Yiisoft\Db\QueryBuilder\Condition\LessThan;
-use Yiisoft\Db\QueryBuilder\Condition\LessThanOrEqual;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
 use Yiisoft\Db\QueryBuilder\Condition\Not;
 use Yiisoft\Db\QueryBuilder\Condition\NotBetween;
-use Yiisoft\Db\QueryBuilder\Condition\NotEquals;
-use Yiisoft\Db\QueryBuilder\Condition\NotExists;
 use Yiisoft\Db\QueryBuilder\Condition\NotIn;
 use Yiisoft\Db\QueryBuilder\Condition\NotLike;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -324,12 +317,12 @@ class QueryBuilderProvider
             [
                 new Not(['exists', (new Query(static::getDb()))->select('id')->from('users')]),
                 'NOT EXISTS (SELECT [[id]] FROM [[users]])',
-                []
+                [],
             ],
             [
                 new Not(['not exists', (new Query(static::getDb()))->select('id')->from('users')]),
                 'EXISTS (SELECT [[id]] FROM [[users]])',
-                []
+                [],
             ],
             [new Not('custom_condition'), 'NOT (custom_condition)', []],
             [new Not(['and', 'id=1', 'name="test"']), 'NOT ((id=1) AND (name="test"))', []],
