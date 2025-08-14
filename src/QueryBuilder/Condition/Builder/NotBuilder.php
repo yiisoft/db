@@ -10,8 +10,25 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\Between;
+use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\Equals;
+use Yiisoft\Db\QueryBuilder\Condition\Exists;
+use Yiisoft\Db\QueryBuilder\Condition\GreaterThan;
+use Yiisoft\Db\QueryBuilder\Condition\GreaterThanOrEqual;
+use Yiisoft\Db\QueryBuilder\Condition\In;
+use Yiisoft\Db\QueryBuilder\Condition\LessThan;
+use Yiisoft\Db\QueryBuilder\Condition\LessThanOrEqual;
+use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\Not;
+use Yiisoft\Db\QueryBuilder\Condition\NotBetween;
+use Yiisoft\Db\QueryBuilder\Condition\NotEquals;
+use Yiisoft\Db\QueryBuilder\Condition\NotExists;
+use Yiisoft\Db\QueryBuilder\Condition\NotIn;
+use Yiisoft\Db\QueryBuilder\Condition\NotLike;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+
+use function is_array;
 
 /**
  * Build an object of {@see Not} into SQL expressions.
@@ -36,19 +53,65 @@ class NotBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operand = $expression->condition;
+        $condition = is_array($expression->condition)
+            ? $this->queryBuilder->createConditionFromArray($expression->condition)
+            : $expression->condition;
 
-        if ($operand === '') {
+        if ($condition === null || $condition === '') {
             return '';
         }
 
-        $expressionValue = $this->queryBuilder->buildCondition($operand, $params);
+        if ($condition instanceof ConditionInterface) {
+            $negatedCondition = $this->tryCreateNegatedCondition($condition);
+            if ($negatedCondition !== null) {
+                return $this->queryBuilder->buildCondition($condition, $params);
+            }
+        }
 
-        return "{$this->getNegationOperator()} ($expressionValue)";
+        $sql = $this->queryBuilder->buildCondition($condition, $params);
+        return "NOT ($sql)";
     }
 
-    protected function getNegationOperator(): string
+    protected function tryCreateNegatedCondition(ConditionInterface $condition): array|string|ExpressionInterface|null
     {
-        return 'NOT';
+        return match ($condition::class) {
+            LessThan::class => new GreaterThanOrEqual($condition->column, $condition->value),
+            LessThanOrEqual::class => new GreaterThan($condition->column, $condition->value),
+            GreaterThan::class => new LessThanOrEqual($condition->column, $condition->value),
+            GreaterThanOrEqual::class => new LessThan($condition->column, $condition->value),
+            In::class => new NotIn($condition->column, $condition->values),
+            NotIn::class => new In($condition->column, $condition->values),
+            Between::class => new NotBetween(
+                $condition->column,
+                $condition->intervalStart,
+                $condition->intervalEnd,
+            ),
+            NotBetween::class => new Between(
+                $condition->column,
+                $condition->intervalStart,
+                $condition->intervalEnd,
+            ),
+            Equals::class => new NotEquals($condition->column, $condition->value),
+            NotEquals::class => new Equals($condition->column, $condition->value),
+            Exists::class => new NotExists($condition->query),
+            Like::class => new NotLike(
+                $condition->column,
+                $condition->value,
+                $condition->caseSensitive,
+                $condition->escape,
+                $condition->mode,
+                $condition->conjunction,
+            ),
+            NotLike::class => new Like(
+                $condition->column,
+                $condition->value,
+                $condition->caseSensitive,
+                $condition->escape,
+                $condition->mode,
+                $condition->conjunction,
+            ),
+            Not::class => $condition->condition,
+            default => null,
+        };
     }
 }
