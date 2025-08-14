@@ -18,11 +18,13 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\Value;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\QueryBuilder\Condition\All;
 use Yiisoft\Db\QueryBuilder\Condition\Between;
 use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
+use Yiisoft\Db\QueryBuilder\Condition\None;
 use Yiisoft\Db\QueryBuilder\Condition\NotIn;
 use Yiisoft\Db\QueryBuilder\Condition\NotBetween;
 use Yiisoft\Db\QueryBuilder\Condition\NotLike;
@@ -277,6 +279,12 @@ class QueryBuilderProvider
             [['not like', 'name', []], '', []],
             [['like', 'name', [], 'conjunction' => LikeConjunction::Or], '0=1', []],
             [['not like', 'name', [], 'conjunction' => LikeConjunction::Or], '', []],
+
+            /* all */
+            [new All(), '', []],
+
+            /* none */
+            [new None(), '0=1', []],
 
             /* not */
             [['not', ''], '', []],
