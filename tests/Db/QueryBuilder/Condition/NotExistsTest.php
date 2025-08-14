@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Connection\ConnectionInterface;
 use InvalidArgumentException;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\NotExists;
