@@ -300,12 +300,12 @@ class QueryBuilderProvider
             'not: like' => [
                 new Not(new Like('name', 'test')),
                 '[[name]] NOT LIKE :qp0' . static::$likeEscapeCharSql,
-                [':qp0' => new Param('%test%', DataType::STRING)]
+                [':qp0' => new Param('%test%', DataType::STRING)],
             ],
             'not: not like' => [
                 new Not(new NotLike('name', 'test')),
                 '[[name]] LIKE :qp0' . static::$likeEscapeCharSql,
-                [':qp0' => new Param('%test%', DataType::STRING)]
+                [':qp0' => new Param('%test%', DataType::STRING)],
             ],
             [new Not(new Not('id=1')), 'id=1', []],
             [new Not(['=', 'status', 'active']), '[[status]] <> :qp0', [':qp0' => new Param('active', DataType::STRING)]],
@@ -1350,7 +1350,7 @@ class QueryBuilderProvider
                             'val' => new Expression('LOWER(:val || :val_0)', ['val' => 'A', 'val_0' => 'B']),
                             'val_0' => new Param('C', DataType::STRING),
                         ],
-                    )
+                    ),
                 ],
                 '[[name]] != :val || :val_0',
                 [
