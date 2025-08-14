@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Exception;
 use PHPUnit\Framework\TestCase;
-use Throwable;
 use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\Context\ConnectionContext;
 use Yiisoft\Db\Profiler\ContextInterface;

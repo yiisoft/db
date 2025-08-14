@@ -10,7 +10,6 @@ use DateTimeZone;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractColumnTest;
 use Yiisoft\Db\Tests\Provider\ColumnProvider;
 use Yiisoft\Db\Tests\Support\Stringable;
