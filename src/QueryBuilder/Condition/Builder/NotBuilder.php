@@ -62,7 +62,7 @@ class NotBuilder implements ExpressionBuilderInterface
         }
 
         if ($condition instanceof ConditionInterface) {
-            $negatedCondition = $this->tryCreateNegatedCondition($condition);
+            $negatedCondition = $this->createNegatedCondition($condition);
             if ($negatedCondition !== null) {
                 return $this->queryBuilder->buildCondition($negatedCondition, $params);
             }
@@ -72,7 +72,7 @@ class NotBuilder implements ExpressionBuilderInterface
         return $sql === '' ? '' : "NOT ($sql)";
     }
 
-    protected function tryCreateNegatedCondition(ConditionInterface $condition): array|string|ExpressionInterface|null
+    protected function createNegatedCondition(ConditionInterface $condition): array|string|ExpressionInterface|null
     {
         return match ($condition::class) {
             LessThan::class => new GreaterThanOrEqual($condition->column, $condition->value),
