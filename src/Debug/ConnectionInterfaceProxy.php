@@ -70,6 +70,11 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
         $this->connection->close();
     }
 
+    public function getColumnBuilderClass(): string
+    {
+        return $this->connection->getColumnBuilderClass();
+    }
+
     public function getColumnFactory(): ColumnFactoryInterface
     {
         return $this->connection->getColumnFactory();

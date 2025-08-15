@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Provider\ColumnBuilderProvider;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -15,14 +15,7 @@ abstract class AbstractColumnBuilderTest extends TestCase
 {
     use TestTrait;
 
-    public function getColumnBuilderClass(): string
-    {
-        return ColumnBuilder::class;
-    }
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\ColumnBuilderProvider::buildingMethods
-     */
+    #[DataProviderExternal(ColumnBuilderProvider::class, 'buildingMethods')]
     public function testBuildingMethods(
         string $buildingMethod,
         array $args,
@@ -30,7 +23,7 @@ abstract class AbstractColumnBuilderTest extends TestCase
         string $expectedType,
         array $expectedMethodResults = [],
     ): void {
-        $columnBuilderClass = $this->getColumnBuilderClass();
+        $columnBuilderClass = $this->getConnection()->getColumnBuilderClass();
 
         $column = $columnBuilderClass::$buildingMethod(...$args);
 

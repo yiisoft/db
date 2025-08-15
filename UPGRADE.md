@@ -136,6 +136,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryPartsInterface::setFor()` - overwrites the `FOR` part of the query;
 - `QueryPartsInterface::setWhere()` - overwrites the `WHERE` part of the query;
 - `QueryPartsInterface::setHaving()` - overwrites the `HAVING` part of the query;
+- `ConnectionInterface::getColumnBuilderClass()` - returns the column builder class name for concrete DBMS;
 - `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `ConnectionInterface::createQuery()` - creates a `Query` object;

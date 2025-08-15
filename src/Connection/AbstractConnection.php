@@ -11,6 +11,7 @@ use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
@@ -48,6 +49,11 @@ abstract class AbstractConnection implements ConnectionInterface
     public function createQuery(): QueryInterface
     {
         return new Query($this);
+    }
+
+    public function getColumnBuilderClass(): string
+    {
+        return ColumnBuilder::class;
     }
 
     public function getTablePrefix(): string
