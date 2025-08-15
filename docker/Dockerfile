@@ -1,6 +1,6 @@
 FROM composer/composer:latest-bin AS composer
 
-FROM php:8.3-cli
+FROM php:8.3-cli-bookworm
 
 # System packages
 
