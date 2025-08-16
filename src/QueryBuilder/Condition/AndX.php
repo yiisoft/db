@@ -11,12 +11,13 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  */
 final class AndX implements ConditionInterface
 {
+    /**
+     * @var array<array|ExpressionInterface|scalar>
+     */
     public readonly array $expressions;
 
     /**
-     * @param array $expressions The expressions that are connected by this condition.
-     *
-     * @psalm-param array<array|ExpressionInterface|scalar> $expressions
+     * @param array|ExpressionInterface|int|float|bool|string ...$expressions The expressions that are connected by this condition.
      */
     public function __construct(
         array|ExpressionInterface|int|float|bool|string ...$expressions,
