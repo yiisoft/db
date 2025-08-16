@@ -12,7 +12,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 final class AndX implements ConditionInterface
 {
     /**
-     * @var array<array|ExpressionInterface|scalar>
+     * @psalm-var array<array|ExpressionInterface|scalar>
      */
     public readonly array $expressions;
 
