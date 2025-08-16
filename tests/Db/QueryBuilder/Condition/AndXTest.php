@@ -14,8 +14,8 @@ final class AndXTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $andCondition = new AndX(['a' => 1, 'b' => 2]);
+        $andCondition = new AndX(['a' => 1], ['b' => 2]);
 
-        $this->assertSame(['a' => 1, 'b' => 2], $andCondition->expressions);
+        $this->assertSame([['a' => 1], ['b' => 2]], $andCondition->expressions);
     }
 }
