@@ -132,6 +132,8 @@
 - Chg #1025: Move expression builders to `Yiisoft\Db\Expression\Builder` namespace (@vjik)
 - Chg #1026: Remove `precision()`, `getPrecision()` and `getPhpType()` methods from `ColumnInterface` (@vjik)
 - New #1033: Add `All` and `None` conditions (@vjik)
+- New #1034: Add `ConnectionInterface::getColumnBuilderClass()` method (@Tigrov)
+- Enh #1031: Optimize SQL generation for `Not` condition (@vjik)
 
 ## 1.3.0 March 21, 2024
 
