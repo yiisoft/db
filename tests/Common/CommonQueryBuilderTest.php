@@ -18,6 +18,11 @@ use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 
+use function is_array;
+use function sort;
+
+use const SORT_NATURAL;
+
 abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
 {
     private function createTebleWithColumn(CommandInterface $command, string|ColumnInterface $column)
@@ -227,7 +232,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         string $class,
         array $operands,
         string $expectedSql,
-        string|int $expectedResult,
+        array|string|int $expectedResult,
         array $expectedParams = [],
     ): void {
         parent::testMultiOperandFunctionBuilder($class, $operands, $expectedSql, $expectedResult, $expectedParams);
@@ -236,6 +241,12 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
 
         $expression = new $class(...$operands);
         $result = $db->select($expression)->scalar();
+
+        if (is_array($expectedResult)) {
+            $arrayCol = $db->getColumnBuilderClass()::array();
+            $result = $arrayCol->phpTypecast($result);
+            sort($result, SORT_NATURAL);
+        }
 
         $this->assertEquals($expectedResult, $result);
     }
