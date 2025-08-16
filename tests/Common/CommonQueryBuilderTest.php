@@ -11,10 +11,17 @@ use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\CaseExpression;
+use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\Function\Length;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
+
+use function is_array;
+use function sort;
+
+use const SORT_NATURAL;
 
 abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
 {
@@ -201,5 +208,46 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $this->assertEquals($expectedResult, $result);
 
         $db->close();
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'lengthBuilder')]
+    public function testLengthBuilder(
+        string|ExpressionInterface $operand,
+        string $expectedSql,
+        int $expectedResult,
+        array $expectedParams = [],
+    ): void {
+        parent::testLengthBuilder($operand, $expectedSql, $expectedResult, $expectedParams);
+
+        $db = $this->getConnection();
+
+        $length = new Length($operand);
+        $result = $db->select($length)->scalar();
+
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'multiOperandFunctionBuilder')]
+    public function testMultiOperandFunctionBuilder(
+        string $class,
+        array $operands,
+        string $expectedSql,
+        array|string|int $expectedResult,
+        array $expectedParams = [],
+    ): void {
+        parent::testMultiOperandFunctionBuilder($class, $operands, $expectedSql, $expectedResult, $expectedParams);
+
+        $db = $this->getConnection();
+
+        $expression = new $class(...$operands);
+        $result = $db->select($expression)->scalar();
+
+        if (is_array($expectedResult)) {
+            $arrayCol = $db->getColumnBuilderClass()::array();
+            $result = $arrayCol->phpTypecast($result);
+            sort($result, SORT_NATURAL);
+        }
+
+        $this->assertEquals($expectedResult, $result);
     }
 }

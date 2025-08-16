@@ -116,7 +116,6 @@ class DateTimeColumn extends AbstractColumn
      * If the database type does not have time zone information, the time zone will be set to the current PHP time zone.
      *
      * @param string|null $value
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function phpTypecast(mixed $value): DateTimeImmutable|null
     {
