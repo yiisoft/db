@@ -12,18 +12,22 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 final class OrX implements ConditionInterface
 {
     /**
-     * @param array $expressions The expressions that are connected by this condition.
-     *
-     * @psalm-param array<array|ExpressionInterface|scalar> $expressions
+     * @psalm-var array<array|ExpressionInterface|scalar>
+     */
+    public readonly array $expressions;
+
+    /**
+     * @param array|bool|ExpressionInterface|float|int|string ...$expressions The expressions that are connected by this condition.
      */
     public function __construct(
-        public readonly array $expressions,
+        array|ExpressionInterface|int|float|bool|string ...$expressions,
     ) {
+        $this->expressions = $expressions;
     }
 
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         /** @psalm-var array<array|ExpressionInterface|scalar> $operands */
-        return new self($operands);
+        return new self(...$operands);
     }
 }

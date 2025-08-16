@@ -475,7 +475,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $conditions[] = new Condition\Equals($column, $value);
         }
 
-        return count($conditions) === 1 ? $conditions[0] : new Condition\AndX($conditions);
+        return count($conditions) === 1 ? $conditions[0] : new Condition\AndX(...$conditions);
     }
 
     public function getExpressionBuilder(ExpressionInterface $expression): object

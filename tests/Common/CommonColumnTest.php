@@ -10,7 +10,6 @@ use DateTimeZone;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractColumnTest;
 use Yiisoft\Db\Tests\Provider\ColumnProvider;
 use Yiisoft\Db\Tests\Support\Stringable;
@@ -26,8 +25,6 @@ abstract class CommonColumnTest extends AbstractColumnTest
     use TestTrait;
 
     protected const DATETIME_COLUMN_TABLE = 'datetime_column_test';
-
-    protected const COLUMN_BUILDER = ColumnBuilder::class;
 
     abstract protected function insertTypeValues(ConnectionInterface $db): void;
 
@@ -119,22 +116,23 @@ abstract class CommonColumnTest extends AbstractColumnTest
     {
         $schema = $db->getSchema();
         $command = $db->createCommand();
+        $columnBuilder = $db->getColumnBuilderClass();
 
         if ($schema->hasTable(static::DATETIME_COLUMN_TABLE)) {
             $command->dropTable(static::DATETIME_COLUMN_TABLE)->execute();
         }
 
         $command->createTable(static::DATETIME_COLUMN_TABLE, [
-            'timestamp' => static::COLUMN_BUILDER::timestamp()->defaultValue(new Expression('CURRENT_TIMESTAMP')),
-            'datetime' => static::COLUMN_BUILDER::datetime()->defaultValue('2025-04-19 14:11:35'),
-            'datetime3' => static::COLUMN_BUILDER::datetime(3)->defaultValue(new Stringable('2025-04-19 14:11:35.123')),
-            'datetimetz' => static::COLUMN_BUILDER::datetimeWithTimezone()->defaultValue(new DateTime('2025-04-19 14:11:35 +02:00')),
-            'datetimetz6' => static::COLUMN_BUILDER::datetimeWithTimezone(6)->defaultValue(new DateTimeImmutable('2025-04-19 14:11:35.123456 +02:00')),
-            'time' => static::COLUMN_BUILDER::time()->defaultValue('14:11:35'),
-            'time3' => static::COLUMN_BUILDER::time(3)->defaultValue(new Stringable('14:11:35.123')),
-            'timetz' => static::COLUMN_BUILDER::timeWithTimezone()->defaultValue(new DateTime('14:11:35 +02:00')),
-            'timetz6' => static::COLUMN_BUILDER::timeWithTimezone(6)->defaultValue(new DateTimeImmutable('14:11:35.123456 +02:00')),
-            'date' => static::COLUMN_BUILDER::date()->defaultValue('2025-04-19'),
+            'timestamp' => $columnBuilder::timestamp()->defaultValue(new Expression('CURRENT_TIMESTAMP')),
+            'datetime' => $columnBuilder::datetime()->defaultValue('2025-04-19 14:11:35'),
+            'datetime3' => $columnBuilder::datetime(3)->defaultValue(new Stringable('2025-04-19 14:11:35.123')),
+            'datetimetz' => $columnBuilder::datetimeWithTimezone()->defaultValue(new DateTime('2025-04-19 14:11:35 +02:00')),
+            'datetimetz6' => $columnBuilder::datetimeWithTimezone(6)->defaultValue(new DateTimeImmutable('2025-04-19 14:11:35.123456 +02:00')),
+            'time' => $columnBuilder::time()->defaultValue('14:11:35'),
+            'time3' => $columnBuilder::time(3)->defaultValue(new Stringable('14:11:35.123')),
+            'timetz' => $columnBuilder::timeWithTimezone()->defaultValue(new DateTime('14:11:35 +02:00')),
+            'timetz6' => $columnBuilder::timeWithTimezone(6)->defaultValue(new DateTimeImmutable('14:11:35.123456 +02:00')),
+            'date' => $columnBuilder::date()->defaultValue('2025-04-19'),
         ])->execute();
     }
 
