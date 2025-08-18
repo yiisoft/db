@@ -31,17 +31,17 @@ interface QueryFunctionsInterface
     /**
      * Returns the number of records.
      *
+     * Note: Make sure you quote column names in the expression.
+     *
      * @param string $sql The `COUNT` expression. Defaults to '*'.
      *
      * @throws InvalidConfigException
      * @throws Throwable
      * @throws Exception
-     * @return int|string Number of records. The result may be a string depending on the underlying database engine and
-     * to support integer values higher than a 32bit PHP integer can handle.
+     *
+     * @return int|string Number of records. The result will be a string when value is higher than {@see PHP_INT_MAX}.
      *
      * @psalm-return non-negative-int|string
-     *
-     * Note: Make sure you quote column names in the expression.
      */
     public function count(string $sql = '*'): int|string;
 
