@@ -270,3 +270,6 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Remove `AbstractTableSchema` and add `TableSchema` instead;
 - Remove `BetweenColumns` condition;
 - Move expression builders to `Yiisoft\Db\Expression\Builder` namespace;
+- Change `QueryBuilderInterface::getExpressionBuilder()` result type to `ExpressionBuilderInterface`;
+- Change `DQLQueryBuilderInterface::getExpressionBuilder()` result type to `ExpressionBuilderInterface`;
+

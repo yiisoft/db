@@ -10,6 +10,7 @@ use JsonSerializable;
 use Stringable;
 use Traversable;
 use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -409,7 +410,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->db->getColumnFactory();
     }
 
-    public function getExpressionBuilder(ExpressionInterface $expression): object
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface
     {
         return $this->dqlBuilder->getExpressionBuilder($expression);
     }
