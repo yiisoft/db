@@ -10,6 +10,7 @@ use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**
@@ -191,7 +192,13 @@ interface DMLQueryBuilderInterface
      *
      * Note: The method will escape the table and column names.
      */
-    public function update(string $table, array $columns, array|string $condition, array &$params = []): string;
+    public function update(
+        string $table,
+        array $columns,
+        array|string $condition,
+        array &$params = [],
+        array|ExpressionInterface|string|null $from = null
+    ): string;
 
     /**
      * Creates an SQL statement to insert rows into a database table if they don't already exist (matching unique

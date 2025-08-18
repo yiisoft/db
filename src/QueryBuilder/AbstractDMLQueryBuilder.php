@@ -8,6 +8,7 @@ use Iterator;
 use IteratorAggregate;
 use Traversable;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
@@ -134,12 +135,21 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
     }
 
-    public function update(string $table, array $columns, array|string $condition, array &$params = []): string
-    {
+    public function update(
+        string $table,
+        array $columns,
+        array|string $condition,
+        array &$params = [],
+        array|ExpressionInterface|string|null $from = null
+    ): string {
         $updates = $this->prepareUpdateSets($table, $columns, $params);
 
         $sql = 'UPDATE ' . $this->quoter->quoteTableName($table) . ' SET ' . implode(', ', $updates);
         $where = $this->queryBuilder->buildWhere($condition, $params);
+        if ($from !== null) {
+            $fromClause = $this->queryBuilder->buildFrom($this->prepareFromTables($from), $params);
+            $sql .=  $fromClause === '' ? '' : ' ' . $fromClause;
+        }
 
         return $where === '' ? $sql : $sql . ' ' . $where;
     }
@@ -443,6 +453,15 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         }
 
         return [$uniqueNames, $insertNames, null];
+    }
+
+    protected function prepareFromTables(array|ExpressionInterface|string $from): array
+    {
+        return match (gettype($from)) {
+        GettypeResult::ARRAY => $from,
+            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($from), -1, PREG_SPLIT_NO_EMPTY),
+            default => [$from],
+        };
     }
 
     /**

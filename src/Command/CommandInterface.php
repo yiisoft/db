@@ -840,7 +840,13 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
-    public function update(string $table, array $columns, array|string $condition = '', array $params = []): static;
+    public function update(
+        string $table,
+        array $columns,
+        array|string $condition = '',
+        array $params = [],
+        array|ExpressionInterface|string|null $from = null
+    ): static;
 
     /**
      * Creates a command to insert rows into a database table if they don't already exist (matching unique constraints)
