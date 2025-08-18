@@ -134,6 +134,8 @@
 - New #1033: Add `All` and `None` conditions (@vjik)
 - New #1034: Add `ConnectionInterface::getColumnBuilderClass()` method (@Tigrov)
 - Enh #1031: Optimize SQL generation for `Not` condition (@vjik)
+- Chg #1037: Change result type of `QueryBuilderInterface::getExpressionBuilder()` and
+  `DQLQueryBuilderInterface::getExpressionBuilder()` methods to `ExpressionBuilderInterface` (@vjik)
 
 ## 1.3.0 March 21, 2024
 
