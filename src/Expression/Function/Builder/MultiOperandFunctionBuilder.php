@@ -17,6 +17,7 @@ use function is_string;
  * Base class for building SQL representation of multi-operand function expressions.
  *
  * @implements ExpressionBuilderInterface<MultiOperandFunction>
+ * @template T as MultiOperandFunction
  */
 abstract class MultiOperandFunctionBuilder implements ExpressionBuilderInterface
 {
@@ -25,6 +26,8 @@ abstract class MultiOperandFunctionBuilder implements ExpressionBuilderInterface
      *
      * @param MultiOperandFunction $expression The expression to build from.
      * @param array $params The parameters to be bound to the query.
+     *
+     * @psalm-param T $expression
      *
      * @return string SQL multi-operand function expression.
      */
@@ -39,6 +42,8 @@ abstract class MultiOperandFunctionBuilder implements ExpressionBuilderInterface
      *
      * @param MultiOperandFunction $expression The expression to build.
      * @param array $params The parameters to be bound to the query.
+     *
+     * @psalm-param T $expression
      *
      * @return string SQL multi-operand function expression.
      */

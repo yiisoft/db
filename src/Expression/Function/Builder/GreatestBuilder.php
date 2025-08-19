@@ -11,6 +11,8 @@ use function implode;
 
 /**
  * Builds SQL GREATEST() function expressions for {@see Greatest} objects.
+ *
+ * @extends MultiOperandFunctionBuilder<Greatest>
  */
 final class GreatestBuilder extends MultiOperandFunctionBuilder
 {

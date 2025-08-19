@@ -11,6 +11,8 @@ use function implode;
 
 /**
  * Builds SQL LEAST() function expressions for {@see Least} objects.
+ *
+ * @extends MultiOperandFunctionBuilder<Least>
  */
 final class LeastBuilder extends MultiOperandFunctionBuilder
 {
