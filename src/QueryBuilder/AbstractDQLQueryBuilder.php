@@ -192,9 +192,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function buildExpression(ExpressionInterface $expression, array &$params = []): string
     {
-        $builder = $this->queryBuilder->getExpressionBuilder($expression);
-        /** @psalm-suppress MixedMethodCall */
-        return (string) $builder->build($expression, $params);
+        return $this->queryBuilder
+            ->getExpressionBuilder($expression)
+            ->build($expression, $params);
     }
 
     public function buildFor(array $values): string
@@ -478,7 +478,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return count($conditions) === 1 ? $conditions[0] : new Condition\AndX(...$conditions);
     }
 
-    public function getExpressionBuilder(ExpressionInterface $expression): object
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface
     {
         $className = $expression::class;
 
@@ -583,6 +583,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Condition\LessThanOrEqual::class => Condition\Builder\CompareBuilder::class,
             Condition\Exists::class => Condition\Builder\ExistsBuilder::class,
             Condition\NotExists::class => Condition\Builder\ExistsBuilder::class,
+            Condition\All::class => Condition\Builder\AllBuilder::class,
+            Condition\None::class => Condition\Builder\NoneBuilder::class,
             Simple::class => Condition\Builder\SimpleBuilder::class,
             JsonExpression::class => JsonExpressionBuilder::class,
             ArrayExpression::class => ArrayExpressionBuilder::class,
