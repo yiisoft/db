@@ -516,8 +516,7 @@ abstract class AbstractCommand implements CommandInterface
         array $columns,
         array|ExpressionInterface|string $condition = '',
         array|ExpressionInterface|string|null $from = null
-    ): static
-    {
+    ): static {
         $params = [];
         $sql = $this->getQueryBuilder()->update($table, $columns, $condition, $from, $params);
         return $this->setSql($sql)->bindValues($params);

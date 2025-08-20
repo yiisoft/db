@@ -178,8 +178,10 @@ interface DMLQueryBuilderInterface
      *
      * @param string $table The table to update.
      * @param array $columns The column data (name => value) to update the table.
-     * @param array|string $condition The condition to put in the `WHERE` part. Please refer to
+     * @param array|ExpressionInterface|string $condition The condition to put in the `WHERE` part. Please refer to
      * {@see Query::where()} On how to specify condition.
+     * @param array|ExpressionInterface|string|null $from The FROM part. Please refer to
+     * {@see Query::from()} On how to specify FROM part.
      * @param array $params The binding parameters that will be modified by this method so that they can be bound to
      * DB command later.
      *

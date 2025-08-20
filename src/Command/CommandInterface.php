@@ -829,12 +829,13 @@ interface CommandInterface
      *
      * @param string $table The name of the table to update.
      * @param array $columns The column data (name => value) to update.
-     * @param array|string $condition The condition to put in the WHERE part. Please refer to
+     * @param array|ExpressionInterface|string $condition The condition to put in the WHERE part. Please refer to
      * {@see QueryInterface::where()} on how to specify condition.
+     * @param array|ExpressionInterface|string|null $from The FROM part. Please refer to {@see QueryInterface::from()}
+     * on how to specify FROM part.
      *
      * @throws Exception
      * @throws InvalidArgumentException
-     *
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */

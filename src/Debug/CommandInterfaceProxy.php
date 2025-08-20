@@ -487,8 +487,7 @@ final class CommandInterfaceProxy implements CommandInterface
         array $columns,
         array|ExpressionInterface|string $condition = '',
         array|ExpressionInterface|string|null $from = null
-    ): static
-    {
+    ): static {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 

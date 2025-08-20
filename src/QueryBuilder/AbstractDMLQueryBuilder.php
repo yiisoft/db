@@ -458,7 +458,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     protected function prepareFromTables(array|ExpressionInterface|string $from): array
     {
         return match (gettype($from)) {
-        GettypeResult::ARRAY => $from,
+            GettypeResult::ARRAY => $from,
             GettypeResult::STRING => preg_split('/\s*,\s*/', trim($from), -1, PREG_SPLIT_NO_EMPTY),
             default => [$from],
         };
