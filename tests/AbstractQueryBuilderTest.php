@@ -2260,7 +2260,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     public function testUpdate(
         string $table,
         array $columns,
-        array|string $condition,
+        array|ExpressionInterface|string $condition,
         array|ExpressionInterface|string|null $from,
         array $params,
         string $expectedSql,

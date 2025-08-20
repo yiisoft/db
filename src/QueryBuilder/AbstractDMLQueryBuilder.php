@@ -138,7 +138,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     public function update(
         string $table,
         array $columns,
-        array|string $condition,
+        array|ExpressionInterface|string $condition,
         array|ExpressionInterface|string|null $from = null,
         array &$params = []
     ): string {

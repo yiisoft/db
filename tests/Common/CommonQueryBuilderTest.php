@@ -163,7 +163,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         ];
 
         $params = [];
-        $qb->update('{{type}}', $values, [], $params);
+        $qb->update('{{type}}', $values, [], null, $params);
 
         $this->assertSame([
             ':qp0' => 1,
@@ -173,7 +173,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         ], $params);
 
         $params = [];
-        $qb->withTypecasting(false)->update('{{type}}', $values, [], $params);
+        $qb->withTypecasting(false)->update('{{type}}', $values, [], null, $params);
 
         $this->assertSame([
             ':qp0' => '1',

@@ -218,7 +218,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     public function testUpdate(
         string $table,
         array $columns,
-        array|string $condition,
+        array|ExpressionInterface|string $condition,
         array|ExpressionInterface|string|null $from,
         array $params,
         string $expectedSql,
