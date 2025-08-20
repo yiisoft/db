@@ -1201,6 +1201,7 @@ class QueryBuilderProvider
                 '{{table}}',
                 ['name' => '{{test}}'],
                 [],
+                null,
                 [],
                 static::replaceQuotes(
                     <<<SQL
@@ -1215,6 +1216,7 @@ class QueryBuilderProvider
                 '{{table}}',
                 ['name' => '{{test}}'],
                 ['id' => 1],
+                null,
                 [],
                 static::replaceQuotes(
                     <<<SQL
@@ -1227,8 +1229,99 @@ class QueryBuilderProvider
             ],
             [
                 '{{table}}',
+                ['name' => '{{tmp}}.{{name}}'],
+                [],
+                'tmp',
+                [],
+                static::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp0 FROM [[tmp]]
+                    SQL
+                ),
+                [
+                    ':qp0' => '{{tmp}}.{{name}}',
+                ],
+            ],
+            [
+                '{{table}}',
+                ['name' => '{{tmp}}.{{name}}'],
+                [],
+                ['tmp'],
+                [],
+                static::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp0 FROM [[tmp]]
+                    SQL
+                ),
+                [
+                    ':qp0' => '{{tmp}}.{{name}}',
+                ],
+            ],
+            [
+                '{{table}}',
+                ['name' => '{{tmp}}.{{name}}'],
+                ['id' => 1],
+                'tmp',
+                [],
+                static::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp0 FROM [[tmp]] WHERE [[id]] = 1
+                    SQL
+                ),
+                [
+                    ':qp0' => '{{tmp}}.{{name}}',
+                ],
+            ],
+            [
+                '{{table}}',
+                ['name' => '{{tmp}}.{{name}}'],
+                [],
+                new Expression('SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1'),
+                [],
+                static::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp0 FROM SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1
+                    SQL
+                ),
+                [
+                    ':qp0' => '{{tmp}}.{{name}}',
+                ],
+            ],
+            [
+                '{{table}}',
+                ['name' => '{{tmp}}.{{name}}'],
+                [],
+                [new Expression('SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1')],
+                [],
+                static::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp0 FROM SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1
+                    SQL
+                ),
+                [
+                    ':qp0' => '{{tmp}}.{{name}}',
+                ],
+            ],
+            [
+                '{{table}}',
+                ['name' => '{{tmp}}'],
+                [],
+                ['tmp' => new Expression('SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1')],
+                [],
+                static::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp0 FROM SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1 [[tmp]]
+                    SQL
+                ),
+                [
+                    ':qp0' => '{{tmp}}',
+                ],
+            ],
+            [
+                '{{table}}',
                 ['{{table}}.name' => '{{test}}'],
                 ['id' => 1],
+                null,
                 ['id' => 'boolean'],
                 static::replaceQuotes(
                     <<<SQL
@@ -1244,6 +1337,7 @@ class QueryBuilderProvider
                 'customer',
                 ['status' => 1, 'updated_at' => new Expression('now()')],
                 ['id' => 100],
+                null,
                 [],
                 static::replaceQuotes(
                     <<<SQL
@@ -1256,6 +1350,7 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['name' => new Expression('UPPER([[name]])')],
                 '[[name]] = :name',
+                null,
                 ['name' => new Expression('LOWER([[name]])')],
                 static::replaceQuotes(
                     <<<SQL
@@ -1268,6 +1363,7 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['price' => new Expression('[[price]] + :val', [':val' => 1])],
                 '[[start_at]] < :date',
+                null,
                 ['date' => new Expression('NOW()')],
                 static::replaceQuotes(
                     <<<SQL
@@ -1280,6 +1376,7 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['name' => new Expression('UPPER([[name]])')],
                 '[[name]] = :name',
+                null,
                 ['name' => new Expression('LOWER(:val)', [':val' => 'Apple'])],
                 static::replaceQuotes(
                     <<<SQL
@@ -1292,6 +1389,7 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['name' => new Expression('LOWER(:val)', ['val' => 'Apple'])],
                 '[[name]] != :name',
+                null,
                 ['name' => new Expression('UPPER(:val)', ['val' => 'Banana'])],
                 static::replaceQuotes(
                     <<<SQL
@@ -1307,6 +1405,7 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['name' => new Expression('LOWER(:val)', [':val' => 'Apple'])],
                 '[[name]] != :name',
+                null,
                 ['name' => new Expression('UPPER(:val)', ['val' => 'Banana'])],
                 static::replaceQuotes(
                     <<<SQL
@@ -1322,6 +1421,7 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['price' => new Expression('[[price]] * :val + :val1', ['val' => 1.2, 'val1' => 2])],
                 '[[name]] IN :values',
+                null,
                 ['values' => new Expression('(:val, :val2)', ['val' => 'Banana', 'val2' => 'Cherry'])],
                 static::replaceQuotes(
                     <<<SQL
@@ -1339,6 +1439,7 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['name' => new Expression('LOWER(:val)', ['val' => 'Apple'])],
                 '[[name]] != :name',
+                null,
                 ['name' => new Expression('UPPER(:val1)', ['val1' => 'Banana'])],
                 static::replaceQuotes(
                     <<<SQL
@@ -1362,6 +1463,7 @@ class QueryBuilderProvider
                     ),
                 ],
                 '[[name]] != :val || :val_0',
+                null,
                 [
                     'val_0' => new Param('F', DataType::STRING),
                     'val' => new Expression('UPPER(:val || :val_0)', ['val' => 'D', 'val_0' => 'E']),
@@ -1384,6 +1486,7 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['name' => new Expression('LOWER(?)', ['Apple'])],
                 '[[name]] != ?',
+                null,
                 ['Banana'],
                 static::replaceQuotes(
                     <<<SQL
@@ -1397,6 +1500,7 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['price' => 10],
                 ':val',
+                null,
                 [':val' => new Expression("label=':val' AND name=:val", [':val' => 'Apple'])],
                 static::replaceQuotes(
                     <<<SQL
@@ -1412,6 +1516,7 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['price' => 10],
                 ':val',
+                null,
                 [':val' => new Expression("label=':val'", [':val' => 'Apple'])],
                 static::replaceQuotes(
                     <<<SQL

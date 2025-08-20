@@ -196,8 +196,8 @@ interface DMLQueryBuilderInterface
         string $table,
         array $columns,
         array|string $condition,
-        array &$params = [],
-        array|ExpressionInterface|string|null $from = null
+        array|ExpressionInterface|string|null $from = null,
+        array &$params = []
     ): string;
 
     /**

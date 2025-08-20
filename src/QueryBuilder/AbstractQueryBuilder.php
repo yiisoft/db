@@ -578,10 +578,10 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         string $table,
         array $columns,
         array|string $condition,
-        array &$params = [],
-        array|ExpressionInterface|string|null $from = null
+        array|ExpressionInterface|string|null $from = null,
+        array &$params = []
     ): string {
-        return $this->dmlBuilder->update($table, $columns, $condition, $params);
+        return $this->dmlBuilder->update($table, $columns, $condition, $from, $params);
     }
 
     public function upsert(

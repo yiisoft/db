@@ -514,12 +514,12 @@ abstract class AbstractCommand implements CommandInterface
     public function update(
         string $table,
         array $columns,
-        array|string $condition = '',
-        array $params = [],
+        array|ExpressionInterface|string $condition = '',
         array|ExpressionInterface|string|null $from = null
     ): static
     {
-        $sql = $this->getQueryBuilder()->update($table, $columns, $condition, $params);
+        $params = [];
+        $sql = $this->getQueryBuilder()->update($table, $columns, $condition, $from, $params);
         return $this->setSql($sql)->bindValues($params);
     }
 

@@ -831,20 +831,17 @@ interface CommandInterface
      * @param array $columns The column data (name => value) to update.
      * @param array|string $condition The condition to put in the WHERE part. Please refer to
      * {@see QueryInterface::where()} on how to specify condition.
-     * @param array $params The parameters to bind to the command.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * @psalm-param ParamsType $params
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
     public function update(
         string $table,
         array $columns,
-        array|string $condition = '',
-        array $params = [],
+        array|ExpressionInterface|string $condition = '',
         array|ExpressionInterface|string|null $from = null
     ): static;
 

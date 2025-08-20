@@ -485,8 +485,7 @@ final class CommandInterfaceProxy implements CommandInterface
     public function update(
         string $table,
         array $columns,
-        array|string $condition = '',
-        array $params = [],
+        array|ExpressionInterface|string $condition = '',
         array|ExpressionInterface|string|null $from = null
     ): static
     {
