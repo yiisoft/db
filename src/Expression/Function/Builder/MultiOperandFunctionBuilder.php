@@ -16,8 +16,8 @@ use function is_string;
 /**
  * Base class for building SQL representation of multi-operand function expressions.
  *
- * @implements ExpressionBuilderInterface<MultiOperandFunction>
  * @template T as MultiOperandFunction
+ * @implements ExpressionBuilderInterface<T>
  */
 abstract class MultiOperandFunctionBuilder implements ExpressionBuilderInterface
 {
