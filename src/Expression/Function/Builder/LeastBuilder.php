@@ -10,19 +10,19 @@ use Yiisoft\Db\Expression\Function\MultiOperandFunction;
 use function implode;
 
 /**
- * Builds SQL LEAST() function expressions for {@see Least} objects.
+ * Builds SQL `LEAST()` function expressions for {@see Least} objects.
  *
  * @extends MultiOperandFunctionBuilder<Least>
  */
 final class LeastBuilder extends MultiOperandFunctionBuilder
 {
     /**
-     * Builds a SQL LEAST() function expression from the given {@see Least} object.
+     * Builds a SQL `LEAST()` function expression from the given {@see Least} object.
      *
      * @param Least $expression The expression to build.
      * @param array $params The parameters to bind.
      *
-     * @return string The SQL LEAST() function expression.
+     * @return string The SQL `LEAST()` function expression.
      */
     protected function buildFromExpression(MultiOperandFunction $expression, array &$params): string
     {

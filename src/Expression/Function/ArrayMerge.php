@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Expression\Function;
 
 /**
- * Represents SQL expression that returns the merged array from a list of operands.
+ * Represents an SQL expression that returns the merged array from a list of operands.
  *
  * Example usage:
  *
