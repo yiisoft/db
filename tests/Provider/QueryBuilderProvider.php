@@ -1212,7 +1212,7 @@ class QueryBuilderProvider
                     SQL
                 ),
                 [
-                    ':qp0' => '{{test}}',
+                    ':qp0' => new Param('{{test}}', DataType::STRING),
                 ],
             ],
             [
@@ -1226,7 +1226,7 @@ class QueryBuilderProvider
                     SQL
                 ),
                 [
-                    ':qp0' => '{{test}}',
+                    ':qp0' => new Param('{{test}}', DataType::STRING),
                 ],
             ],
             [
@@ -1241,7 +1241,7 @@ class QueryBuilderProvider
                 ),
                 [
                     'id' => 'boolean',
-                    ':qp1' => '{{test}}',
+                    ':qp1' => new Param('{{test}}', DataType::STRING),
                 ],
             ],
             [
@@ -1251,10 +1251,9 @@ class QueryBuilderProvider
                 [],
                 static::replaceQuotes(
                     <<<SQL
-                    UPDATE [[customer]] SET [[status]]=:qp0, [[updated_at]]=now() WHERE [[id]] = 100
+                    UPDATE [[customer]] SET [[status]]=1, [[updated_at]]=now() WHERE [[id]] = 100
                     SQL
                 ),
-                [':qp0' => 1],
             ],
             'Expressions without params' => [
                 '{{product}}',
@@ -1266,7 +1265,6 @@ class QueryBuilderProvider
                     UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER([[name]])
                     SQL
                 ),
-                [],
             ],
             'Expression with params and without params' => [
                 '{{product}}',
@@ -1404,11 +1402,10 @@ class QueryBuilderProvider
                 [':val' => new Expression("label=':val' AND name=:val", [':val' => 'Apple'])],
                 static::replaceQuotes(
                     <<<SQL
-                    UPDATE [[product]] SET [[price]]=:qp1 WHERE label=':val' AND name=:val_0
+                    UPDATE [[product]] SET [[price]]=10 WHERE label=':val' AND name=:val_0
                     SQL
                 ),
                 [
-                    ':qp1' => 10,
                     ':val_0' => 'Apple',
                 ],
             ],
@@ -1419,11 +1416,10 @@ class QueryBuilderProvider
                 [':val' => new Expression("label=':val'", [':val' => 'Apple'])],
                 static::replaceQuotes(
                     <<<SQL
-                    UPDATE [[product]] SET [[price]]=:qp1 WHERE label=':val'
+                    UPDATE [[product]] SET [[price]]=10 WHERE label=':val'
                     SQL
                 ),
                 [
-                    ':qp1' => 10,
                     ':val_0' => 'Apple',
                 ],
             ],
@@ -1457,8 +1453,7 @@ class QueryBuilderProvider
                     ':qp1' => 'bar {{city}}',
                     ':qp2' => 1,
                     ':qp3' => null,
-                    ':qp4' => 'foo {{city}}',
-                    ':qp5' => 2,
+                    ':qp4' => new Param('foo {{city}}', DataType::STRING),
                 ],
             ],
             'regular values without update part' => [
@@ -1488,7 +1483,10 @@ class QueryBuilderProvider
                     ->limit(1),
                 ['address' => 'foo {{city}}', 'status' => 2, 'orders' => new Expression('T_upsert.orders + 1')],
                 '',
-                [':qp0' => new Param('user1', DataType::STRING), ':qp1' => 'foo {{city}}', ':qp2' => 2],
+                [
+                    ':qp0' => new Param('user1', DataType::STRING),
+                    ':qp1' => new Param('foo {{city}}', DataType::STRING),
+                ],
             ],
             'query without update part' => [
                 'T_upsert',
@@ -1533,7 +1531,7 @@ class QueryBuilderProvider
                     ),
                 ['ts' => 0, '[[orders]]' => new Expression('T_upsert.orders + 1')],
                 '',
-                [':phEmail' => 'dynamic@example.com', ':qp1' => 0],
+                [':phEmail' => 'dynamic@example.com'],
             ],
             'query, values and expressions without update part' => [
                 'T_upsert',

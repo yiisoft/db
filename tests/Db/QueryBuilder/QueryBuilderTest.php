@@ -221,7 +221,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array|string $condition,
         array $params,
         string $expectedSql,
-        array $expectedParams
+        array $expectedParams = [],
     ): void {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();

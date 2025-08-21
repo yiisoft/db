@@ -180,7 +180,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $quoter = $this->quoter;
 
         foreach ($columns as $name => &$column) {
-            $column = $column . ' AS ' . $quoter->quoteSimpleColumnName($name);
+            $column .= ' AS ' . $quoter->quoteSimpleColumnName($name);
         }
 
         return 'SELECT ' . implode(', ', $columns);
@@ -413,14 +413,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             }
 
             $quotedName = $quoter->quoteColumnName($name);
+            $builtValue = $queryBuilder->buildValue($value, $params);
 
-            if ($value instanceof ExpressionInterface) {
-                $placeholder = $queryBuilder->buildExpression($value, $params);
-            } else {
-                $placeholder = $queryBuilder->bindParam($value, $params);
-            }
-
-            $sets[] = "$quotedName=$placeholder";
+            $sets[] = "$quotedName=$builtValue";
         }
 
         return $sets;
