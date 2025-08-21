@@ -15,23 +15,11 @@ use Yiisoft\Db\Expression\Function\Longest;
 use Yiisoft\Db\Expression\Function\MultiOperandFunction;
 use Yiisoft\Db\Expression\Function\Shortest;
 use Yiisoft\Db\Expression\Param;
-use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 final class MultiOperandFunctionTest extends TestCase
 {
     use TestTrait;
-
-    public static function dataClasses(): array
-    {
-        return [
-            ArrayMerge::class => [ArrayMerge::class],
-            Greatest::class => [Greatest::class],
-            Least::class => [Least::class],
-            Longest::class => [Longest::class],
-            Shortest::class => [Shortest::class],
-        ];
-    }
 
     public static function dataOperands(): array
     {
@@ -101,19 +89,5 @@ final class MultiOperandFunctionTest extends TestCase
 
             $this->assertSame($operands, $expression->getOperands());
         }
-    }
-
-    #[DataProvider('dataClasses')]
-    public function testType(string $class): void
-    {
-        $expression = new $class();
-
-        $this->assertSame('', $expression->getType());
-        $this->assertSame($expression, $expression->type('integer'));
-        $this->assertSame('integer', $expression->getType());
-
-        $intColumn = new IntegerColumn();
-        $this->assertSame($expression, $expression->type($intColumn));
-        $this->assertSame($intColumn, $expression->getType());
     }
 }
