@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Expression\Function;
 use Yiisoft\Db\Expression\Function\Builder\GreatestBuilder;
 
 /**
- * Represents a SQL GREATEST() function that returns the greatest value from a list of values or expressions.
+ * Represents a SQL `GREATEST()` function that returns the greatest value from a list of values or expressions.
  *
  * Example usage:
  *

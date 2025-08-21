@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Expression\Function;
 use Yiisoft\Db\Expression\Function\Builder\LeastBuilder;
 
 /**
- * Represents a SQL LEAST() function that returns the least value from a list of values or expressions.
+ * Represents a SQL `LEAST()` function that returns the least value from a list of values or expressions.
  *
  * Example usage:
  *

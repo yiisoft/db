@@ -8,7 +8,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Builder\LengthBuilder;
 
 /**
- * Represents a SQL LENGTH() function that returns the length of string represented as an expression.
+ * Represents a SQL `LENGTH()` function that returns the length of string represented as an expression.
  *
  * Example usage:
  *
