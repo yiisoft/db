@@ -18,6 +18,16 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\Builder\ExpressionBuilder;
 use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\Function\Builder\GreatestBuilder;
+use Yiisoft\Db\Expression\Function\Builder\LeastBuilder;
+use Yiisoft\Db\Expression\Function\Builder\LengthBuilder;
+use Yiisoft\Db\Expression\Function\Builder\LongestBuilder;
+use Yiisoft\Db\Expression\Function\Builder\ShortestBuilder;
+use Yiisoft\Db\Expression\Function\Greatest;
+use Yiisoft\Db\Expression\Function\Least;
+use Yiisoft\Db\Expression\Function\Length;
+use Yiisoft\Db\Expression\Function\Longest;
+use Yiisoft\Db\Expression\Function\Shortest;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\Builder\JsonExpressionBuilder;
 use Yiisoft\Db\Expression\CaseExpression;
@@ -600,6 +610,11 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             DateTimeValue::class => DateTimeValueBuilder::class,
             DateTimeTzValue::class => DateTimeTzValueBuilder::class,
             TimestampValue::class => TimestampValueBuilder::class,
+            Length::class => LengthBuilder::class,
+            Greatest::class => GreatestBuilder::class,
+            Least::class => LeastBuilder::class,
+            Longest::class => LongestBuilder::class,
+            Shortest::class => ShortestBuilder::class,
         ];
     }
 
