@@ -87,7 +87,7 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      *
      * @throws InvalidArgumentException When expression building isn't supported by this QueryBuilder.
      */
-    public function getExpressionBuilder(ExpressionInterface $expression): object;
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface;
 
     /**
      * Returns {@see ServerInfoInterface} instance that provides information about the database server.

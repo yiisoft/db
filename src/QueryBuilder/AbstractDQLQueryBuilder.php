@@ -18,6 +18,16 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\Builder\ExpressionBuilder;
 use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\Function\Builder\GreatestBuilder;
+use Yiisoft\Db\Expression\Function\Builder\LeastBuilder;
+use Yiisoft\Db\Expression\Function\Builder\LengthBuilder;
+use Yiisoft\Db\Expression\Function\Builder\LongestBuilder;
+use Yiisoft\Db\Expression\Function\Builder\ShortestBuilder;
+use Yiisoft\Db\Expression\Function\Greatest;
+use Yiisoft\Db\Expression\Function\Least;
+use Yiisoft\Db\Expression\Function\Length;
+use Yiisoft\Db\Expression\Function\Longest;
+use Yiisoft\Db\Expression\Function\Shortest;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\Builder\JsonExpressionBuilder;
 use Yiisoft\Db\Expression\CaseExpression;
@@ -182,9 +192,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function buildExpression(ExpressionInterface $expression, array &$params = []): string
     {
-        $builder = $this->queryBuilder->getExpressionBuilder($expression);
-        /** @psalm-suppress MixedMethodCall */
-        return (string) $builder->build($expression, $params);
+        return $this->queryBuilder
+            ->getExpressionBuilder($expression)
+            ->build($expression, $params);
     }
 
     public function buildFor(array $values): string
@@ -468,7 +478,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return count($conditions) === 1 ? $conditions[0] : new Condition\AndX(...$conditions);
     }
 
-    public function getExpressionBuilder(ExpressionInterface $expression): object
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface
     {
         $className = $expression::class;
 
@@ -582,6 +592,11 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             CaseExpression::class => CaseExpressionBuilder::class,
             ColumnName::class => ColumnNameBuilder::class,
             Value::class => ValueBuilder::class,
+            Length::class => LengthBuilder::class,
+            Greatest::class => GreatestBuilder::class,
+            Least::class => LeastBuilder::class,
+            Longest::class => LongestBuilder::class,
+            Shortest::class => ShortestBuilder::class,
         ];
     }
 

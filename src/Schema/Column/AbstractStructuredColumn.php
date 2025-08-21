@@ -50,7 +50,6 @@ abstract class AbstractStructuredColumn extends AbstractColumn
 
     /**
      * @param array|object|string|null $value
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function dbTypecast(mixed $value): ExpressionInterface|null
     {

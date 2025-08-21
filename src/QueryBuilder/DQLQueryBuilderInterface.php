@@ -313,9 +313,9 @@ interface DQLQueryBuilderInterface
     /**
      * @throws InvalidArgumentException
      *
-     * @return object Instance of {@see ExpressionBuilderInterface} for the given expression.
+     * @return ExpressionBuilderInterface Instance of {@see ExpressionBuilderInterface} for the given expression.
      */
-    public function getExpressionBuilder(ExpressionInterface $expression): object;
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface;
 
     /**
      * Creates a `SELECT EXISTS()` SQL statement.

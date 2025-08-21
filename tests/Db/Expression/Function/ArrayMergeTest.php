@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Yiisoft\Db\Tests\Db\Expression\Function;
+
+use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Expression\Function\ArrayMerge;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
+use Yiisoft\Db\Tests\Support\TestTrait;
+
+final class ArrayMergeTest extends TestCase
+{
+    use TestTrait;
+
+    public function testType(): void
+    {
+        $expression = new ArrayMerge();
+
+        $this->assertSame('', $expression->getType());
+        $this->assertSame($expression, $expression->type('integer'));
+        $this->assertSame('integer', $expression->getType());
+
+        $intColumn = new IntegerColumn();
+        $this->assertSame($expression, $expression->type($intColumn));
+        $this->assertSame($intColumn, $expression->getType());
+    }
+}
