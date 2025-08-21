@@ -9,6 +9,7 @@ services:
       - ./../tests:/code/tests
       - ./../composer.json:/code/composer.json
       - ./../phpunit.xml.dist:/code/phpunit.xml.dist
+      - ./../psalm.xml:/code/psalm.xml
     environment:
       YII_MYSQL_DATABASE: yii
       YII_MYSQL_HOST: mysql
