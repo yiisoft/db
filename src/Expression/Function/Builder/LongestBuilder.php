@@ -33,19 +33,14 @@ final class LongestBuilder extends MultiOperandFunctionBuilder
      */
     protected function buildFromExpression(MultiOperandFunction $expression, array &$params): string
     {
-        $builtSelects = [];
+        $selects = [];
 
         foreach ($expression->getOperands() as $operand) {
-            $builtSelects[] = $this->buildSelect($operand, $params);
+            $selects[] = 'SELECT ' . $this->buildOperand($operand, $params) . ' AS value';
         }
 
-        $unions = implode(' UNION ', $builtSelects);
+        $unions = implode(' UNION ', $selects);
 
         return "(SELECT value FROM ($unions) AS t ORDER BY LENGTH(value) DESC LIMIT 1)";
-    }
-
-    protected function buildSelect(mixed $operand, array &$params): string
-    {
-        return 'SELECT ' . $this->buildOperand($operand, $params) . ' AS value';
     }
 }
