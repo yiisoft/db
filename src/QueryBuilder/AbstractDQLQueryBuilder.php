@@ -36,18 +36,8 @@ use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\Builder\StructuredExpressionBuilder;
 use Yiisoft\Db\Expression\Value;
 use Yiisoft\Db\Expression\Builder\ValueBuilder;
-use Yiisoft\Db\Expression\DateValue;
-use Yiisoft\Db\Expression\Builder\DateValueBuilder;
-use Yiisoft\Db\Expression\TimestampValue;
-use Yiisoft\Db\Expression\Builder\TimestampValueBuilder;
-use Yiisoft\Db\Expression\DateTimeValue;
-use Yiisoft\Db\Expression\Builder\DateTimeValueBuilder;
-use Yiisoft\Db\Expression\DateTimeTzValue;
-use Yiisoft\Db\Expression\Builder\DateTimeTzValueBuilder;
-use Yiisoft\Db\Expression\TimeValue;
-use Yiisoft\Db\Expression\Builder\TimeValueBuilder;
-use Yiisoft\Db\Expression\TimeTzValue;
-use Yiisoft\Db\Expression\Builder\TimeTzValueBuilder;
+use Yiisoft\Db\Expression\Value\DateTimeValue;
+use Yiisoft\Db\Expression\Value\Builder\DateTimeValueBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Simple;
 use Yiisoft\Db\Query\Query;
@@ -604,12 +594,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             CaseExpression::class => CaseExpressionBuilder::class,
             ColumnName::class => ColumnNameBuilder::class,
             Value::class => ValueBuilder::class,
-            DateValue::class => DateValueBuilder::class,
-            TimeValue::class => TimeValueBuilder::class,
-            TimeTzValue::class => TimeTzValueBuilder::class,
             DateTimeValue::class => DateTimeValueBuilder::class,
-            DateTimeTzValue::class => DateTimeTzValueBuilder::class,
-            TimestampValue::class => TimestampValueBuilder::class,
             Length::class => LengthBuilder::class,
             Greatest::class => GreatestBuilder::class,
             Least::class => LeastBuilder::class,
