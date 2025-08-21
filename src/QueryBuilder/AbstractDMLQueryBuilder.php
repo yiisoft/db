@@ -424,13 +424,14 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Prepare column names and placeholders for upsert SQL statement.
      *
+     * @psalm-param array|true $updateColumns
      * @psalm-param ParamsType $params
      *
      * @return string[]
      */
     protected function prepareUpsertSets(
         string $table,
-        array|true $updateColumns,
+        array|bool $updateColumns,
         array|null $updateNames,
         array &$params
     ): array {
