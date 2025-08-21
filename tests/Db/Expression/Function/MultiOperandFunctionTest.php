@@ -96,7 +96,7 @@ final class MultiOperandFunctionTest extends TestCase
             $this->assertSame([], $expression->getOperands());
 
             foreach ($operands as $operand) {
-                $expression->addOperand($operand);
+                $expression->add($operand);
             }
 
             $this->assertSame($operands, $expression->getOperands());

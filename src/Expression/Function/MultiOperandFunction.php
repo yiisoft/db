@@ -32,7 +32,7 @@ abstract class MultiOperandFunction implements ExpressionInterface
         $this->operands = $operands;
     }
 
-    public function addOperand(mixed $operand): static
+    public function add(mixed $operand): static
     {
         $this->operands[] = $operand;
         return $this;
