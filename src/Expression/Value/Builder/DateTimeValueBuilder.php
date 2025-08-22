@@ -29,11 +29,11 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $format = match ($expression->type) {
-            DateTimeType::DateTimeTz => $this->hasMicroseconds($expression->value) ? 'Y-m-d H:i:s.uP' : 'Y-m-d H:i:sP',
-            DateTimeType::DateTime => $this->hasMicroseconds($expression->value) ? 'Y-m-d H:i:s.u' : 'Y-m-d H:i:s',
             DateTimeType::Date => 'Y-m-d',
-            DateTimeType::TimeTz => $this->hasMicroseconds($expression->value) ? 'H:i:s.uP' : 'H:i:sP',
             DateTimeType::Time => $this->hasMicroseconds($expression->value) ? 'H:i:s.u' : 'H:i:s',
+            DateTimeType::TimeTz => $this->hasMicroseconds($expression->value) ? 'H:i:s.uP' : 'H:i:sP',
+            DateTimeType::DateTime => $this->hasMicroseconds($expression->value) ? 'Y-m-d H:i:s.u' : 'Y-m-d H:i:s',
+            DateTimeType::DateTimeTz => $this->hasMicroseconds($expression->value) ? 'Y-m-d H:i:s.uP' : 'Y-m-d H:i:sP',
             DateTimeType::Timestamp => 'U',
         };
 
