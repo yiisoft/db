@@ -29,12 +29,14 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $format = match ($expression->type) {
+            DateTimeType::Timestamp,
+            DateTimeType::DateTime => 'Y-m-d H:i:s' . $this->getMillisecondsFormat($expression->size),
+            DateTimeType::DateTimeTz => 'Y-m-d H:i:s' . $this->getMillisecondsFormat($expression->size) . 'P',
+            DateTimeType::Time => 'H:i:s' . $this->getMillisecondsFormat($expression->size),
+            DateTimeType::TimeTz => 'H:i:s' . $this->getMillisecondsFormat($expression->size) . 'P',
             DateTimeType::Date => 'Y-m-d',
-            DateTimeType::Time => $this->hasMicroseconds($expression->value) ? 'H:i:s.u' : 'H:i:s',
-            DateTimeType::TimeTz => $this->hasMicroseconds($expression->value) ? 'H:i:s.uP' : 'H:i:sP',
-            DateTimeType::DateTime => $this->hasMicroseconds($expression->value) ? 'Y-m-d H:i:s.u' : 'Y-m-d H:i:s',
-            DateTimeType::DateTimeTz => $this->hasMicroseconds($expression->value) ? 'Y-m-d H:i:s.uP' : 'Y-m-d H:i:sP',
-            DateTimeType::Timestamp => 'U',
+            DateTimeType::Integer => 'U',
+            DateTimeType::Float => 'U.u',
         };
 
         return $this->queryBuilder->bindParam(
@@ -43,8 +45,12 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
         );
     }
 
-    private function hasMicroseconds(DateTimeInterface $value): bool
+    protected function getMillisecondsFormat(int|null $size): string
     {
-        return (int) $value->format('u') > 0;
+        return match ($size) {
+            0 => '',
+            1, 2, 3 => '.v',
+            default => '.u',
+        };
     }
 }

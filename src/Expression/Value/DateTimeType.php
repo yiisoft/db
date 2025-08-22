@@ -6,10 +6,12 @@ namespace Yiisoft\Db\Expression\Value;
 
 enum DateTimeType
 {
-    case Date;
-    case Time;
-    case TimeTz;
+    case Timestamp;
     case DateTime;
     case DateTimeTz;
-    case Timestamp;
+    case Time;
+    case TimeTz;
+    case Date;
+    case Integer;
+    case Float;
 }

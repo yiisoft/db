@@ -12,6 +12,7 @@ final class DateTimeValue implements ExpressionInterface
     public function __construct(
         public readonly DateTimeInterface $value,
         public readonly DateTimeType $type = DateTimeType::DateTimeTz,
+        public readonly int|null $size = 0,
     ) {
     }
 }
