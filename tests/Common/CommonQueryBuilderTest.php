@@ -323,7 +323,6 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
             ->from('{{date_time_value}}')
             ->where([$column => $expression]);
         $result = $query->column();
-//        var_dump( $db->createQuery()->from('date_time_value')->all());
 
         $this->assertSame([$expected], $result, 'SQL Query: ' . $query->createCommand()->getRawSql());
     }
