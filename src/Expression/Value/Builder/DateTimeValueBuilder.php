@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Expression\Value\Builder;
 
 use DateTimeInterface;
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\Value\DateTimeType;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * Builder for {@see DateTimeValue} expressions.
@@ -18,39 +22,24 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  */
 final class DateTimeValueBuilder implements ExpressionBuilderInterface
 {
+    private ColumnFactoryInterface $columnFactory;
+
     /**
      * @param QueryBuilderInterface $queryBuilder The query builder instance.
      */
     public function __construct(
         private readonly QueryBuilderInterface $queryBuilder,
     ) {
+        $this->columnFactory = $this->queryBuilder->getColumnFactory();
     }
 
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $format = match ($expression->type) {
-            DateTimeType::Timestamp,
-            DateTimeType::DateTime => 'Y-m-d H:i:s' . $this->getMillisecondsFormat($expression->size),
-            DateTimeType::DateTimeTz => 'Y-m-d H:i:s' . $this->getMillisecondsFormat($expression->size) . 'P',
-            DateTimeType::Time => 'H:i:s' . $this->getMillisecondsFormat($expression->size),
-            DateTimeType::TimeTz => 'H:i:s' . $this->getMillisecondsFormat($expression->size) . 'P',
-            DateTimeType::Date => 'Y-m-d',
-            DateTimeType::Integer => 'U',
-            DateTimeType::Float => 'U.u',
-        };
-
         return $this->queryBuilder->bindParam(
-            $expression->value->format($format),
+            $this->columnFactory
+                ->fromType($expression->type->getColumnType(), ['size' => $expression->size])
+                ->dbTypecast($expression->value),
             $params,
         );
-    }
-
-    protected function getMillisecondsFormat(int|null $size): string
-    {
-        return match ($size) {
-            0 => '',
-            1, 2, 3 => '.v',
-            default => '.u',
-        };
     }
 }

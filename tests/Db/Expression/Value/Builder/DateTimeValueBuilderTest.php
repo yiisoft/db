@@ -124,16 +124,30 @@ final class DateTimeValueBuilderTest extends TestCase
             ),
         ];
         yield 'Timestamp' => [
-            '2023-12-25 15:30:45',
+            '2023-12-25 13:30:45',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45+2:00'),
                 DateTimeType::Timestamp,
             ),
         ];
+        yield 'Integer' => [
+            1703511045,
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45+2:00'),
+                DateTimeType::Integer,
+            ),
+        ];
+        yield 'Float' => [
+            1703511045.112233,
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.112233+2:00'),
+                DateTimeType::Float,
+            ),
+        ];
     }
 
     #[DataProvider('dataBuild')]
-    public function testBuild(string $expectedFormat, DateTimeValue $value): void
+    public function testBuild(mixed $expected, DateTimeValue $value): void
     {
         $builder = new DateTimeValueBuilder(
             $this->getConnection()->getQueryBuilder()
@@ -143,6 +157,6 @@ final class DateTimeValueBuilderTest extends TestCase
         $result = $builder->build($value, $params);
 
         assertSame(':qp0', $result);
-        assertSame([':qp0' => $expectedFormat], $params);
+        assertSame([':qp0' => $expected], $params);
     }
 }
