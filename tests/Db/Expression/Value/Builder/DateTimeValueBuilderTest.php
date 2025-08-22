@@ -25,67 +25,122 @@ final class DateTimeValueBuilderTest extends TestCase
     public static function dataBuild(): iterable
     {
         yield 'DateTimeTz without microseconds' => [
-            new DateTimeImmutable('2023-12-25 15:30:45', new DateTimeZone('+02:00')),
-            DateTimeType::DateTimeTz,
             '2023-12-25 15:30:45+02:00',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
+                DateTimeType::DateTimeTz,
+            ),
         ];
         yield 'DateTimeTz with microseconds' => [
-            new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
-            DateTimeType::DateTimeTz,
             '2023-12-25 15:30:45.123456+02:00',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
+                DateTimeType::DateTimeTz,
+                6
+            ),
+        ];
+        yield 'DateTimeTz with milliseconds' => [
+            '2023-12-25 15:30:45.123+02:00',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
+                DateTimeType::DateTimeTz,
+                1,
+            ),
         ];
         yield 'DateTime without microseconds' => [
-            new DateTimeImmutable('2023-12-25 15:30:45'),
-            DateTimeType::DateTime,
             '2023-12-25 15:30:45',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.123456'),
+                DateTimeType::DateTime,
+            ),
         ];
         yield 'DateTime with microseconds' => [
-            new DateTimeImmutable('2023-12-25 15:30:45.123456'),
-            DateTimeType::DateTime,
             '2023-12-25 15:30:45.123456',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.123456'),
+                DateTimeType::DateTime,
+                6,
+            ),
+        ];
+        yield 'DateTime with milliseconds' => [
+            '2023-12-25 15:30:45.123',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.123456'),
+                DateTimeType::DateTime,
+                3
+            ),
         ];
         yield 'Date' => [
-            new DateTimeImmutable('2023-12-25 15:30:45'),
-            DateTimeType::Date,
             '2023-12-25',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45'),
+                DateTimeType::Date,
+            ),
         ];
         yield 'TimeTz without microseconds' => [
-            new DateTimeImmutable('2023-12-25 15:30:45', new DateTimeZone('+02:00')),
-            DateTimeType::TimeTz,
             '15:30:45+02:00',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
+                DateTimeType::TimeTz,
+            ),
         ];
         yield 'TimeTz with microseconds' => [
-            new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
-            DateTimeType::TimeTz,
             '15:30:45.123456+02:00',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
+                DateTimeType::TimeTz,
+                6,
+            ),
+        ];
+        yield 'TimeTz with milliseconds' => [
+            '15:30:45.123+02:00',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
+                DateTimeType::TimeTz,
+                3,
+            ),
         ];
         yield 'Time without microseconds' => [
-            new DateTimeImmutable('2023-12-25 15:30:45'),
-            DateTimeType::Time,
             '15:30:45',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.123456'),
+                DateTimeType::Time,
+            ),
         ];
         yield 'Time with microseconds' => [
-            new DateTimeImmutable('2023-12-25 15:30:45.123456'),
-            DateTimeType::Time,
             '15:30:45.123456',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.123456'),
+                DateTimeType::Time,
+                6,
+            ),
+        ];
+        yield 'Time with milliseconds' => [
+            '15:30:45.123',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45.123456'),
+                DateTimeType::Time,
+                2,
+            ),
         ];
         yield 'Timestamp' => [
-            new DateTimeImmutable('2023-12-25 15:30:45+2:00'),
-            DateTimeType::Timestamp,
-            '1703511045',
+            '2023-12-25 15:30:45',
+            new DateTimeValue(
+                new DateTimeImmutable('2023-12-25 15:30:45+2:00'),
+                DateTimeType::Timestamp,
+            ),
         ];
     }
 
     #[DataProvider('dataBuild')]
-    public function testBuild(\DateTimeInterface $dateTime, DateTimeType $type, string $expectedFormat): void
+    public function testBuild(string $expectedFormat, DateTimeValue $value): void
     {
         $builder = new DateTimeValueBuilder(
             $this->getConnection()->getQueryBuilder()
         );
-        $expression = new DateTimeValue($dateTime, $type);
 
         $params = [];
-        $result = $builder->build($expression, $params);
+        $result = $builder->build($value, $params);
 
         assertSame(':qp0', $result);
         assertSame([':qp0' => $expectedFormat], $params);

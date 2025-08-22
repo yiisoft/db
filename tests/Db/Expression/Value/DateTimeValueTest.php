@@ -18,5 +18,6 @@ final class DateTimeValueTest extends TestCase
         $expression = new DateTimeValue(new DateTimeImmutable());
 
         assertSame(DateTimeType::DateTimeTz, $expression->type);
+        assertSame(0, $expression->size);
     }
 }
