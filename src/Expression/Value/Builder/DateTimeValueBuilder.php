@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression\Value\Builder;
 
-use DateTimeInterface;
-use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
-use Yiisoft\Db\Expression\Value\DateTimeType;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
-use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * Builder for {@see DateTimeValue} expressions.
