@@ -16,7 +16,6 @@ use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Length;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
-use Yiisoft\Db\QueryBuilder\Condition\All;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
