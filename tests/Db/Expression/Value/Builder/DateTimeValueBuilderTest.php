@@ -9,7 +9,7 @@ use DateTimeZone;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\Value\Builder\DateTimeValueBuilder;
-use Yiisoft\Db\Expression\Value\DateTimeType;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -28,14 +28,14 @@ final class DateTimeValueBuilderTest extends TestCase
             '2023-12-25 15:30:45+02:00',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
-                DateTimeType::DateTimeTz,
+                ColumnType::DATETIMETZ,
             ),
         ];
         yield 'DateTimeTz with microseconds' => [
             '2023-12-25 15:30:45.123456+02:00',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
-                DateTimeType::DateTimeTz,
+                ColumnType::DATETIMETZ,
                 6
             ),
         ];
@@ -43,7 +43,7 @@ final class DateTimeValueBuilderTest extends TestCase
             '2023-12-25 15:30:45.123+02:00',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
-                DateTimeType::DateTimeTz,
+                ColumnType::DATETIMETZ,
                 1,
             ),
         ];
@@ -51,14 +51,14 @@ final class DateTimeValueBuilderTest extends TestCase
             '2023-12-25 15:30:45',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456'),
-                DateTimeType::DateTime,
+                ColumnType::DATETIME,
             ),
         ];
         yield 'DateTime with microseconds' => [
             '2023-12-25 15:30:45.123456',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456'),
-                DateTimeType::DateTime,
+                ColumnType::DATETIME,
                 6,
             ),
         ];
@@ -66,7 +66,7 @@ final class DateTimeValueBuilderTest extends TestCase
             '2023-12-25 15:30:45.123',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456'),
-                DateTimeType::DateTime,
+                ColumnType::DATETIME,
                 3
             ),
         ];
@@ -74,21 +74,21 @@ final class DateTimeValueBuilderTest extends TestCase
             '2023-12-25',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45'),
-                DateTimeType::Date,
+                ColumnType::DATE,
             ),
         ];
         yield 'TimeTz without microseconds' => [
             '15:30:45+02:00',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
-                DateTimeType::TimeTz,
+                ColumnType::TIMETZ,
             ),
         ];
         yield 'TimeTz with microseconds' => [
             '15:30:45.123456+02:00',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
-                DateTimeType::TimeTz,
+                ColumnType::TIMETZ,
                 6,
             ),
         ];
@@ -96,7 +96,7 @@ final class DateTimeValueBuilderTest extends TestCase
             '15:30:45.123+02:00',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
-                DateTimeType::TimeTz,
+                ColumnType::TIMETZ,
                 3,
             ),
         ];
@@ -104,14 +104,14 @@ final class DateTimeValueBuilderTest extends TestCase
             '15:30:45',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456'),
-                DateTimeType::Time,
+                ColumnType::TIME,
             ),
         ];
         yield 'Time with microseconds' => [
             '15:30:45.123456',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456'),
-                DateTimeType::Time,
+                ColumnType::TIME,
                 6,
             ),
         ];
@@ -119,7 +119,7 @@ final class DateTimeValueBuilderTest extends TestCase
             '15:30:45.123',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456'),
-                DateTimeType::Time,
+                ColumnType::TIME,
                 2,
             ),
         ];
@@ -127,21 +127,21 @@ final class DateTimeValueBuilderTest extends TestCase
             '2023-12-25 13:30:45',
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45+2:00'),
-                DateTimeType::Timestamp,
+                ColumnType::TIMESTAMP,
             ),
         ];
         yield 'Integer' => [
             1703511045,
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45+2:00'),
-                DateTimeType::Integer,
+                ColumnType::INTEGER,
             ),
         ];
         yield 'Float' => [
             1703511045.112233,
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.112233+2:00'),
-                DateTimeType::Float,
+                ColumnType::FLOAT,
             ),
         ];
     }

@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Db\Expression\Value;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Expression\Value\DateTimeType;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
 
 use function PHPUnit\Framework\assertSame;
@@ -17,7 +17,7 @@ final class DateTimeValueTest extends TestCase
     {
         $expression = new DateTimeValue(new DateTimeImmutable());
 
-        assertSame(DateTimeType::DateTimeTz, $expression->type);
+        assertSame(ColumnType::DATETIMETZ, $expression->type);
         assertSame(0, $expression->size);
     }
 }

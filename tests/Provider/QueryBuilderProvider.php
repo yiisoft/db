@@ -23,7 +23,6 @@ use Yiisoft\Db\Expression\Function\Longest;
 use Yiisoft\Db\Expression\Function\Shortest;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\Value;
-use Yiisoft\Db\Expression\Value\DateTimeType;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\All;
@@ -2076,67 +2075,67 @@ class QueryBuilderProvider
         yield 'DateTimeTz' => [
             'one',
             'datetimetz_col',
-            new DateTimeValue($dateTimeOne, DateTimeType::DateTimeTz),
+            new DateTimeValue($dateTimeOne, ColumnType::DATETIMETZ),
         ];
         yield 'DateTimeTz 2' => [
             'two',
             'datetimetz_col',
-            new DateTimeValue($dateTimeTwo, DateTimeType::DateTimeTz),
+            new DateTimeValue($dateTimeTwo, ColumnType::DATETIMETZ),
         ];
         yield 'DateTime' => [
             'one',
             'datetime_col',
-            new DateTimeValue($dateTimeOne, DateTimeType::DateTime),
+            new DateTimeValue($dateTimeOne, ColumnType::DATETIME),
         ];
         yield 'DateTime with milliseconds' => [
             'one',
             'datetime3_col',
-            new DateTimeValue($dateTimeOne, DateTimeType::DateTime, 3),
+            new DateTimeValue($dateTimeOne, ColumnType::DATETIME, 3),
         ];
         yield 'DateTime 2' => [
             'two',
             'datetime_col',
-            new DateTimeValue($dateTimeTwo, DateTimeType::DateTime),
+            new DateTimeValue($dateTimeTwo, ColumnType::DATETIME),
         ];
         yield 'Date' => [
             'one',
             'date_col',
-            new DateTimeValue($dateTimeOne, DateTimeType::Date),
+            new DateTimeValue($dateTimeOne, ColumnType::DATE),
         ];
         yield 'TimeTz' => [
             'one',
             'timetz_col',
-            new DateTimeValue($dateTimeOne, DateTimeType::TimeTz),
+            new DateTimeValue($dateTimeOne, ColumnType::TIMETZ),
         ];
         yield 'TimeTz 2' => [
             'two',
             'timetz_col',
-            new DateTimeValue($dateTimeTwo, DateTimeType::TimeTz),
+            new DateTimeValue($dateTimeTwo, ColumnType::TIMETZ),
         ];
         yield 'Time' => [
             'one',
             'time_col',
-            new DateTimeValue($dateTimeOne, DateTimeType::Time),
+            new DateTimeValue($dateTimeOne, ColumnType::TIME),
         ];
         yield 'Time 2' => [
             'two',
             'time_col',
-            new DateTimeValue($dateTimeTwo, DateTimeType::Time),
+            new DateTimeValue($dateTimeTwo, ColumnType::TIME),
         ];
         yield 'Timestamp' => [
             'one',
             'timestamp_col',
-            new DateTimeValue($dateTimeOne, DateTimeType::Timestamp),
+            new DateTimeValue($dateTimeOne, ColumnType::TIMESTAMP),
         ];
         yield 'Integer' => [
             'one',
             'integer_col',
-            new DateTimeValue($dateTimeOne, DateTimeType::Integer),
+            new DateTimeValue($dateTimeOne, ColumnType::INTEGER),
         ];
         yield 'Float' => [
             'one',
             'float_col',
-            new DateTimeValue($dateTimeOne, DateTimeType::Float),
+            new DateTimeValue($dateTimeOne, ColumnType::FLOAT),
         ];
     }
 }
