@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use Yiisoft\Db\Command\CommandInterface;
@@ -13,6 +15,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Length;
+use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
@@ -250,5 +253,85 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         }
 
         $this->assertEquals($expectedResult, $result);
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'dateTimeValue')]
+    public function testDateTimeValue(string $expected, string $column, DateTimeValue $expression): void
+    {
+        $db = $this->getConnection();
+        $columnBuilder = $db->getColumnBuilderClass();
+
+        try {
+            $db->createCommand()->dropTable('date_time_value')->execute();
+        } catch (Exception) {
+            // Suppress exception if the table does not exist.
+        }
+        $dateColumn = $columnBuilder::date();
+        $timeColumn = $columnBuilder::time();
+        $timeTzColumn = $columnBuilder::timeWithTimezone();
+        $dateTimeColumn = $columnBuilder::datetime();
+        $dateTime3Column = $columnBuilder::datetime(3);
+        $dateTimeTzColumn = $columnBuilder::datetimeWithTimezone();
+        $timestampColumn = $columnBuilder::timestamp();
+        $integerColumn = $columnBuilder::integer();
+        $doubleColumn = $columnBuilder::double();
+        $decimalColumn = $columnBuilder::decimal(16, 6);
+        $db->createCommand()->createTable(
+            'date_time_value',
+            [
+                'name' => $columnBuilder::string(),
+                'date_col' => $dateColumn,
+                'time_col' => $timeColumn,
+                'timetz_col' => $timeTzColumn,
+                'datetime_col' => $dateTimeColumn,
+                'datetime3_col' => $dateTimeColumn,
+                'datetimetz_col' => $dateTimeTzColumn,
+                'timestamp_col' => $timestampColumn,
+                'integer_col' => $integerColumn,
+                'double_col' => $doubleColumn,
+                'decimal_col' => $decimalColumn,
+            ],
+        )->execute();
+        $date1 = new DateTimeImmutable('2025-08-21 15:30:45', new DateTimeZone('+03:00'));
+        $date2 = new DateTimeImmutable('2023-03-19 11:25:00.12563', new DateTimeZone('UTC'));
+        $db->createCommand()->insertBatch(
+            'date_time_value',
+            [
+                [
+                    'one',
+                    $dateColumn->dbTypecast($date1),
+                    $timeColumn->dbTypecast($date1),
+                    $timeTzColumn->dbTypecast($date1),
+                    $dateTimeColumn->dbTypecast($date1),
+                    $dateTime3Column->dbTypecast($date1),
+                    $dateTimeTzColumn->dbTypecast($date1),
+                    $timestampColumn->dbTypecast($date1),
+                    $integerColumn->dbTypecast($date1),
+                    $doubleColumn->dbTypecast($date1),
+                    $decimalColumn->dbTypecast($date1),
+                ],
+                [
+                    'two',
+                    $dateColumn->dbTypecast($date2),
+                    $timeColumn->dbTypecast($date2),
+                    $timeTzColumn->dbTypecast($date2),
+                    $dateTimeColumn->dbTypecast($date2),
+                    $dateTime3Column->dbTypecast($date2),
+                    $dateTimeTzColumn->dbTypecast($date2),
+                    $timestampColumn->dbTypecast($date2),
+                    $integerColumn->dbTypecast($date2),
+                    $doubleColumn->dbTypecast($date2),
+                    $decimalColumn->dbTypecast($date2),
+                ],
+            ],
+        )->execute();
+
+        $query = $db
+            ->select('name')
+            ->from('date_time_value')
+            ->where([$column => $expression]);
+        $result = $query->column();
+
+        $this->assertSame([$expected], $result, 'SQL Query: ' . $query->createCommand()->getRawSql());
     }
 }
