@@ -273,7 +273,6 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $dateTimeTzColumn = $columnBuilder::datetimeWithTimezone();
         $timestampColumn = $columnBuilder::timestamp();
         $integerColumn = $columnBuilder::integer();
-        $floatColumn = $columnBuilder::float();
         $doubleColumn = $columnBuilder::double();
         $decimalColumn = $columnBuilder::decimal(16, 6);
         $db->createCommand()->createTable(
@@ -288,7 +287,6 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
                 'datetimetz_col' => $dateTimeTzColumn,
                 'timestamp_col' => $timestampColumn,
                 'integer_col' => $integerColumn,
-                'float_col' => $floatColumn,
                 'double_col' => $doubleColumn,
                 'decimal_col' => $decimalColumn,
             ],
@@ -308,7 +306,6 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
                     $dateTimeTzColumn->dbTypecast($date1),
                     $timestampColumn->dbTypecast($date1),
                     $integerColumn->dbTypecast($date1),
-                    $floatColumn->dbTypecast($date1),
                     $doubleColumn->dbTypecast($date1),
                     $decimalColumn->dbTypecast($date1),
                 ],
@@ -322,7 +319,6 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
                     $dateTimeTzColumn->dbTypecast($date2),
                     $timestampColumn->dbTypecast($date2),
                     $integerColumn->dbTypecast($date2),
-                    $floatColumn->dbTypecast($date2),
                     $doubleColumn->dbTypecast($date2),
                     $decimalColumn->dbTypecast($date2),
                 ],

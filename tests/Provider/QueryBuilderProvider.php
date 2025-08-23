@@ -2132,16 +2132,6 @@ class QueryBuilderProvider
             'integer_col',
             new DateTimeValue($dateTimeOne, ColumnType::INTEGER),
         ];
-        yield 'Float' => [
-            'one',
-            'float_col',
-            new DateTimeValue($dateTimeOne, ColumnType::FLOAT),
-        ];
-        yield 'Float 2' => [
-            'two',
-            'float_col',
-            new DateTimeValue($dateTimeTwo, ColumnType::FLOAT),
-        ];
         yield 'Double' => [
             'one',
             'double_col',

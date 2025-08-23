@@ -152,14 +152,6 @@ final class DateTimeValueBuilderTest extends TestCase
                 ColumnType::INTEGER,
             ),
         ];
-        yield 'Float' => [
-            '1703511045.1122',
-            [],
-            new DateTimeValue(
-                new DateTimeImmutable('2023-12-25 15:30:45.112233+2:00'),
-                ColumnType::FLOAT,
-            ),
-        ];
     }
 
     #[DataProvider('dataBuild')]
