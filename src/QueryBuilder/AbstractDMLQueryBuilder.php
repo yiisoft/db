@@ -402,17 +402,16 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     {
         $sets = [];
         $columns = $this->normalizeColumnNames($columns);
-        $tableColumns = $this->schema->getTableSchema($table)?->getColumns() ?? [];
-        $typecastColumns = $this->typecasting ? $tableColumns : [];
+        $tableColumns = $this->typecasting ? $this->schema->getTableSchema($table)?->getColumns() ?? [] : [];
         $queryBuilder = $this->queryBuilder;
         $quoter = $this->quoter;
 
         foreach ($columns as $name => $value) {
-            if (isset($typecastColumns[$name])) {
-                $value = $typecastColumns[$name]->dbTypecast($value);
+            if (isset($tableColumns[$name])) {
+                $value = $tableColumns[$name]->dbTypecast($value);
             }
 
-            $quotedName = $quoter->quoteColumnName($name);
+            $quotedName = $quoter->quoteSimpleColumnName($name);
             $builtValue = $queryBuilder->buildValue($value, $params);
 
             $sets[] = "$quotedName=$builtValue";
