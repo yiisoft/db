@@ -15,6 +15,8 @@ use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
  * Builder for {@see DateTimeValue} expressions.
  *
  * @implements ExpressionBuilderInterface<DateTimeValue>
+ *
+ * @psalm-import-type ColumnInfo from ColumnFactoryInterface
  */
 final class DateTimeValueBuilder implements ExpressionBuilderInterface
 {
@@ -37,6 +39,9 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
         return $this->queryBuilder->buildValue($value, $params);
     }
 
+    /**
+     * @psalm-return ColumnInfo
+     */
     private function prepareInfo(DateTimeValue $expression): array
     {
         if ($expression->info !== null) {
