@@ -13,6 +13,7 @@ use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Expression\Value\Builder\DateTimeValueBuilder;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
+use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -150,6 +151,54 @@ final class DateTimeValueBuilderTest extends TestCase
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45+2:00'),
                 ColumnType::INTEGER,
+            ),
+        ];
+        yield 'Integer value type' => [
+            '1703511045',
+            [],
+            new DateTimeValue(
+                1703511045,
+                ColumnType::INTEGER,
+            ),
+        ];
+        yield 'Float value type' => [
+            ':qp0',
+            [':qp0' => new Param('2023-12-25 13:30:45', DataType::STRING)],
+            new DateTimeValue(
+                1703511045.56,
+                ColumnType::DATETIME,
+            ),
+        ];
+        yield 'String value type' => [
+            ':qp0',
+            [':qp0' => new Param('2023-12-25 13:30:45+02:00', DataType::STRING)],
+            new DateTimeValue(
+                '2023-12-25 13:30:45+02:00',
+                ColumnType::DATETIMETZ,
+            ),
+        ];
+        yield 'Integer as string value type' => [
+            ':qp0',
+            [':qp0' => new Param('2023-12-25 13:30:45', DataType::STRING)],
+            new DateTimeValue(
+                '1703511045',
+                ColumnType::DATETIME,
+            ),
+        ];
+        yield 'Float as string value type' => [
+            ':qp0',
+            [':qp0' => new Param('2023-12-25 13:30:45', DataType::STRING)],
+            new DateTimeValue(
+                '1703511045.56',
+                ColumnType::DATETIME,
+            ),
+        ];
+        yield 'Stringable value type' => [
+            ':qp0',
+            [':qp0' => new Param('2023-12-25 13:30:45+02:00', DataType::STRING)],
+            new DateTimeValue(
+                new Stringable('2023-12-25 13:30:45+02:00'),
+                ColumnType::DATETIMETZ,
             ),
         ];
     }

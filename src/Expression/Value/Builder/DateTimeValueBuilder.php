@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression\Value\Builder;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+use InvalidArgumentException;
+use Stringable;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
+
+use function date_create_immutable;
+use function gettype;
 
 /**
  * Builder for {@see DateTimeValue} expressions.
@@ -35,8 +43,38 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
     {
         $value = $this->columnFactory
             ->fromType($expression->type, $this->prepareInfo($expression))
-            ->dbTypecast($expression->value);
+            ->dbTypecast($this->prepareValue($expression->value));
         return $this->queryBuilder->buildValue($value, $params);
+    }
+
+    private function prepareValue(int|float|string|Stringable|DateTimeInterface $value): DateTimeInterface
+    {
+        if ($value instanceof DateTimeInterface) {
+            return $value;
+        }
+
+        /** @psalm-suppress PossiblyInvalidArgument */
+        $result = match (gettype($value)) {
+            GettypeResult::STRING => $this->prepareStringValue($value),
+            GettypeResult::INTEGER => DateTimeImmutable::createFromFormat('U', (string) $value),
+            GettypeResult::DOUBLE => DateTimeImmutable::createFromFormat('U.u', (string) $value),
+            GettypeResult::OBJECT => $this->prepareStringValue((string) $value),
+        };
+        if ($result === false) {
+            throw new InvalidArgumentException("The value $value is not a valid datetime.");
+        }
+        return $result;
+    }
+
+    private function prepareStringValue(string $value): DateTimeImmutable|false
+    {
+        if ($value === (string) (int) $value) {
+            return DateTimeImmutable::createFromFormat('U', $value);
+        }
+        if ($value === (string) (float) $value) {
+            return DateTimeImmutable::createFromFormat('U.u', $value);
+        }
+        return date_create_immutable($value);
     }
 
     /**
