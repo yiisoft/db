@@ -2137,5 +2137,10 @@ class QueryBuilderProvider
             'float_col',
             new DateTimeValue($dateTimeOne, ColumnType::FLOAT),
         ];
+        yield 'Double' => [
+            'one',
+            'double_col',
+            new DateTimeValue($dateTimeOne, ColumnType::DOUBLE),
+        ];
     }
 }

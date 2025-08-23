@@ -270,6 +270,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $timestampColumn = $columnBuilder::timestamp();
         $integerColumn = $columnBuilder::integer();
         $floatColumn = $columnBuilder::float();
+        $doubleColumn = $columnBuilder::double();
         $db->createCommand()->createTable(
             '{{date_time_value}}',
             [
@@ -283,6 +284,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
                 'timestamp_col' => $timestampColumn,
                 'integer_col' => $integerColumn,
                 'float_col' => $floatColumn,
+                'double_col' => $doubleColumn,
             ],
         )->execute();
         $date1 = new DateTimeImmutable('2025-08-21 15:30:45', new DateTimeZone('+03:00'));
@@ -301,6 +303,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
                     $timestampColumn->dbTypecast($date1),
                     $integerColumn->dbTypecast($date1),
                     $floatColumn->dbTypecast($date1),
+                    $doubleColumn->dbTypecast($date1),
                 ],
                 [
                     'two',
@@ -313,6 +316,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
                     $timestampColumn->dbTypecast($date2),
                     $integerColumn->dbTypecast($date2),
                     $floatColumn->dbTypecast($date2),
+                    $doubleColumn->dbTypecast($date2),
                 ],
             ],
         )->execute();
