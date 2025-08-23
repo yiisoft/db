@@ -30,11 +30,9 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
 
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        return $this->queryBuilder->bindParam(
-            $this->columnFactory
-                ->fromType($expression->type, ['size' => $expression->size])
-                ->dbTypecast($expression->value),
-            $params,
-        );
+        $value = $this->columnFactory
+            ->fromType($expression->type, ['size' => $expression->size])
+            ->dbTypecast($expression->value);
+        return $this->queryBuilder->buildValue($value, $params);
     }
 }
