@@ -11,6 +11,8 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 
 /**
+ * Represents a value that should be treated as a date and time value for specific column type.
+ *
  * @psalm-import-type ColumnInfo from ColumnFactoryInterface
  */
 final class DateTimeValue implements ExpressionInterface

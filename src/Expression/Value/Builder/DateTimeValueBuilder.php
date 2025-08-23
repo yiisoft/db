@@ -74,13 +74,11 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
 
     private function prepareStringValue(string $value): DateTimeImmutable|false
     {
-        if ($value === (string) (int) $value) {
-            return DateTimeImmutable::createFromFormat('U', $value);
-        }
-        if ($value === (string) (float) $value) {
-            return DateTimeImmutable::createFromFormat('U.u', $value);
-        }
-        return date_create_immutable($value);
+        return match ($value) {
+            (string) (int) $value => DateTimeImmutable::createFromFormat('U', $value),
+            (string) (float) $value => DateTimeImmutable::createFromFormat('U.u', $value),
+            default => date_create_immutable($value),
+        };
     }
 
     /**
