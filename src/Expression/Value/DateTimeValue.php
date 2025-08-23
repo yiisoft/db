@@ -16,12 +16,12 @@ final class DateTimeValue implements ExpressionInterface
 {
     /**
      * @psalm-param ColumnType::* $type
-     * @psalm-param ColumnInfo|null $info
+     * @psalm-param ColumnInfo $info
      */
     public function __construct(
         public readonly DateTimeInterface $value,
         public readonly string $type = ColumnType::DATETIMETZ,
-        public readonly ?array $info = null,
+        public readonly array $info = [],
     ) {
     }
 }
