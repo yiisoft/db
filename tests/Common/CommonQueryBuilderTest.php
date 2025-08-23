@@ -260,7 +260,11 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $db = $this->getConnection();
         $columnBuilder = $db->getColumnBuilderClass();
 
-        $db->createCommand()->dropTable('{{date_time_value}}', ifExists: true)->execute();
+        try {
+            $db->createCommand()->dropTable('{{date_time_value}}')->execute();
+        } catch (Exception) {
+            // Suppress exception if the table does not exist.
+        }
         $dateColumn = $columnBuilder::date();
         $timeColumn = $columnBuilder::time();
         $timeTzColumn = $columnBuilder::timeWithTimezone();
