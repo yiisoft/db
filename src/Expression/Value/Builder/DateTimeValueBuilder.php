@@ -57,9 +57,4 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
             default => [],
         };
     }
-
-    private function hasMicroseconds(DateTimeValue $expression): bool
-    {
-        return (int) $expression->value->format('u') > 0;
-    }
 }
