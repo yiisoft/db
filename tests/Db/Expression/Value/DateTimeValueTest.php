@@ -16,6 +16,6 @@ final class DateTimeValueTest extends TestCase
         $expression = new DateTimeValue(new DateTimeImmutable());
 
         $this->assertSame(ColumnType::DATETIMETZ, $expression->type);
-        $this->assertNull($expression->info);
+        $this->assertSame([], $expression->info);
     }
 }
