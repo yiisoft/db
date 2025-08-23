@@ -18,6 +18,7 @@ use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 
 use function date_create_immutable;
 use function gettype;
+use function sprintf;
 
 /**
  * Builder for {@see DateTimeValue} expressions.
@@ -61,7 +62,12 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
             GettypeResult::OBJECT => $this->prepareStringValue((string) $value),
         };
         if ($result === false) {
-            throw new InvalidArgumentException("The value $value is not a valid datetime.");
+            throw new InvalidArgumentException(
+                sprintf(
+                    'The value "%s" is not a valid datetime.',
+                    $value,
+                ),
+            );
         }
         return $result;
     }

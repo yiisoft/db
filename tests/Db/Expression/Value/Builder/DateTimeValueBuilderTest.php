@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests\Db\Expression\Value\Builder;
 
 use DateTimeImmutable;
 use DateTimeZone;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\DataType;
@@ -215,5 +216,18 @@ final class DateTimeValueBuilderTest extends TestCase
 
         $this->assertSame($expectedResult, $result);
         $this->assertEquals($expectedParams, $params);
+    }
+
+    public function testIncorrectString(): void
+    {
+        $builder = new DateTimeValueBuilder(
+            $this->getConnection()->getQueryBuilder()
+        );
+
+        $value = new DateTimeValue('invalid-datetime-string', ColumnType::DATETIME);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The value "invalid-datetime-string" is not a valid datetime.');
+        $builder->build($value);
     }
 }
