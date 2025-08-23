@@ -54,9 +54,6 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
             ColumnType::TIMETZ,
             ColumnType::DATETIME,
             ColumnType::DATETIMETZ => ['size' => 0],
-            ColumnType::DECIMAL => $this->hasMicroseconds($expression)
-                ? ['size' => 16, 'scale' => 6]
-                : ['size' => 10, 'scale' => 0],
             default => [],
         };
     }
