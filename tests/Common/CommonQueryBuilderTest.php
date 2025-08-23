@@ -261,7 +261,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $columnBuilder = $db->getColumnBuilderClass();
 
         try {
-            $db->createCommand()->dropTable('{{date_time_value}}')->execute();
+            $db->createCommand()->dropTable('date_time_value')->execute();
         } catch (Exception) {
             // Suppress exception if the table does not exist.
         }
@@ -277,7 +277,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $doubleColumn = $columnBuilder::double();
         $decimalColumn = $columnBuilder::decimal(16, 6);
         $db->createCommand()->createTable(
-            '{{date_time_value}}',
+            'date_time_value',
             [
                 'name' => $columnBuilder::string(),
                 'date_col' => $dateColumn,
@@ -296,7 +296,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $date1 = new DateTimeImmutable('2025-08-21 15:30:45', new DateTimeZone('+03:00'));
         $date2 = new DateTimeImmutable('2023-03-19 11:25:00.12563', new DateTimeZone('UTC'));
         $db->createCommand()->insertBatch(
-            '{{date_time_value}}',
+            'date_time_value',
             [
                 [
                     'one',
@@ -331,7 +331,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
 
         $query = $db
             ->select('name')
-            ->from('{{date_time_value}}')
+            ->from('date_time_value')
             ->where([$column => $expression]);
         $result = $query->column();
 
