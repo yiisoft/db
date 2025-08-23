@@ -8,12 +8,12 @@ use DateTimeImmutable;
 use DateTimeZone;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Constant\DataType;
+use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Expression\Value\Builder\DateTimeValueBuilder;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Tests\Support\TestTrait;
-
-use function PHPUnit\Framework\assertSame;
 
 /**
  * @group db
@@ -25,120 +25,136 @@ final class DateTimeValueBuilderTest extends TestCase
     public static function dataBuild(): iterable
     {
         yield 'DateTimeTz without microseconds' => [
-            '2023-12-25 15:30:45+02:00',
+            ':qp0',
+            [':qp0' => new Param('2023-12-25 15:30:45+02:00', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
                 ColumnType::DATETIMETZ,
             ),
         ];
         yield 'DateTimeTz with microseconds' => [
-            '2023-12-25 15:30:45.123456+02:00',
+            ':qp0',
+            [':qp0' => new Param('2023-12-25 15:30:45.123456+02:00', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
                 ColumnType::DATETIMETZ,
-                6
+                ['size' => 6],
             ),
         ];
         yield 'DateTimeTz with milliseconds' => [
-            '2023-12-25 15:30:45.123+02:00',
+            ':qp0',
+            [':qp0' => new Param('2023-12-25 15:30:45.123+02:00', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
                 ColumnType::DATETIMETZ,
-                1,
+                ['size' => 1],
             ),
         ];
         yield 'DateTime without microseconds' => [
-            '2023-12-25 15:30:45',
+            ':qp0',
+            [':qp0' => new Param('2023-12-25 15:30:45', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456'),
                 ColumnType::DATETIME,
             ),
         ];
         yield 'DateTime with microseconds' => [
-            '2023-12-25 15:30:45.123456',
+            ':qp0',
+            [':qp0' => new Param('2023-12-25 15:30:45.123456', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456'),
                 ColumnType::DATETIME,
-                6,
+                ['size' => 6],
             ),
         ];
         yield 'DateTime with milliseconds' => [
-            '2023-12-25 15:30:45.123',
+            ':qp0',
+            [':qp0' => new Param('2023-12-25 15:30:45.123', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456'),
                 ColumnType::DATETIME,
-                3
+                ['size' => 3],
             ),
         ];
         yield 'Date' => [
-            '2023-12-25',
+            ':qp0',
+            [':qp0' => new Param('2023-12-25', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45'),
                 ColumnType::DATE,
             ),
         ];
         yield 'TimeTz without microseconds' => [
-            '15:30:45+02:00',
+            ':qp0',
+            [':qp0' => new Param('15:30:45+02:00', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
                 ColumnType::TIMETZ,
             ),
         ];
         yield 'TimeTz with microseconds' => [
-            '15:30:45.123456+02:00',
+            ':qp0',
+            [':qp0' => new Param('15:30:45.123456+02:00', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
                 ColumnType::TIMETZ,
-                6,
+                ['size' => 6],
             ),
         ];
         yield 'TimeTz with milliseconds' => [
-            '15:30:45.123+02:00',
+            ':qp0',
+            [':qp0' => new Param('15:30:45.123+02:00', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456', new DateTimeZone('+02:00')),
                 ColumnType::TIMETZ,
-                3,
+                ['size' => 3],
             ),
         ];
         yield 'Time without microseconds' => [
-            '15:30:45',
+            ':qp0',
+            [':qp0' => new Param('15:30:45', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456'),
                 ColumnType::TIME,
             ),
         ];
         yield 'Time with microseconds' => [
-            '15:30:45.123456',
+            ':qp0',
+            [':qp0' => new Param('15:30:45.123456', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456'),
                 ColumnType::TIME,
-                6,
+                ['size' => 6],
             ),
         ];
         yield 'Time with milliseconds' => [
-            '15:30:45.123',
+            ':qp0',
+            [':qp0' => new Param('15:30:45.123', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.123456'),
                 ColumnType::TIME,
-                2,
+                ['size' => 2],
             ),
         ];
         yield 'Timestamp' => [
-            '2023-12-25 13:30:45',
+            ':qp0',
+            [':qp0' => new Param('2023-12-25 13:30:45', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45+2:00'),
                 ColumnType::TIMESTAMP,
             ),
         ];
         yield 'Integer' => [
-            1703511045,
+            '1703511045',
+            [],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45+2:00'),
                 ColumnType::INTEGER,
             ),
         ];
         yield 'Float' => [
-            1703511045.112233,
+            ':qp0',
+            [':qp0' => new Param('1703511045.112233', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.112233+2:00'),
                 ColumnType::FLOAT,
@@ -147,7 +163,7 @@ final class DateTimeValueBuilderTest extends TestCase
     }
 
     #[DataProvider('dataBuild')]
-    public function testBuild(mixed $expected, DateTimeValue $value): void
+    public function testBuild(string $expectedResult, array $expectedParams, DateTimeValue $value): void
     {
         $builder = new DateTimeValueBuilder(
             $this->getConnection()->getQueryBuilder()
@@ -156,7 +172,7 @@ final class DateTimeValueBuilderTest extends TestCase
         $params = [];
         $result = $builder->build($value, $params);
 
-        assertSame(':qp0', $result);
-        assertSame([':qp0' => $expected], $params);
+        $this->assertSame($expectedResult, $result);
+        $this->assertEquals($expectedParams, $params);
     }
 }

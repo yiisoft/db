@@ -44,6 +44,7 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
         }
 
         return match ($expression->type) {
+            ColumnType::TIMESTAMP,
             ColumnType::TIME,
             ColumnType::TIMETZ,
             ColumnType::DATETIME,
