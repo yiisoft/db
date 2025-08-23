@@ -16,7 +16,7 @@ final class DateTimeValue implements ExpressionInterface
     public function __construct(
         public readonly DateTimeInterface $value,
         public readonly string $type = ColumnType::DATETIMETZ,
-        public readonly int|null $size = 0,
+        public readonly ?array $info = null,
     ) {
     }
 }

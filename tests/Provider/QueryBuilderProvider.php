@@ -2090,7 +2090,7 @@ class QueryBuilderProvider
         yield 'DateTime with milliseconds' => [
             'one',
             'datetime3_col',
-            new DateTimeValue($dateTimeOne, ColumnType::DATETIME, 3),
+            new DateTimeValue($dateTimeOne, ColumnType::DATETIME, ['size' => 3]),
         ];
         yield 'DateTime 2' => [
             'two',
@@ -2141,6 +2141,16 @@ class QueryBuilderProvider
             'one',
             'double_col',
             new DateTimeValue($dateTimeOne, ColumnType::DOUBLE),
+        ];
+        yield 'Decimal' => [
+            'one',
+            'decimal_col',
+            new DateTimeValue($dateTimeOne, ColumnType::DECIMAL),
+        ];
+        yield 'Decimal 2' => [
+            'two',
+            'decimal_col',
+            new DateTimeValue($dateTimeTwo, ColumnType::DECIMAL),
         ];
     }
 }
