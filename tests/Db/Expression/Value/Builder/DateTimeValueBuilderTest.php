@@ -153,8 +153,8 @@ final class DateTimeValueBuilderTest extends TestCase
             ),
         ];
         yield 'Float' => [
-            ':qp0',
-            [':qp0' => new Param('1703511045.112233', DataType::STRING)],
+            '1703511045.1122',
+            [],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45.112233+2:00'),
                 ColumnType::FLOAT,
