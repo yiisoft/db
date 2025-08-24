@@ -140,6 +140,7 @@
 - Enh #1038: Add ability to pass `FROM` clause to `CommandInterface::update()` and `DMLQueryBuilderInterface::update()` methods (@rustamwin)
 - Enh #1038: Allow passing `ExpressionInterface` as condition in `CommandInterface::update()` and `DMLQueryBuilderInterface::update()` methods (@rustamwin)
 - Chg #1038: Remove `$params` parameter from `CommandInterface::update()` method (@rustamwin)
+- New #1040: Add `DateTimeValue` class (@vjik)
 
 ## 1.3.0 March 21, 2024
 

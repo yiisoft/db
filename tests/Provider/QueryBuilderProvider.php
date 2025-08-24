@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use ArrayIterator;
+use DateTimeImmutable;
+use DateTimeZone;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Constant\ColumnType;
@@ -21,6 +23,7 @@ use Yiisoft\Db\Expression\Function\Longest;
 use Yiisoft\Db\Expression\Function\Shortest;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\Value;
+use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\All;
 use Yiisoft\Db\QueryBuilder\Condition\Between;
@@ -2166,6 +2169,88 @@ class QueryBuilderProvider
                     ':qp0' => $stringParam,
                 ],
             ],
+        ];
+    }
+
+    public static function dateTimeValue(): iterable
+    {
+        $dateTimeOne = new DateTimeImmutable('2025-08-21 15:30:45', new DateTimeZone('+03:00'));
+        $dateTimeTwo = new DateTimeImmutable('2023-03-19 11:25:00.12563', new DateTimeZone('UTC'));
+
+        yield 'DateTimeTz' => [
+            'one',
+            'datetimetz_col',
+            new DateTimeValue($dateTimeOne, ColumnType::DATETIMETZ),
+        ];
+        yield 'DateTimeTz 2' => [
+            'two',
+            'datetimetz_col',
+            new DateTimeValue($dateTimeTwo, ColumnType::DATETIMETZ),
+        ];
+        yield 'DateTime' => [
+            'one',
+            'datetime_col',
+            new DateTimeValue($dateTimeOne, ColumnType::DATETIME),
+        ];
+        yield 'DateTime with milliseconds' => [
+            'one',
+            'datetime3_col',
+            new DateTimeValue($dateTimeOne, ColumnType::DATETIME, ['size' => 3]),
+        ];
+        yield 'DateTime 2' => [
+            'two',
+            'datetime_col',
+            new DateTimeValue($dateTimeTwo, ColumnType::DATETIME),
+        ];
+        yield 'Date' => [
+            'one',
+            'date_col',
+            new DateTimeValue($dateTimeOne, ColumnType::DATE),
+        ];
+        yield 'TimeTz' => [
+            'one',
+            'timetz_col',
+            new DateTimeValue($dateTimeOne, ColumnType::TIMETZ),
+        ];
+        yield 'TimeTz 2' => [
+            'two',
+            'timetz_col',
+            new DateTimeValue($dateTimeTwo, ColumnType::TIMETZ),
+        ];
+        yield 'Time' => [
+            'one',
+            'time_col',
+            new DateTimeValue($dateTimeOne, ColumnType::TIME),
+        ];
+        yield 'Time 2' => [
+            'two',
+            'time_col',
+            new DateTimeValue($dateTimeTwo, ColumnType::TIME),
+        ];
+        yield 'Timestamp' => [
+            'one',
+            'timestamp_col',
+            new DateTimeValue($dateTimeOne, ColumnType::TIMESTAMP),
+        ];
+        yield 'Integer' => [
+            'one',
+            'integer_col',
+            new DateTimeValue($dateTimeOne, ColumnType::INTEGER),
+        ];
+        yield 'Double' => [
+            'one',
+            'double_col',
+            new DateTimeValue($dateTimeOne, ColumnType::DOUBLE),
+        ];
+        yield 'Decimal' => [
+            'one',
+            'decimal_col',
+            new DateTimeValue($dateTimeOne, ColumnType::DECIMAL),
+        ];
+        yield 'Decimal 2' => [
+            'two',
+            'decimal_col',
+            new DateTimeValue($dateTimeTwo, ColumnType::DECIMAL),
         ];
     }
 }

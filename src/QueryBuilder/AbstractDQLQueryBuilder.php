@@ -36,6 +36,8 @@ use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\Builder\StructuredExpressionBuilder;
 use Yiisoft\Db\Expression\Value;
 use Yiisoft\Db\Expression\Builder\ValueBuilder;
+use Yiisoft\Db\Expression\Value\DateTimeValue;
+use Yiisoft\Db\Expression\Value\Builder\DateTimeValueBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Simple;
 use Yiisoft\Db\Query\Query;
@@ -592,6 +594,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             CaseExpression::class => CaseExpressionBuilder::class,
             ColumnName::class => ColumnNameBuilder::class,
             Value::class => ValueBuilder::class,
+            DateTimeValue::class => DateTimeValueBuilder::class,
             Length::class => LengthBuilder::class,
             Greatest::class => GreatestBuilder::class,
             Least::class => LeastBuilder::class,
