@@ -92,7 +92,7 @@ class DateTimeColumn extends AbstractColumn
      * the default time zone set specified in the {@see $phpTimezone} property. If the conversion fails, the original
      * value will be returned.
      */
-    public function dbTypecast(mixed $value): string|ExpressionInterface|null
+    public function dbTypecast(mixed $value): float|int|string|ExpressionInterface|null
     {
         /** @psalm-suppress MixedArgument, PossiblyFalseArgument */
         return match (gettype($value)) {
@@ -192,17 +192,24 @@ class DateTimeColumn extends AbstractColumn
             : $this->phpTimezone;
     }
 
-    private function dbTypecastDateTime(DateTimeImmutable $value): string
+    private function dbTypecastDateTime(DateTimeImmutable $value): float|int|string
     {
         if ($this->shouldConvertTimezone()) {
             /** @psalm-suppress ArgumentTypeCoercion */
             $value = $value->setTimezone(new DateTimeZone($this->dbTimezone));
         }
 
-        return $value->format($this->getFormat());
+        $format = $this->getFormat();
+        $result = $value->format($format);
+
+        return match ($format) {
+            'U' => (int) $result,
+            'U.u' => (float) $result,
+            default => $result,
+        };
     }
 
-    private function dbTypecastString(string $value): string|null
+    private function dbTypecastString(string $value): float|int|string|null
     {
         /** @psalm-suppress PossiblyFalseArgument */
         return match ($value) {

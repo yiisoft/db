@@ -147,16 +147,16 @@ final class DateTimeValueBuilderTest extends TestCase
             ),
         ];
         yield 'Integer' => [
-            ':qp0',
-            [':qp0' => new Param('1703511045', DataType::STRING)],
+            '1703511045',
+            [],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45+2:00'),
                 ColumnType::INTEGER,
             ),
         ];
         yield 'Integer value type' => [
-            ':qp0',
-            [':qp0' => new Param('1703511045', DataType::STRING)],
+            '1703511045',
+            [],
             new DateTimeValue(
                 1703511045,
                 ColumnType::INTEGER,
