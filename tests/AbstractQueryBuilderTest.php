@@ -2261,7 +2261,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
     public function testUpdate(
         string $table,
         array $columns,
-        array|string $condition,
+        array|ExpressionInterface|string $condition,
+        array|ExpressionInterface|string|null $from,
         array $params,
         string $expectedSql,
         array $expectedParams = [],
@@ -2269,7 +2270,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
-        $sql = $qb->update($table, $columns, $condition, $params);
+        $sql = $qb->update($table, $columns, $condition, $from, $params);
         $sql = $db->getQuoter()->quoteSql($sql);
 
         $this->assertSame($expectedSql, $sql);
