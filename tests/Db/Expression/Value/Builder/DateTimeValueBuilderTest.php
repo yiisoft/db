@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Tests\Db\Expression\Value\Builder;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\DataType;
