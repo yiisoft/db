@@ -4,21 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression\Value\Builder;
 
-use DateTimeImmutable;
-use DateTimeInterface;
-use InvalidArgumentException;
-use Stringable;
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
-
-use function date_create_immutable;
-use function gettype;
-use function sprintf;
 
 /**
  * Builder for {@see DateTimeValue} expressions.
@@ -43,41 +34,23 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $value = $this->columnFactory
-            ->fromType($expression->type, $this->prepareInfo($expression))
-            ->dbTypecast($this->prepareValue($expression->value));
+            ->fromType($this->prepareType($expression->type), $this->prepareInfo($expression))
+            ->dbTypecast($expression->value);
         return $this->queryBuilder->buildValue($value, $params);
     }
 
-    private function prepareValue(int|float|string|Stringable|DateTimeInterface $value): DateTimeInterface
+    /**
+     * @psalm-return ColumnType::*
+     */
+    private function prepareType(string $type): string
     {
-        if ($value instanceof DateTimeInterface) {
-            return $value;
-        }
-
-        /** @psalm-suppress PossiblyInvalidArgument */
-        $result = match (gettype($value)) {
-            GettypeResult::STRING => $this->prepareStringValue($value),
-            GettypeResult::INTEGER => DateTimeImmutable::createFromFormat('U', (string) $value),
-            GettypeResult::DOUBLE => DateTimeImmutable::createFromFormat('U.u', (string) $value),
-            GettypeResult::OBJECT => $this->prepareStringValue((string) $value),
-        };
-        if ($result === false) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'The value "%s" is not a valid datetime.',
-                    $value,
-                ),
-            );
-        }
-        return $result;
-    }
-
-    private function prepareStringValue(string $value): DateTimeImmutable|false
-    {
-        return match ($value) {
-            (string) (int) $value => DateTimeImmutable::createFromFormat('U', $value),
-            (string) (float) $value => DateTimeImmutable::createFromFormat('U.u', $value),
-            default => date_create_immutable($value),
+        return match ($type) {
+            ColumnType::TIMESTAMP,
+            ColumnType::TIME,
+            ColumnType::TIMETZ,
+            ColumnType::DATETIME,
+            ColumnType::DATETIMETZ => $type,
+            default => ColumnType::TIMESTAMP,
         };
     }
 
@@ -86,13 +59,15 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
      */
     private function prepareInfo(DateTimeValue $expression): array
     {
+        $info = $expression->info + ['type' => $expression->type];
+
         return match ($expression->type) {
             ColumnType::TIMESTAMP,
             ColumnType::TIME,
             ColumnType::TIMETZ,
             ColumnType::DATETIME,
-            ColumnType::DATETIMETZ => $expression->info + ['size' => 0],
-            default => $expression->info,
+            ColumnType::DATETIMETZ => $info + ['size' => 0],
+            default => $info,
         };
     }
 }

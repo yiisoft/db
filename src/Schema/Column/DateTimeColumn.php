@@ -161,7 +161,9 @@ class DateTimeColumn extends AbstractColumn
             ColumnType::DATE => 'Y-m-d',
             ColumnType::INTEGER,
             ColumnType::BIGINT => 'U',
-            ColumnType::FLOAT => 'U.u',
+            ColumnType::FLOAT ,
+            ColumnType::DOUBLE,
+            ColumnType::DECIMAL => 'U.u',
             default => throw new UnexpectedValueException(
                 'Unsupported abstract column type ' . $this->getType() . ' for ' . static::class . ' class.',
             ),

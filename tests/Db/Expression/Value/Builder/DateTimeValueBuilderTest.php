@@ -147,16 +147,16 @@ final class DateTimeValueBuilderTest extends TestCase
             ),
         ];
         yield 'Integer' => [
-            '1703511045',
-            [],
+            ':qp0',
+            [':qp0' => new Param('1703511045', DataType::STRING)],
             new DateTimeValue(
                 new DateTimeImmutable('2023-12-25 15:30:45+2:00'),
                 ColumnType::INTEGER,
             ),
         ];
         yield 'Integer value type' => [
-            '1703511045',
-            [],
+            ':qp0',
+            [':qp0' => new Param('1703511045', DataType::STRING)],
             new DateTimeValue(
                 1703511045,
                 ColumnType::INTEGER,
@@ -202,6 +202,14 @@ final class DateTimeValueBuilderTest extends TestCase
                 ColumnType::DATETIMETZ,
             ),
         ];
+        yield 'Stringable in custom format' => [
+            ':qp0',
+            [':qp0' => new Param('10.11.12 09:39:16.78', DataType::STRING)],
+            new DateTimeValue(
+                new Stringable('10.11.12 09:39:16.78'),
+                ColumnType::DATETIME,
+            ),
+        ];
     }
 
     #[DataProvider('dataBuild')]
@@ -216,18 +224,5 @@ final class DateTimeValueBuilderTest extends TestCase
 
         $this->assertSame($expectedResult, $result);
         $this->assertEquals($expectedParams, $params);
-    }
-
-    public function testIncorrectString(): void
-    {
-        $builder = new DateTimeValueBuilder(
-            $this->getConnection()->getQueryBuilder()
-        );
-
-        $value = new DateTimeValue('invalid-datetime-string', ColumnType::DATETIME);
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The value "invalid-datetime-string" is not a valid datetime.');
-        $builder->build($value);
     }
 }
