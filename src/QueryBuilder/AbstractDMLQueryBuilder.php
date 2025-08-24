@@ -380,12 +380,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             if (isset($tableColumns[$name])) {
                 $value = $tableColumns[$name]->dbTypecast($value);
             }
-
-            if ($value instanceof ExpressionInterface) {
-                $placeholders[] = $this->queryBuilder->buildExpression($value, $params);
-            } else {
-                $placeholders[] = $this->queryBuilder->bindParam($value, $params);
-            }
+            $placeholders[] = $this->queryBuilder->buildValue($value, $params);
         }
 
         return [array_keys($columns), $placeholders, '', $params];

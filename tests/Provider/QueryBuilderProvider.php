@@ -1052,15 +1052,13 @@ class QueryBuilderProvider
                 [],
                 static::replaceQuotes(
                     <<<SQL
-                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) VALUES (:qp0, :qp1, :qp2, :qp3, :qp4)
+                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) VALUES (:qp0, :qp1, :qp2, FALSE, NULL)
                     SQL
                 ),
                 [
-                    ':qp0' => 'test@example.com',
-                    ':qp1' => 'silverfire',
-                    ':qp2' => 'Kyiv {{city}}, Ukraine',
-                    ':qp3' => false,
-                    ':qp4' => null,
+                    ':qp0' => new Param('test@example.com', DataType::STRING),
+                    ':qp1' => new Param('silverfire', DataType::STRING),
+                    ':qp2' => new Param('Kyiv {{city}}, Ukraine', DataType::STRING),
                 ],
             ],
             'params-and-expressions' => [
@@ -1069,10 +1067,10 @@ class QueryBuilderProvider
                 [],
                 static::replaceQuotes(
                     <<<SQL
-                    INSERT INTO {{%type}} ([[related_id]], [[time]]) VALUES (:qp0, now())
+                    INSERT INTO {{%type}} ([[related_id]], [[time]]) VALUES (NULL, now())
                     SQL
                 ),
-                [':qp0' => null],
+                [],
             ],
             'carry passed params' => [
                 'customer',
@@ -1087,16 +1085,14 @@ class QueryBuilderProvider
                 [':phBar' => 'bar'],
                 static::replaceQuotes(
                     <<<SQL
-                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]], [[col]]) VALUES (:qp1, :qp2, :qp3, :qp4, :qp5, CONCAT(:phFoo, :phBar))
+                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]], [[col]]) VALUES (:qp1, :qp2, :qp3, FALSE, NULL, CONCAT(:phFoo, :phBar))
                     SQL
                 ),
                 [
                     ':phBar' => 'bar',
-                    ':qp1' => 'test@example.com',
-                    ':qp2' => 'sergeymakinen',
-                    ':qp3' => '{{city}}',
-                    ':qp4' => false,
-                    ':qp5' => null,
+                    ':qp1' => new Param('test@example.com', DataType::STRING),
+                    ':qp2' => new Param('sergeymakinen', DataType::STRING),
+                    ':qp3' => new Param('{{city}}', DataType::STRING),
                     ':phFoo' => 'foo',
                 ],
             ],
@@ -1437,14 +1433,20 @@ class QueryBuilderProvider
                 ['email' => 'test@example.com', 'address' => 'bar {{city}}', 'status' => 1, 'profile_id' => null],
                 true,
                 '',
-                [':qp0' => 'test@example.com', ':qp1' => 'bar {{city}}', ':qp2' => 1, ':qp3' => null],
+                [
+                    ':qp0' => new Param('test@example.com', DataType::STRING),
+                    ':qp1' => new Param('bar {{city}}', DataType::STRING),
+                ],
             ],
             'regular values with unique at not the first position' => [
                 'T_upsert',
                 ['address' => 'bar {{city}}', 'email' => 'test@example.com', 'status' => 1, 'profile_id' => null],
                 true,
                 '',
-                [':qp0' => 'bar {{city}}', ':qp1' => 'test@example.com', ':qp2' => 1, ':qp3' => null],
+                [
+                    ':qp0' => new Param('bar {{city}}', DataType::STRING),
+                    ':qp1' => new Param('test@example.com', DataType::STRING),
+                ],
             ],
             'regular values with update part' => [
                 'T_upsert',
@@ -1452,11 +1454,9 @@ class QueryBuilderProvider
                 ['address' => 'foo {{city}}', 'status' => 2, 'orders' => new Expression('T_upsert.orders + 1')],
                 '',
                 [
-                    ':qp0' => 'test@example.com',
-                    ':qp1' => 'bar {{city}}',
-                    ':qp2' => 1,
-                    ':qp3' => null,
-                    ':qp4' => new Param('foo {{city}}', DataType::STRING),
+                    ':qp0' => new Param('test@example.com', DataType::STRING),
+                    ':qp1' => new Param('bar {{city}}', DataType::STRING),
+                    ':qp2' => new Param('foo {{city}}', DataType::STRING),
                 ],
             ],
             'regular values without update part' => [
@@ -1464,7 +1464,10 @@ class QueryBuilderProvider
                 ['email' => 'test@example.com', 'address' => 'bar {{city}}', 'status' => 1, 'profile_id' => null],
                 false,
                 '',
-                [':qp0' => 'test@example.com', ':qp1' => 'bar {{city}}', ':qp2' => 1, ':qp3' => null],
+                [
+                    ':qp0' => new Param('test@example.com', DataType::STRING),
+                    ':qp1' => new Param('bar {{city}}', DataType::STRING),
+                ],
             ],
             'query' => [
                 'T_upsert',
@@ -1507,21 +1510,21 @@ class QueryBuilderProvider
                 ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('CURRENT_TIMESTAMP')],
                 true,
                 '',
-                [':qp0' => 'dynamic@example.com'],
+                [':qp0' => new Param('dynamic@example.com', DataType::STRING)],
             ],
             'values and expressions with update part' => [
                 '{{%T_upsert}}',
                 ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('CURRENT_TIMESTAMP')],
                 ['[[orders]]' => new Expression('T_upsert.orders + 1')],
                 '',
-                [':qp0' => 'dynamic@example.com'],
+                [':qp0' => new Param('dynamic@example.com', DataType::STRING)],
             ],
             'values and expressions without update part' => [
                 'T_upsert',
                 ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('CURRENT_TIMESTAMP')],
                 false,
                 '',
-                [':qp0' => 'dynamic@example.com'],
+                [':qp0' => new Param('dynamic@example.com', DataType::STRING)],
             ],
             'query, values and expressions with update part' => [
                 '{{%T_upsert}}',
@@ -1554,21 +1557,21 @@ class QueryBuilderProvider
                 ['a' => 1],
                 false,
                 '',
-                [':qp0' => 1],
+                [],
             ],
             'no columns to update with unique' => [
                 'T_upsert',
                 ['email' => 'email'],
                 true,
                 '',
-                [':qp0' => 'email'],
+                [':qp0' => new Param('email', DataType::STRING)],
             ],
             'no unique columns in table - simple insert' => [
                 '{{%animal}}',
                 ['type' => 'test'],
                 false,
                 '',
-                [':qp0' => 'test'],
+                [':qp0' => new Param('test', DataType::STRING)],
             ],
         ];
     }

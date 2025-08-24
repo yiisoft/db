@@ -99,7 +99,7 @@
 - Chg #980: Add constructor with DB connection to `AbstractCommand` (@vjik)
 - Enh #979: Allow `ExpressionInterface` for column definitions when create table (@Tigrov)
 - Enh #981, #1004: Refactor constraints (@Tigrov)
-- Enh #982, #995: Reduce binding parameters, add `QueryBuilderInterface::buildValue()` method (@Tigrov)
+- Enh #982, #995, #1044: Reduce binding parameters, add `QueryBuilderInterface::buildValue()` method (@Tigrov, @vjik)
 - New #984: Add `createQuery()` and `select()` methods to `ConnectionInterface` (@Tigrov)
 - Chg #985: Rename `insertWithReturningPks()` to `insertReturningPks()` in `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
 - Enh #992: Add optional type casting to `DataReaderInterface` using columns (@Tigrov)
