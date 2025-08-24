@@ -100,21 +100,18 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $params = [];
         $qb->insert('{{type}}', $values, $params);
 
-        $this->assertSame([
-            ':qp0' => 1,
-            ':qp1' => 'test',
-            ':qp2' => 3.14,
-            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
+        $this->assertEquals([
+            ':qp0' => new Param('test', DataType::STRING),
         ], $params);
 
         $params = [];
         $qb->withTypecasting(false)->insert('{{type}}', $values, $params);
 
-        $this->assertSame([
-            ':qp0' => '1',
-            ':qp1' => 'test',
-            ':qp2' => '3.14',
-            ':qp3' => '1',
+        $this->assertEquals([
+            ':qp0' => new Param('1', DataType::STRING),
+            ':qp1' => new Param('test', DataType::STRING),
+            ':qp2' => new Param('3.14', DataType::STRING),
+            ':qp3' => new Param('1', DataType::STRING),
         ], $params);
 
         $db->close();

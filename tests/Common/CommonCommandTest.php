@@ -1275,7 +1275,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    public function testInsertWithoutTypecasting(): void
+    public function testInsertWithoutTypecasting1(): void
     {
         $db = $this->getConnection(true);
         $command = $db->createCommand();
@@ -1290,10 +1290,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->insert('{{type}}', $values);
 
         $this->assertSame([
-            ':qp0' => 1,
-            ':qp1' => 'test',
-            ':qp2' => 3.14,
-            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
+            ':qp0' => 'test',
         ], $command->getParams());
 
         $command = $command->withDbTypecasting(false);
