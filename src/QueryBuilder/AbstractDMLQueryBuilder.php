@@ -409,7 +409,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 $value = $typecastColumns[$name]->dbTypecast($value);
             }
 
-            $quotedName = $quoter->quoteColumnName($name);
+            $quotedName = $quoter->quoteSimpleColumnName($name);
 
             if ($forUpsert && $value instanceof MultiOperandFunction && empty($value->getOperands())) {
                 $quotedTableName ??= $quoter->quoteTableName($table);
