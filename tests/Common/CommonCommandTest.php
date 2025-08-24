@@ -1275,7 +1275,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    public function testInsertWithoutTypecasting1(): void
+    public function testInsertWithoutTypecasting(): void
     {
         $db = $this->getConnection(true);
         $command = $db->createCommand();
