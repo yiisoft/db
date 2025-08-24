@@ -100,9 +100,12 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $params = [];
         $qb->insert('{{type}}', $values, $params);
 
-        $this->assertEquals([
-            ':qp0' => new Param('test', DataType::STRING),
-        ], $params);
+        $this->assertEquals(
+            $db->getDriverName() === 'oci'
+                ? [':qp0' => new Param('test', DataType::STRING), ':qp1' => new Param('1', DataType::STRING)]
+                : [':qp0' => new Param('test', DataType::STRING)],
+            $params
+        );
 
         $params = [];
         $qb->withTypecasting(false)->insert('{{type}}', $values, $params);
