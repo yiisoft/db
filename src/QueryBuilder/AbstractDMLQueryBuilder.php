@@ -183,6 +183,20 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
+     * @psalm-param array<string, string> $columns
+     */
+    protected function buildSimpleSelect(array $columns): string
+    {
+        $quoter = $this->quoter;
+
+        foreach ($columns as $name => &$column) {
+            $column .= ' AS ' . $quoter->quoteSimpleColumnName($name);
+        }
+
+        return 'SELECT ' . implode(', ', $columns);
+    }
+
+    /**
      * Prepare traversable for batch insert.
      *
      * @param Traversable $rows The rows to be batch inserted into the table.
@@ -303,12 +317,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      *
-     * @return array Array of column names, values, and params.
+     * @return string[] Array of column names, values, and params.
      *
      * @psalm-param ParamsType $params
-     * @psalm-return array{0: string[], 1: string, 2: array}
      */
-    protected function prepareInsertSelectSubQuery(QueryInterface $columns, array $params = []): array
+    protected function getQueryColumnNames(QueryInterface $columns, array &$params = []): array
     {
         /** @psalm-var string[] $select */
         $select = $columns->getSelect();
@@ -316,8 +329,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         if (empty($select) || in_array('*', $select, true)) {
             throw new InvalidArgumentException('Expected select query object with enumerated (named) parameters');
         }
-
-        [$values, $params] = $this->queryBuilder->build($columns, $params);
 
         $names = [];
 
@@ -337,7 +348,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             }
         }
 
-        return [$names, $values, $params];
+        return $names;
     }
 
     /**
@@ -366,7 +377,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         }
 
         if ($columns instanceof QueryInterface) {
-            [$names, $values, $params] = $this->prepareInsertSelectSubQuery($columns, $params);
+            $names = $this->getQueryColumnNames($columns, $params);
+            [$values, $params] = $this->queryBuilder->build($columns, $params);
             return [$names, [], $values, $params];
         }
 
@@ -392,11 +404,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Prepare column names and placeholders for `UPDATE` SQL statement.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     *
      * @psalm-param ParamsType $params
      *
      * @return string[]
@@ -406,22 +413,51 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $sets = [];
         $columns = $this->normalizeColumnNames($columns);
         $tableColumns = $this->typecasting ? $this->schema->getTableSchema($table)?->getColumns() ?? [] : [];
+        $queryBuilder = $this->queryBuilder;
+        $quoter = $this->quoter;
 
         foreach ($columns as $name => $value) {
             if (isset($tableColumns[$name])) {
                 $value = $tableColumns[$name]->dbTypecast($value);
             }
 
-            if ($value instanceof ExpressionInterface) {
-                $placeholder = $this->queryBuilder->buildExpression($value, $params);
-            } else {
-                $placeholder = $this->queryBuilder->bindParam($value, $params);
-            }
+            $quotedName = $quoter->quoteSimpleColumnName($name);
+            $builtValue = $queryBuilder->buildValue($value, $params);
 
-            $sets[] = $this->quoter->quoteColumnName($name) . '=' . $placeholder;
+            $sets[] = "$quotedName=$builtValue";
         }
 
         return $sets;
+    }
+
+    /**
+     * Prepare column names and placeholders for upsert SQL statement.
+     *
+     * @psalm-param array|true $updateColumns
+     * @psalm-param ParamsType $params
+     *
+     * @return string[]
+     */
+    protected function prepareUpsertSets(
+        string $table,
+        array|bool $updateColumns,
+        array|null $updateNames,
+        array &$params
+    ): array {
+        if ($updateColumns === true) {
+            $quoter = $this->quoter;
+            $sets = [];
+
+            /** @psalm-var string[] $updateNames */
+            foreach ($updateNames as $name) {
+                $quotedName = $quoter->quoteSimpleColumnName($name);
+                $sets[] = "$quotedName=EXCLUDED.$quotedName";
+            }
+
+            return $sets;
+        }
+
+        return $this->prepareUpdateSets($table, $updateColumns, $params);
     }
 
     /**
@@ -441,11 +477,12 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         array &$constraints = []
     ): array {
         if ($insertColumns instanceof QueryInterface) {
-            [$insertNames] = $this->prepareInsertSelectSubQuery($insertColumns);
+            $insertNames = $this->getQueryColumnNames($insertColumns);
         } else {
-            $insertNames = $this->getNormalizeColumnNames(array_keys($insertColumns));
+            $insertNames = array_keys($insertColumns);
         }
 
+        $insertNames = $this->getNormalizeColumnNames($insertNames);
         $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
 
         if ($updateColumns === true) {

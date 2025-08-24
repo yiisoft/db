@@ -222,7 +222,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array|ExpressionInterface|string|null $from,
         array $params,
         string $expectedSql,
-        array $expectedParams
+        array $expectedParams = [],
     ): void {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
