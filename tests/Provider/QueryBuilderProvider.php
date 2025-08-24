@@ -1280,11 +1280,11 @@ class QueryBuilderProvider
                 '{{table}}',
                 ['name' => '{{tmp}}.{{name}}'],
                 [],
-                new Expression('SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1'),
+                new Expression('(SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1)'),
                 [],
                 static::replaceQuotes(
                     <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp0 FROM SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1
+                    UPDATE [[table]] SET [[name]]=:qp0 FROM (SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1)
                     SQL
                 ),
                 [
