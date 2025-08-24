@@ -31,6 +31,8 @@ use function is_string;
  * - `ColumnType::INTEGER`
  * - `ColumnType::BIGINT`
  * - `ColumnType::FLOAT`
+ * - `ColumnType::DOUBLE`
+ * - `ColumnType::DECIMAL`
  *
  * Possible issues:
  * - MySQL DBMS converts `TIMESTAMP` column type values from database session time zone to UTC for storage,
