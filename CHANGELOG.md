@@ -137,7 +137,8 @@
 - Chg #1037: Change result type of `QueryBuilderInterface::getExpressionBuilder()` and
   `DQLQueryBuilderInterface::getExpressionBuilder()` methods to `ExpressionBuilderInterface` (@vjik)
 - New #1029: Add functions as expressions (@Tigrov)
-- New #1040: Add `DateTimeValue` class @vjik)
+- Enh #1042: Refactor `AbstractDMLQueryBuilder` class to `upsert()` method (@Tigrov)
+- New #1040: Add `DateTimeValue` class (@vjik)
 
 ## 1.3.0 March 21, 2024
 
