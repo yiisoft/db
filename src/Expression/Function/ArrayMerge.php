@@ -23,7 +23,16 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
  */
 final class ArrayMerge extends MultiOperandFunction
 {
+    private bool $ordered = false;
     private string|ColumnInterface $type = '';
+
+    /**
+     * Returns whether the result array should be ordered.
+     */
+    public function getOrdered(): bool
+    {
+        return $this->ordered;
+    }
 
     /**
      * Returns the type of the operands. Empty string if not set.
@@ -31,6 +40,15 @@ final class ArrayMerge extends MultiOperandFunction
     public function getType(): string|ColumnInterface
     {
         return $this->type;
+    }
+
+    /**
+     * Sets whether the result array should be ordered.
+     */
+    public function ordered(bool $ordered = true): self
+    {
+        $this->ordered = $ordered;
+        return $this;
     }
 
     /**
