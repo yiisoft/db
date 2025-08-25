@@ -16,9 +16,24 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
  * Represents a value that should be treated as a date and time value for specific column type.
  *
  * @psalm-import-type ColumnInfo from ColumnFactoryInterface
+ * @psalm-type SupportedColumnType = ColumnType::DATE|ColumnType::DATETIME|ColumnType::DATETIMETZ|ColumnType::TIME|ColumnType::TIMETZ|ColumnType::TIMESTAMP|ColumnType::BIGINT|ColumnType::INTEGER|ColumnType::FLOAT|ColumnType::DOUBLE|ColumnType::DECIMAL
  */
 final class DateTimeValue implements ExpressionInterface
 {
+    private const SUPPORTED_TYPES = [
+        ColumnType::DATE => true,
+        ColumnType::DATETIME => true,
+        ColumnType::DATETIMETZ => true,
+        ColumnType::TIME => true,
+        ColumnType::TIMETZ => true,
+        ColumnType::TIMESTAMP => true,
+        ColumnType::BIGINT => true,
+        ColumnType::INTEGER => true,
+        ColumnType::FLOAT => true,
+        ColumnType::DOUBLE => true,
+        ColumnType::DECIMAL => true,
+    ];
+
     /**
      * @param DateTimeInterface|float|int|string|Stringable $value The value to be treated as a date and time value.
      * @param string $type The column type. The following types are supported:
@@ -35,7 +50,7 @@ final class DateTimeValue implements ExpressionInterface
      * - {@see ColumnType::DECIMAL}
      * @param array $info Additional information about {@see ColumnInterface the column}.
      *
-     * @psalm-param ColumnType::* $type
+     * @psalm-param SupportedColumnType $type
      * @psalm-param ColumnInfo $info
      */
     public function __construct(
@@ -43,19 +58,8 @@ final class DateTimeValue implements ExpressionInterface
         public readonly string $type = ColumnType::DATETIMETZ,
         public readonly array $info = [],
     ) {
-        match ($type) {
-            ColumnType::DATE,
-            ColumnType::DATETIME,
-            ColumnType::DATETIMETZ,
-            ColumnType::TIME,
-            ColumnType::TIMETZ,
-            ColumnType::TIMESTAMP,
-            ColumnType::BIGINT,
-            ColumnType::INTEGER,
-            ColumnType::FLOAT,
-            ColumnType::DOUBLE,
-            ColumnType::DECIMAL => null,
-            default => throw new InvalidArgumentException("The type '$type' is not supported by DateTimeValue."),
-        };
+        if (!isset(self::SUPPORTED_TYPES[$type])) {
+            throw new InvalidArgumentException("The type '$type' is not supported by DateTimeValue.");
+        }
     }
 }

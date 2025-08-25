@@ -44,14 +44,12 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
      */
     private function prepareType(DateTimeValue $expression): string
     {
-        $type = $expression->info['type'] ?? $expression->type;
-
-        return match ($type) {
+        return match ($expression->type) {
             ColumnType::TIMESTAMP,
             ColumnType::TIME,
             ColumnType::TIMETZ,
             ColumnType::DATETIME,
-            ColumnType::DATETIMETZ => $type,
+            ColumnType::DATETIMETZ => $expression->type,
             default => ColumnType::TIMESTAMP,
         };
     }
