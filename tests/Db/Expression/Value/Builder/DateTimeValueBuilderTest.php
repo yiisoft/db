@@ -201,11 +201,11 @@ final class DateTimeValueBuilderTest extends TestCase
                 ColumnType::DATETIMETZ,
             ),
         ];
-        yield 'Stringable in custom format' => [
+        yield 'String in custom format' => [
             ':qp0',
             [':qp0' => new Param('10.11.12 09:39:16.78', DataType::STRING)],
             new DateTimeValue(
-                new Stringable('10.11.12 09:39:16.78'),
+                '10.11.12 09:39:16.78',
                 ColumnType::DATETIME,
             ),
         ];
