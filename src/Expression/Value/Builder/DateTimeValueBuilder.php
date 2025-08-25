@@ -34,7 +34,7 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $value = $this->columnFactory
-            ->fromType($this->prepareType($expression->type), $this->prepareInfo($expression))
+            ->fromType($this->prepareType($expression), $this->prepareInfo($expression))
             ->dbTypecast($expression->value);
         return $this->queryBuilder->buildValue($value, $params);
     }
@@ -42,8 +42,10 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
     /**
      * @psalm-return ColumnType::*
      */
-    private function prepareType(string $type): string
+    private function prepareType(DateTimeValue $expression): string
     {
+        $type = $expression->info['type'] ?? $expression->type;
+
         return match ($type) {
             ColumnType::TIMESTAMP,
             ColumnType::TIME,
@@ -59,7 +61,7 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
      */
     private function prepareInfo(DateTimeValue $expression): array
     {
-        $info = $expression->info + ['type' => $expression->type];
+        $info = ['type' => $expression->type] + $expression->info;
 
         return match ($expression->type) {
             ColumnType::TIMESTAMP,
