@@ -59,15 +59,13 @@ final class DateTimeValueBuilder implements ExpressionBuilderInterface
      */
     private function prepareInfo(DateTimeValue $expression): array
     {
-        $info = ['type' => $expression->type] + $expression->info;
-
         return match ($expression->type) {
             ColumnType::TIMESTAMP,
             ColumnType::TIME,
             ColumnType::TIMETZ,
             ColumnType::DATETIME,
-            ColumnType::DATETIMETZ => $info + ['size' => 0],
-            default => $info,
+            ColumnType::DATETIMETZ => $expression->info + ['size' => 0],
+            default => $expression->info,
         };
     }
 }
