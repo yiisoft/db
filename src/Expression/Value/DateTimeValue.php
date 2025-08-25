@@ -20,7 +20,7 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 final class DateTimeValue implements ExpressionInterface
 {
     /**
-     * @param int|float|string|Stringable|DateTimeInterface $value The value to be treated as a date and time value.
+     * @param DateTimeInterface|float|int|string|Stringable $value The value to be treated as a date and time value.
      * @param string $type The column type. The following types are supported:
      * - {@see ColumnType::DATE}
      * - {@see ColumnType::DATETIME}
