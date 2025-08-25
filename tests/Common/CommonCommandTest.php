@@ -1289,12 +1289,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->insert('{{type}}', $values);
 
-        $this->assertSame([
-            ':qp0' => 1,
-            ':qp1' => 'test',
-            ':qp2' => 3.14,
-            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
-        ], $command->getParams());
+        $this->assertSame(
+            $db->getDriverName() === 'oci'
+                ? [':qp0' => 'test', ':qp1' => '1']
+                : [':qp0' => 'test'],
+            $command->getParams(),
+        );
 
         $command = $command->withDbTypecasting(false);
         $command->insert('{{type}}', $values);
