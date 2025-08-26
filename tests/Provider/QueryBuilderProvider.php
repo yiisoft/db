@@ -2090,7 +2090,7 @@ class QueryBuilderProvider
                 'shortest_col' => 'short',
             ],
             [
-                'array_col' => new ArrayMerge(),
+                'array_col' => (new ArrayMerge())->ordered(),
                 'greatest_col' => new Greatest(),
                 'least_col' => new Least(),
                 'longest_col' => new Longest(),
