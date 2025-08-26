@@ -181,6 +181,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
 
     public function fromType(string $type, array $info = []): ColumnInterface
     {
+        $columnType = $info['type'] ?? $type;
         unset($info['type']);
 
         if ($type === ColumnType::ARRAY || !empty($info['dimension'])) {
@@ -200,7 +201,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
                 }
             }
 
-            $type = ColumnType::ARRAY;
+            $columnType = $type = ColumnType::ARRAY;
         }
 
         /** @psalm-var class-string<ColumnInterface> $columnClass */
@@ -208,7 +209,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ?? $this->getColumnClass($type, $info);
 
         $columnParams = $info + ($this->classDefaults[$type] ?? []);
-        $column = new $columnClass($type, ...$columnParams);
+        $column = new $columnClass($columnType, ...$columnParams);
 
         if (array_key_exists('defaultValueRaw', $info)) {
             $column->defaultValue($this->normalizeDefaultValue($info['defaultValueRaw'], $column));
