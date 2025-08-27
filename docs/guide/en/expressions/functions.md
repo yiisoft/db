@@ -1,4 +1,4 @@
-# Expressions as functions
+# Function expressions
 
 The library provides several classes to represent SQL functions as expressions.
 

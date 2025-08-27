@@ -114,7 +114,7 @@ $db->createCommand()->upsert(
 )->execute();
 ```
 
-It also supports [expressions as functions](../expressions/functions.md) with multi-operands without values.
+It also supports [function expressions](../expressions/functions.md) with multi-operands without values.
 In this case the current column value will be used as one of the operands and the insert value as another operand.
 
 ```php
