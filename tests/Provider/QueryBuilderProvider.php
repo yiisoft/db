@@ -8,6 +8,8 @@ use ArrayIterator;
 use DateTimeImmutable;
 use DateTimeZone;
 use Yiisoft\Db\Constant\DataType;
+use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\IndexType;
@@ -2066,6 +2068,48 @@ class QueryBuilderProvider
                 ],
             ],
         ];
+    }
+
+    public static function upsertWithMultiOperandFunctions(): array
+    {
+        return [[
+            [
+                'id' => 1,
+                'array_col' => new ArrayExpression([1, 2, 3]),
+                'greatest_col' => 10,
+                'least_col' => 10,
+                'longest_col' => 'longest',
+                'shortest_col' => 'longest',
+            ],
+            [
+                'id' => 1,
+                'array_col' => new ArrayExpression([3, 4, 5]),
+                'greatest_col' => 5,
+                'least_col' => 5,
+                'longest_col' => 'short',
+                'shortest_col' => 'short',
+            ],
+            [
+                'array_col' => (new ArrayMerge())->ordered(),
+                'greatest_col' => new Greatest(),
+                'least_col' => new Least(),
+                'longest_col' => new Longest(),
+                'shortest_col' => new Shortest(),
+            ],
+            '',
+            [
+                'array_col' => '[1,2,3,4,5]',
+                'greatest_col' => 10,
+                'least_col' => 5,
+                'longest_col' => 'longest',
+                'shortest_col' => 'short',
+            ],
+            [
+                ':qp0' => new Param('[3,4,5]', DataType::STRING),
+                ':qp1' => new Param('short', DataType::STRING),
+                ':qp2' => new Param('short', DataType::STRING),
+            ],
+        ]];
     }
 
     public static function dateTimeValue(): iterable
