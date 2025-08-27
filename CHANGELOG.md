@@ -99,7 +99,7 @@
 - Chg #980: Add constructor with DB connection to `AbstractCommand` (@vjik)
 - Enh #979: Allow `ExpressionInterface` for column definitions when create table (@Tigrov)
 - Enh #981, #1004: Refactor constraints (@Tigrov)
-- Enh #982, #995: Reduce binding parameters, add `QueryBuilderInterface::buildValue()` method (@Tigrov)
+- Enh #982, #995, #1044: Reduce binding parameters, add `QueryBuilderInterface::buildValue()` method (@Tigrov, @vjik)
 - New #984: Add `createQuery()` and `select()` methods to `ConnectionInterface` (@Tigrov)
 - Chg #985: Rename `insertWithReturningPks()` to `insertReturningPks()` in `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
 - Enh #992: Add optional type casting to `DataReaderInterface` using columns (@Tigrov)
@@ -140,8 +140,11 @@
 - Enh #1038: Add ability to pass `FROM` clause to `CommandInterface::update()` and `DMLQueryBuilderInterface::update()` methods (@rustamwin)
 - Enh #1038: Allow passing `ExpressionInterface` as condition in `CommandInterface::update()` and `DMLQueryBuilderInterface::update()` methods (@rustamwin)
 - Chg #1038: Remove `$params` parameter from `CommandInterface::update()` method (@rustamwin)
+- New #1029, #1048: Add functions as expressions (@Tigrov)
 - Enh #1042: Refactor `AbstractDMLQueryBuilder` class to `upsert()` method (@Tigrov)
-- New #1040: Add `DateTimeValue` class (@vjik)
+- New #1040, #1043: Add `DateTimeValue` class (@vjik, @Tigrov)
+- Enh #1045: Support multi-operand functions in `CommandInterface::upsert()` and `DMLQueryBuilderInterface::upsert()` 
+  methods (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

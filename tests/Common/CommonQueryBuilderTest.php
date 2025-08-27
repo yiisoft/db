@@ -16,6 +16,7 @@ use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Length;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
@@ -100,21 +101,21 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $params = [];
         $qb->insert('{{type}}', $values, $params);
 
-        $this->assertSame([
-            ':qp0' => 1,
-            ':qp1' => 'test',
-            ':qp2' => 3.14,
-            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
-        ], $params);
+        $this->assertEquals(
+            $db->getDriverName() === 'oci'
+                ? [':qp0' => new Param('test', DataType::STRING), ':qp1' => new Param('1', DataType::STRING)]
+                : [':qp0' => new Param('test', DataType::STRING)],
+            $params
+        );
 
         $params = [];
         $qb->withTypecasting(false)->insert('{{type}}', $values, $params);
 
-        $this->assertSame([
-            ':qp0' => '1',
-            ':qp1' => 'test',
-            ':qp2' => '3.14',
-            ':qp3' => '1',
+        $this->assertEquals([
+            ':qp0' => new Param('1', DataType::STRING),
+            ':qp1' => new Param('test', DataType::STRING),
+            ':qp2' => new Param('3.14', DataType::STRING),
+            ':qp3' => new Param('1', DataType::STRING),
         ], $params);
 
         $db->close();
@@ -251,6 +252,51 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
             $result = $arrayCol->phpTypecast($result);
             sort($result, SORT_NATURAL);
         }
+
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsertWithMultiOperandFunctions')]
+    public function testUpsertWithMultiOperandFunctions(
+        array $initValues,
+        array $insertValues,
+        array $updateValues,
+        string $expectedSql,
+        array $expectedResult,
+        array $expectedParams = [],
+    ): void {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+        $schema = $db->getSchema();
+        $command = $db->createCommand();
+
+        $tableName = 'test_upsert_with_functions';
+
+        if ($schema->hasTable($tableName)) {
+            $command->dropTable($tableName)->execute();
+        }
+
+        $command->createTable($tableName, [
+            'id' => ColumnBuilder::primaryKey(false),
+            'array_col' => ColumnBuilder::array(ColumnBuilder::integer()),
+            'greatest_col' => ColumnBuilder::integer(),
+            'least_col' => ColumnBuilder::integer(),
+            'longest_col' => ColumnBuilder::string(),
+            'shortest_col' => ColumnBuilder::string(),
+        ])->execute();
+
+        $command->insert($tableName, $initValues)->execute();
+
+        $params = [];
+
+        $sql = $qb->upsert($tableName, $insertValues, $updateValues, $params);
+
+        $this->assertSame($expectedSql, $sql);
+        $this->assertEquals($expectedParams, $params);
+
+        $command->upsert($tableName, $insertValues, $updateValues, $params)->execute();
+
+        $result = $db->select(array_keys($expectedResult))->from($tableName)->one();
 
         $this->assertEquals($expectedResult, $result);
     }

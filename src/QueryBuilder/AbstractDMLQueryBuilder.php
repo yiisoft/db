@@ -15,6 +15,8 @@ use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\Function\ArrayMerge;
+use Yiisoft\Db\Expression\Function\MultiOperandFunction;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -390,12 +392,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             if (isset($tableColumns[$name])) {
                 $value = $tableColumns[$name]->dbTypecast($value);
             }
-
-            if ($value instanceof ExpressionInterface) {
-                $placeholders[] = $this->queryBuilder->buildExpression($value, $params);
-            } else {
-                $placeholders[] = $this->queryBuilder->bindParam($value, $params);
-            }
+            $placeholders[] = $this->queryBuilder->buildValue($value, $params);
         }
 
         return [array_keys($columns), $placeholders, '', $params];
@@ -408,21 +405,35 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @return string[]
      */
-    protected function prepareUpdateSets(string $table, array $columns, array &$params): array
+    protected function prepareUpdateSets(string $table, array $columns, array &$params, bool $forUpsert = false): array
     {
         $sets = [];
         $columns = $this->normalizeColumnNames($columns);
-        $tableColumns = $this->typecasting ? $this->schema->getTableSchema($table)?->getColumns() ?? [] : [];
+        $tableColumns = $this->schema->getTableSchema($table)?->getColumns() ?? [];
+        $typecastColumns = $this->typecasting ? $tableColumns : [];
         $queryBuilder = $this->queryBuilder;
         $quoter = $this->quoter;
 
         foreach ($columns as $name => $value) {
-            if (isset($tableColumns[$name])) {
-                $value = $tableColumns[$name]->dbTypecast($value);
+            if (isset($typecastColumns[$name])) {
+                $value = $typecastColumns[$name]->dbTypecast($value);
             }
 
             $quotedName = $quoter->quoteSimpleColumnName($name);
-            $builtValue = $queryBuilder->buildValue($value, $params);
+
+            if ($forUpsert && $value instanceof MultiOperandFunction && empty($value->getOperands())) {
+                $quotedTableName ??= $quoter->quoteTableName($table);
+                $value->add("$quotedTableName.$quotedName")
+                    ->add("EXCLUDED.$quotedName");
+
+                if (isset($tableColumns[$name]) && $value instanceof ArrayMerge) {
+                    $value->type($tableColumns[$name]);
+                }
+
+                $builtValue = $queryBuilder->buildExpression($value, $params);
+            } else {
+                $builtValue = $queryBuilder->buildValue($value, $params);
+            }
 
             $sets[] = "$quotedName=$builtValue";
         }
@@ -457,7 +468,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             return $sets;
         }
 
-        return $this->prepareUpdateSets($table, $updateColumns, $params);
+        return $this->prepareUpdateSets($table, $updateColumns, $params, true);
     }
 
     /**

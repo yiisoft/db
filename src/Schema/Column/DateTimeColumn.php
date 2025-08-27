@@ -31,6 +31,8 @@ use function is_string;
  * - `ColumnType::INTEGER`
  * - `ColumnType::BIGINT`
  * - `ColumnType::FLOAT`
+ * - `ColumnType::DOUBLE`
+ * - `ColumnType::DECIMAL`
  *
  * Possible issues:
  * - MySQL DBMS converts `TIMESTAMP` column type values from database session time zone to UTC for storage,
@@ -92,7 +94,7 @@ class DateTimeColumn extends AbstractColumn
      * the default time zone set specified in the {@see $phpTimezone} property. If the conversion fails, the original
      * value will be returned.
      */
-    public function dbTypecast(mixed $value): string|ExpressionInterface|null
+    public function dbTypecast(mixed $value): float|int|string|ExpressionInterface|null
     {
         /** @psalm-suppress MixedArgument, PossiblyFalseArgument */
         return match (gettype($value)) {
@@ -161,7 +163,9 @@ class DateTimeColumn extends AbstractColumn
             ColumnType::DATE => 'Y-m-d',
             ColumnType::INTEGER,
             ColumnType::BIGINT => 'U',
-            ColumnType::FLOAT => 'U.u',
+            ColumnType::FLOAT ,
+            ColumnType::DOUBLE,
+            ColumnType::DECIMAL => 'U.u',
             default => throw new UnexpectedValueException(
                 'Unsupported abstract column type ' . $this->getType() . ' for ' . static::class . ' class.',
             ),
@@ -190,17 +194,24 @@ class DateTimeColumn extends AbstractColumn
             : $this->phpTimezone;
     }
 
-    private function dbTypecastDateTime(DateTimeImmutable $value): string
+    private function dbTypecastDateTime(DateTimeImmutable $value): float|int|string
     {
         if ($this->shouldConvertTimezone()) {
             /** @psalm-suppress ArgumentTypeCoercion */
             $value = $value->setTimezone(new DateTimeZone($this->dbTimezone));
         }
 
-        return $value->format($this->getFormat());
+        $format = $this->getFormat();
+        $result = $value->format($format);
+
+        return match ($format) {
+            'U' => (int) $result,
+            'U.u' => (float) $result,
+            default => $result,
+        };
     }
 
-    private function dbTypecastString(string $value): string|null
+    private function dbTypecastString(string $value): float|int|string|null
     {
         /** @psalm-suppress PossiblyFalseArgument */
         return match ($value) {
