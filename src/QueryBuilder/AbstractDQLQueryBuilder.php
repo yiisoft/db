@@ -51,8 +51,6 @@ use function array_shift;
 use function count;
 use function implode;
 use function is_array;
-use function is_bool;
-use function is_int;
 use function is_string;
 use function ltrim;
 use function preg_match;
