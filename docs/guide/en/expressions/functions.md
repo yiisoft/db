@@ -42,7 +42,6 @@ in a list of expressions.
 ```php
 new Least(1, new Column('int_col'), $db->select(['int_col'])->from('table'));
 ```
-Instead of values can be used expressions including subqueries.
 
 ## Length
 The [Length](../../../../src/Expression/Function/Length.php) expression allows you to find the length of a string.
