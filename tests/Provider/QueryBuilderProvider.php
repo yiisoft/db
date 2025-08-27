@@ -1244,7 +1244,7 @@ class QueryBuilderProvider
                     SQL
                 ),
                 [
-                    ':qp0' => '{{tmp}}.{{name}}',
+                    ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
                 ],
             ],
             [
@@ -1259,7 +1259,7 @@ class QueryBuilderProvider
                     SQL
                 ),
                 [
-                    ':qp0' => '{{tmp}}.{{name}}',
+                    ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
                 ],
             ],
             [
@@ -1274,7 +1274,7 @@ class QueryBuilderProvider
                     SQL
                 ),
                 [
-                    ':qp0' => '{{tmp}}.{{name}}',
+                    ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
                 ],
             ],
             [
@@ -1289,7 +1289,7 @@ class QueryBuilderProvider
                     SQL
                 ),
                 [
-                    ':qp0' => '{{tmp}}.{{name}}',
+                    ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
                 ],
             ],
             [
@@ -1304,7 +1304,7 @@ class QueryBuilderProvider
                     SQL
                 ),
                 [
-                    ':qp0' => '{{tmp}}.{{name}}',
+                    ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
                 ],
             ],
             [
@@ -1319,7 +1319,7 @@ class QueryBuilderProvider
                     SQL
                 ),
                 [
-                    ':qp0' => '{{tmp}}',
+                    ':qp0' => new Param('{{tmp}}', DataType::STRING),
                 ],
             ],
             [
