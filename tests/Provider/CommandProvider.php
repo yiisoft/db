@@ -746,7 +746,7 @@ class CommandProvider
             [
                 'customer',
                 ['status' => new Expression('1 + 2')],
-                ['customer.id' => 2],
+                ['{{customer}}.id' => 2],
                 ['c' => 'customer'],
                 ['status' => 3],
                 1,
@@ -754,7 +754,7 @@ class CommandProvider
             [
                 'customer',
                 ['status' => new Expression('1 + 2')],
-                ['customer.id' => 2],
+                ['{{customer}}.id' => 2],
                 ['c' => self::getDb()->createQuery()->from('customer')],
                 ['status' => 3],
                 1,
