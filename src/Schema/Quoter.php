@@ -10,7 +10,6 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use function addcslashes;
 use function array_map;
 use function array_slice;
-use function count;
 use function explode;
 use function implode;
 use function is_string;
