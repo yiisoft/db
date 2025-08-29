@@ -40,7 +40,7 @@ abstract class AbstractCommandTest extends TestCase
         $this->assertSame(
             static::replaceQuotes(
                 <<<SQL
-                SELECT [[id]], [[t]].[[name]] FROM [[customer]] t
+                SELECT [[id]], [[t.name]] FROM [[customer]] t
                 SQL
             ),
             $command->getSql(),
