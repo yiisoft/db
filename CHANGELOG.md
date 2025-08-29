@@ -142,6 +142,7 @@
 - Enh #1045: Support multi-operand functions in `CommandInterface::upsert()` and `DMLQueryBuilderInterface::upsert()` 
   methods (@Tigrov)
 - Enh #1049: Refactor `AbstractDQLQueryBuilder::buildSelect()` to fix possible bugs (@Tigrov)
+- Enh #1051: Refactor `Quoter` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
