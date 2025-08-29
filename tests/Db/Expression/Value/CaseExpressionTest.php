@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Expression;
+namespace Yiisoft\Db\Tests\Db\Expression\Value;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\CaseExpression;
-use Yiisoft\Db\Expression\WhenClause;
+use Yiisoft\Db\Expression\Statement\CaseExpression;
+use Yiisoft\Db\Expression\Statement\WhenClause;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\TestTrait;
