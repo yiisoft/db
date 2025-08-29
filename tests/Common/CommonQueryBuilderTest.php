@@ -174,7 +174,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         ];
 
         $params = [];
-        $qb->update('{{type}}', $values, [], $params);
+        $qb->update('{{type}}', $values, [], null, $params);
 
         $expectedParams = [':qp0' => new Param('test', DataType::STRING)];
 
@@ -185,7 +185,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         Assert::arraysEquals($expectedParams, $params);
 
         $params = [];
-        $qb->withTypecasting(false)->update('{{type}}', $values, [], $params);
+        $qb->withTypecasting(false)->update('{{type}}', $values, [], null, $params);
 
         Assert::arraysEquals([
             ':qp0' => new Param('1', DataType::STRING),
