@@ -8,7 +8,7 @@ use Closure;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;

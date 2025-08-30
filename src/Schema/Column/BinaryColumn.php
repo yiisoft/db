@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Schema\Column;
 use BackedEnum;
 use PDO;
 use Stringable;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\GettypeResult;

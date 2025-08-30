@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expression\Builder;
-
-use Yiisoft\Db\Expression\ExpressionInterface;
+namespace Yiisoft\Db\Expression;
 
 /**
  * This interface defines the methods to build database expressions, such as conditions for a SELECT statement or values

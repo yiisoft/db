@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Expression\StructuredExpression;
+use Yiisoft\Db\Expression\Value\StructuredExpression;
 
 /**
  * Represents an abstract structured column.

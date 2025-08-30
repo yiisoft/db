@@ -7,7 +7,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\AbstractCompare;
 use Yiisoft\Db\QueryBuilder\Condition\Equals;

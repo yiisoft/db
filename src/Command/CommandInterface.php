@@ -19,7 +19,7 @@ use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;

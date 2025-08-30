@@ -9,7 +9,7 @@ use DateTimeZone;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Expression\Value\Builder\DateTimeValueBuilder;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Value\DateTimeValue;

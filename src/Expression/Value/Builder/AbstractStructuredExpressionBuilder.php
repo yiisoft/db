@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expression\Builder;
+namespace Yiisoft\Db\Expression\Value\Builder;
 
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Expression\StructuredExpression;
+use Yiisoft\Db\Expression\Value\StructuredExpression;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;

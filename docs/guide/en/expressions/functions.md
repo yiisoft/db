@@ -3,8 +3,8 @@
 The library provides several classes to represent SQL functions as expressions.
 
 > [!WARNING]
-> The functions do not quote string values or column names, use [Value](../../../../src/Expression/Value.php)
-> expression for string values and [ColumnName](../../../../src/Expression/ColumnName.php) expression for column names
+> The functions do not quote string values or column names, use [Value](../../../../src/Expression/Value/Value.php)
+> expression for string values and [ColumnName](../../../../src/Expression/Value/ColumnName.php) expression for column names
 > or quote the values directly.
 > 
 > For example, `new Longest(new Value('short'), new ColumnName('column'), "'longest'")`

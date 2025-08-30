@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
 use InvalidArgumentException;
-use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;

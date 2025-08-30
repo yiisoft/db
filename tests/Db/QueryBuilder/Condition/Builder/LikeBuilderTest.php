@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition\Builder;
 
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\QueryBuilder\Condition\Builder\LikeBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\Like;

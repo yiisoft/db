@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Expression;
+namespace Yiisoft\Db\Tests\Db\Expression\Value;
 
 use ArrayIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Expression\JsonExpression;
+use Yiisoft\Db\Expression\Value\JsonExpression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Tests\Support\TestTrait;

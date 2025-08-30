@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Schema\Column;
 
 use Yiisoft\Db\Constraint\ForeignKey;
-use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Expression\Value\ArrayExpression;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\CollatableColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;

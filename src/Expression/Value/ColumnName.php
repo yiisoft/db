@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expression;
+namespace Yiisoft\Db\Expression\Value;
+
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * Represents a column name expression for SQL queries.

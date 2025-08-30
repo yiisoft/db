@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expression\Builder;
+namespace Yiisoft\Db\Expression;
 
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function array_merge;

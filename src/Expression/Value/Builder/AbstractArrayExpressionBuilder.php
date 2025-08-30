@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expression\Builder;
+namespace Yiisoft\Db\Expression\Value\Builder;
 
-use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\Value\ArrayExpression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;

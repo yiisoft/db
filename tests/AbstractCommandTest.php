@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Throwable;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;

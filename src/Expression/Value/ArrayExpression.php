@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expression;
+namespace Yiisoft\Db\Expression\Value;
 
 use Traversable;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\ColumnDefinitionBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
