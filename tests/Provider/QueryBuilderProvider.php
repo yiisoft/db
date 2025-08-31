@@ -1186,13 +1186,13 @@ class QueryBuilderProvider
     public static function selectScalar(): array
     {
         return [
-            [1, 'SELECT 1'],
-            ['custom_string', static::replaceQuotes('SELECT [[custom_string]]')],
-            [true, 'SELECT TRUE'],
-            [false, 'SELECT FALSE'],
-            [12.34, 'SELECT 12.34'],
-            [[1, true, 12.34], 'SELECT 1, TRUE, 12.34'],
-            [
+            'int' => [1, 'SELECT 1'],
+            'string' => ['custom_string', static::replaceQuotes('SELECT [[custom_string]]')],
+            'true' => [true, 'SELECT TRUE'],
+            'false' => [false, 'SELECT FALSE'],
+            'float' => [12.34, 'SELECT 12.34'],
+            'array' => [[1, true, 12.34], 'SELECT 1, TRUE, 12.34'],
+            'string keys' => [
                 ['a' => 1, 'b' => true, 12.34],
                 static::replaceQuotes('SELECT 1 AS [[a]], TRUE AS [[b]], 12.34'),
             ],
@@ -2031,10 +2031,10 @@ class QueryBuilderProvider
                     ),
                 static::replaceQuotes(
                     <<<SQL
-                    CASE WHEN [[column_name]] = 1 THEN :qp0 WHEN [[column_name]] = 2 THEN (SELECT :pv1) END
+                    CASE WHEN [[column_name]] = 1 THEN :qp0 WHEN [[column_name]] = 2 THEN (SELECT :qp1) END
                     SQL
                 ),
-                [':qp0' => $paramA, ':pv1' => $paramB],
+                [':qp0' => $paramA, ':qp1' => $paramB],
                 'b',
             ],
         ];

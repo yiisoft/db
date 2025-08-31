@@ -2158,10 +2158,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $qb->build($query);
 
-        if ($db->getDriverName() === 'oci') {
-            $expected .= ' FROM DUAL';
-        }
-
         $this->assertSame($expected, $sql);
         $this->assertEmpty($params);
     }

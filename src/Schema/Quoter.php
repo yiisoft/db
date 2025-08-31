@@ -10,12 +10,10 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use function addcslashes;
 use function array_map;
 use function array_slice;
-use function count;
 use function explode;
 use function implode;
 use function is_string;
 use function preg_match;
-use function preg_replace;
 use function preg_replace_callback;
 use function str_contains;
 use function str_replace;
@@ -117,22 +115,21 @@ class Quoter implements QuoterInterface
     {
         $name = str_replace(["'", '"', '`', '[', ']'], '', $name);
 
-        if ($name && !preg_match('/^{{.*}}$/', $name)) {
-            return '{{' . $name . '}}';
+        if (empty($name) || str_starts_with($name, '{{')) {
+            return $name;
         }
 
-        return $name;
+        return '{{' . $name . '}}';
     }
 
     public function ensureColumnName(string $name): string
     {
-        if (strrpos($name, '.') !== false) {
-            $parts = explode('.', $name);
-            $name = $parts[count($parts) - 1];
+        if (($pos = strrpos($name, '.')) !== false) {
+            $name = substr($name, $pos + 1);
         }
 
         /** @var string */
-        return preg_replace('|^\[\[([\w\-. ]+)]]$|', '\1', $name);
+        return preg_replace('|^\[\[([\w\- ]+)]]$|', '\1', $name);
     }
 
     public function quoteColumnName(string $name): string
@@ -157,13 +154,17 @@ class Quoter implements QuoterInterface
 
     public function quoteSimpleColumnName(string $name): string
     {
+        if ($name === '' || $name === '*') {
+            return $name;
+        }
+
         if (is_string($this->columnQuoteCharacter)) {
             $startingCharacter = $endingCharacter = $this->columnQuoteCharacter;
         } else {
             [$startingCharacter, $endingCharacter] = $this->columnQuoteCharacter;
         }
 
-        return $name === '*' || str_starts_with($name, $startingCharacter)
+        return $name[0] === $startingCharacter
             ? $name
             : $startingCharacter . $name . $endingCharacter;
     }
@@ -176,7 +177,7 @@ class Quoter implements QuoterInterface
             [$startingCharacter, $endingCharacter] = $this->tableQuoteCharacter;
         }
 
-        return str_starts_with($name, $startingCharacter)
+        return ($name[0] ?? '') === $startingCharacter
             ? $name
             : $startingCharacter . $name . $endingCharacter;
     }
@@ -185,13 +186,13 @@ class Quoter implements QuoterInterface
     {
         /** @var string */
         return preg_replace_callback(
-            '/({{(%?[\w\-. ]+)%?}}|\\[\\[([\w\-. ]+)]])/',
+            '/{{(%?[\w\-. ]+)%?}}|\\[\\[([\w\-. ]+)]]/',
             function ($matches) {
-                if (isset($matches[3])) {
-                    return $this->quoteColumnName($matches[3]);
+                if (isset($matches[2])) {
+                    return $this->quoteSimpleColumnName($matches[2]);
                 }
 
-                return str_replace('%', $this->tablePrefix, $this->quoteTableName($matches[2]));
+                return str_replace('%', $this->tablePrefix, $this->quoteSimpleTableName($matches[1]));
             },
             $sql
         );
@@ -199,11 +200,7 @@ class Quoter implements QuoterInterface
 
     public function quoteTableName(string $name): string
     {
-        if (str_starts_with($name, '(')) {
-            return $name;
-        }
-
-        if (str_contains($name, '{{')) {
+        if ($name[0] === '(' || str_contains($name, '{{')) {
             return $name;
         }
 
@@ -213,8 +210,8 @@ class Quoter implements QuoterInterface
 
         $parts = $this->getTableNameParts($name);
 
-        foreach ($parts as $i => $part) {
-            $parts[$i] = $this->quoteSimpleTableName($part);
+        foreach ($parts as &$part) {
+            $part = $this->quoteSimpleTableName($part);
         }
 
         return implode('.', $parts);
@@ -232,26 +229,14 @@ class Quoter implements QuoterInterface
 
     public function unquoteSimpleColumnName(string $name): string
     {
-        if (is_string($this->columnQuoteCharacter)) {
-            $startingCharacter = $this->columnQuoteCharacter;
-        } else {
-            $startingCharacter = $this->columnQuoteCharacter[0];
-        }
-
-        return !str_starts_with($name, $startingCharacter)
+        return ($name[0] ?? '') !== $this->columnQuoteCharacter[0]
             ? $name
             : substr($name, 1, -1);
     }
 
     public function unquoteSimpleTableName(string $name): string
     {
-        if (is_string($this->tableQuoteCharacter)) {
-            $startingCharacter = $this->tableQuoteCharacter;
-        } else {
-            $startingCharacter = $this->tableQuoteCharacter[0];
-        }
-
-        return !str_starts_with($name, $startingCharacter)
+        return ($name[0] ?? '') !== $this->tableQuoteCharacter[0]
             ? $name
             : substr($name, 1, -1);
     }
