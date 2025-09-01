@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Expression\Value\Builder;
 
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Expression\Value\ArrayExpression;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Schema\Data\LazyArray;
@@ -20,25 +20,25 @@ use function json_encode;
 use const JSON_THROW_ON_ERROR;
 
 /**
- * Default expression builder for {@see ArrayExpression}. Builds an expression as a JSON.
+ * Default expression builder for {@see ArrayValue}. Builds an expression as a JSON.
  */
-final class ArrayExpressionBuilder extends AbstractArrayExpressionBuilder
+final class ArrayValueBuilder extends AbstractArrayValueBuilder
 {
-    protected function buildStringValue(string $value, ArrayExpression $expression, array &$params): string
+    protected function buildStringValue(string $value, ArrayValue $expression, array &$params): string
     {
         $param = new Param($value, DataType::STRING);
 
         return $this->queryBuilder->bindParam($param, $params);
     }
 
-    protected function buildSubquery(QueryInterface $query, ArrayExpression $expression, array &$params): string
+    protected function buildSubquery(QueryInterface $query, ArrayValue $expression, array &$params): string
     {
         [$sql, $params] = $this->queryBuilder->build($query, $params);
 
         return "($sql)";
     }
 
-    protected function buildValue(iterable $value, ArrayExpression $expression, array &$params): string
+    protected function buildValue(iterable $value, ArrayValue $expression, array &$params): string
     {
         if (!is_array($value)) {
             $value = iterator_to_array($value, false);

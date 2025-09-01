@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Expression\Value\ArrayExpression;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
@@ -80,6 +80,6 @@ abstract class AbstractArrayColumn extends AbstractColumn
             return $value;
         }
 
-        return new ArrayExpression($value, $this);
+        return new ArrayValue($value, $this);
     }
 }

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Expression\Builder;
+namespace Yiisoft\Db\Tests\Db\Expression\Value\Builder;
 
 use ArrayIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Expression\Value\ArrayExpression;
-use Yiisoft\Db\Expression\Value\Builder\ArrayExpressionBuilder;
+use Yiisoft\Db\Expression\Value\ArrayValue;
+use Yiisoft\Db\Expression\Value\Builder\ArrayValueBuilder;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
@@ -20,7 +20,7 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 /**
  * @group db
  */
-final class ArrayExpressionBuilderTest extends TestCase
+final class ArrayValueBuilderTest extends TestCase
 {
     use TestTrait;
 
@@ -44,8 +44,8 @@ final class ArrayExpressionBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $params = [];
-        $builder = new ArrayExpressionBuilder($qb);
-        $expression = new ArrayExpression($value);
+        $builder = new ArrayValueBuilder($qb);
+        $expression = new ArrayValue($value);
 
         $this->assertSame(':qp0', $builder->build($expression, $params));
         $this->assertEquals([':qp0' => new Param($expected, DataType::STRING)], $params);
@@ -57,8 +57,8 @@ final class ArrayExpressionBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $params = [];
-        $builder = new ArrayExpressionBuilder($qb);
-        $expression = new ArrayExpression(null);
+        $builder = new ArrayValueBuilder($qb);
+        $expression = new ArrayValue(null);
 
         $this->assertSame('NULL', $builder->build($expression, $params));
         $this->assertSame([], $params);
@@ -70,8 +70,8 @@ final class ArrayExpressionBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $params = [];
-        $builder = new ArrayExpressionBuilder($qb);
-        $expression = new ArrayExpression((new Query($db))->select('json_field')->from('json_table'));
+        $builder = new ArrayValueBuilder($qb);
+        $expression = new ArrayValue((new Query($db))->select('json_field')->from('json_table'));
 
         $this->assertSame('(SELECT [json_field] FROM [json_table])', $builder->build($expression, $params));
         $this->assertSame([], $params);

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Schema\Column;
 
 use Yiisoft\Db\Constraint\ForeignKey;
-use Yiisoft\Db\Expression\Value\ArrayExpression;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\CollatableColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
@@ -337,9 +337,9 @@ final class ColumnTest extends AbstractColumnTest
             $arrayCol->dimension($dimension);
             $dbValue = $arrayCol->dbTypecast($value);
 
-            $this->assertInstanceOf(ArrayExpression::class, $dbValue);
-            $this->assertSame($arrayCol, $dbValue->getType());
-            $this->assertEquals($value, $dbValue->getValue());
+            $this->assertInstanceOf(ArrayValue::class, $dbValue);
+            $this->assertSame($arrayCol, $dbValue->type);
+            $this->assertEquals($value, $dbValue->value);
         }
     }
 
