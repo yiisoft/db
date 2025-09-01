@@ -30,8 +30,8 @@ use Yiisoft\Db\Expression\Function\Longest;
 use Yiisoft\Db\Expression\Function\Shortest;
 use Yiisoft\Db\Expression\Value\JsonExpression;
 use Yiisoft\Db\Expression\Value\Builder\JsonExpressionBuilder;
-use Yiisoft\Db\Expression\Statement\CaseExpression;
-use Yiisoft\Db\Expression\Statement\Builder\CaseExpressionBuilder;
+use Yiisoft\Db\Expression\Statement\CaseX;
+use Yiisoft\Db\Expression\Statement\Builder\CaseXBuilder;
 use Yiisoft\Db\Expression\Value\StructuredExpression;
 use Yiisoft\Db\Expression\Value\Builder\StructuredExpressionBuilder;
 use Yiisoft\Db\Expression\Value\Value;
@@ -583,7 +583,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             JsonExpression::class => JsonExpressionBuilder::class,
             ArrayExpression::class => ArrayExpressionBuilder::class,
             StructuredExpression::class => StructuredExpressionBuilder::class,
-            CaseExpression::class => CaseExpressionBuilder::class,
+            CaseX::class => CaseXBuilder::class,
             ColumnName::class => ColumnNameBuilder::class,
             Value::class => ValueBuilder::class,
             DateTimeValue::class => DateTimeValueBuilder::class,
