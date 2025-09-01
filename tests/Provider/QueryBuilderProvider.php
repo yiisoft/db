@@ -8,6 +8,7 @@ use ArrayIterator;
 use DateTimeImmutable;
 use DateTimeZone;
 use Yiisoft\Db\Constant\DataType;
+use Yiisoft\Db\Expression\Statement\When;
 use Yiisoft\Db\Expression\Value\ArrayExpression;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Value\Param;
@@ -16,7 +17,7 @@ use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKey;
-use Yiisoft\Db\Expression\Statement\CaseExpression;
+use Yiisoft\Db\Expression\Statement\CaseX;
 use Yiisoft\Db\Expression\Value\ColumnName;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\Function\Greatest;
@@ -1904,32 +1905,38 @@ class QueryBuilderProvider
         ];
     }
 
-    public static function caseExpressionBuilder(): array
+    public static function caseXBuilder(): array
     {
         return [
             'with case expression' => [
-                (new CaseExpression('(1 + 2)'))
-                    ->addWhen(1, 1)
-                    ->addWhen(2, new Expression('2'))
-                    ->addWhen(3, '(2 + 1)')
-                    ->else($param = new Param(4, DataType::INTEGER)),
+                new CaseX(
+                    '(1 + 2)',
+                    when1: new When(1, 1),
+                    when2: new When(2, new Expression('2')),
+                    when3: new When(3, '(2 + 1)'),
+                    else: $param = new Param(4, DataType::INTEGER),
+                ),
                 'CASE (1 + 2) WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN (2 + 1) ELSE :qp0 END',
                 [':qp0' => $param],
                 3,
             ],
             'without case expression' => [
-                (new CaseExpression())
-                    ->addWhen(['=', 'column_name', 1], $paramA = new Param('a', DataType::STRING))
-                    ->addWhen(
+                new CaseX(
+                    when1: new When(['=', 'column_name', 1], new Value('a')),
+                    when2: new When(
                         static::replaceQuotes('[[column_name]] = 2'),
-                        (new Query(self::getDb()))->select($paramB = new Param('b', DataType::STRING))
+                        (new Query(self::getDb()))->select($param = new Param('b', DataType::STRING))
                     ),
+                ),
                 static::replaceQuotes(
                     <<<SQL
                     CASE WHEN [[column_name]] = 1 THEN :qp0 WHEN [[column_name]] = 2 THEN (SELECT :qp1) END
                     SQL
                 ),
-                [':qp0' => $paramA, ':qp1' => $paramB],
+                [
+                    ':qp0' => new Param('a', DataType::STRING),
+                    ':qp1' => $param,
+                ],
                 'b',
             ],
         ];
