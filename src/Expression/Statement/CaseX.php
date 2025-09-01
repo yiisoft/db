@@ -81,7 +81,7 @@ final class CaseX implements ExpressionInterface
      * If not provided, the `CASE` expression will be a WHEN-THEN structure without a specific case value.
      * @param ColumnInterface|string $valueType Optional data type of the CASE expression which can be used in some DBMS
      * to specify the expected type (for example in PostgreSQL).
-     * @param When|mixed ...$args List of `WHEN` conditions and their corresponding results represented
+     * @param mixed|When ...$args List of `WHEN` conditions and their corresponding results represented
      * as {@see When} instances or `ELSE` value in the `CASE` expression.
      */
     public function __construct(
