@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression\Value\Builder;
 
-use Yiisoft\Db\Exception\Exception;
-use InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Value\StructuredValue;
@@ -68,9 +64,9 @@ abstract class AbstractStructuredValueBuilder implements ExpressionBuilderInterf
      * @return string The SQL expression representing the structured value.
      */
     abstract protected function buildValue(
-        array|object    $value,
+        array|object $value,
         StructuredValue $expression,
-        array           &$params
+        array &$params
     ): string;
 
     /**

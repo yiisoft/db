@@ -42,8 +42,8 @@ abstract class AbstractArrayValueBuilder implements ExpressionBuilderInterface
      */
     abstract protected function buildSubquery(
         QueryInterface $query,
-        ArrayValue     $expression,
-        array          &$params
+        ArrayValue $expression,
+        array &$params
     ): string;
 
     /**
