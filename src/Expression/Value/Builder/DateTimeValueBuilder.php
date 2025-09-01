@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Expression\Value\Builder;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;

@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Length;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 final class LengthTest extends TestCase
