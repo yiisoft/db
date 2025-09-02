@@ -9,7 +9,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\Statement\When;
-use Yiisoft\Db\Expression\Value\ArrayExpression;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\ColumnType;
@@ -24,7 +24,7 @@ use Yiisoft\Db\Expression\Function\Greatest;
 use Yiisoft\Db\Expression\Function\Least;
 use Yiisoft\Db\Expression\Function\Longest;
 use Yiisoft\Db\Expression\Function\Shortest;
-use Yiisoft\Db\Expression\Value\JsonExpression;
+use Yiisoft\Db\Expression\Value\JsonValue;
 use Yiisoft\Db\Expression\Value\Value;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Query\Query;
@@ -1162,7 +1162,7 @@ class QueryBuilderProvider
             'json expression' => [
                 'json_type',
                 [
-                    'json_col' => new JsonExpression(['c' => 1, 'd' => 2]),
+                    'json_col' => new JsonValue(['c' => 1, 'd' => 2]),
                 ],
                 [],
                 static::replaceQuotes(
@@ -1621,8 +1621,8 @@ class QueryBuilderProvider
             [new ArrayIterator([0, 1, 2, 7]), 1],
             'null' => [[null], 1],
             'expression' => [new Expression("'[0,1,2,7]'"), 1],
-            'json expression' => [new JsonExpression([0, 1, 2, 7]), 1],
-            'query expression' => [(new Query(static::getDb()))->select(new JsonExpression([0, 1, 2, 7])), 1],
+            'json expression' => [new JsonValue([0, 1, 2, 7]), 1],
+            'query expression' => [(new Query(static::getDb()))->select(new JsonValue([0, 1, 2, 7])), 1],
         ];
     }
 
@@ -2082,7 +2082,7 @@ class QueryBuilderProvider
         return [[
             [
                 'id' => 1,
-                'array_col' => new ArrayExpression([1, 2, 3]),
+                'array_col' => new ArrayValue([1, 2, 3]),
                 'greatest_col' => 10,
                 'least_col' => 10,
                 'longest_col' => 'longest',
@@ -2090,7 +2090,7 @@ class QueryBuilderProvider
             ],
             [
                 'id' => 1,
-                'array_col' => new ArrayExpression([3, 4, 5]),
+                'array_col' => new ArrayValue([3, 4, 5]),
                 'greatest_col' => 5,
                 'least_col' => 5,
                 'longest_col' => 'short',

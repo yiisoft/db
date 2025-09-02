@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Expression\Value\JsonExpression;
+use Yiisoft\Db\Expression\Value\JsonValue;
 
 /**
  * Represents an abstract JSON column.
@@ -24,6 +24,6 @@ abstract class AbstractJsonColumn extends AbstractColumn
             return $value;
         }
 
-        return new JsonExpression($value, $this->getDbType());
+        return new JsonValue($value, $this->getDbType());
     }
 }

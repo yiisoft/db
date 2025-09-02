@@ -144,6 +144,8 @@
 - Enh #1049: Refactor `AbstractDQLQueryBuilder::buildSelect()` to fix possible bugs (@Tigrov)
 - Enh #1051: Refactor `Quoter` class (@Tigrov)
 - Chg #1052: Rearrange expression namespaces (@Tigrov)
+- Chg #1054: Rename `ArrayExpression` to `ArrayValue`, `JsonExpression` to `JsonValue`,
+  `StructuredExpression` to `StructuredValue` (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

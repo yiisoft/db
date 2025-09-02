@@ -10,8 +10,8 @@ use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Value\ArrayExpression;
-use Yiisoft\Db\Expression\Value\Builder\ArrayExpressionBuilder;
+use Yiisoft\Db\Expression\Value\ArrayValue;
+use Yiisoft\Db\Expression\Value\Builder\ArrayValueBuilder;
 use Yiisoft\Db\Expression\Value\ColumnName;
 use Yiisoft\Db\Expression\Value\Builder\ColumnNameBuilder;
 use Yiisoft\Db\Expression\Expression;
@@ -28,12 +28,12 @@ use Yiisoft\Db\Expression\Function\Least;
 use Yiisoft\Db\Expression\Function\Length;
 use Yiisoft\Db\Expression\Function\Longest;
 use Yiisoft\Db\Expression\Function\Shortest;
-use Yiisoft\Db\Expression\Value\JsonExpression;
-use Yiisoft\Db\Expression\Value\Builder\JsonExpressionBuilder;
+use Yiisoft\Db\Expression\Value\JsonValue;
+use Yiisoft\Db\Expression\Value\Builder\JsonValueBuilder;
 use Yiisoft\Db\Expression\Statement\CaseX;
 use Yiisoft\Db\Expression\Statement\Builder\CaseXBuilder;
-use Yiisoft\Db\Expression\Value\StructuredExpression;
-use Yiisoft\Db\Expression\Value\Builder\StructuredExpressionBuilder;
+use Yiisoft\Db\Expression\Value\StructuredValue;
+use Yiisoft\Db\Expression\Value\Builder\StructuredValueBuilder;
 use Yiisoft\Db\Expression\Value\Value;
 use Yiisoft\Db\Expression\Value\Builder\ValueBuilder;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
@@ -580,9 +580,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Condition\All::class => Condition\Builder\AllBuilder::class,
             Condition\None::class => Condition\Builder\NoneBuilder::class,
             Simple::class => Condition\Builder\SimpleBuilder::class,
-            JsonExpression::class => JsonExpressionBuilder::class,
-            ArrayExpression::class => ArrayExpressionBuilder::class,
-            StructuredExpression::class => StructuredExpressionBuilder::class,
+            JsonValue::class => JsonValueBuilder::class,
+            ArrayValue::class => ArrayValueBuilder::class,
+            StructuredValue::class => StructuredValueBuilder::class,
             CaseX::class => CaseXBuilder::class,
             ColumnName::class => ColumnNameBuilder::class,
             Value::class => ValueBuilder::class,
