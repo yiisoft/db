@@ -13,6 +13,7 @@ The following expression classes are available:
 - [Value](#value)
 
 ## ArrayValue
+
 The [ArrayValue](../../../../src/Expression/Value/ArrayValue.php) expression allows to represent a PHP array as an SQL
 array. In PostgreSQL, the array is represented using the native `ARRAY[]` syntax. In other databases, it is represented
 as a JSON-encoded string.
