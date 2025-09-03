@@ -139,11 +139,11 @@ Operand 1 should be the column name, and operand 2 and 3 should be the starting 
 
 For example, `['between', 'id', 1,10]` will generate `id BETWEEN 1 AND 10`.
 
-You can also use `Yiisoft\Db\Expression\ColumnName` and `Yiisoft\Db\Expression\Value` expressions:
+You can also use `Yiisoft\Db\Expression\Value\ColumnName` and `Yiisoft\Db\Expression\Value\Value` expressions:
 
 ```php
-use Yiisoft\Db\Expression\ColumnName;
-use Yiisoft\Db\Expression\Value;
+use Yiisoft\Db\Expression\Value\ColumnName;
+use Yiisoft\Db\Expression\Value\Value;
 
 ['between', new Value('2025-08-11'), new ColumnName('start_date'), new ColumnName('end_date')]
 ```

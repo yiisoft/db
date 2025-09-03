@@ -103,7 +103,7 @@
 - New #984: Add `createQuery()` and `select()` methods to `ConnectionInterface` (@Tigrov)
 - Chg #985: Rename `insertWithReturningPks()` to `insertReturningPks()` in `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
 - Enh #992: Add optional type casting to `DataReaderInterface` using columns (@Tigrov)
-- New #988: Add `CaseExpression` and `CaseExpressionBuilder` to build `CASE-WHEN-THEN-ELSE` SQL expressions (@Tigrov)
+- New #988, #1053: Add `CaseExpression` and `CaseExpressionBuilder` to build `CASE-WHEN-THEN-ELSE` SQL expressions (@Tigrov)
 - Enh #991: Improve types in `ConnectionInterface::transaction()` (@kikara)
 - Chg #998: Add `yiisoft/db-implementation` virtual package as dependency (@vjik)
 - Chg #999: Remove `requireTransaction()` method and `$isolationLevel` property from `AbstractCommand` (@vjik)
@@ -147,6 +147,9 @@
   methods (@Tigrov)
 - Enh #1049: Refactor `AbstractDQLQueryBuilder::buildSelect()` to fix possible bugs (@Tigrov)
 - Enh #1051: Refactor `Quoter` class (@Tigrov)
+- Chg #1052: Rearrange expression namespaces (@Tigrov)
+- Chg #1054: Rename `ArrayExpression` to `ArrayValue`, `JsonExpression` to `JsonValue`,
+  `StructuredExpression` to `StructuredValue` (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

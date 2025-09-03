@@ -10,16 +10,16 @@ use JsonSerializable;
 use Stringable;
 use Traversable;
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Constant\GettypeResult;
 use InvalidArgumentException;
-use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Expression\JsonExpression;
+use Yiisoft\Db\Expression\Value\JsonValue;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
@@ -271,7 +271,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         /** @psalm-suppress MixedArgument */
         return match (gettype($value)) {
             GettypeResult::ARRAY => $this->buildExpression(
-                array_is_list($value) ? new ArrayExpression($value) : new JsonExpression($value),
+                array_is_list($value) ? new ArrayValue($value) : new JsonValue($value),
                 $params,
             ),
             GettypeResult::BOOLEAN => $value ? static::TRUE_VALUE : static::FALSE_VALUE,
@@ -286,9 +286,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                 $value instanceof BackedEnum => is_string($value->value)
                     ? $this->bindParam(new Param($value->value, DataType::STRING), $params)
                     : (string) $value->value,
-                $value instanceof Iterator && $value->key() === 0 => $this->buildExpression(new ArrayExpression($value), $params),
-                $value instanceof Traversable => $this->buildExpression(new JsonExpression($value), $params),
-                $value instanceof JsonSerializable => $this->buildExpression(new JsonExpression($value), $params),
+                $value instanceof Iterator && $value->key() === 0 => $this->buildExpression(new ArrayValue($value), $params),
+                $value instanceof Traversable => $this->buildExpression(new JsonValue($value), $params),
+                $value instanceof JsonSerializable => $this->buildExpression(new JsonValue($value), $params),
                 default => $this->bindParam($value, $params),
             },
             GettypeResult::RESOURCE => $this->bindParam(new Param($value, DataType::LOB), $params),
@@ -462,8 +462,8 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             GettypeResult::ARRAY => $this->replacePlaceholders(
                 $this->buildExpression(
                     array_is_list($value)
-                        ? new ArrayExpression($value)
-                        : new JsonExpression($value),
+                        ? new ArrayValue($value)
+                        : new JsonValue($value),
                     $params
                 ),
                 array_map($this->prepareValue(...), $params),
@@ -483,12 +483,12 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                     ? $this->db->getQuoter()->quoteValue($value->value)
                     : (string) $value->value,
                 $value instanceof Iterator && $value->key() === 0 => $this->replacePlaceholders(
-                    $this->buildExpression(new ArrayExpression($value), $params),
+                    $this->buildExpression(new ArrayValue($value), $params),
                     array_map($this->prepareValue(...), $params),
                 ),
                 $value instanceof Traversable,
                 $value instanceof JsonSerializable => $this->replacePlaceholders(
-                    $this->buildExpression(new JsonExpression($value), $params),
+                    $this->buildExpression(new JsonValue($value), $params),
                     array_map($this->prepareValue(...), $params),
                 ),
                 default => $this->db->getQuoter()->quoteValue((string) $value),

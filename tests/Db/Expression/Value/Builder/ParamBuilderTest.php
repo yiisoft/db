@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Expression\Builder;
+namespace Yiisoft\Db\Tests\Db\Expression\Value\Builder;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Expression\Builder\ParamBuilder;
+use Yiisoft\Db\Expression\Value\Builder\ParamBuilder;
 use Yiisoft\Db\Expression\Expression;
 
 /**

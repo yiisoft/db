@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Expression;
+namespace Yiisoft\Db\Tests\Db\Expression\Value;
 
 use ArrayIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Expression\StructuredExpression;
+use Yiisoft\Db\Expression\Value\StructuredValue;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\AbstractStructuredColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
@@ -17,7 +17,7 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 /**
  * @group db
  */
-final class StructuredExpressionTest extends TestCase
+final class StructuredValueTest extends TestCase
 {
     use TestTrait;
 
@@ -43,9 +43,9 @@ final class StructuredExpressionTest extends TestCase
         array|object|string $value,
         AbstractStructuredColumn|string|null $type = null
     ): void {
-        $expression = new StructuredExpression($value, $type);
+        $expression = new StructuredValue($value, $type);
 
-        $this->assertSame($value, $expression->getValue());
-        $this->assertSame($type, $expression->getType());
+        $this->assertSame($value, $expression->value);
+        $this->assertSame($type, $expression->type);
     }
 }

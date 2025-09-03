@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expression\Builder;
+namespace Yiisoft\Db\Expression\Statement\Builder;
 
-use InvalidArgumentException;
 use Yiisoft\Db\Constant\GettypeResult;
-use Yiisoft\Db\Expression\CaseExpression;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\Statement\CaseX;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
@@ -14,47 +14,39 @@ use function gettype;
 use function is_string;
 
 /**
- * Builds expressions for {@see CaseExpression}.
+ * Builds expressions for {@see CaseX}.
  *
- * @implements ExpressionBuilderInterface<CaseExpression>
+ * @implements ExpressionBuilderInterface<CaseX>
  */
-class CaseExpressionBuilder implements ExpressionBuilderInterface
+class CaseXBuilder implements ExpressionBuilderInterface
 {
     public function __construct(protected readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * Builds an SQL CASE expression from the given {@see CaseExpression} object.
+     * Builds an SQL `CASE` expression from the given {@see CaseX} object.
      *
-     * @param CaseExpression $expression The CASE expression to build.
+     * @param CaseX $expression The `CASE` expression to build.
      * @param array $params The parameters to be bound to the query.
      *
-     * @return string SQL CASE expression.
+     * @return string SQL `CASE` expression.
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $whenClauses = $expression->getWhen();
-
-        if (empty($whenClauses)) {
-            throw new InvalidArgumentException('The CASE expression must have at least one WHEN clause.');
-        }
-
         $sql = 'CASE';
 
-        $case = $expression->getCase();
-
-        if ($case !== null) {
-            $sql .= ' ' . $this->buildCondition($case, $params);
+        if ($expression->value !== null) {
+            $sql .= ' ' . $this->buildCondition($expression->value, $params);
         }
 
-        foreach ($whenClauses as $when) {
+        foreach ($expression->when as $when) {
             $sql .= ' WHEN ' . $this->buildCondition($when->condition, $params);
             $sql .= ' THEN ' . $this->buildResult($when->result, $params);
         }
 
         if ($expression->hasElse()) {
-            $sql .= ' ELSE ' . $this->buildResult($expression->getElse(), $params);
+            $sql .= ' ELSE ' . $this->buildResult($expression->else, $params);
         }
 
         return $sql . ' END';
@@ -79,7 +71,7 @@ class CaseExpressionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Builds the result part of the CASE expression based on its type.
+     * Builds the result part of the `CASE` expression based on its type.
      *
      * @return string The SQL result string.
      */

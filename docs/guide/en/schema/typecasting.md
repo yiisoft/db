@@ -322,10 +322,10 @@ final class MyStructuredColumn extends AbstractStructuredColumn
         }
         
         if ($this->getDbType() === 'file_with_name' && $value instanceof FileWithName) {
-            return new StructuredExpression([$value->getPath(), $value->getName()], $this);
+            return new StructuredValue([$value->getPath(), $value->getName()], $this);
         }
 
-        return new StructuredExpression($value, $this);
+        return new StructuredValue($value, $this);
     }
 
     /**

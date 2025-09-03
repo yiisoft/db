@@ -2,14 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expression\Builder;
+namespace Yiisoft\Db\Expression\Value\Builder;
 
-use Yiisoft\Db\Exception\Exception;
-use InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Expression\StructuredExpression;
+use Yiisoft\Db\Expression\Value\StructuredValue;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -21,24 +18,24 @@ use function array_keys;
 use function is_string;
 
 /**
- * Abstract expression builder for {@see StructuredExpression}.
+ * Abstract expression builder for {@see StructuredValue}.
  *
- * @implements ExpressionBuilderInterface<StructuredExpression>
+ * @implements ExpressionBuilderInterface<StructuredValue>
  */
-abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderInterface
+abstract class AbstractStructuredValueBuilder implements ExpressionBuilderInterface
 {
     /**
      * Builds an SQL expression for a string value.
      *
      * @param string $value The valid SQL string representation of the structured value.
-     * @param StructuredExpression $expression The structured expression.
+     * @param StructuredValue $expression The structured expression.
      * @param array $params The binding parameters.
      *
      * @return string The SQL expression representing the structured value.
      */
     abstract protected function buildStringValue(
         string $value,
-        StructuredExpression $expression,
+        StructuredValue $expression,
         array &$params
     ): string;
 
@@ -46,14 +43,14 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
      * Build a structured expression from a sub-query object.
      *
      * @param QueryInterface $query The sub-query object.
-     * @param StructuredExpression $expression The structured expression.
+     * @param StructuredValue $expression The structured expression.
      * @param array $params The binding parameters.
      *
      * @return string The sub-query SQL expression representing a structured value.
      */
     abstract protected function buildSubquery(
         QueryInterface $query,
-        StructuredExpression $expression,
+        StructuredValue $expression,
         array &$params
     ): string;
 
@@ -61,14 +58,14 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
      * Builds an SQL expression for a structured value.
      *
      * @param array|object $value The structured value.
-     * @param StructuredExpression $expression The structured expression.
+     * @param StructuredValue $expression The structured expression.
      * @param array $params The binding parameters.
      *
      * @return string The SQL expression representing the structured value.
      */
     abstract protected function buildValue(
         array|object $value,
-        StructuredExpression $expression,
+        StructuredValue $expression,
         array &$params
     ): string;
 
@@ -88,19 +85,14 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
     /**
      * The method builds the raw SQL from the `$expression` that won't be additionally escaped or quoted.
      *
-     * @param StructuredExpression $expression The expression to build.
+     * @param StructuredValue $expression The expression to build.
      * @param array $params The binding parameters.
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
      *
      * @return string The raw SQL that won't be additionally escaped or quoted.
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $value = $expression->getValue();
+        $value = $expression->value;
 
         if ($value === null) {
             return 'NULL';
@@ -132,13 +124,13 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
      * If the structured type columns are not specified it will only convert the object to an array.
      *
      * @param array|object $value The structured type value.
-     * @param StructuredExpression $expression The structured expression.
+     * @param StructuredValue $expression The structured expression.
      */
-    protected function prepareValues(array|object $value, StructuredExpression $expression): array
+    protected function prepareValues(array|object $value, StructuredValue $expression): array
     {
         $value = DbArrayHelper::toArray($value);
 
-        $type = $expression->getType();
+        $type = $expression->type;
         $columns = $type instanceof AbstractStructuredColumn ? $type->getColumns() : [];
 
         if (empty($columns)) {

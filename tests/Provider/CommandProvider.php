@@ -8,12 +8,12 @@ use ArrayIterator;
 use IteratorAggregate;
 use Traversable;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\JsonExpression;
+use Yiisoft\Db\Expression\Value\JsonValue;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Support\Stringable;
@@ -309,7 +309,7 @@ class CommandProvider
                 '{{%type}}',
                 /**
                  * This example is completely useless. This feature of batchInsert is intended to be used with complex
-                 * expression objects, such as JsonExpression.
+                 * expression objects, such as JsonValue.
                  */
                 'values' => [[new Expression(':exp1', [':exp1' => 42]), 1, 'test', false]],
                 ['int_col', 'float_col', 'char_col', 'bool_col'],
@@ -449,7 +449,7 @@ class CommandProvider
                 '{{%type}}',
                 [
                     [1, 'a', 0.0, true, ['a' => 1, 'b' => true, 'c' => [1, 2, 3]]],
-                    [2, 'b', -1.0, false, new JsonExpression(['d' => 'e', 'f' => false, 'g' => [4, 5, null]])],
+                    [2, 'b', -1.0, false, new JsonValue(['d' => 'e', 'f' => false, 'g' => [4, 5, null]])],
                 ],
                 ['int_col', 'char_col', 'float_col', 'bool_col', 'json_col'],
                 'expected' => static::replaceQuotes(

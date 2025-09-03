@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
-use Yiisoft\Db\Expression\Param;
-use Yiisoft\Db\Expression\Builder\ParamBuilder;
+use Yiisoft\Db\Expression\Value\Param;
+use Yiisoft\Db\Expression\Value\Builder\ParamBuilder;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\ArrayExpression;
-use Yiisoft\Db\Expression\Builder\ArrayExpressionBuilder;
-use Yiisoft\Db\Expression\ColumnName;
-use Yiisoft\Db\Expression\Builder\ColumnNameBuilder;
+use Yiisoft\Db\Expression\Value\ArrayValue;
+use Yiisoft\Db\Expression\Value\Builder\ArrayValueBuilder;
+use Yiisoft\Db\Expression\Value\ColumnName;
+use Yiisoft\Db\Expression\Value\Builder\ColumnNameBuilder;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\Builder\ExpressionBuilder;
-use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionBuilder;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Builder\GreatestBuilder;
 use Yiisoft\Db\Expression\Function\Builder\LeastBuilder;
@@ -28,14 +28,14 @@ use Yiisoft\Db\Expression\Function\Least;
 use Yiisoft\Db\Expression\Function\Length;
 use Yiisoft\Db\Expression\Function\Longest;
 use Yiisoft\Db\Expression\Function\Shortest;
-use Yiisoft\Db\Expression\JsonExpression;
-use Yiisoft\Db\Expression\Builder\JsonExpressionBuilder;
-use Yiisoft\Db\Expression\CaseExpression;
-use Yiisoft\Db\Expression\Builder\CaseExpressionBuilder;
-use Yiisoft\Db\Expression\StructuredExpression;
-use Yiisoft\Db\Expression\Builder\StructuredExpressionBuilder;
-use Yiisoft\Db\Expression\Value;
-use Yiisoft\Db\Expression\Builder\ValueBuilder;
+use Yiisoft\Db\Expression\Value\JsonValue;
+use Yiisoft\Db\Expression\Value\Builder\JsonValueBuilder;
+use Yiisoft\Db\Expression\Statement\CaseX;
+use Yiisoft\Db\Expression\Statement\Builder\CaseXBuilder;
+use Yiisoft\Db\Expression\Value\StructuredValue;
+use Yiisoft\Db\Expression\Value\Builder\StructuredValueBuilder;
+use Yiisoft\Db\Expression\Value\Value;
+use Yiisoft\Db\Expression\Value\Builder\ValueBuilder;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Expression\Value\Builder\DateTimeValueBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
@@ -580,10 +580,10 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Condition\All::class => Condition\Builder\AllBuilder::class,
             Condition\None::class => Condition\Builder\NoneBuilder::class,
             Simple::class => Condition\Builder\SimpleBuilder::class,
-            JsonExpression::class => JsonExpressionBuilder::class,
-            ArrayExpression::class => ArrayExpressionBuilder::class,
-            StructuredExpression::class => StructuredExpressionBuilder::class,
-            CaseExpression::class => CaseExpressionBuilder::class,
+            JsonValue::class => JsonValueBuilder::class,
+            ArrayValue::class => ArrayValueBuilder::class,
+            StructuredValue::class => StructuredValueBuilder::class,
+            CaseX::class => CaseXBuilder::class,
             ColumnName::class => ColumnNameBuilder::class,
             Value::class => ValueBuilder::class,
             DateTimeValue::class => DateTimeValueBuilder::class,

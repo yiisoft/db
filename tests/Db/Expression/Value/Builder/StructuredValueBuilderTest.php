@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Expression\Builder;
+namespace Yiisoft\Db\Tests\Db\Expression\Value\Builder;
 
 use ArrayIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Expression\StructuredExpression;
-use Yiisoft\Db\Expression\Builder\StructuredExpressionBuilder;
+use Yiisoft\Db\Expression\Value\StructuredValue;
+use Yiisoft\Db\Expression\Value\Builder\StructuredValueBuilder;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\AbstractStructuredColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
@@ -21,7 +21,7 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 /**
  * @group db
  */
-final class StructuredExpressionBuilderTest extends TestCase
+final class StructuredValueBuilderTest extends TestCase
 {
     use TestTrait;
 
@@ -54,8 +54,8 @@ final class StructuredExpressionBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $params = [];
-        $builder = new StructuredExpressionBuilder($qb);
-        $expression = new StructuredExpression($value, $type);
+        $builder = new StructuredValueBuilder($qb);
+        $expression = new StructuredValue($value, $type);
 
         $this->assertSame(':qp0', $builder->build($expression, $params));
         $this->assertEquals([':qp0' => new Param($expected, DataType::STRING)], $params);
@@ -67,8 +67,8 @@ final class StructuredExpressionBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $params = [];
-        $builder = new StructuredExpressionBuilder($qb);
-        $expression = new StructuredExpression(null);
+        $builder = new StructuredValueBuilder($qb);
+        $expression = new StructuredValue(null);
 
         $this->assertSame('NULL', $builder->build($expression, $params));
         $this->assertSame([], $params);
@@ -80,8 +80,8 @@ final class StructuredExpressionBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $params = [];
-        $builder = new StructuredExpressionBuilder($qb);
-        $expression = new StructuredExpression((new Query($db))->select('json_field')->from('json_table'));
+        $builder = new StructuredValueBuilder($qb);
+        $expression = new StructuredValue((new Query($db))->select('json_field')->from('json_table'));
 
         $this->assertSame('(SELECT [json_field] FROM [json_table])', $builder->build($expression, $params));
         $this->assertSame([], $params);

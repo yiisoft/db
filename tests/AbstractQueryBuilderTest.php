@@ -10,15 +10,15 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\CaseExpression;
+use Yiisoft\Db\Expression\Statement\CaseX;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Length;
 use Yiisoft\Db\Query\Query;
@@ -2419,9 +2419,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
         Assert::arraysEquals($expectedParams, $params);
     }
 
-    #[DataProviderExternal(QueryBuilderProvider::class, 'caseExpressionBuilder')]
-    public function testCaseExpressionBuilder(
-        CaseExpression $case,
+    #[DataProviderExternal(QueryBuilderProvider::class, 'caseXBuilder')]
+    public function testCaseXBuilder(
+        CaseX $case,
         string $expectedSql,
         array $expectedParams,
         string|int $expectedResult,
@@ -2433,20 +2433,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expectedSql, $qb->buildExpression($case, $params));
         $this->assertEquals($expectedParams, $params);
-    }
-
-    public function testCaseExpressionBuilderEmpty(): void
-    {
-        $db = $this->getConnection();
-        $qb = $db->getQueryBuilder();
-
-        $params = [];
-        $case = new CaseExpression();
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The CASE expression must have at least one WHEN clause.');
-
-        $qb->buildExpression($case, $params);
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'lengthBuilder')]

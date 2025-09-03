@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
-use Yiisoft\Db\Expression\Builder\ExpressionBuilderInterface;
-
 /**
  * This interface defines a set of methods that an object should implement to represent an expression in database
  * queries, such as one for filtering or ordering results.

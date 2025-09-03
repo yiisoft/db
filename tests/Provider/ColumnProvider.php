@@ -10,13 +10,13 @@ use DateTimeImmutable;
 use DateTimeZone;
 use PDO;
 use stdClass;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\ForeignKey;
-use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\JsonExpression;
-use Yiisoft\Db\Expression\StructuredExpression;
+use Yiisoft\Db\Expression\Value\JsonValue;
+use Yiisoft\Db\Expression\Value\StructuredValue;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\ArrayLazyColumn;
 use Yiisoft\Db\Schema\Column\BigIntColumn;
@@ -436,16 +436,16 @@ class ColumnProvider
                 new JsonColumn(),
                 [
                     [null, null],
-                    [new JsonExpression(''), ''],
-                    [new JsonExpression(1), 1],
-                    [new JsonExpression(true), true],
-                    [new JsonExpression(false), false],
-                    [new JsonExpression('string'), 'string'],
-                    [new JsonExpression([1, 2, 3]), [1, 2, 3]],
-                    [new JsonExpression(['key' => 'value']), ['key' => 'value']],
-                    [new JsonExpression(['a' => 1]), ['a' => 1]],
-                    [new JsonExpression(new stdClass()), new stdClass()],
-                    [$expression = new JsonExpression([1, 2, 3]), $expression],
+                    [new JsonValue(''), ''],
+                    [new JsonValue(1), 1],
+                    [new JsonValue(true), true],
+                    [new JsonValue(false), false],
+                    [new JsonValue('string'), 'string'],
+                    [new JsonValue([1, 2, 3]), [1, 2, 3]],
+                    [new JsonValue(['key' => 'value']), ['key' => 'value']],
+                    [new JsonValue(['a' => 1]), ['a' => 1]],
+                    [new JsonValue(new stdClass()), new stdClass()],
+                    [$expression = new JsonValue([1, 2, 3]), $expression],
                     [$expression = new Expression('expression'), $expression],
                 ],
             ],
@@ -453,10 +453,10 @@ class ColumnProvider
                 $arrayCol = new ArrayColumn(),
                 [
                     [null, null],
-                    [new ArrayExpression([], $arrayCol), []],
-                    [new ArrayExpression([1, 2, 3], $arrayCol), [1, 2, 3]],
-                    [new ArrayExpression($iterator = new ArrayIterator([1, 2, 3]), $arrayCol), $iterator],
-                    [new ArrayExpression('[1,2,3]', $arrayCol), '[1,2,3]'],
+                    [new ArrayValue([], $arrayCol), []],
+                    [new ArrayValue([1, 2, 3], $arrayCol), [1, 2, 3]],
+                    [new ArrayValue($iterator = new ArrayIterator([1, 2, 3]), $arrayCol), $iterator],
+                    [new ArrayValue('[1,2,3]', $arrayCol), '[1,2,3]'],
                     [$expression = new Expression('expression'), $expression],
                 ],
             ],
@@ -464,10 +464,10 @@ class ColumnProvider
                 $structuredCol = new StructuredColumn(),
                 [
                     [null, null],
-                    [new StructuredExpression([], $structuredCol), []],
-                    [new StructuredExpression(['value' => 1, 'currency_code' => 'USD'], $structuredCol), ['value' => 1, 'currency_code' => 'USD']],
-                    [new StructuredExpression($iterator = new ArrayIterator(['value' => 1, 'currency_code' => 'USD']), $structuredCol), $iterator],
-                    [new StructuredExpression('[1,"USD"]', $structuredCol), '[1,"USD"]'],
+                    [new StructuredValue([], $structuredCol), []],
+                    [new StructuredValue(['value' => 1, 'currency_code' => 'USD'], $structuredCol), ['value' => 1, 'currency_code' => 'USD']],
+                    [new StructuredValue($iterator = new ArrayIterator(['value' => 1, 'currency_code' => 'USD']), $structuredCol), $iterator],
+                    [new StructuredValue('[1,"USD"]', $structuredCol), '[1,"USD"]'],
                     [$expression = new Expression('expression'), $expression],
                 ],
             ],
@@ -782,20 +782,20 @@ class ColumnProvider
                 new JsonColumn(),
                 [
                     [1, [
-                        new JsonExpression([1, 2, 3]),
-                        new JsonExpression(['key' => 'value']),
-                        new JsonExpression(['key' => 'value']),
+                        new JsonValue([1, 2, 3]),
+                        new JsonValue(['key' => 'value']),
+                        new JsonValue(['key' => 'value']),
                         null,
-                    ], [[1, 2, 3], ['key' => 'value'], new JsonExpression(['key' => 'value']), null]],
+                    ], [[1, 2, 3], ['key' => 'value'], new JsonValue(['key' => 'value']), null]],
                     [2, [
                         [
-                            new JsonExpression([1, 2, 3]),
-                            new JsonExpression(['key' => 'value']),
-                            new JsonExpression(['key' => 'value']),
+                            new JsonValue([1, 2, 3]),
+                            new JsonValue(['key' => 'value']),
+                            new JsonValue(['key' => 'value']),
                             null,
                         ],
                         null,
-                    ], [[[1, 2, 3], ['key' => 'value'], new JsonExpression(['key' => 'value']), null], null]],
+                    ], [[[1, 2, 3], ['key' => 'value'], new JsonValue(['key' => 'value']), null], null]],
                 ],
             ],
             ColumnType::STRUCTURED => [
@@ -804,7 +804,7 @@ class ColumnProvider
                     [
                         1,
                         [
-                            new StructuredExpression(['value' => 10, 'currency' => 'USD'], 'structured_type'),
+                            new StructuredValue(['value' => 10, 'currency' => 'USD'], 'structured_type'),
                             null,
                         ],
                         [
@@ -815,7 +815,7 @@ class ColumnProvider
                     [
                         2,
                         [[
-                            new StructuredExpression(['value' => 10, 'currency' => 'USD'], 'structured_type'),
+                            new StructuredValue(['value' => 10, 'currency' => 'USD'], 'structured_type'),
                             null,
                         ]],
                         [[

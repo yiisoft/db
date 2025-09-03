@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Expression;
+namespace Yiisoft\Db\Tests\Db\Expression\Value;
 
 use ArrayIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
@@ -20,7 +20,7 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 /**
  * @group db
  */
-final class ArrayExpressionTest extends TestCase
+final class ArrayValueTest extends TestCase
 {
     use TestTrait;
 
@@ -39,9 +39,9 @@ final class ArrayExpressionTest extends TestCase
         iterable|LazyArrayInterface|QueryInterface|string $value,
         ColumnInterface|string|null $type = null
     ): void {
-        $expression = new ArrayExpression($value, $type);
+        $arrayValue = new ArrayValue($value, $type);
 
-        $this->assertSame($value, $expression->getValue());
-        $this->assertSame($type, $expression->getType());
+        $this->assertSame($value, $arrayValue->value);
+        $this->assertSame($type, $arrayValue->type);
     }
 }

@@ -2,19 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expression\Builder;
+namespace Yiisoft\Db\Expression\Value\Builder;
 
-use JsonException;
 use JsonSerializable;
 use Traversable;
-use Yiisoft\Db\Expression\Param;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Exception\Exception;
-use InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Expression\JsonExpression;
+use Yiisoft\Db\Expression\Value\JsonValue;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Schema\Data\LazyArray;
@@ -29,11 +25,11 @@ use function strlen;
 use const JSON_THROW_ON_ERROR;
 
 /**
- * Builds expressions for {@see JsonExpression}.
+ * Builds expressions for {@see JsonValue}.
  *
- * @implements ExpressionBuilderInterface<JsonExpression>
+ * @implements ExpressionBuilderInterface<JsonValue>
  */
-final class JsonExpressionBuilder implements ExpressionBuilderInterface
+final class JsonValueBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
@@ -42,20 +38,14 @@ final class JsonExpressionBuilder implements ExpressionBuilderInterface
     /**
      * The method builds the raw SQL from the `$expression` that won't be additionally escaped or quoted.
      *
-     * @param JsonExpression $expression The expression to build.
+     * @param JsonValue $expression The expression to build.
      * @param array $params The binding parameters.
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws JsonException
-     * @throws NotSupportedException
      *
      * @return string The raw SQL that won't be additionally escaped or quoted.
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $value = $expression->getValue();
+        $value = $expression->value;
 
         if ($value === null) {
             return 'NULL';

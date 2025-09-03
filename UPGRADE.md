@@ -265,11 +265,18 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `ConditionInterface` moved to `Yiisoft\Db\QueryBuilder\Condition` namespace;
 - Remove `AbstractConjunctionCondition` and `AbstractOverlapsConditionBuilder`;
 - Change namespace of condition and condition builder classes;
+- Change namespace of expression and expression builder classes;
 - Remove `AbstractDsn` and `AbstractDsnSocket` classes and `DsnInterface` interface;
 - Remove `Hash` condition;
 - Remove `AbstractTableSchema` and add `TableSchema` instead;
 - Remove `BetweenColumns` condition;
-- Move expression builders to `Yiisoft\Db\Expression\Builder` namespace;
 - Change `QueryBuilderInterface::getExpressionBuilder()` result type to `ExpressionBuilderInterface`;
 - Change `DQLQueryBuilderInterface::getExpressionBuilder()` result type to `ExpressionBuilderInterface`;
+- Rename `ArrayExpression` to `ArrayValue` and move it to `Yiisoft\Db\Expression\Value` namespace;
+- Rename `ArrayExpressionBuilder` to `ArrayValueBuilder` and move it to `Yiisoft\Db\Expression\Value\Builder` namespace;
+- Rename `JsonExpression` to `JsonValue` and move it to `Yiisoft\Db\Expression\Value` namespace;
+- Rename `JsonExpressionBuilder` to `JsonValueBuilder` and move it to `Yiisoft\Db\Expression\Value\Builder` namespace;
+- Rename `StructuredExpression` to `StructuredValue` and move it to `Yiisoft\Db\Expression\Value` namespace;`
+- Rename `StructuredExpressionBuilder` to `StructuredValueBuilder` and move it to `Yiisoft\Db\Expression\Value\Builder`
+  namespace;
 

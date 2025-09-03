@@ -239,7 +239,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
-        string|array $expectedSQL,
+        string|array $expectedSql,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
