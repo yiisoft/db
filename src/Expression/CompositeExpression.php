@@ -10,7 +10,7 @@ namespace Yiisoft\Db\Expression;
 final class CompositeExpression implements ExpressionInterface
 {
     /**
-     * @param (string|ExpressionInterface)[] $expressions The expressions to be combined. String values are treated as a DB expression that
+     * @param (ExpressionInterface|string)[] $expressions The expressions to be combined. String values are treated as a DB expression that
      * doesn't need escaping or quoting.
      * @param string $separator The separator to use when concatenating the expressions. Defaults to a space character.
      *
