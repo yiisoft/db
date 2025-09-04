@@ -22,13 +22,13 @@ final class CompositeExpressionBuilder implements ExpressionBuilderInterface
 
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $sql = '';
+        $parts = [];
         foreach ($expression->expressions as $e) {
             if (is_string($e)) {
                 $e = new Expression($e);
             }
-            $sql .= $this->queryBuilder->buildExpression($e, $params);
+            $parts[] = $this->queryBuilder->buildExpression($e, $params);
         }
-        return $sql;
+        return implode($expression->separator, $parts);
     }
 }

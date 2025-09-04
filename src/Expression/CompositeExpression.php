@@ -10,18 +10,15 @@ namespace Yiisoft\Db\Expression;
 final class CompositeExpression implements ExpressionInterface
 {
     /**
-     * @psalm-var list<string|ExpressionInterface>
-     */
-    public readonly array $expressions;
-
-    /**
-     * @param ExpressionInterface|string ...$expressions The expressions to be combined. String values are treated as
-     * a DB expression that doesn't need escaping or quoting.
+     * @param array $expressions The expressions to be combined. String values are treated as a DB expression that
+     * doesn't need escaping or quoting.
+     * @param string $separator The separator to use when concatenating the expressions. Defaults to a space character.
      *
-     * @no-named-arguments
+     * @psalm-param list<string|ExpressionInterface> $expressions
      */
-    public function __construct(string|ExpressionInterface ...$expressions)
-    {
-        $this->expressions = $expressions;
+    public function __construct(
+        public readonly array $expressions,
+        public readonly string $separator = ' ',
+    ) {
     }
 }

@@ -20,15 +20,28 @@ final class CompositeExpressionBuilderTest extends TestCase
     public function testBase(): void
     {
         $builder = new CompositeExpressionBuilder($this->getConnection()->getQueryBuilder());
-        $expression = new CompositeExpression(
-            'x=1 ',
+        $expression = new CompositeExpression([
+            'x=1',
             new Expression('AND y=:p', ['p' => 2]),
-        );
+        ]);
 
         $params = [];
         $sql = $builder->build($expression, $params);
 
         $this->assertSame('x=1 AND y=:p', $sql);
         $this->assertEquals(['p' => 2], $params);
+    }
+
+    public function testCustomSeparator(): void
+    {
+        $builder = new CompositeExpressionBuilder($this->getConnection()->getQueryBuilder());
+        $expression = new CompositeExpression(
+            ['x=1', 'y=2'],
+            ' AND ',
+        );
+
+        $sql = $builder->build($expression);
+
+        $this->assertSame('x=1 AND y=2', $sql);
     }
 }
