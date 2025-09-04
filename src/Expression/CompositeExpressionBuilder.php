@@ -24,10 +24,7 @@ final class CompositeExpressionBuilder implements ExpressionBuilderInterface
     {
         $parts = [];
         foreach ($expression->expressions as $e) {
-            if (is_string($e)) {
-                $e = new Expression($e);
-            }
-            $parts[] = $this->queryBuilder->buildExpression($e, $params);
+            $parts[] = is_string($e) ? $e : $this->queryBuilder->buildExpression($e, $params);
         }
         return implode($expression->separator, $parts);
     }
