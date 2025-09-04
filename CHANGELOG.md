@@ -150,6 +150,7 @@
 - Chg #1052: Rearrange expression namespaces (@Tigrov)
 - Chg #1054: Rename `ArrayExpression` to `ArrayValue`, `JsonExpression` to `JsonValue`,
   `StructuredExpression` to `StructuredValue` (@Tigrov)
+- Chg #1056: Remove unused exceptions (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
