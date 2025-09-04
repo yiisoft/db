@@ -8,7 +8,9 @@ of the `Yiisoft\Db\Query\QueryInterface` and the `insert()`, `update()`, `upsert
 `Yiisoft\Db\Command\CommandInterface` to represent SQL expressions.
 
 ## Available expressions
+
 - [Expression](expression.md) that does not require escaping or quoting of its content;
+- [CompositeExpression](composite-expression.md) for combining multiple expressions into a single expression;
 - [Function expressions](functions.md) `ArrayMerge`, `Greatest`, `Least`, `Length`, `Longest`, `Shortest`;
 - [Statement expressions](statements.md) `CaseX`;
 - [Value expressions](values.md) `ArrayValue`, `ColumnName`, `DateTimeValue`, `JsonValue`, `Param`, `StructuredValue`,
