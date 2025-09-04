@@ -29,10 +29,16 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 final class Expression implements ExpressionInterface, Stringable
 {
     /**
+     * @param string $expression The DB expression.
+     * @param array $params List of parameters to bind to this expression. The keys are placeholders appearing in
+     * {@see expression} and the values are the corresponding parameter values.
+     *
      * @psalm-param ParamsType $params
      */
-    public function __construct(private readonly string $expression, private readonly array $params = [])
-    {
+    public function __construct(
+        public readonly string $expression,
+        public readonly array $params = [],
+    ) {
     }
 
     /**
@@ -41,16 +47,5 @@ final class Expression implements ExpressionInterface, Stringable
     public function __toString(): string
     {
         return $this->expression;
-    }
-
-    /**
-     * @return array List of parameters to bind to this expression. The keys are placeholders appearing in
-     * {@see expression} and the values are the corresponding parameter values.
-     *
-     * @psalm-return ParamsType
-     */
-    public function getParams(): array
-    {
-        return $this->params;
     }
 }

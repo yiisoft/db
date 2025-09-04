@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Yiisoft\Db\Expression\CompositeExpression;
+use Yiisoft\Db\Expression\CompositeExpressionBuilder;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Expression\Value\Builder\ParamBuilder;
 use Yiisoft\Db\Exception\Exception;
@@ -560,6 +562,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Query::class => QueryExpressionBuilder::class,
             Param::class => ParamBuilder::class,
             Expression::class => ExpressionBuilder::class,
+            CompositeExpression::class => CompositeExpressionBuilder::class,
             Condition\Not::class => Condition\Builder\NotBuilder::class,
             Condition\AndX::class => Condition\Builder\LogicalBuilder::class,
             Condition\OrX::class => Condition\Builder\LogicalBuilder::class,

@@ -280,4 +280,5 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Rename `StructuredExpressionBuilder` to `StructuredValueBuilder` and move it to `Yiisoft\Db\Expression\Value\Builder`
   namespace;
 - Remove `StaleObjectException`, `UnknownMethodException`, `UnknownPropertyException` classes;
+- Remove `Expression::getParams()` method, use `$params` property instead;
 

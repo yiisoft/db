@@ -151,6 +151,9 @@
 - Chg #1054: Rename `ArrayExpression` to `ArrayValue`, `JsonExpression` to `JsonValue`,
   `StructuredExpression` to `StructuredValue` (@Tigrov)
 - Chg #1056: Remove unused exceptions (@Tigrov)
+- New #1057: Add `CompositeExpression` class (@vjik)
+- Chg #1058: Refactor `Expression` class: declare `$expression` and `$params` as public readonly properties, remove 
+  `getParams()` method (@vjik)
 
 ## 1.3.0 March 21, 2024
 
