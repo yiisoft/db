@@ -279,4 +279,5 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Rename `StructuredExpression` to `StructuredValue` and move it to `Yiisoft\Db\Expression\Value` namespace;`
 - Rename `StructuredExpressionBuilder` to `StructuredValueBuilder` and move it to `Yiisoft\Db\Expression\Value\Builder`
   namespace;
+- Remove `StaleObjectException`, `UnknownMethodException`, `UnknownPropertyException` classes;
 
