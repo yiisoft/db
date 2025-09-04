@@ -44,8 +44,8 @@ final class ExpressionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $sql = $expression->__toString();
-        $expressionParams = $expression->getParams();
+        $sql = $expression->expression;
+        $expressionParams = $expression->params;
 
         if (empty($expressionParams)) {
             return $sql;
