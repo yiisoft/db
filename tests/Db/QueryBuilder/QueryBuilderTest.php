@@ -32,6 +32,31 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 {
     use TestTrait;
 
+    public function testBase(): void
+    {
+        $db = $this->getConnection();
+
+        $sql = (new Query($db))
+            ->select('id')
+            ->distinct()
+            ->selectOption('TOP (10)')
+            ->from('customer')
+            ->leftJoin('profile', 'customer.id=profile.user_id')
+            ->where('customer.age>19')
+            ->groupBy('customer.group_id')
+            ->having('COUNT(customer.id)>1')
+            ->orderBy(['customer.name' => SORT_DESC])
+            ->limit(20)
+            ->for('UPDATE')
+            ->createCommand()
+            ->getRawSql();
+
+        $this->assertSame(
+            'SELECT DISTINCT TOP (10) [id] FROM [customer] LEFT JOIN [profile] ON customer.id=profile.user_id WHERE customer.age>19 GROUP BY [customer].[group_id] HAVING COUNT(customer.id)>1 ORDER BY [customer].[name] DESC LIMIT 20 FOR UPDATE',
+            $sql,
+        );
+    }
+
     public function testAddDefaultValue(): void
     {
         $db = $this->getConnection();

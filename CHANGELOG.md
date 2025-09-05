@@ -90,7 +90,7 @@
 - Enh #963: Make `Query::andHaving()` similar to `Query::andWhere()` (@Tigrov)
 - New #964: Add `QueryBuilderInterface::replacePlaceholders()` method (@Tigrov)
 - Enh #879: Rename `getLastInsertID()` method in `ConnectionInterface` to `getLastInsertId()` (@vjik)
-- New #967: Add `FOR` clause to query (@vjik)
+- New #967, #1059: Add `FOR` clause to query (@vjik)
 - Chg #972: Change in query "distinct" flag type from `bool|null` to `bool` (@vjik)
 - New #973, #976: Add `CommandInterface::upsertReturningPks()` method (@Tigrov)
 - New #973, #976: Add `upsertReturning()` method to `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
