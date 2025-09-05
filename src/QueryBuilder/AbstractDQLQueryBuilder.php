@@ -129,10 +129,11 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $this->buildWhere($query->getWhere(), $params),
             $this->buildGroupBy($query->getGroupBy(), $params),
             $this->buildHaving($query->getHaving(), $params),
+            $this->buildOrderBy($query->getOrderBy(), $params),
+            $this->buildLimit($query->getLimit(), $query->getOffset()),
             $this->buildFor($query->getFor()),
         ];
         $sql = implode($this->separator, array_filter($clauses));
-        $sql = $this->buildOrderByAndLimit($sql, $query->getOrderBy(), $query->getLimit(), $query->getOffset(), $params);
 
         $union = $this->buildUnion($query->getUnions(), $params);
 
