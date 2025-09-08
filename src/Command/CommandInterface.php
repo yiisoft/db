@@ -833,6 +833,9 @@ interface CommandInterface
      * {@see QueryPartsInterface::where()} on how to specify condition.
      * @param array|ExpressionInterface|string|null $from The FROM part. Please refer to {@see QueryPartsInterface::from()}
      * on how to specify FROM part.
+     * @param array $params The parameters to bind to the command.
+     *
+     * @psalm-param ParamsType $params
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -843,7 +846,8 @@ interface CommandInterface
         string $table,
         array $columns,
         array|ExpressionInterface|string $condition = '',
-        array|ExpressionInterface|string|null $from = null
+        array|ExpressionInterface|string|null $from = null,
+        array $params = []
     ): static;
 
     /**

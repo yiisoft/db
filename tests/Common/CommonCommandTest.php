@@ -1691,19 +1691,20 @@ abstract class CommonCommandTest extends AbstractCommandTest
         array $columns,
         array|ExpressionInterface|string $conditions,
         array|ExpressionInterface|string|null $from,
+        array $params,
         array $expectedValues,
         int $expectedCount,
     ): void {
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $count = $command->update($table, $columns, $conditions, $from)->execute();
+        $count = $command->update($table, $columns, $conditions, $from, $params)->execute();
 
         $this->assertSame($expectedCount, $count);
 
         $values = (new Query($db))
             ->from($table)
-            ->where($conditions)
+            ->where($conditions, $params)
             ->limit(1)
             ->one();
 
