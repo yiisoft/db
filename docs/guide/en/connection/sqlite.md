@@ -27,7 +27,7 @@ use Yiisoft\Db\Sqlite\Dsn;
 
 return [
     'yiisoft/db-sqlite' => [
-        'dsn' => (new Dsn('sqlite', dirname(__DIR__, 2) . '/resources/database/sqlite.db'))->__toString(),
+        'dsn' => new Dsn('sqlite', dirname(__DIR__, 2) . '/resources/database/sqlite.db'),
     ],
 ];
 ```
@@ -45,16 +45,16 @@ use Yiisoft\Db\Sqlite\Driver;
 use Yiisoft\Db\Sqlite\Dsn;
 
 // Dsn.
-$dsn = (new Dsn('sqlite', 'memory'))->asString();
+$dsn = new Dsn('sqlite', 'memory');
 
 // PSR-16 cache implementation.
 $arrayCache = new ArrayCache();
 
 // Schema cache.
-$schemaCache = new SchemaCache($cache);
+$schemaCache = new SchemaCache($arrayCache);
 
 // PDO driver.
-$pdoDriver = new Driver($dsn); 
+$pdoDriver = new Driver($dsn);
 
 // Connection.
 $db = new Connection($pdoDriver, $schemaCache);
