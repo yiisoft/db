@@ -8,6 +8,8 @@ use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Driver\Pdo\PdoDriverInterface;
 use Yiisoft\Db\Tests\Support\Stub\PdoDriver;
 
+use function str_replace;
+
 trait TestTrait
 {
     private string $dsn = 'sqlite::memory:';
@@ -33,9 +35,14 @@ trait TestTrait
         return new PdoDriver($this->dsn);
     }
 
-    protected function getDriverName(): string
+    protected static function getDriverName(): string
     {
         return 'db';
+    }
+
+    protected static function replaceQuotes(string $sql): string
+    {
+        return str_replace(['[[', ']]'], ['[', ']'], $sql);
     }
 
     protected function setDsn(string $dsn): void

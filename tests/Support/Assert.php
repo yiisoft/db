@@ -9,10 +9,19 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionObject;
 use ReflectionProperty;
+use Yiisoft\Db\Constraint\Check;
+use Yiisoft\Db\Constraint\DefaultValue;
+use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Constraint\Index;
 
+use function array_key_exists;
+use function array_values;
 use function is_array;
 use function is_object;
+use function json_encode;
+use function ksort;
 use function ltrim;
+use function strtolower;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -40,10 +49,8 @@ final class Assert extends TestCase
 
     /**
      * Gets an inaccessible object property.
-     *
-     * @param bool $revoke whether to make property inaccessible after getting.
      */
-    public static function getInaccessibleProperty(object $object, string $propertyName, bool $revoke = true): mixed
+    public static function getPropertyValue(object $object, string $propertyName): mixed
     {
         $class = new ReflectionClass($object);
 
@@ -51,18 +58,7 @@ final class Assert extends TestCase
             $class = $class->getParentClass();
         }
 
-        $property = $class->getProperty($propertyName);
-
-        $property->setAccessible(true);
-
-        /** @psalm-var mixed $result */
-        $result = $property->getValue($object);
-
-        if ($revoke) {
-            $property->setAccessible(false);
-        }
-
-        return $result;
+        return $class->getProperty($propertyName)->getValue($object);
     }
 
     /**
@@ -72,7 +68,7 @@ final class Assert extends TestCase
      * @param string $propertyName The name of the property to set.
      * @param mixed $value The value to set.
      */
-    public static function setInaccessibleProperty(object $object, string $propertyName, mixed $value): void
+    public static function setPropertyValue(object &$object, string $propertyName, mixed $value): void
     {
         $class = new ReflectionClass($object);
 
@@ -81,8 +77,40 @@ final class Assert extends TestCase
         }
 
         $property = $class->getProperty($propertyName);
-        $property->setAccessible(true);
-        $property->setValue($object, $value);
+
+        if ($property->isReadOnly()) {
+            $object = self::cloneObjectWith($object, [$propertyName => $value]);
+        } else {
+            $property->setValue($object, $value);
+        }
+    }
+
+    public static function cloneObjectWith(object $object, array $values): object
+    {
+        $class = new ReflectionClass($object);
+        $new = $class->newInstanceWithoutConstructor();
+
+        $setProperty = fn (string $name, mixed $value) => $this->$name = $value;
+
+        foreach ($class->getProperties() as $property) {
+            if (array_key_exists($property->name, $values)) {
+                $value = $values[$property->name];
+            } elseif ($property->isInitialized($object)) {
+                $value = $property->getValue($object);
+            } else {
+                continue;
+            }
+
+            $propertyClass = $property->getDeclaringClass()->name;
+
+            if ($propertyClass === $object::class) {
+                $property->setValue($new, $value);
+            } else {
+                $setProperty->bindTo($new, $propertyClass)($property->name, $value);
+            }
+        }
+
+        return $new;
     }
 
     /**
@@ -98,7 +126,6 @@ final class Assert extends TestCase
     {
         $reflection = new ReflectionObject($object);
         $method = $reflection->getMethod($method);
-        $method->setAccessible(true);
 
         return $method->invokeArgs($object, $args);
     }
@@ -176,5 +203,56 @@ final class Assert extends TestCase
         } while ($reflectionClass = $reflectionClass->getParentClass());
 
         return $properties;
+    }
+
+    public static function constraintsEquals(
+        array|Check|DefaultValue|ForeignKey|Index|null $expected,
+        array|Check|DefaultValue|ForeignKey|Index|null $actual,
+    ): void {
+        if ($expected === null) {
+            self::assertNull($actual);
+            return;
+        }
+
+        if (is_array($expected)) {
+            self::assertIsArray($actual);
+            self::sortConstrains($expected);
+            self::sortConstrains($actual);
+
+            foreach ($expected as $key => $constraint) {
+                self::normalizeConstraints($constraint, $actual[$key]);
+            }
+        } else {
+            self::assertIsObject($actual);
+            self::normalizeConstraints($expected, $actual);
+        }
+
+        self::assertEquals($expected, $actual);
+    }
+
+    private static function sortConstrains(array &$array): void
+    {
+        $sort = [];
+
+        foreach ($array as $constraint) {
+            $key = (array) $constraint;
+            unset($key['name']);
+
+            $sort[strtolower(json_encode($key))] = $constraint;
+        }
+
+        ksort($sort, SORT_STRING);
+        $array = array_values($sort);
+    }
+
+    private static function normalizeConstraints(
+        Check|DefaultValue|ForeignKey|Index $expected,
+        Check|DefaultValue|ForeignKey|Index &$actual,
+    ): void {
+        self::assertInstanceOf($expected::class, $actual);
+
+        if ($expected->name === '') {
+            self::setPropertyValue($actual, 'name', '');
+        }
     }
 }

@@ -9,16 +9,26 @@ use Stringable;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\GettypeResult;
-use Yiisoft\Db\Constant\PhpType;
 
 use function gettype;
 
 /**
  * Represents the metadata for a string column.
  */
-class StringColumn extends AbstractColumn
+class StringColumn extends AbstractColumn implements CollatableColumnInterface
 {
     protected const DEFAULT_TYPE = ColumnType::STRING;
+
+    /**
+     * @var string|null The column collation.
+     */
+    protected string|null $collation = null;
+
+    public function collation(string|null $collation): static
+    {
+        $this->collation = $collation;
+        return $this;
+    }
 
     public function dbTypecast(mixed $value): mixed
     {
@@ -40,9 +50,9 @@ class StringColumn extends AbstractColumn
     }
 
     /** @psalm-mutation-free */
-    public function getPhpType(): string
+    public function getCollation(): string|null
     {
-        return PhpType::STRING;
+        return $this->collation;
     }
 
     public function phpTypecast(mixed $value): string|null

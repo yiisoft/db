@@ -4,25 +4,27 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use BackedEnum;
 use Iterator;
 use JsonSerializable;
 use Stringable;
 use Traversable;
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Constant\GettypeResult;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Expression\ArrayExpression;
+use InvalidArgumentException;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Expression\JsonExpression;
+use Yiisoft\Db\Expression\Value\JsonValue;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Schema\Data\StringableStream;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Syntax\AbstractSqlParser;
 
@@ -171,7 +173,6 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             ++$additionalCount;
         }
 
-        /** @psalm-var mixed */
         $params[$phName] = $value;
 
         return $phName;
@@ -270,7 +271,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         /** @psalm-suppress MixedArgument */
         return match (gettype($value)) {
             GettypeResult::ARRAY => $this->buildExpression(
-                array_is_list($value) ? new ArrayExpression($value) : new JsonExpression($value),
+                array_is_list($value) ? new ArrayValue($value) : new JsonValue($value),
                 $params,
             ),
             GettypeResult::BOOLEAN => $value ? static::TRUE_VALUE : static::FALSE_VALUE,
@@ -278,12 +279,16 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             GettypeResult::INTEGER => (string) $value,
             GettypeResult::NULL => 'NULL',
             GettypeResult::OBJECT => match (true) {
-                $value instanceof ParamInterface => $this->bindParam($value, $params),
+                $value instanceof Param => $this->bindParam($value, $params),
                 $value instanceof ExpressionInterface => $this->buildExpression($value, $params),
+                $value instanceof StringableStream => $this->bindParam(new Param($value->getValue(), DataType::LOB), $params),
                 $value instanceof Stringable => $this->bindParam(new Param((string) $value, DataType::STRING), $params),
-                $value instanceof Iterator && $value->key() === 0 => $this->buildExpression(new ArrayExpression($value), $params),
-                $value instanceof Traversable => $this->buildExpression(new JsonExpression($value), $params),
-                $value instanceof JsonSerializable => $this->buildExpression(new JsonExpression($value), $params),
+                $value instanceof BackedEnum => is_string($value->value)
+                    ? $this->bindParam(new Param($value->value, DataType::STRING), $params)
+                    : (string) $value->value,
+                $value instanceof Iterator && $value->key() === 0 => $this->buildExpression(new ArrayValue($value), $params),
+                $value instanceof Traversable => $this->buildExpression(new JsonValue($value), $params),
+                $value instanceof JsonSerializable => $this->buildExpression(new JsonValue($value), $params),
                 default => $this->bindParam($value, $params),
             },
             GettypeResult::RESOURCE => $this->bindParam(new Param($value, DataType::LOB), $params),
@@ -405,7 +410,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->db->getColumnFactory();
     }
 
-    public function getExpressionBuilder(ExpressionInterface $expression): object
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface
     {
         return $this->dqlBuilder->getExpressionBuilder($expression);
     }
@@ -435,16 +440,16 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->db->getQuoter();
     }
 
-    public function prepareParam(ParamInterface $param): string
+    public function prepareParam(Param $param): string
     {
-        return match ($param->getType()) {
-            DataType::BOOLEAN => $param->getValue() ? static::TRUE_VALUE : static::FALSE_VALUE,
-            DataType::INTEGER => (string) (int) $param->getValue(),
-            DataType::LOB => is_resource($value = $param->getValue())
+        return match ($param->type) {
+            DataType::BOOLEAN => $param->value ? static::TRUE_VALUE : static::FALSE_VALUE,
+            DataType::INTEGER => (string) (int) $param->value,
+            DataType::LOB => is_resource($value = $param->value)
                 ? $this->prepareResource($value)
                 : $this->prepareBinary((string) $value),
             DataType::NULL => 'NULL',
-            default => $this->prepareValue($param->getValue()),
+            default => $this->prepareValue($param->value),
         };
     }
 
@@ -457,8 +462,8 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             GettypeResult::ARRAY => $this->replacePlaceholders(
                 $this->buildExpression(
                     array_is_list($value)
-                        ? new ArrayExpression($value)
-                        : new JsonExpression($value),
+                        ? new ArrayValue($value)
+                        : new JsonValue($value),
                     $params
                 ),
                 array_map($this->prepareValue(...), $params),
@@ -468,18 +473,22 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             GettypeResult::INTEGER => (string) $value,
             GettypeResult::NULL => 'NULL',
             GettypeResult::OBJECT => match (true) {
-                $value instanceof ParamInterface => $this->prepareParam($value),
+                $value instanceof Param => $this->prepareParam($value),
                 $value instanceof ExpressionInterface => $this->replacePlaceholders(
                     $this->buildExpression($value, $params),
                     array_map($this->prepareValue(...), $params),
                 ),
+                $value instanceof StringableStream => $this->prepareBinary((string) $value),
+                $value instanceof BackedEnum => is_string($value->value)
+                    ? $this->db->getQuoter()->quoteValue($value->value)
+                    : (string) $value->value,
                 $value instanceof Iterator && $value->key() === 0 => $this->replacePlaceholders(
-                    $this->buildExpression(new ArrayExpression($value), $params),
+                    $this->buildExpression(new ArrayValue($value), $params),
                     array_map($this->prepareValue(...), $params),
                 ),
                 $value instanceof Traversable,
                 $value instanceof JsonSerializable => $this->replacePlaceholders(
-                    $this->buildExpression(new JsonExpression($value), $params),
+                    $this->buildExpression(new JsonValue($value), $params),
                     array_map($this->prepareValue(...), $params),
                 ),
                 default => $this->db->getQuoter()->quoteValue((string) $value),

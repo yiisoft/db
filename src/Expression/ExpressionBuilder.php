@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
-use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
@@ -19,6 +19,8 @@ use function substr;
  *
  * These expressions can be used with the query builder to build complex and customizable database queries
  * {@see Expression} class.
+ *
+ * @implements ExpressionBuilderInterface<Expression>
  *
  * @psalm-import-type ParamsType from ConnectionInterface
  */
@@ -42,8 +44,8 @@ final class ExpressionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $sql = $expression->__toString();
-        $expressionParams = $expression->getParams();
+        $sql = $expression->expression;
+        $expressionParams = $expression->params;
 
         if (empty($expressionParams)) {
             return $sql;

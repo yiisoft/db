@@ -74,11 +74,10 @@ The interface and the abstract implementation `AbstractColumn` were moved to `Yi
 and the following changes were made:
 
 - `getName()` method can return `string` or `null`;
-- `getPhpType()` method must return `string` PHP type of the column which used for generating related model properties;
 - `withName(string|null $name)` method is added;
 - `check(string|null $check)` method is added;
 - `getCheck()` method is added;
-- `reference(ForeignKeyConstraint|null $reference)` method is added;
+- `reference(ForeignKey|null $reference)` method is added;
 - `getReference()` method is added;
 - `notNull(bool $notNull = true)` method is added;
 - `null()` method is added;
@@ -86,13 +85,22 @@ and the following changes were made:
 - `unique(bool $unique = true)` method is added;
 - `isUnique()` method is added;
 - `hasDefaultValue()` method is added;
+- `getPrecision()` and `precision()` methods are removed;
+- `getPhpType()` and `phpType()` methods are removed;
 - all `AbstractColumn` class properties except `$type` moved to constructor;
 - added `DEFAULT_TYPE` constant to `AbstractColumn` class;
 - added method chaining.
 
+### Changes in constraint classes
+
+- Remove `Constraint` class;
+- Rename classes `CheckConstraint`, `DefaultValueConstraint`, `ForeignKeyConstraint` and `IndexConstraint`
+  to `Check`, `DefaultValue`, `ForeignKey` and `Index`;
+- Move properties to constructor and make them `public readonly`;
+- Remove all methods - use constructor to initialize values and properties to get values;
+
 ### New classes with constants
 
-- `Yiisoft\Db\Constant\PhpType` with PHP types constants;
 - `Yiisoft\Db\Constant\GettypeResult` with `gettype()` function results constants;
 - `Yiisoft\Db\Constant\ColumnType` with abstract column types constants;
 - `Yiisoft\Db\Constant\PseudoType` with column pseudo-types constants;
@@ -128,13 +136,14 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryPartsInterface::setFor()` - overwrites the `FOR` part of the query;
 - `QueryPartsInterface::setWhere()` - overwrites the `WHERE` part of the query;
 - `QueryPartsInterface::setHaving()` - overwrites the `HAVING` part of the query;
+- `ConnectionInterface::getColumnBuilderClass()` - returns the column builder class name for concrete DBMS;
 - `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `ConnectionInterface::createQuery()` - creates a `Query` object;
 - `ConnectionInterface::select()` - creates a `Query` object with the specified columns to be selected;
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
 - `QueryBuilderInterface::buildValue()` - converts a value to its SQL representation with binding parameters if necessary;
-- `QueryBuilderInterface::prepareParam()` - converts a `ParamInterface` object to its SQL representation;
+- `QueryBuilderInterface::prepareParam()` - converts a `Param` object to its SQL representation;
 - `QueryBuilderInterface::prepareValue()` - converts a value to its SQL representation;
 - `QueryBuilderInterface::replacePlaceholders()` - replaces placeholders in the SQL string with the corresponding values;
 - `QueryBuilderInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
@@ -144,7 +153,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `DMLQueryBuilderInterface::upsertReturning()` - builds a SQL to insert or update a record with returning values;
 - `DMLQueryBuilderInterface::withTypecasting()` - enables or disables typecasting of values when inserting or updating 
   records in DB;
-- `LikeConditionInterface::getCaseSensitive()` - returns whether the comparison is case-sensitive;
+- `LikeCondition::getCaseSensitive()` - returns whether the comparison is case-sensitive;
 - `SchemaInterface::hasTable()` - returns whether the specified table exists in database;
 - `SchemaInterface::hasSchema()` - returns whether the specified schema exists in database;
 - `SchemaInterface::hasView()` - returns whether the specified view exists in database;
@@ -158,6 +167,9 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `SchemaInterface::getResultColumn()` - returns the column instance for the column metadata received from the query;
 - `AbstractSchema::getResultColumnCacheKey()` - returns the cache key for the column metadata received from the query;
 - `AbstractSchema::loadResultColumn()` - creates a new column instance according to the column metadata from the query;
+- `DataReaderInterface::typecastColumns()` - sets columns for type casting the query results;
+- `AbstractSchema::resolveFullName()` - resolves the full name of the table, view, index, etc.;
+- `AbstractSchema::clarifyFullName()` - clarifies the full name of the table, view, index, etc.;
 
 ### Remove methods
 
@@ -166,13 +178,13 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `TableSchemaInterface::compositeForeignKey()`;
 - `SchemaInterface::createColumn()` - use `ColumnBuilder` instead;
 - `SchemaInterface::isReadQuery()` - use `DbStringHelper::isReadQuery()` instead;
+- `AbstractSchema::resolveTableName()` - use `QuoterInterface::getTableNameParts()` instead;
 - `SchemaInterface::getRawTableName()` - use `QuoterInterface::getRawTableName()` instead;
 - `AbstractSchema::isReadQuery()` - use `DbStringHelper::isReadQuery()` instead;
 - `AbstractSchema::getRawTableName()` - use `QuoterInterface::getRawTableName()` instead;
 - `AbstractSchema::normalizeRowKeyCase()` - use `array_change_key_case()` instead;
 - `Quoter::unquoteParts()`;
 - `AbstractPdoCommand::logQuery()`;
-- `ColumnSchemaInterface::phpType()`;
 - `ConnectionInterface::getServerVersion()` - use `ConnectionInterface::getServerInfo()` instead;
 - `DbArrayHelper::getColumn()` - use `array_column()` instead;
 - `DbArrayHelper::getValueByPath()`;
@@ -183,6 +195,8 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `AbstractDQLQueryBuilder::hasOffset()` - use `!empty($offset)` instead;
 - `BatchQueryResultInterface::reset()` - use `BatchQueryResultInterface::rewind()` instead;
 - `BatchQueryResult::reset()` - use `BatchQueryResult::rewind()` instead;
+- `Like::getEscapingReplacements()`/`LikeCondition::setEscapingReplacements()` - use `escape` constructor parameter
+  instead;
 
 ### Remove deprecated parameters
 
@@ -243,3 +257,28 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Remove `$params` parameter from `upsert()` method in `CommandInterface` and `AbstractCommand` class;
 - Add default value to `$updateColumns` and `$params` parameters of `upsert()` method in `DMLQueryBuilderInterface` and 
   `AbstractDMLQueryBuilder` and `AbstractQueryBuilder` classes;
+- Remove `ParamInterface`, use `Param` class instead;
+- Remove `getType()` and `getValue()` methods from `Param` class, use `$type` and `$value` properties instead;
+- Remove specific condition interfaces: `BetweenColumnsConditionInterface`, `BetweenConditionInterface`,
+  `ConjunctionConditionInterface`, `ExistConditionInterface`, `HashConditionInterface`, `InConditionInterface`,
+  `LikeConditionInterface`, `NotConditionInterface`, `OverlapsConditionInterface`, `SimpleConditionInterface`;
+- `ConditionInterface` moved to `Yiisoft\Db\QueryBuilder\Condition` namespace;
+- Remove `AbstractConjunctionCondition` and `AbstractOverlapsConditionBuilder`;
+- Change namespace of condition and condition builder classes;
+- Change namespace of expression and expression builder classes;
+- Remove `AbstractDsn` and `AbstractDsnSocket` classes and `DsnInterface` interface;
+- Remove `Hash` condition;
+- Remove `AbstractTableSchema` and add `TableSchema` instead;
+- Remove `BetweenColumns` condition;
+- Change `QueryBuilderInterface::getExpressionBuilder()` result type to `ExpressionBuilderInterface`;
+- Change `DQLQueryBuilderInterface::getExpressionBuilder()` result type to `ExpressionBuilderInterface`;
+- Rename `ArrayExpression` to `ArrayValue` and move it to `Yiisoft\Db\Expression\Value` namespace;
+- Rename `ArrayExpressionBuilder` to `ArrayValueBuilder` and move it to `Yiisoft\Db\Expression\Value\Builder` namespace;
+- Rename `JsonExpression` to `JsonValue` and move it to `Yiisoft\Db\Expression\Value` namespace;
+- Rename `JsonExpressionBuilder` to `JsonValueBuilder` and move it to `Yiisoft\Db\Expression\Value\Builder` namespace;
+- Rename `StructuredExpression` to `StructuredValue` and move it to `Yiisoft\Db\Expression\Value` namespace;`
+- Rename `StructuredExpressionBuilder` to `StructuredValueBuilder` and move it to `Yiisoft\Db\Expression\Value\Builder`
+  namespace;
+- Remove `StaleObjectException`, `UnknownMethodException`, `UnknownPropertyException` classes;
+- Remove `Expression::getParams()` method, use `$params` property instead;
+

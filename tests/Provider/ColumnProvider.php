@@ -10,14 +10,13 @@ use DateTimeImmutable;
 use DateTimeZone;
 use PDO;
 use stdClass;
-use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
-use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\JsonExpression;
-use Yiisoft\Db\Constant\PhpType;
-use Yiisoft\Db\Expression\StructuredExpression;
+use Yiisoft\Db\Expression\Value\JsonValue;
+use Yiisoft\Db\Expression\Value\StructuredValue;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\ArrayLazyColumn;
 use Yiisoft\Db\Schema\Column\BigIntColumn;
@@ -34,11 +33,13 @@ use Yiisoft\Db\Schema\Column\StructuredColumn;
 use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
 use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
+use Yiisoft\Db\Schema\Data\StringableStream;
 use Yiisoft\Db\Schema\Data\StructuredLazyArray;
 use Yiisoft\Db\Tests\Support\IntEnum;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\StringEnum;
 
+use function fclose;
 use function fopen;
 
 class ColumnProvider
@@ -47,17 +48,17 @@ class ColumnProvider
     {
         return [
             // [class, type, phpType]
-            'integer' => [IntegerColumn::class, ColumnType::INTEGER, PhpType::INT],
-            'bigint' => [BigIntColumn::class, ColumnType::BIGINT, PhpType::STRING],
-            'double' => [DoubleColumn::class, ColumnType::DOUBLE, PhpType::FLOAT],
-            'string' => [StringColumn::class, ColumnType::STRING, PhpType::STRING],
-            'binary' => [BinaryColumn::class, ColumnType::BINARY, PhpType::MIXED],
-            'bit' => [BitColumn::class, ColumnType::BIT, PhpType::INT],
-            'boolean' => [BooleanColumn::class, ColumnType::BOOLEAN, PhpType::BOOL],
-            'datetime' => [DateTimeColumn::class, ColumnType::DATETIME, DateTimeImmutable::class],
-            'array' => [ArrayColumn::class, ColumnType::ARRAY, PhpType::ARRAY],
-            'structured' => [StructuredColumn::class, ColumnType::STRUCTURED, PhpType::ARRAY],
-            'json' => [JsonColumn::class, ColumnType::JSON, PhpType::MIXED],
+            'integer' => [IntegerColumn::class, ColumnType::INTEGER],
+            'bigint' => [BigIntColumn::class, ColumnType::BIGINT],
+            'double' => [DoubleColumn::class, ColumnType::DOUBLE],
+            'string' => [StringColumn::class, ColumnType::STRING],
+            'binary' => [BinaryColumn::class, ColumnType::BINARY],
+            'bit' => [BitColumn::class, ColumnType::BIT],
+            'boolean' => [BooleanColumn::class, ColumnType::BOOLEAN],
+            'datetime' => [DateTimeColumn::class, ColumnType::DATETIME],
+            'array' => [ArrayColumn::class, ColumnType::ARRAY],
+            'structured' => [StructuredColumn::class, ColumnType::STRUCTURED],
+            'json' => [JsonColumn::class, ColumnType::JSON],
         ];
     }
 
@@ -147,10 +148,12 @@ class ColumnProvider
                     ['1', true],
                     ['0', false],
                     [new Param("\x10\x11\x12", PDO::PARAM_LOB), "\x10\x11\x12"],
-                    ['1', IntEnum::ONE],
-                    ['one', StringEnum::ONE],
-                    ['string', new Stringable('string')],
+                    [new Param('1', PDO::PARAM_LOB), IntEnum::ONE],
+                    [new Param('one', PDO::PARAM_LOB), StringEnum::ONE],
+                    [new Param('string', PDO::PARAM_LOB), new Stringable('string')],
                     [$resource = fopen('php://memory', 'rb'), $resource],
+                    [new Param($resource = fopen('php://memory', 'rb'), PDO::PARAM_LOB), new StringableStream($resource)],
+                    [new Param("\x10\x11\x12", PDO::PARAM_LOB), new StringableStream("\x10\x11\x12")],
                     [$expression = new Expression('expression'), $expression],
                 ],
             ],
@@ -433,16 +436,16 @@ class ColumnProvider
                 new JsonColumn(),
                 [
                     [null, null],
-                    [new JsonExpression(''), ''],
-                    [new JsonExpression(1), 1],
-                    [new JsonExpression(true), true],
-                    [new JsonExpression(false), false],
-                    [new JsonExpression('string'), 'string'],
-                    [new JsonExpression([1, 2, 3]), [1, 2, 3]],
-                    [new JsonExpression(['key' => 'value']), ['key' => 'value']],
-                    [new JsonExpression(['a' => 1]), ['a' => 1]],
-                    [new JsonExpression(new stdClass()), new stdClass()],
-                    [$expression = new JsonExpression([1, 2, 3]), $expression],
+                    [new JsonValue(''), ''],
+                    [new JsonValue(1), 1],
+                    [new JsonValue(true), true],
+                    [new JsonValue(false), false],
+                    [new JsonValue('string'), 'string'],
+                    [new JsonValue([1, 2, 3]), [1, 2, 3]],
+                    [new JsonValue(['key' => 'value']), ['key' => 'value']],
+                    [new JsonValue(['a' => 1]), ['a' => 1]],
+                    [new JsonValue(new stdClass()), new stdClass()],
+                    [$expression = new JsonValue([1, 2, 3]), $expression],
                     [$expression = new Expression('expression'), $expression],
                 ],
             ],
@@ -450,10 +453,10 @@ class ColumnProvider
                 $arrayCol = new ArrayColumn(),
                 [
                     [null, null],
-                    [new ArrayExpression([], $arrayCol), []],
-                    [new ArrayExpression([1, 2, 3], $arrayCol), [1, 2, 3]],
-                    [new ArrayExpression($iterator = new ArrayIterator([1, 2, 3]), $arrayCol), $iterator],
-                    [new ArrayExpression('[1,2,3]', $arrayCol), '[1,2,3]'],
+                    [new ArrayValue([], $arrayCol), []],
+                    [new ArrayValue([1, 2, 3], $arrayCol), [1, 2, 3]],
+                    [new ArrayValue($iterator = new ArrayIterator([1, 2, 3]), $arrayCol), $iterator],
+                    [new ArrayValue('[1,2,3]', $arrayCol), '[1,2,3]'],
                     [$expression = new Expression('expression'), $expression],
                 ],
             ],
@@ -461,10 +464,10 @@ class ColumnProvider
                 $structuredCol = new StructuredColumn(),
                 [
                     [null, null],
-                    [new StructuredExpression([], $structuredCol), []],
-                    [new StructuredExpression(['value' => 1, 'currency_code' => 'USD'], $structuredCol), ['value' => 1, 'currency_code' => 'USD']],
-                    [new StructuredExpression($iterator = new ArrayIterator(['value' => 1, 'currency_code' => 'USD']), $structuredCol), $iterator],
-                    [new StructuredExpression('[1,"USD"]', $structuredCol), '[1,"USD"]'],
+                    [new StructuredValue([], $structuredCol), []],
+                    [new StructuredValue(['value' => 1, 'currency_code' => 'USD'], $structuredCol), ['value' => 1, 'currency_code' => 'USD']],
+                    [new StructuredValue($iterator = new ArrayIterator(['value' => 1, 'currency_code' => 'USD']), $structuredCol), $iterator],
+                    [new StructuredValue('[1,"USD"]', $structuredCol), '[1,"USD"]'],
                     [$expression = new Expression('expression'), $expression],
                 ],
             ],
@@ -473,6 +476,9 @@ class ColumnProvider
 
     public static function dbTypecastColumnsWithException(): array
     {
+        $resource = fopen('php://memory', 'rb');
+        fclose($resource);
+
         return [
             'integer array' => [new IntegerColumn(), []],
             'integer resource' => [new IntegerColumn(), fopen('php://memory', 'r')],
@@ -485,6 +491,7 @@ class ColumnProvider
             'double stdClass' => [new DoubleColumn(), new stdClass()],
             'string array' => [new StringColumn(), []],
             'string stdClass' => [new StringColumn(), new stdClass()],
+            'binary closed' => [new BinaryColumn(), $resource],
             'binary array' => [new BinaryColumn(), []],
             'binary stdClass' => [new BinaryColumn(), new stdClass()],
             'datetime array' => [new DateTimeColumn(), []],
@@ -539,7 +546,7 @@ class ColumnProvider
                     [null, null],
                     ['', ''],
                     ["\x10\x11\x12", "\x10\x11\x12"],
-                    [$resource = fopen('php://memory', 'rb'), $resource],
+                    [new StringableStream($resource = fopen('php://memory', 'rb')), $resource],
                 ],
             ],
             'bit' => [
@@ -775,20 +782,20 @@ class ColumnProvider
                 new JsonColumn(),
                 [
                     [1, [
-                        new JsonExpression([1, 2, 3]),
-                        new JsonExpression(['key' => 'value']),
-                        new JsonExpression(['key' => 'value']),
+                        new JsonValue([1, 2, 3]),
+                        new JsonValue(['key' => 'value']),
+                        new JsonValue(['key' => 'value']),
                         null,
-                    ], [[1, 2, 3], ['key' => 'value'], new JsonExpression(['key' => 'value']), null]],
+                    ], [[1, 2, 3], ['key' => 'value'], new JsonValue(['key' => 'value']), null]],
                     [2, [
                         [
-                            new JsonExpression([1, 2, 3]),
-                            new JsonExpression(['key' => 'value']),
-                            new JsonExpression(['key' => 'value']),
+                            new JsonValue([1, 2, 3]),
+                            new JsonValue(['key' => 'value']),
+                            new JsonValue(['key' => 'value']),
                             null,
                         ],
                         null,
-                    ], [[[1, 2, 3], ['key' => 'value'], new JsonExpression(['key' => 'value']), null], null]],
+                    ], [[[1, 2, 3], ['key' => 'value'], new JsonValue(['key' => 'value']), null], null]],
                 ],
             ],
             ColumnType::STRUCTURED => [
@@ -797,7 +804,7 @@ class ColumnProvider
                     [
                         1,
                         [
-                            new StructuredExpression(['value' => 10, 'currency' => 'USD'], 'structured_type'),
+                            new StructuredValue(['value' => 10, 'currency' => 'USD'], 'structured_type'),
                             null,
                         ],
                         [
@@ -808,7 +815,7 @@ class ColumnProvider
                     [
                         2,
                         [[
-                            new StructuredExpression(['value' => 10, 'currency' => 'USD'], 'structured_type'),
+                            new StructuredValue(['value' => 10, 'currency' => 'USD'], 'structured_type'),
                             null,
                         ]],
                         [[
@@ -847,7 +854,7 @@ class ColumnProvider
             ['notNull', false, 'isNotNull', false],
             ['primaryKey', true, 'isPrimaryKey', true],
             ['primaryKey', false, 'isPrimaryKey', false],
-            ['reference', $fk = new ForeignKeyConstraint(), 'getReference', $fk],
+            ['reference', $fk = new ForeignKey(), 'getReference', $fk],
             ['reference', null, 'getReference', null],
             ['scale', 2, 'getScale', 2],
             ['scale', null, 'getScale', null],

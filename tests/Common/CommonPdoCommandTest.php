@@ -8,12 +8,10 @@ use PDO;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Yiisoft\Db\Command\Param;
-use Yiisoft\Db\Command\ParamInterface;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
-use Yiisoft\Db\Exception\InvalidParamException;
+use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class CommonPdoCommandTest extends TestCase
@@ -35,11 +33,10 @@ abstract class CommonPdoCommandTest extends TestCase
         $db = $this->getConnection(true);
 
         /** @psalm-var $sql */
-        $sql = DbHelper::replaceQuotes(
+        $sql = static::replaceQuotes(
             <<<SQL
             SELECT * FROM [[customer]] WHERE $field = $name
-            SQL,
-            $db->getDriverName(),
+            SQL
         );
         $command = $db->createCommand();
         $command->setSql($sql);
@@ -135,7 +132,7 @@ abstract class CommonPdoCommandTest extends TestCase
         $bindedValues = $command->getParams(false);
 
         $this->assertIsArray($bindedValues);
-        $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
+        $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
         $this->assertCount(2, $bindedValues);
 
         $param = new Param('str', 99);
@@ -143,7 +140,7 @@ abstract class CommonPdoCommandTest extends TestCase
         $bindedValues = $command->getParams(false);
 
         $this->assertIsArray($bindedValues);
-        $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
+        $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
         $this->assertCount(3, $bindedValues);
         $this->assertSame($param, $bindedValues['param']);
         $this->assertNotEquals($param, $bindedValues['int']);
@@ -153,7 +150,7 @@ abstract class CommonPdoCommandTest extends TestCase
         $bindedValues = $command->getParams(false);
 
         $this->assertIsArray($bindedValues);
-        $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
+        $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
         $this->assertCount(3, $bindedValues);
         $this->assertSame($param, $bindedValues['int']);
 
@@ -223,7 +220,7 @@ abstract class CommonPdoCommandTest extends TestCase
             }
         };
 
-        $this->expectException(InvalidParamException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Unknown query mode '1024'");
         $command->testExecute();
 

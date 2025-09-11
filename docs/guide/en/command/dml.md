@@ -113,3 +113,28 @@ $db->createCommand()->upsert(
     params: $params,
 )->execute();
 ```
+
+It also supports [function expressions](../expressions/functions.md) with multi-operands without values.
+In this case the current column value will be used as one of the operands and the insert value as another operand.
+
+```php
+use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Expression\Function\ArrayMerge;
+
+/** @var ConnectionInterface $db */
+$db->createCommand()->upsert(
+    'products',
+    [
+        'name' => 'Product A',
+        'sku' => 'A001', // SKU is unique
+        'price' => 100,
+        'stock' => 50,
+        'tags' => ['new', 'sale'], // Array or JSON column
+    ],
+    updateColumns: [
+        'tags' => new ArrayMerge(), // Merge the current tags with ['new', 'sale']
+        'price' => new Greatest(), // Greater of current price and 100
+        'stock' => new Least(), // Least of current stock and 50
+    ],
+)->execute();
+```

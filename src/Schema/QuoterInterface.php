@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
@@ -39,7 +39,9 @@ interface QuoterInterface
     public function getRawTableName(string $name): string;
 
     /**
-     * Splits full table name into parts.
+     * Splits a full table name into parts in the appropriate order, using the part name as the key.
+     *
+     * For example, "dbname.tblname" will be split into an array `['schemaName' => 'dbname', 'name' => 'tblname']`
      *
      * @param string $name The full name of the table.
      *

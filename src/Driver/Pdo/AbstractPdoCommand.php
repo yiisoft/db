@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Driver\Pdo;
 
+use InvalidArgumentException;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -12,12 +13,10 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Command\AbstractCommand;
-use Yiisoft\Db\Command\Param;
-use Yiisoft\Db\Command\ParamInterface;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
@@ -120,10 +119,10 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         }
 
         /**
-         * @psalm-var array<string, int>|ParamInterface|int $value
+         * @psalm-var array<string, int>|Param|int $value
          */
         foreach ($values as $name => $value) {
-            if ($value instanceof ParamInterface) {
+            if ($value instanceof Param) {
                 $this->params[$name] = $value;
             } else {
                 $type = $this->db->getSchema()->getDataType($value);
@@ -174,7 +173,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     protected function bindPendingParams(): void
     {
         foreach ($this->params as $name => $value) {
-            $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
+            $this->pdoStatement?->bindValue($name, $value->value, $value->type);
         }
     }
 
@@ -206,31 +205,18 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      */
     protected function internalExecute(): void
     {
-        $attempt = 0;
-
-        while (true) {
+        for ($attempt = 0; ; ++$attempt) {
             try {
-                if (
-                    ++$attempt === 1
-                    && $this->isolationLevel !== null
-                    && $this->db->getTransaction() === null
-                ) {
-                    $this->db->transaction(
-                        fn () => $this->internalExecute(),
-                        $this->isolationLevel
-                    );
-                } else {
-                    set_error_handler(
-                        static fn(int $errorNumber, string $errorString): bool =>
-                            str_starts_with($errorString, 'Packets out of order. Expected '),
-                        E_WARNING,
-                    );
+                set_error_handler(
+                    static fn(int $errorNumber, string $errorString): bool =>
+                        str_starts_with($errorString, 'Packets out of order. Expected '),
+                    E_WARNING,
+                );
 
-                    try {
-                        $this->pdoStatement?->execute();
-                    } finally {
-                        restore_error_handler();
-                    }
+                try {
+                    $this->pdoStatement?->execute();
+                } finally {
+                    restore_error_handler();
                 }
                 break;
             } catch (PDOException $e) {
@@ -245,13 +231,20 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     }
 
     /**
-     * @throws InvalidParamException
+     * @throws InvalidArgumentException
      */
     protected function internalGetQueryResult(int $queryMode): mixed
     {
         if ($queryMode === self::QUERY_MODE_CURSOR) {
             /** @psalm-suppress PossiblyNullArgument */
-            return new PdoDataReader($this->pdoStatement);
+            $dataReader = new PdoDataReader($this->pdoStatement);
+
+            if ($this->phpTypecasting && ($row = $dataReader->current()) !== false) {
+                /** @var array $row */
+                $dataReader->typecastColumns($this->getResultColumns(array_keys($row)));
+            }
+
+            return $dataReader;
         }
 
         if ($queryMode === self::QUERY_MODE_EXECUTE) {
@@ -293,7 +286,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
                 $result = $this->phpTypecastRows($result);
             }
         } else {
-            throw new InvalidParamException("Unknown query mode '$queryMode'");
+            throw new InvalidArgumentException("Unknown query mode '$queryMode'");
         }
 
         $this->pdoStatement?->closeCursor();

@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PhpType;
-use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
@@ -72,15 +71,8 @@ abstract class AbstractArrayColumn extends AbstractColumn
         return $this->dimension;
     }
 
-    /** @psalm-mutation-free */
-    public function getPhpType(): string
-    {
-        return PhpType::ARRAY;
-    }
-
     /**
      * @param iterable|LazyArrayInterface|QueryInterface|string|null $value
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function dbTypecast(mixed $value): ExpressionInterface|null
     {
@@ -88,6 +80,6 @@ abstract class AbstractArrayColumn extends AbstractColumn
             return $value;
         }
 
-        return new ArrayExpression($value, $this);
+        return new ArrayValue($value, $this);
     }
 }

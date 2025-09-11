@@ -6,15 +6,13 @@ namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Throwable;
-use Yiisoft\Db\Command\Param;
-use Yiisoft\Db\Command\ParamInterface;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ContextInterface;
 use Yiisoft\Db\Profiler\ProfilerInterface;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -40,11 +38,10 @@ abstract class AbstractCommandTest extends TestCase
         $command = $db->createCommand($sql);
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            static::replaceQuotes(
                 <<<SQL
-                SELECT [[id]], [[t]].[[name]] FROM [[customer]] t
-                SQL,
-                $db->getDriverName(),
+                SELECT [[id]], [[t.name]] FROM [[customer]] t
+                SQL
             ),
             $command->getSql(),
         );
@@ -85,7 +82,7 @@ abstract class AbstractCommandTest extends TestCase
         $bindedValues = $command->getParams(false);
 
         $this->assertIsArray($bindedValues);
-        $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
+        $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
         $this->assertCount(2, $bindedValues);
 
         $param = new Param('str', 99);
@@ -93,7 +90,7 @@ abstract class AbstractCommandTest extends TestCase
         $bindedValues = $command->getParams(false);
 
         $this->assertIsArray($bindedValues);
-        $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
+        $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
         $this->assertCount(3, $bindedValues);
         $this->assertEquals($param, $bindedValues['param']);
         $this->assertNotEquals($param, $bindedValues['int']);
@@ -103,7 +100,7 @@ abstract class AbstractCommandTest extends TestCase
         $bindedValues = $command->getParams(false);
 
         $this->assertIsArray($bindedValues);
-        $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
+        $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
         $this->assertCount(3, $bindedValues);
         $this->assertEquals($param, $bindedValues['int']);
     }

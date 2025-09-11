@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Constraint\ForeignKey;
 
 /**
  * The interface must be implemented by a column factory class. It should create an instance of {@see ColumnInterface}
@@ -15,6 +15,7 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
  * @psalm-type ColumnInfo = array{
  *     autoIncrement?: bool,
  *     check?: string|null,
+ *     collation?: string|null,
  *     column?: ColumnInterface|null,
  *     columns?: array<string, ColumnInterface>,
  *     comment?: string|null,
@@ -30,7 +31,7 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
  *     primaryKey?: bool,
  *     name?: string|null,
  *     notNull?: bool,
- *     reference?: ForeignKeyConstraint|null,
+ *     reference?: ForeignKey|null,
  *     scale?: int|null,
  *     schema?: string|null,
  *     size?: int|null,

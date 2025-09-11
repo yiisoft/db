@@ -10,7 +10,6 @@ use Stringable;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\GettypeResult;
-use Yiisoft\Db\Constant\PhpType;
 
 use function gettype;
 use function is_int;
@@ -48,12 +47,6 @@ class BigIntColumn extends AbstractColumn
             },
             default => $this->throwWrongTypeException(gettype($value)),
         };
-    }
-
-    /** @psalm-mutation-free */
-    public function getPhpType(): string
-    {
-        return PhpType::STRING;
     }
 
     public function phpTypecast(mixed $value): string|null

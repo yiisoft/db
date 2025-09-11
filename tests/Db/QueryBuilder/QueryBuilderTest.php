@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -18,7 +18,6 @@ use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\QueryBuilder;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -32,6 +31,31 @@ use function stream_context_create;
 final class QueryBuilderTest extends AbstractQueryBuilderTest
 {
     use TestTrait;
+
+    public function testBase(): void
+    {
+        $db = $this->getConnection();
+
+        $sql = (new Query($db))
+            ->select('id')
+            ->distinct()
+            ->selectOption('TOP (10)')
+            ->from('customer')
+            ->leftJoin('profile', 'customer.id=profile.user_id')
+            ->where('customer.age>19')
+            ->groupBy('customer.group_id')
+            ->having('COUNT(customer.id)>1')
+            ->orderBy(['customer.name' => SORT_DESC])
+            ->limit(20)
+            ->for('UPDATE')
+            ->createCommand()
+            ->getRawSql();
+
+        $this->assertSame(
+            'SELECT DISTINCT TOP (10) [id] FROM [customer] LEFT JOIN [profile] ON customer.id=profile.user_id WHERE customer.age>19 GROUP BY [customer].[group_id] HAVING COUNT(customer.id)>1 ORDER BY [customer].[name] DESC LIMIT 20 FOR UPDATE',
+            $sql,
+        );
+    }
 
     public function testAddDefaultValue(): void
     {
@@ -100,7 +124,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
+            self::replaceQuotes(
                 <<<SQL
                 CREATE TABLE [[test]] (
                 \t[[id]] integer PRIMARY KEY AUTOINCREMENT,
@@ -110,8 +134,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 \t[[created_at]] datetime NOT NULL,
                 \tUNIQUE test_email_unique (email)
                 )
-                SQL,
-                $db->getDriverName(),
+                SQL
             ),
             $qb->createTable(
                 'test',
@@ -159,7 +182,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     {
         $db = $this->getConnection();
 
-        $this->expectException(Exception::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $expression = new class () implements ExpressionInterface {
         };
@@ -223,7 +246,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array|string $condition,
         array $params,
         string $expectedSql,
-        array $expectedParams
+        array $expectedParams = [],
     ): void {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
@@ -240,7 +263,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
-        string|array $expectedSQL,
+        string|array $expectedSql,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
@@ -341,26 +364,17 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $column = ColumnBuilder::json();
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
-                "CREATE TABLE [json_table] (\n\t[json_col] json CHECK (json_valid([json_col]))\n)",
-                $db->getDriverName(),
-            ),
+            self::replaceQuotes("CREATE TABLE [json_table] (\n\t[json_col] json CHECK (json_valid([json_col]))\n)"),
             $qb->createTable('json_table', ['json_col' => $column]),
         );
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
-                'ALTER TABLE [json_table] ADD [json_col] json',
-                $db->getDriverName(),
-            ),
+            self::replaceQuotes('ALTER TABLE [json_table] ADD [json_col] json'),
             $qb->addColumn('json_table', 'json_col', $column),
         );
 
         $this->assertSame(
-            DbHelper::replaceQuotes(
-                'ALTER TABLE [json_table] CHANGE [json_col] [json_col] json',
-                $db->getDriverName(),
-            ),
+            self::replaceQuotes('ALTER TABLE [json_table] CHANGE [json_col] [json_col] json'),
             $qb->alterColumn('json_table', 'json_col', $column),
         );
     }
@@ -370,30 +384,30 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
-        $dmlBuilder = Assert::getInaccessibleProperty($qb, 'dmlBuilder');
-        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+        $dmlBuilder = Assert::getPropertyValue($qb, 'dmlBuilder');
+        $typecasting = Assert::getPropertyValue($dmlBuilder, 'typecasting');
 
         $this->assertTrue($typecasting);
 
         $dmlBuilder = $dmlBuilder->withTypecasting(false);
-        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+        $typecasting = Assert::getPropertyValue($dmlBuilder, 'typecasting');
 
         $this->assertFalse($typecasting);
 
         $dmlBuilder = $dmlBuilder->withTypecasting();
-        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+        $typecasting = Assert::getPropertyValue($dmlBuilder, 'typecasting');
 
         $this->assertTrue($typecasting);
 
         $qb = $qb->withTypecasting(false);
-        $dmlBuilder = Assert::getInaccessibleProperty($qb, 'dmlBuilder');
-        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+        $dmlBuilder = Assert::getPropertyValue($qb, 'dmlBuilder');
+        $typecasting = Assert::getPropertyValue($dmlBuilder, 'typecasting');
 
         $this->assertFalse($typecasting);
 
         $qb = $qb->withTypecasting();
-        $dmlBuilder = Assert::getInaccessibleProperty($qb, 'dmlBuilder');
-        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+        $dmlBuilder = Assert::getPropertyValue($qb, 'dmlBuilder');
+        $typecasting = Assert::getPropertyValue($dmlBuilder, 'typecasting');
 
         $this->assertTrue($typecasting);
 

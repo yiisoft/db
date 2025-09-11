@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema\Column;
 
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
-use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
+use Yiisoft\Db\Schema\Column\CollatableColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
+use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\Column\StructuredColumn;
 use Yiisoft\Db\Tests\AbstractColumnTest;
 use Yiisoft\Db\Tests\Support\Stub\Column;
@@ -198,19 +200,6 @@ final class ColumnTest extends AbstractColumnTest
         $this->assertFalse($column->isNotNull());
     }
 
-    public function testPrecision(): void
-    {
-        $column = new Column();
-
-        $this->assertNull($column->getPrecision());
-        $this->assertSame($column, $column->precision(10));
-        $this->assertSame(10, $column->getPrecision());
-
-        $column->precision(0);
-
-        $this->assertSame(0, $column->getPrecision());
-    }
-
     public function testPrimaryKey(): void
     {
         $column = new Column();
@@ -231,7 +220,7 @@ final class ColumnTest extends AbstractColumnTest
     public function testReference(): void
     {
         $column = new Column();
-        $fk = new ForeignKeyConstraint();
+        $fk = new ForeignKey();
 
         $this->assertNull($column->getReference());
         $this->assertSame($column, $column->reference($fk));
@@ -348,9 +337,9 @@ final class ColumnTest extends AbstractColumnTest
             $arrayCol->dimension($dimension);
             $dbValue = $arrayCol->dbTypecast($value);
 
-            $this->assertInstanceOf(ArrayExpression::class, $dbValue);
-            $this->assertSame($arrayCol, $dbValue->getType());
-            $this->assertEquals($value, $dbValue->getValue());
+            $this->assertInstanceOf(ArrayValue::class, $dbValue);
+            $this->assertSame($arrayCol, $dbValue->type);
+            $this->assertEquals($value, $dbValue->value);
         }
     }
 
@@ -365,5 +354,15 @@ final class ColumnTest extends AbstractColumnTest
         $this->assertSame([], $structuredCol->getColumns());
         $this->assertSame($structuredCol, $structuredCol->columns($columns));
         $this->assertSame($columns, $structuredCol->getColumns());
+    }
+
+    public function testStringColumnCollation(): void
+    {
+        $stringCol = new StringColumn();
+
+        $this->assertInstanceOf(CollatableColumnInterface::class, $stringCol);
+        $this->assertNull($stringCol->getCollation());
+        $this->assertSame($stringCol, $stringCol->collation('utf8mb4'));
+        $this->assertSame('utf8mb4', $stringCol->getCollation());
     }
 }

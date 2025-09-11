@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema;
 
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Quoter;
 use Yiisoft\Db\Tests\AbstractQuoterTest;
@@ -82,7 +82,7 @@ final class QuoterTest extends AbstractQuoterTest
     {
         $quoter = new Quoter('`', '"');
 
-        $this->assertSame(['schema', 'table'], $quoter->getTableNameParts('"schema"."table"'));
+        $this->assertSame(['schemaName' => 'schema', 'name' => 'table'], $quoter->getTableNameParts('"schema"."table"'));
     }
 
     public function testQuoteSqlWithTablePrefix(): void

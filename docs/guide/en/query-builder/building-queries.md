@@ -38,3 +38,6 @@ All the query building methods return the query object itself, which allows you 
 - [For](../query/for.md)
 - [Union](../query/union.md)
 - [WithQuery](../query/with-query.md)
+
+Also see:
+- [Expressions](../expressions/expressions.md) for using expressions in queries.

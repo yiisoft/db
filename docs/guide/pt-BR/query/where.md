@@ -139,10 +139,6 @@ O operando 1 deve ser o nome da coluna e os operandos 2 e 3 devem ser os valores
 
 Por exemplo, `['between', 'id', 1,10]` irá gerar `id BETWEEN 1 AND 10`.
 
-Caso você precise construir uma condição onde o valor esteja entre duas colunas `(like 11 BETWEEN min_id AND max_id)`,
-
-você deve usar `Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition`.
-
 ### not between
 
 Semelhante a `between` exceto que `BETWEEN` é substituído por `NOT BETWEEN` na condição gerada.
@@ -251,16 +247,16 @@ Internamente, os formatos descritos são convertidos implicitamente para o forma
 então é possível combinar formatos em uma única condição:
 
 ```php
-use Yiisoft\Db\QueryBuilder\Condition\InCondition;
-use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
+use Yiisoft\Db\QueryBuilder\Condition\In;
+use Yiisoft\Db\QueryBuilder\Condition\OrX;
 use Yiisoft\Db\Query\Query;
 
 /** @var Query $query */
 
 $query->andWhere(
-    new OrCondition(
+    new OrX(
         [
-            new InCondition('type', 'in', $types),
+            new In('type', 'in', $types),
             ['like', 'name', '%good%'],
             'disabled=false',
         ],
@@ -272,10 +268,13 @@ A conversão do formato operador para o formato objeto é realizada de acordo
 com a propriedade `Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder::conditionClasses`
 que mapeia nomes de operadores para nomes de classes representativos.
 
-- `AND`, `OR` => `Yiisoft\Db\QueryBuilder\Condition\ConjunctionCondition`.
-- `NOT` => `Yiisoft\Db\QueryBuilder\Condition\NotCondition`.
-- `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\InCondition`.
-- `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\BetweenCondition`.
+- `AND` => `Yiisoft\Db\QueryBuilder\Condition\AndX`;
+- `OR` => `Yiisoft\Db\QueryBuilder\Condition\OrX`;
+- `NOT` => `Yiisoft\Db\QueryBuilder\Condition\Not`;
+- `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\In`;
+- `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\Between`;
+- `ARRAY OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\ArrayOverlaps`;
+- `JSON OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\JsonOverlaps`.
 
 ## Anexando condições
 

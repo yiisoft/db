@@ -20,5 +20,6 @@
     <RiskyTruthyFalsyComparison errorLevel="suppress" />
     <MissingClassConstType errorLevel="suppress" />
     <ClassMustBeFinal errorLevel="suppress" />
+    <MoreSpecificImplementedParamType errorLevel="suppress" />
   </issueHandlers>
 </psalm>

@@ -7,14 +7,27 @@ namespace Yiisoft\Db\Syntax;
 use function explode;
 use function preg_match;
 use function preg_match_all;
+use function preg_replace;
 use function str_replace;
 use function strlen;
 use function strtolower;
 use function substr;
+use function substr_count;
 use function trim;
 
 /**
  * Parses column definition string. For example, `string(255)` or `int unsigned`.
+ *
+ * @psalm-type ExtraInfo = array{
+ *     check?: string,
+ *     collation?: string,
+ *     comment?: string,
+ *     defaultValueRaw?: string,
+ *     extra?: string,
+ *     notNull?: bool,
+ *     unique?: bool,
+ *     unsigned?: bool
+ * }
  */
 class ColumnDefinitionParser
 {
@@ -27,6 +40,7 @@ class ColumnDefinitionParser
      *
      * @psalm-return array{
      *     check?: string,
+     *     collation?: string,
      *     comment?: string,
      *     defaultValueRaw?: string,
      *     dimension?: positive-int,
@@ -76,15 +90,7 @@ class ColumnDefinitionParser
     }
 
     /**
-     * @psalm-return array{
-     *     check?: string,
-     *     comment?: string,
-     *     defaultValueRaw?: string,
-     *     extra?: string,
-     *     notNull?: bool,
-     *     unique?: bool,
-     *     unsigned?: bool
-     * }
+     * @psalm-return ExtraInfo
      */
     protected function extraInfo(string $extra): array
     {
@@ -96,52 +102,68 @@ class ColumnDefinitionParser
         $bracketsPattern = '(\(((?>[^()]+)|(?-2))*\))';
         $defaultPattern = "/\\s*\\bDEFAULT\\s+('(?:[^']|'')*'|\"(?:[^\"]|\"\")*\"|[^(\\s]*$bracketsPattern?\\S*)/i";
 
-        if (preg_match($defaultPattern, $extra, $matches) === 1) {
-            $info['defaultValueRaw'] = $matches[1];
-            $extra = str_replace($matches[0], '', $extra);
-        }
+        $extra = $this->parseStringValue($extra, $defaultPattern, 'defaultValueRaw', $info);
+        $extra = $this->parseStringValue($extra, "/\\s*\\bCOMMENT\\s+'((?:[^']|'')*)'/i", 'comment', $info);
+        $extra = $this->parseStringValue($extra, "/\\s*\\bCHECK\\s+$bracketsPattern/i", 'check', $info);
+        $extra = $this->parseStringValue($extra, '/\s*\bCOLLATE\s+(\S+)/i', 'collation', $info);
+        $extra = $this->parseBoolValue($extra, '/\s*\bUNSIGNED\b/i', 'unsigned', $info);
+        $extra = $this->parseBoolValue($extra, '/\s*\bUNIQUE\b/i', 'unique', $info);
+        $extra = $this->parseBoolValue($extra, '/\s*\bNOT\s+NULL\b/i', 'notNull', $info);
 
-        if (preg_match("/\\s*\\bCOMMENT\\s+'((?:[^']|'')*)'/i", $extra, $matches) === 1) {
-            $info['comment'] = str_replace("''", "'", $matches[1]);
-            $extra = str_replace($matches[0], '', $extra);
-        }
+        if (empty($info['notNull'])) {
+            $extra = $this->parseBoolValue($extra, '/\s*\bNULL\b/i', 'notNull', $info);
 
-        if (preg_match("/\\s*\\bCHECK\\s+$bracketsPattern/i", $extra, $matches) === 1) {
-            $info['check'] = substr($matches[1], 1, -1);
-            $extra = str_replace($matches[0], '', $extra);
-        }
-
-        /** @var string $extra */
-        $extra = preg_replace('/\s*\bUNSIGNED\b/i', '', $extra, 1, $count);
-        if ($count > 0) {
-            $info['unsigned'] = true;
-        }
-
-        /** @var string $extra */
-        $extra = preg_replace('/\s*\bUNIQUE\b/i', '', $extra, 1, $count);
-        if ($count > 0) {
-            $info['unique'] = true;
-        }
-
-        /** @var string $extra */
-        $extra = preg_replace('/\s*\bNOT\s+NULL\b/i', '', $extra, 1, $count);
-        if ($count > 0) {
-            $info['notNull'] = true;
-        } else {
-            /** @var string $extra */
-            $extra = preg_replace('/\s*\bNULL\b/i', '', $extra, 1, $count);
-            if ($count > 0) {
+            if (!empty($info['notNull'])) {
                 $info['notNull'] = false;
             }
         }
 
-        $extra = trim($extra);
+        /** @psalm-var ExtraInfo $info */
+        if (!empty($info['comment'])) {
+            $info['comment'] = str_replace("''", "'", $info['comment']);
+        }
+
+        if (!empty($info['check'])) {
+            $info['check'] = substr($info['check'], 1, -1);
+        }
 
         if (!empty($extra)) {
             $info['extra'] = $extra;
         }
 
         return $info;
+    }
+
+    /**
+     * @psalm-param non-empty-string $pattern
+     */
+    protected function parseStringValue(string $extra, string $pattern, string $name, array &$info): string
+    {
+        if (!empty($extra) && preg_match($pattern, $extra, $matches) === 1) {
+            $info[$name] = $matches[1];
+            return trim(str_replace($matches[0], '', $extra));
+        }
+
+        return $extra;
+    }
+
+    /**
+     * @psalm-param non-empty-string $pattern
+     */
+    protected function parseBoolValue(string $extra, string $pattern, string $name, array &$info): string
+    {
+        if (empty($extra)) {
+            return '';
+        }
+
+        /** @psalm-suppress PossiblyNullArgument */
+        $extra = trim(preg_replace($pattern, '', $extra, 1, $count));
+
+        if ($count > 0) {
+            $info[$name] = true;
+        }
+
+        return $extra;
     }
 
     /**

@@ -23,7 +23,7 @@ abstract class AbstractSchemaTest extends TestCase
 
         $schema = $db->getSchema();
 
-        $this->assertNull($schema->getDefaultSchema());
+        $this->assertSame('', $schema->getDefaultSchema());
     }
 
     public function testGetDataType(): void
@@ -62,7 +62,7 @@ abstract class AbstractSchemaTest extends TestCase
         $schema = $db->getSchema();
         $schema->refresh();
 
-        $this->assertSame([], Assert::getInaccessibleProperty($schema, 'tableMetadata'));
-        $this->assertSame([], Assert::getInaccessibleProperty($schema, 'tableNames'));
+        $this->assertSame([], Assert::getPropertyValue($schema, 'tableMetadata'));
+        $this->assertSame([], Assert::getPropertyValue($schema, 'tableNames'));
     }
 }

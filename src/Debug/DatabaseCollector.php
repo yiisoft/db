@@ -181,22 +181,20 @@ final class DatabaseCollector implements SummaryCollectorInterface
     public function getSummary(): array
     {
         return [
-            'db' => [
-                'queries' => [
-                    'error' => count(
-                        array_filter($this->queries, fn (array $query) => $query['status'] === self::QUERY_STATUS_ERROR)
-                    ),
-                    'total' => count($this->queries),
-                ],
-                'transactions' => [
-                    'error' => count(
-                        array_filter(
-                            $this->transactions,
-                            fn (array $query) => $query['status'] === self::TRANSACTION_STATUS_ROLLBACK
-                        )
-                    ),
-                    'total' => count($this->transactions),
-                ],
+            'queries' => [
+                'error' => count(
+                    array_filter($this->queries, fn (array $query) => $query['status'] === self::QUERY_STATUS_ERROR)
+                ),
+                'total' => count($this->queries),
+            ],
+            'transactions' => [
+                'error' => count(
+                    array_filter(
+                        $this->transactions,
+                        static fn (array $query) => $query['status'] === self::TRANSACTION_STATUS_ROLLBACK
+                    )
+                ),
+                'total' => count($this->transactions),
             ],
         ];
     }

@@ -14,6 +14,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class AbstractQueryTest extends TestCase
@@ -53,7 +54,7 @@ abstract class AbstractQueryTest extends TestCase
     }
 
     /**
-     * @depends testFilterWhereWithHashFormat
+     * @depends testFilterWhereWithKeyValueFormat
      * @depends testFilterWhereWithOperatorFormat
      *
      * @throws NotSupportedException
@@ -111,10 +112,7 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame(['and', ['>', 'id', 1], ['>', 'id', 2]], $query->getHaving());
     }
 
-    /**
-     * @throws NotSupportedException
-     */
-    public function testAndFilterHavingWithHashFormat(): void
+    public function testAndFilterHavingWithKeyValueFormat(): void
     {
         $db = $this->getConnection();
 
@@ -209,10 +207,7 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame([], $column);
     }
 
-    /**
-     * @throws NotSupportedException
-     */
-    public function testFilterHavingWithHashFormat(): void
+    public function testFilterHavingWithKeyValueFormat(): void
     {
         $db = $this->getConnection();
 
@@ -263,7 +258,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame($condition, $query->getHaving());
 
-        $query->andFilterHaving(['or like', 'id', '']);
+        $query->andFilterHaving(['like', 'id', '', 'conjunction' => LikeConjunction::Or]);
 
         $this->assertSame($condition, $query->getHaving());
 
@@ -271,7 +266,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame($condition, $query->getHaving());
 
-        $query->andFilterHaving(['or not like', 'id', null]);
+        $query->andFilterHaving(['not like', 'id', null, 'conjunction' => LikeConjunction::Or]);
 
         $this->assertSame($condition, $query->getHaving());
 
@@ -298,7 +293,7 @@ abstract class AbstractQueryTest extends TestCase
     /**
      * @throws NotSupportedException
      */
-    public function testFilterWhereWithHashFormat(): void
+    public function testFilterWhereWithKeyValueFormat(): void
     {
         $db = $this->getConnection();
 
@@ -349,7 +344,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame($condition, $query->getWhere());
 
-        $query->andFilterWhere(['or like', 'id', '']);
+        $query->andFilterWhere(['like', 'id', '', 'conjunction' => LikeConjunction::Or]);
 
         $this->assertSame($condition, $query->getWhere());
 
@@ -357,7 +352,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame($condition, $query->getWhere());
 
-        $query->andFilterWhere(['or not like', 'id', null]);
+        $query->andFilterWhere(['not like', 'id', null, 'conjunction' => LikeConjunction::Or]);
 
         $this->assertSame($condition, $query->getWhere());
 
@@ -464,10 +459,7 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame(5, $query->getOffset());
     }
 
-    /**
-     * @throws NotSupportedException
-     */
-    public function testOrFilterHavingHashFormat(): void
+    public function testOrFilterHavingKeyValueFormat(): void
     {
         $db = $this->getConnection();
 
@@ -477,10 +469,7 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame(['status' => 1], $query->getHaving());
     }
 
-    /**
-     * @throws NotSupportedException
-     */
-    public function testOrFilterWhereHashFormat(): void
+    public function testOrFilterWhereKeyValueFormat(): void
     {
         $db = $this->getConnection();
 

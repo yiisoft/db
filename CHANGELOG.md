@@ -2,6 +2,9 @@
 
 ## 2.0.0 under development
 
+- Enh #996: Adapt summary data in debug collector (@rustamwin)
+- Chg #990: Delete `Yiisoft\Db\Exception\InvalidArgumentException` and `Yiisoft\Db\Exception\InvalidParamException` and
+  use `\InvalidArgumentException` instead (@DikoIbragimov)
 - New #913: Add methods `SchemaInterface::hasSchema()`, `SchemaInterface::hasTable()`, `SchemaInterface::hasView()` (@evil1)
 - Enh #820: Support `Traversable` values for `AbstractDMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #815: Refactor `Query::column()` method (@Tigrov) 
@@ -10,7 +13,7 @@
 - Enh #806, #964: Build `Expression` instances inside `Expression::$params` when build a query using `QueryBuilder` (@Tigrov)
 - Enh #766: Allow `ColumnInterface` as column type. (@Tigrov)
 - Bug #828: Fix `float` type when use `AbstractCommand::getRawSql()` method (@Tigrov)
-- New #752, #974: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
+- New #752, #974, #1013: Implement `ColumnInterface` classes according to the data type of database table columns
   for type casting performance (@Tigrov)
 - Enh #829: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilderInterface` and `CommandInterface`
   and change parameters from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
@@ -36,7 +39,7 @@
 - Enh #865: Raise minimum PHP version to `^8.1` with minor refactoring (@Tigrov, @vjik)
 - Enh #798: Allow `QueryInterface::one()` and `QueryInterface::all()` to return objects (@darkdef, @Tigrov)
 - Enh #872: Use `#[\SensitiveParameter]` attribute to mark sensitive parameters (@heap-s)
-- New #864, #897, #898, #950: Realize column factory (@Tigrov)
+- New #864, #897, #898, #950, #1009: Realize column factory (@Tigrov, @vjik)
 - Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #877: Separate column type constants (@Tigrov)
 - New #878: Realize `ColumnBuilder` class (@Tigrov)
@@ -46,11 +49,11 @@
 - Enh #881: Refactor `ColumnSchemaInterface` and `AbstractColumnSchema` (@Tigrov)
 - New #882: Move `ArrayColumnSchema` and `StructuredColumnSchema` classes from `db-pgsql` package (@Tigrov)
 - New #883, #901, #922: Add `ColumnDefinitionBuilder` class and `QueryBuilderInterface::buildColumnDefinition()` method (@Tigrov)
-- Enh #885: Refactor `AbstractDsn` class (@Tigrov)
+- Enh #885, #1005: Refactor DSN classes (@Tigrov)
 - Chg #889: Update `AbstractDMLQueryBuilder::insertBatch()` method (@Tigrov)
 - Enh #890: Add properties of `AbstractColumnSchema` class to constructor (@Tigrov)
 - New #899: Add `ColumnSchemaInterface::hasDefaultValue()` and `ColumnSchemaInterface::null()` methods (@Tigrov)
-- New #902, #983: Add `QueryBuilderInterface::prepareParam()` and `QueryBuilderInterface::prepareValue()` methods (@Tigrov)
+- New #902, #982, #983, #995: Add `prepareParam()` and `prepareValue()` methods in `QueryBuilderInterface` (@Tigrov)
 - Enh #902: Refactor `Quoter::quoteValue()` method (@Tigrov)
 - New #906: Add `ServerInfoInterface` and its implementation (@Tigrov)
 - Enh #905: Use `AbstractColumnDefinitionBuilder` to generate table column SQL representation (@Tigrov)
@@ -74,6 +77,7 @@
 - New #939: Add `caseSensitive` option to like condition (@vjik)
 - New #942: Allow PHP backed enums as values (@Tigrov)
 - Enh #943: Add `getCacheKey()` and `getCacheTag()` methods to `AbstractPdoSchema` class (@Tigrov)
+- Enh #730: Add `ExpressionBuilderInterface::build()` (@samdark)
 - Enh #944: Added `setWhere()` as a forced method to overwrite `where()` (@lav45)
 - Enh #925, #951: Add callback to `Query::all()` and `Query::one()` methods (@Tigrov, @vjik)
 - New #954: Add `DbArrayHelper::arrange()` method (@Tigrov)
@@ -86,7 +90,7 @@
 - Enh #963: Make `Query::andHaving()` similar to `Query::andWhere()` (@Tigrov)
 - New #964: Add `QueryBuilderInterface::replacePlaceholders()` method (@Tigrov)
 - Enh #879: Rename `getLastInsertID()` method in `ConnectionInterface` to `getLastInsertId()` (@vjik)
-- New #967: Add `FOR` clause to query (@vjik)
+- New #967, #1059: Add `FOR` clause to query (@vjik)
 - Chg #972: Change in query "distinct" flag type from `bool|null` to `bool` (@vjik)
 - New #973, #976: Add `CommandInterface::upsertReturningPks()` method (@Tigrov)
 - New #973, #976: Add `upsertReturning()` method to `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
@@ -94,9 +98,58 @@
 - Bug #978: Fix memory leaking in `Command::exists()` method (@Tigrov)
 - Chg #980: Add constructor with DB connection to `AbstractCommand` (@vjik)
 - Enh #979: Allow `ExpressionInterface` for column definitions when create table (@Tigrov)
-- Enh #982: Reduce binding parameters (@Tigrov)
+- Enh #981, #1004: Refactor constraints (@Tigrov)
+- Enh #982, #995, #1044: Reduce binding parameters, add `QueryBuilderInterface::buildValue()` method (@Tigrov, @vjik)
 - New #984: Add `createQuery()` and `select()` methods to `ConnectionInterface` (@Tigrov)
 - Chg #985: Rename `insertWithReturningPks()` to `insertReturningPks()` in `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
+- Enh #992: Add optional type casting to `DataReaderInterface` using columns (@Tigrov)
+- New #988, #1053: Add `CaseExpression` and `CaseExpressionBuilder` to build `CASE-WHEN-THEN-ELSE` SQL expressions (@Tigrov)
+- Enh #991: Improve types in `ConnectionInterface::transaction()` (@kikara)
+- Chg #998: Add `yiisoft/db-implementation` virtual package as dependency (@vjik)
+- Chg #999: Remove `requireTransaction()` method and `$isolationLevel` property from `AbstractCommand` (@vjik)
+- Chg #1000, #1007, #1027: Add compare conditions: `Equals`, `NotEquals`, `GreaterThan`, `GreaterThanOrEqual`,
+  `LessThan` and `LessThanOrEqual`. Remove `Hash` condition in favor `Equals` and `In` usage (@vjik)
+- Chg #1001: Remove `ParamInterface` (@vjik)
+- Chg #1001: Add public properties `$type` and `$value` to `Param` class instead of `getType()` and `getValue()` methods that were removed (@vjik)
+- Chg #1002: Remove specific condition interfaces (@vjik)
+- Chg #1003, #1006: Refactor namespace of condition objects and use promoted properties instead of getters (@vjik)
+- Enh #1010: Improve `Quoter::getTableNameParts()` method (@Tigrov)
+- Enh #1011: Refactor `TableSchemaInterface` and `AbstractSchema` (@Tigrov)
+- Enh #1011: Remove `AbstractTableSchema` and add `TableSchema` instead (@Tigrov)
+- New #1013: Add `StringableStream` class to cast binary column values to `string` using `(string) $value` (@Tigrov)
+- Chg #1014: Replace `getEscapingReplacements()`/`setEscapingReplacements()` methods with `escape` constructor parameter 
+  in `Like` condition (@vjik)
+- Enh #1016: Refactor `AbstractDMLQueryBuilder::getTableUniqueColumnNames()` method (@Tigrov)
+- New #1015: Add mode parameter to `Like` condition (@vjik)
+- Chg #1019: Split `In` condition to `In` and `NotIn` (@vjik)
+- Chg #1028: Split `Exists` condition to `Exists` and `NotExists` (@vjik)
+- Chg #1018, #1024: Remove `BetweenColumns` in favor `Between` with `ColumnName` usage (@vjik)
+- Chg #1017: Split `Between` condition to `Between` and `NotBetween` (@vjik)
+- New #1020: Support column's collation (@Tigrov)
+- Chg #1021: Move conjunction type from operator string value to `Like` condition constructor parameter (@vjik)
+- Chg #1023: Split `Like` condition to `Like` and `NotLike` (@vjik)
+- New #1024: Add `ColumnName` and `Value` expressions (@vjik)  
+- Chg #1025: Move expression builders to `Yiisoft\Db\Expression\Builder` namespace (@vjik)
+- Chg #1026: Remove `precision()`, `getPrecision()` and `getPhpType()` methods from `ColumnInterface` (@vjik)
+- New #1033: Add `All` and `None` conditions (@vjik)
+- New #1034: Add `ConnectionInterface::getColumnBuilderClass()` method (@Tigrov)
+- Enh #1031: Optimize SQL generation for `Not` condition (@vjik)
+- Chg #1037: Change result type of `QueryBuilderInterface::getExpressionBuilder()` and
+  `DQLQueryBuilderInterface::getExpressionBuilder()` methods to `ExpressionBuilderInterface` (@vjik)
+- New #1029, #1048: Add functions as expressions (@Tigrov)
+- Enh #1042: Refactor `AbstractDMLQueryBuilder` class to `upsert()` method (@Tigrov)
+- New #1040, #1043: Add `DateTimeValue` class (@vjik, @Tigrov)
+- Enh #1045: Support multi-operand functions in `CommandInterface::upsert()` and `DMLQueryBuilderInterface::upsert()` 
+  methods (@Tigrov)
+- Enh #1049: Refactor `AbstractDQLQueryBuilder::buildSelect()` to fix possible bugs (@Tigrov)
+- Enh #1051: Refactor `Quoter` class (@Tigrov)
+- Chg #1052: Rearrange expression namespaces (@Tigrov)
+- Chg #1054: Rename `ArrayExpression` to `ArrayValue`, `JsonExpression` to `JsonValue`,
+  `StructuredExpression` to `StructuredValue` (@Tigrov)
+- Chg #1056: Remove unused exceptions (@Tigrov)
+- New #1057: Add `CompositeExpression` class (@vjik)
+- Chg #1058: Refactor `Expression` class: declare `$expression` and `$params` as public readonly properties, remove 
+  `getParams()` method (@vjik)
 
 ## 1.3.0 March 21, 2024
 

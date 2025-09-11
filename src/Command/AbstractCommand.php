@@ -8,6 +8,7 @@ use Closure;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
@@ -114,12 +115,7 @@ abstract class AbstractCommand implements CommandInterface
     protected const QUERY_MODE_SCALAR = 32;
 
     /**
-     * @var string|null Transaction isolation level.
-     */
-    protected string|null $isolationLevel = null;
-
-    /**
-     * @var ParamInterface[] Parameters to use.
+     * @var Param[] Parameters to use.
      */
     protected array $params = [];
 
@@ -343,8 +339,7 @@ abstract class AbstractCommand implements CommandInterface
         $buildParams = [];
 
         foreach ($this->params as $name => $value) {
-            /** @psalm-var mixed */
-            $buildParams[$name] = $value->getValue();
+            $buildParams[$name] = $value->value;
         }
 
         return $buildParams;
@@ -664,19 +659,6 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Marks the command to execute in transaction.
-     *
-     * @param string|null $isolationLevel The isolation level to use for this transaction.
-     *
-     * {@see \Yiisoft\Db\Transaction\TransactionInterface::begin()} for details.
-     */
-    protected function requireTransaction(?string $isolationLevel = null): static
-    {
-        $this->isolationLevel = $isolationLevel;
-        return $this;
-    }
-
-    /**
      * Resets the command object, so it can be reused to build another SQL statement.
      */
     protected function reset(): void
@@ -684,7 +666,6 @@ abstract class AbstractCommand implements CommandInterface
         $this->sql = '';
         $this->params = [];
         $this->refreshTableName = null;
-        $this->isolationLevel = null;
         $this->retryHandler = null;
     }
 

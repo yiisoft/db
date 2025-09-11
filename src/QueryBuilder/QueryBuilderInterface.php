@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
-use Yiisoft\Db\Command\ParamInterface;
+use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
@@ -87,7 +87,7 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      *
      * @throws InvalidArgumentException When expression building isn't supported by this QueryBuilder.
      */
-    public function getExpressionBuilder(ExpressionInterface $expression): object;
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface;
 
     /**
      * Returns {@see ServerInfoInterface} instance that provides information about the database server.
@@ -100,10 +100,10 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
     public function getQuoter(): QuoterInterface;
 
     /**
-     * Converts a {@see ParamInterface} object to its SQL representation and quotes it if necessary.
+     * Converts a {@see Param} object to its SQL representation and quotes it if necessary.
      * Used when the bind parameter cannot be used in the SQL query.
      */
-    public function prepareParam(ParamInterface $param): string;
+    public function prepareParam(Param $param): string;
 
     /**
      * Converts a value to its SQL representation and quotes it if necessary.

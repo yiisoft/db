@@ -4,25 +4,44 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
-use Yiisoft\Db\Command\Param;
-use Yiisoft\Db\Command\ParamBuilder;
+use Yiisoft\Db\Expression\CompositeExpression;
+use Yiisoft\Db\Expression\CompositeExpressionBuilder;
+use Yiisoft\Db\Expression\Value\Param;
+use Yiisoft\Db\Expression\Value\Builder\ParamBuilder;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\ArrayExpression;
-use Yiisoft\Db\Expression\ArrayExpressionBuilder;
+use Yiisoft\Db\Expression\Value\ArrayValue;
+use Yiisoft\Db\Expression\Value\Builder\ArrayValueBuilder;
+use Yiisoft\Db\Expression\Value\ColumnName;
+use Yiisoft\Db\Expression\Value\Builder\ColumnNameBuilder;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilder;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Expression\JsonExpression;
-use Yiisoft\Db\Expression\JsonExpressionBuilder;
-use Yiisoft\Db\Expression\StructuredExpression;
-use Yiisoft\Db\Expression\StructuredExpressionBuilder;
-use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
+use Yiisoft\Db\Expression\Function\Builder\GreatestBuilder;
+use Yiisoft\Db\Expression\Function\Builder\LeastBuilder;
+use Yiisoft\Db\Expression\Function\Builder\LengthBuilder;
+use Yiisoft\Db\Expression\Function\Builder\LongestBuilder;
+use Yiisoft\Db\Expression\Function\Builder\ShortestBuilder;
+use Yiisoft\Db\Expression\Function\Greatest;
+use Yiisoft\Db\Expression\Function\Least;
+use Yiisoft\Db\Expression\Function\Length;
+use Yiisoft\Db\Expression\Function\Longest;
+use Yiisoft\Db\Expression\Function\Shortest;
+use Yiisoft\Db\Expression\Value\JsonValue;
+use Yiisoft\Db\Expression\Value\Builder\JsonValueBuilder;
+use Yiisoft\Db\Expression\Statement\CaseX;
+use Yiisoft\Db\Expression\Statement\Builder\CaseXBuilder;
+use Yiisoft\Db\Expression\Value\StructuredValue;
+use Yiisoft\Db\Expression\Value\Builder\StructuredValueBuilder;
+use Yiisoft\Db\Expression\Value\Value;
+use Yiisoft\Db\Expression\Value\Builder\ValueBuilder;
+use Yiisoft\Db\Expression\Value\DateTimeValue;
+use Yiisoft\Db\Expression\Value\Builder\DateTimeValueBuilder;
+use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\Simple;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryExpressionBuilder;
 use Yiisoft\Db\Query\QueryInterface;
@@ -31,10 +50,9 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use function array_filter;
 use function array_merge;
 use function array_shift;
+use function count;
 use function implode;
 use function is_array;
-use function is_bool;
-use function is_int;
 use function is_string;
 use function ltrim;
 use function preg_match;
@@ -56,7 +74,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      *
      * ```php
      * return [
-     *     'LIKE' => \Yiisoft\Db\Condition\LikeCondition::class,
+     *     'LIKE' => \Yiisoft\Db\QueryBuilder\Condition\Like::class,
      * ];
      * ```
      *
@@ -68,6 +86,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      *
      * @see setConditonClasses()
      * @see defaultConditionClasses()
+     *
+     * @psalm-var array<string, class-string<ConditionInterface>> $conditionClasses
      */
     protected array $conditionClasses = [];
     /**
@@ -86,7 +106,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      * {@see setExpressionBuilders()}
      * {@see defaultExpressionBuilders()}
      *
-     * @psalm-var array<string, class-string<ExpressionBuilderInterface>>
+     * @psalm-var array<class-string<ExpressionInterface>, class-string<ExpressionBuilderInterface>>
      */
     protected array $expressionBuilders = [];
 
@@ -109,10 +129,14 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $this->buildWhere($query->getWhere(), $params),
             $this->buildGroupBy($query->getGroupBy(), $params),
             $this->buildHaving($query->getHaving(), $params),
-            $this->buildFor($query->getFor()),
         ];
         $sql = implode($this->separator, array_filter($clauses));
         $sql = $this->buildOrderByAndLimit($sql, $query->getOrderBy(), $query->getLimit(), $query->getOffset(), $params);
+
+        $for = $this->buildFor($query->getFor());
+        if ($for !== '') {
+            $sql .= $this->separator . $for;
+        }
 
         $union = $this->buildUnion($query->getUnions(), $params);
 
@@ -174,9 +198,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function buildExpression(ExpressionInterface $expression, array &$params = []): string
     {
-        $builder = $this->queryBuilder->getExpressionBuilder($expression);
-        /** @psalm-suppress MixedMethodCall */
-        return (string) $builder->build($expression, $params);
+        return $this->queryBuilder
+            ->getExpressionBuilder($expression)
+            ->build($expression, $params);
     }
 
     public function buildFor(array $values): string
@@ -343,37 +367,31 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             return $select . ' *';
         }
 
+        $quoter = $this->quoter;
+
         foreach ($columns as $i => $column) {
-            if ($column instanceof ExpressionInterface) {
-                if (is_int($i)) {
-                    $columns[$i] = $this->buildExpression($column, $params);
-                } else {
-                    $columns[$i] = $this->buildExpression($column, $params) . ' AS '
-                        . $this->quoter->quoteColumnName($i);
-                }
-            } elseif (!is_string($column)) {
-                if (is_bool($column)) {
-                    $columns[$i] = $column ? 'TRUE' : 'FALSE';
-                } else {
-                    $columns[$i] = (string) $column;
+            $isIndexString = is_string($i);
+
+            if (!is_string($column)) {
+                $columns[$i] = $this->queryBuilder->buildValue($column, $params);
+            } elseif (!str_contains($column, '(')) {
+                if (!$isIndexString
+                    && preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $column, $matches) === 1
+                ) {
+                    $columns[$i] = $quoter->quoteColumnName($matches[1])
+                        . ' AS ' . $quoter->quoteSimpleColumnName($matches[2]);
+                    continue;
                 }
 
-                if (is_string($i)) {
-                    /** @psalm-var string $columns[$i] */
-                    $columns[$i] .= ' AS ' . $this->quoter->quoteColumnName($i);
-                }
-            } elseif (is_string($i) && $i !== $column) {
-                if (!str_contains($column, '(')) {
-                    $column = $this->quoter->quoteColumnName($column);
-                }
-                $columns[$i] = "$column AS " . $this->quoter->quoteColumnName($i);
-            } elseif (!str_contains($column, '(')) {
-                if (preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $column, $matches)) {
-                    $columns[$i] = $this->quoter->quoteColumnName($matches[1])
-                        . ' AS ' . $this->quoter->quoteColumnName($matches[2]);
-                } else {
-                    $columns[$i] = $this->quoter->quoteColumnName($column);
-                }
+                $columns[$i] = $quoter->quoteColumnName($column);
+            }
+
+            if ($isIndexString && $i !== $column) {
+                /**
+                 * @var string $i
+                 * @psalm-var string $columns[$i]
+                 */
+                $columns[$i] .= ' AS ' . $quoter->quoteColumnName($i);
             }
         }
 
@@ -441,19 +459,26 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         /** operator format: operator, operand 1, operand 2, ... */
         if (isset($condition[0])) {
             $operator = strtoupper((string) array_shift($condition));
-
-            /** @var string $className */
-            $className = $this->conditionClasses[$operator] ?? SimpleCondition::class;
-
-            /** @var ConditionInterface $className */
+            $className = $this->conditionClasses[$operator] ?? Simple::class;
             return $className::fromArrayDefinition($operator, $condition);
         }
 
-        /** hash format: 'column1' => 'value1', 'column2' => 'value2', ... */
-        return new HashCondition($condition);
+        $conditions = [];
+        foreach ($condition as $column => $value) {
+            if (!is_string($column)) {
+                throw new InvalidArgumentException('Condition array must have string keys.');
+            }
+            if (is_iterable($value) || $value instanceof QueryInterface) {
+                $conditions[] = new Condition\In($column, $value);
+                continue;
+            }
+            $conditions[] = new Condition\Equals($column, $value);
+        }
+
+        return count($conditions) === 1 ? $conditions[0] : new Condition\AndX(...$conditions);
     }
 
-    public function getExpressionBuilder(ExpressionInterface $expression): object
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface
     {
         $className = $expression::class;
 
@@ -497,25 +522,32 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      * Extend this method if you want to change default condition classes for the query builder.
      *
      * See {@see conditionClasses} docs for details.
+     *
+     * @psalm-return array<string, class-string<ConditionInterface>>
      */
     protected function defaultConditionClasses(): array
     {
         return [
-            'NOT' => Condition\NotCondition::class,
-            'AND' => Condition\AndCondition::class,
-            'OR' => Condition\OrCondition::class,
-            'BETWEEN' => Condition\BetweenCondition::class,
-            'NOT BETWEEN' => Condition\BetweenCondition::class,
-            'IN' => Condition\InCondition::class,
-            'NOT IN' => Condition\InCondition::class,
-            'LIKE' => Condition\LikeCondition::class,
-            'NOT LIKE' => Condition\LikeCondition::class,
-            'OR LIKE' => Condition\LikeCondition::class,
-            'OR NOT LIKE' => Condition\LikeCondition::class,
-            'EXISTS' => Condition\ExistsCondition::class,
-            'NOT EXISTS' => Condition\ExistsCondition::class,
-            'ARRAY OVERLAPS' => Condition\ArrayOverlapsCondition::class,
-            'JSON OVERLAPS' => Condition\JsonOverlapsCondition::class,
+            'NOT' => Condition\Not::class,
+            'AND' => Condition\AndX::class,
+            'OR' => Condition\OrX::class,
+            '=' => Condition\Equals::class,
+            '!=' => Condition\NotEquals::class,
+            '<>' => Condition\NotEquals::class,
+            '>' => Condition\GreaterThan::class,
+            '>=' => Condition\GreaterThanOrEqual::class,
+            '<' => Condition\LessThan::class,
+            '<=' => Condition\LessThanOrEqual::class,
+            'BETWEEN' => Condition\Between::class,
+            'NOT BETWEEN' => Condition\NotBetween::class,
+            'IN' => Condition\In::class,
+            'NOT IN' => Condition\NotIn::class,
+            'LIKE' => Condition\Like::class,
+            'NOT LIKE' => Condition\NotLike::class,
+            'EXISTS' => Condition\Exists::class,
+            'NOT EXISTS' => Condition\NotExists::class,
+            'ARRAY OVERLAPS' => Condition\ArrayOverlaps::class,
+            'JSON OVERLAPS' => Condition\JsonOverlaps::class,
         ];
     }
 
@@ -526,7 +558,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      *
      * See {@see expressionBuilders} docs for details.
      *
-     * @psalm-return array<string, class-string<ExpressionBuilderInterface>>
+     * @psalm-return array<class-string<ExpressionInterface>, class-string<ExpressionBuilderInterface>>
      */
     protected function defaultExpressionBuilders(): array
     {
@@ -534,20 +566,39 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Query::class => QueryExpressionBuilder::class,
             Param::class => ParamBuilder::class,
             Expression::class => ExpressionBuilder::class,
-            Condition\AbstractConjunctionCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
-            Condition\NotCondition::class => Condition\Builder\NotConditionBuilder::class,
-            Condition\AndCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
-            Condition\OrCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
-            Condition\BetweenCondition::class => Condition\Builder\BetweenConditionBuilder::class,
-            Condition\InCondition::class => Condition\Builder\InConditionBuilder::class,
-            Condition\LikeCondition::class => Condition\Builder\LikeConditionBuilder::class,
-            Condition\ExistsCondition::class => Condition\Builder\ExistsConditionBuilder::class,
-            SimpleCondition::class => Condition\Builder\SimpleConditionBuilder::class,
-            HashCondition::class => Condition\Builder\HashConditionBuilder::class,
-            Condition\BetweenColumnsCondition::class => Condition\Builder\BetweenColumnsConditionBuilder::class,
-            JsonExpression::class => JsonExpressionBuilder::class,
-            ArrayExpression::class => ArrayExpressionBuilder::class,
-            StructuredExpression::class => StructuredExpressionBuilder::class,
+            CompositeExpression::class => CompositeExpressionBuilder::class,
+            Condition\Not::class => Condition\Builder\NotBuilder::class,
+            Condition\AndX::class => Condition\Builder\LogicalBuilder::class,
+            Condition\OrX::class => Condition\Builder\LogicalBuilder::class,
+            Condition\Between::class => Condition\Builder\BetweenBuilder::class,
+            Condition\NotBetween::class => Condition\Builder\BetweenBuilder::class,
+            Condition\In::class => Condition\Builder\InBuilder::class,
+            Condition\NotIn::class => Condition\Builder\InBuilder::class,
+            Condition\Like::class => Condition\Builder\LikeBuilder::class,
+            Condition\NotLike::class => Condition\Builder\LikeBuilder::class,
+            Condition\Equals::class => Condition\Builder\CompareBuilder::class,
+            Condition\NotEquals::class => Condition\Builder\CompareBuilder::class,
+            Condition\GreaterThan::class => Condition\Builder\CompareBuilder::class,
+            Condition\GreaterThanOrEqual::class => Condition\Builder\CompareBuilder::class,
+            Condition\LessThan::class => Condition\Builder\CompareBuilder::class,
+            Condition\LessThanOrEqual::class => Condition\Builder\CompareBuilder::class,
+            Condition\Exists::class => Condition\Builder\ExistsBuilder::class,
+            Condition\NotExists::class => Condition\Builder\ExistsBuilder::class,
+            Condition\All::class => Condition\Builder\AllBuilder::class,
+            Condition\None::class => Condition\Builder\NoneBuilder::class,
+            Simple::class => Condition\Builder\SimpleBuilder::class,
+            JsonValue::class => JsonValueBuilder::class,
+            ArrayValue::class => ArrayValueBuilder::class,
+            StructuredValue::class => StructuredValueBuilder::class,
+            CaseX::class => CaseXBuilder::class,
+            ColumnName::class => ColumnNameBuilder::class,
+            Value::class => ValueBuilder::class,
+            DateTimeValue::class => DateTimeValueBuilder::class,
+            Length::class => LengthBuilder::class,
+            Greatest::class => GreatestBuilder::class,
+            Least::class => LeastBuilder::class,
+            Longest::class => LongestBuilder::class,
+            Shortest::class => ShortestBuilder::class,
         ];
     }
 

@@ -4,7 +4,7 @@ The `Yiisoft\Db\Query\Query::where()` method specifies the `WHERE` fragment of a
 You can use one of the four formats to specify a `WHERE` condition.
 
 - string format, `status=1`.
-- hash format, `['status' => 1, 'type' => 2]`.
+- key-value format, `['status' => 1, 'type' => 2]`.
 - operator format, `['like', 'name', 'test']`.
 - object format, `new LikeCondition('name', 'LIKE', 'test')`.
 
@@ -60,7 +60,7 @@ WHERE (`status` = 10) AND (`type` IS NULL) AND (`id` IN (4, 8, 15))
 
 As you can see, the query builder is intelligent enough to handle values that are nulls or arrays.
 
-You can also use subqueries with hash format like the following.
+You can also use subqueries with key-value format like the following.
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -78,7 +78,7 @@ The relevant part of SQL is:
 WHERE `id` IN (SELECT `id` FROM `user`)
 ```
 
-Using the hash format, Yii DB internally applies parameter binding for values, so in contrast to the string format,
+Using the key-value format, Yii DB internally applies parameter binding for values, so in contrast to the string format,
 here you don't have to add parameters manually.
 
 However, note that Yii DB never escapes column names, so if you pass a variable obtained from the user side as a column
@@ -104,7 +104,7 @@ Operator format allows you to specify arbitrary conditions in a programmatic way
 ['operator', 'operand1', 'operand2', ...]
 ```
 
-Where the operands can each be specified in string format, hash format or operator format recursively,
+Where the operands can each be specified in string format, key-value format or operator format recursively,
 while the operator can be one of the following:
 
 ### and
@@ -139,9 +139,17 @@ Operand 1 should be the column name, and operand 2 and 3 should be the starting 
 
 For example, `['between', 'id', 1,10]` will generate `id BETWEEN 1 AND 10`.
 
-In case you need to build a condition where value is between two columns `(like 11 BETWEEN min_id AND max_id)`,
+You can also use `Yiisoft\Db\Expression\Value\ColumnName` and `Yiisoft\Db\Expression\Value\Value` expressions:
 
-you should use `Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition`.
+```php
+use Yiisoft\Db\Expression\Value\ColumnName;
+use Yiisoft\Db\Expression\Value\Value;
+
+['between', new Value('2025-08-11'), new ColumnName('start_date'), new ColumnName('end_date')]
+```
+
+The `ColumnName` expression ensures proper quoting of column names, while `Value` expressions ensure proper parameter 
+binding for values.
 
 ### not between
 
@@ -181,15 +189,14 @@ When the value range is given as an array, many `LIKE` predicates will be genera
 
 For example, `['like', 'name', ['test', 'sample']]` will generate `name LIKE '%test%' AND name LIKE '%sample%'`.
 
-You may also give an optional third operand to specify how to escape special characters in the values.
-The operand should be an array of mappings from the special characters to their escaped counterparts.
+You may also provide an optional `escape` parameter to control whether special characters in the values should be 
+escaped. If `escape` is `true` (default), special characters like `%`, `_`, and `\` will be escaped and the values will
+be automatically wrapped with `%`. If `escape` is `false`, the values will be used as-is without any escaping or 
+wrapping.
 
-If this operand isn't provided, a default escape mapping will be used.
-
-You may use false or an empty array to indicate the values are already escaped and no escape should be applied.
-
-> Note: That when using an escape mapping (or the third operand isn't provided),
-> the values will be automatically inside within a pair of percentage characters.
+For example:
+- `['like', 'name', 'test']` will generate `name LIKE '%test%'` (default escaping)
+- `['like', 'name', 'test%', 'escape' => false]` will generate `name LIKE 'test%'` (no escaping or wrapping)
 
 Optionally, you can specify the case sensitivity of the `LIKE` condition by passing boolean value with `caseSensitive` 
 key, e.g. `['like', 'name', 'Ivan', 'caseSensitive' => true]`.
@@ -276,16 +283,16 @@ Internally, the formats described are implicitly converted to object format befo
 so it's possible to combine formats in a single condition:
 
 ```php
-use Yiisoft\Db\QueryBuilder\Condition\InCondition;
-use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
+use Yiisoft\Db\QueryBuilder\Condition\In;
+use Yiisoft\Db\QueryBuilder\Condition\OrX;
 use Yiisoft\Db\Query\Query;
 
 /** @var Query $query */
 
 $query->andWhere(
-    new OrCondition(
+    new OrX(
         [
-            new InCondition('type', 'in', $types),
+            new In('type', 'in', $types),
             ['like', 'name', '%good%'],
             'disabled=false',
         ],
@@ -297,12 +304,13 @@ Conversion from operator format into object format is performed according
 to `Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder::conditionClasses` property
 that maps operator names to representative class names.
 
-- `AND`, `OR` => `Yiisoft\Db\QueryBuilder\Condition\ConjunctionCondition`;
-- `NOT` => `Yiisoft\Db\QueryBuilder\Condition\NotCondition`;
-- `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\InCondition`;
-- `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\BetweenCondition`;
-- `ARRAY OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition`;
-- `JSON OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition`.
+- `AND` => `Yiisoft\Db\QueryBuilder\Condition\AndX`;
+- `OR` => `Yiisoft\Db\QueryBuilder\Condition\OrX`;
+- `NOT` => `Yiisoft\Db\QueryBuilder\Condition\Not`;
+- `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\In`;
+- `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\Between`;
+- `ARRAY OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\ArrayOverlaps`;
+- `JSON OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\JsonOverlaps`.
 
 ## Appending conditions
 
@@ -343,7 +351,7 @@ $query->filterWhere(['username' => $username, 'email' => $email]);
 ```
 
 The only difference between `Yiisoft\Db\Query\Query::filterWhere()` and `Yiisoft\Db\Query\Query::where()`
-is that the former will ignore empty values provided in the condition in hash format.
+is that the former will ignore empty values provided in the condition in key-value format.
 
 So, if `$email` is empty while `$username` isn't,
 the above code will result in the SQL condition `WHERE username=:username`.

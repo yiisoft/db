@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Expression\StructuredExpression;
+use Yiisoft\Db\Expression\Value\StructuredValue;
 
 /**
  * Represents an abstract structured column.
@@ -49,15 +48,8 @@ abstract class AbstractStructuredColumn extends AbstractColumn
         return $this->columns;
     }
 
-    /** @psalm-mutation-free */
-    public function getPhpType(): string
-    {
-        return PhpType::ARRAY;
-    }
-
     /**
      * @param array|object|string|null $value
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function dbTypecast(mixed $value): ExpressionInterface|null
     {
@@ -65,6 +57,6 @@ abstract class AbstractStructuredColumn extends AbstractColumn
             return $value;
         }
 
-        return new StructuredExpression($value, $this);
+        return new StructuredValue($value, $this);
     }
 }

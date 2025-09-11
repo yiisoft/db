@@ -6,6 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
+use Yiisoft\Db\Schema\Column\CollatableColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function in_array;
@@ -57,6 +58,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             . $this->buildDefault($column)
             . $this->buildComment($column)
             . $this->buildCheck($column)
+            . $this->buildCollate($column)
             . $this->buildReferences($column)
             . $this->buildExtra($column);
     }
@@ -122,6 +124,21 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
         $check = $column->getCheck();
 
         return !empty($check) ? " CHECK ($check)" : '';
+    }
+
+    /**
+     * Builds the collation clause for the column.
+     *
+     * @return string A string containing the COLLATE keyword and the collation name.
+     */
+    protected function buildCollate(ColumnInterface $column): string
+    {
+        if (!$column instanceof CollatableColumnInterface || empty($column->getCollation())) {
+            return '';
+        }
+
+        /** @psalm-suppress PossiblyNullOperand */
+        return ' COLLATE ' . $column->getCollation();
     }
 
     /**
@@ -211,7 +228,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     {
         $reference = $this->buildReferenceDefinition($column);
 
-        if ($reference === null) {
+        if ($reference === '') {
             return '';
         }
 
@@ -221,36 +238,31 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     /**
      * Builds the reference definition for the column.
      */
-    protected function buildReferenceDefinition(ColumnInterface $column): string|null
+    protected function buildReferenceDefinition(ColumnInterface $column): string
     {
         $reference = $column->getReference();
-        $table = $reference?->getForeignTableName();
 
-        if ($table === null) {
-            return null;
+        if ($reference === null || $reference->foreignTableName === '') {
+            return '';
         }
 
         $quoter = $this->queryBuilder->getQuoter();
-        $schema = $reference?->getForeignSchemaName();
 
-        $sql = $quoter->quoteTableName($table);
+        $sql = $reference->foreignSchemaName === ''
+            ? $quoter->quoteTableName($reference->foreignTableName)
+            : $quoter->quoteTableName($reference->foreignSchemaName)
+                . '.' . $quoter->quoteTableName($reference->foreignTableName);
 
-        if ($schema !== null) {
-            $sql = $quoter->quoteTableName($schema) . '.' . $sql;
+        if (!empty($reference->foreignColumnNames)) {
+            $sql .= ' (' . $this->queryBuilder->buildColumns($reference->foreignColumnNames) . ')';
         }
 
-        $columns = $reference?->getForeignColumnNames();
-
-        if (!empty($columns)) {
-            $sql .= ' (' . $this->queryBuilder->buildColumns($columns) . ')';
+        if ($reference->onDelete !== null) {
+            $sql .= $this->buildOnDelete($reference->onDelete);
         }
 
-        if (null !== $onDelete = $reference?->getOnDelete()) {
-            $sql .= $this->buildOnDelete($onDelete);
-        }
-
-        if (null !== $onUpdate = $reference?->getOnUpdate()) {
-            $sql .= $this->buildOnUpdate($onUpdate);
+        if ($reference->onUpdate !== null) {
+            $sql .= $this->buildOnUpdate($reference->onUpdate);
         }
 
         return $sql;

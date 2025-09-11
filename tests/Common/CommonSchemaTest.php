@@ -4,47 +4,30 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
-use JsonException;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
-use Throwable;
+use PHPUnit\Framework\Attributes\Depends;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\IndexType;
-use Yiisoft\Db\Constraint\CheckConstraint;
-use Yiisoft\Db\Constraint\Constraint;
-use Yiisoft\Db\Constraint\DefaultValueConstraint;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
-use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\Constraint\Check;
+use Yiisoft\Db\Constraint\DefaultValue;
+use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Provider\SchemaProvider;
-use Yiisoft\Db\Tests\Support\AnyCaseValue;
-use Yiisoft\Db\Tests\Support\AnyValue;
 use Yiisoft\Db\Tests\Support\Assert;
 
-use function array_keys;
 use function count;
-use function gettype;
-use function is_array;
-use function json_encode;
-use function ksort;
 use function mb_chr;
-use function str_replace;
-use function strtolower;
 
 abstract class CommonSchemaTest extends AbstractSchemaTest
 {
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testColumnComment(): void
     {
         $db = $this->getConnection();
@@ -67,9 +50,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columns
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'columns')]
     public function testColumns(array $columns, string $tableName): void
     {
         $this->assertTableColumns($columns, $tableName);
@@ -84,18 +65,13 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->assertNotNull($table);
 
-        $fk = $table->getForeignKeys();
+        $foreignKeys = $table->getForeignKeys();
+        $foreignKey = $foreignKeys['FK_composite_fk_order_item'];
 
-        $expectedKey = match ($db->getDriverName()) {
-            'mysql', 'sqlsrv' => $fk['FK_composite_fk_order_item'],
-            default => $fk['fk_composite_fk_order_item'],
-        };
-
-        $this->assertCount(1, $fk);
-        $this->assertTrue(isset($expectedKey));
-        $this->assertSame('order_item', $expectedKey[0]);
-        $this->assertSame('order_id', $expectedKey['order_id']);
-        $this->assertSame('item_id', $expectedKey['item_id']);
+        $this->assertCount(1, $foreignKeys);
+        $this->assertSame('FK_composite_fk_order_item', $foreignKey->name);
+        $this->assertSame('order_item', $foreignKey->foreignTableName);
+        $this->assertSame(['order_id', 'item_id'], $foreignKey->foreignColumnNames);
 
         $db->close();
     }
@@ -115,11 +91,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testFindUniquesIndexes(): void
     {
         $db = $this->getConnection();
@@ -175,7 +146,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $uniqueIndexes = $schema->findUniqueIndexes($tableSchema);
 
-        $this->assertSame(['someCol2Unique' => ['someCol2'], 'somecolUnique' => ['somecol']], $uniqueIndexes);
+        $this->assertEquals(['somecolUnique' => ['somecol'], 'someCol2Unique' => ['someCol2']], $uniqueIndexes);
 
         /** @link https://github.com/yiisoft/yii2/issues/13814 */
         $command->createIndex(
@@ -190,8 +161,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $uniqueIndexes = $schema->findUniqueIndexes($tableSchema);
 
-        $this->assertSame(
-            ['another unique index' => ['someCol3'], 'someCol2Unique' => ['someCol2'], 'somecolUnique' => ['somecol']],
+        $this->assertEquals(
+            ['somecolUnique' => ['somecol'], 'someCol2Unique' => ['someCol2'], 'another unique index' => ['someCol3']],
             $uniqueIndexes,
         );
 
@@ -217,7 +188,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $schema = $db->getSchema();
 
-        $this->assertNull($schema->getDefaultSchema());
+        $this->assertSame('', $schema->getDefaultSchema());
 
         $db->close();
     }
@@ -244,7 +215,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         foreach ($tableChecks as $checks) {
             $this->assertIsArray($checks);
-            $this->assertContainsOnlyInstancesOf(CheckConstraint::class, $checks);
+            $this->assertContainsOnlyInstancesOf(Check::class, $checks);
         }
 
         $db->close();
@@ -261,7 +232,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         foreach ($tableDefaultValues as $defaultValues) {
             $this->assertIsArray($defaultValues);
-            $this->assertContainsOnlyInstancesOf(DefaultValueConstraint::class, $defaultValues);
+            $this->assertContainsOnlyInstancesOf(DefaultValue::class, $defaultValues);
         }
 
         $db->close();
@@ -278,7 +249,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         foreach ($tableForeignKeys as $foreignKeys) {
             $this->assertIsArray($foreignKeys);
-            $this->assertContainsOnlyInstancesOf(ForeignKeyConstraint::class, $foreignKeys);
+            $this->assertContainsOnlyInstancesOf(ForeignKey::class, $foreignKeys);
         }
 
         $db->close();
@@ -295,7 +266,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         foreach ($tableIndexes as $indexes) {
             $this->assertIsArray($indexes);
-            $this->assertContainsOnlyInstancesOf(IndexConstraint::class, $indexes);
+            $this->assertContainsOnlyInstancesOf(Index::class, $indexes);
         }
 
         $db->close();
@@ -309,7 +280,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $tablePks = $schema->getSchemaPrimaryKeys();
 
         $this->assertIsArray($tablePks);
-        $this->assertContainsOnlyInstancesOf(Constraint::class, $tablePks);
+        $this->assertContainsOnlyInstancesOf(Index::class, $tablePks);
 
         $db->close();
     }
@@ -325,7 +296,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         foreach ($tableUniques as $uniques) {
             $this->assertIsArray($uniques);
-            $this->assertContainsOnlyInstancesOf(Constraint::class, $uniques);
+            $this->assertContainsOnlyInstancesOf(Index::class, $uniques);
         }
 
         $db->close();
@@ -340,16 +311,12 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->assertIsArray($tableChecks);
 
-        $this->assertContainsOnlyInstancesOf(CheckConstraint::class, $tableChecks);
+        $this->assertContainsOnlyInstancesOf(Check::class, $tableChecks);
 
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::pdoAttributes
-     *
-     * @throws NotSupportedException
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'pdoAttributes')]
     public function testGetTableNames(array $pdoAttributes): void
     {
         $db = $this->getConnection(true);
@@ -380,7 +347,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     public function testHasTable(): void
     {
         $db = $this->getConnection(true);
-
         $schema = $db->getSchema();
 
         $tempTableName = 'testTemporaryTable';
@@ -402,9 +368,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchema
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'tableSchema')]
     public function testGetTableSchema(string $name, string $expectedName): void
     {
         $db = $this->getConnection(true);
@@ -417,11 +381,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::pdoAttributes
-     *
-     * @throws NotSupportedException
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'pdoAttributes')]
     public function testGetTableSchemas(array $pdoAttributes): void
     {
         $db = $this->getConnection(true);
@@ -446,11 +406,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws Exception
-     */
     public function testGetTableSchemaWithAttrCase(): void
     {
         $db = $this->getConnection(true);
@@ -514,11 +469,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testQuoterEscapingValue(): void
     {
         $db = $this->getConnection(true);
@@ -551,9 +501,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @depends testSchemaCache
-     */
+    #[Depends('testSchemaCache')]
     public function testRefreshTableSchema(): void
     {
         $db = $this->getConnection(true);
@@ -569,10 +517,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testSchemaCache(): void
     {
         $db = $this->getConnection(true);
@@ -594,10 +538,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testSchemaCacheExtreme(): void
     {
         $db = $this->getConnection(true);
@@ -635,9 +575,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchemaCachePrefixes
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'tableSchemaCachePrefixes')]
     public function testTableSchemaCacheWithTablePrefixes(
         string $tablePrefix,
         string $tableName,
@@ -678,12 +616,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints
-     *
-     * @throws Exception
-     * @throws JsonException
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'constraints')]
     public function testTableSchemaConstraints(string $tableName, string $type, mixed $expected): void
     {
         if ($expected === false) {
@@ -692,20 +625,14 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $db = $this->getConnection(true);
         $schema = $db->getSchema();
-        $constraints = $schema->{'getTable' . ucfirst($type)}($tableName);
+        $constraints = $schema->{"getTable$type"}($tableName);
 
-        $this->assertMetadataEquals($expected, $constraints);
+        Assert::constraintsEquals($expected, $constraints);
 
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints
-     *
-     * @throws Exception
-     * @throws JsonException
-     * @throws InvalidConfigException
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'constraints')]
     public function testTableSchemaConstraintsWithPdoLowercase(string $tableName, string $type, mixed $expected): void
     {
         if ($expected === false) {
@@ -716,20 +643,14 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $schema = $db->getSchema();
         $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-        $constraints = $schema->{'getTable' . ucfirst($type)}($tableName, true);
+        $constraints = $schema->{"getTable$type"}($tableName, true);
 
-        $this->assertMetadataEquals($expected, $constraints);
+        Assert::constraintsEquals($expected, $constraints);
 
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints
-     *
-     * @throws Exception
-     * @throws JsonException
-     * @throws InvalidConfigException
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'constraints')]
     public function testTableSchemaConstraintsWithPdoUppercase(string $tableName, string $type, mixed $expected): void
     {
         if ($expected === false) {
@@ -742,7 +663,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
         $constraints = $schema->{'getTable' . ucfirst($type)}($tableName, true);
 
-        $this->assertMetadataEquals($expected, $constraints);
+        Assert::constraintsEquals($expected, $constraints);
 
         $db->close();
     }
@@ -773,38 +694,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @throws JsonException
-     */
-    protected function assertMetadataEquals($expected, $actual): void
-    {
-        switch (strtolower(gettype($expected))) {
-            case 'object':
-                $this->assertIsObject($actual);
-                break;
-            case 'array':
-                $this->assertIsArray($actual);
-                break;
-            case 'null':
-                $this->assertNull($actual);
-                break;
-        }
-
-        if (is_array($expected)) {
-            $this->normalizeArrayKeys($expected, false);
-            $this->normalizeArrayKeys($actual, false);
-        }
-
-        $this->normalizeConstraints($expected, $actual);
-
-        if (is_array($expected)) {
-            $this->normalizeArrayKeys($expected, true);
-            $this->normalizeArrayKeys($actual, true);
-        }
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    /**
      * @param ColumnInterface[] $columns
      */
     protected function assertTableColumns(array $columns, string $tableName): void
@@ -832,102 +721,27 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @throws JsonException
-     */
-    private function normalizeArrayKeys(array &$array, bool $caseSensitive): void
-    {
-        $newArray = [];
-
-        foreach ($array as $value) {
-            if ($value instanceof Constraint) {
-                $key = (array) $value;
-                unset(
-                    $key["\000Yiisoft\Db\Constraint\Constraint\000name"],
-                    $key["\u0000Yiisoft\\Db\\Constraint\\ForeignKeyConstraint\u0000foreignSchemaName"]
-                );
-
-                foreach ($key as $keyName => $keyValue) {
-                    if ($keyValue instanceof AnyCaseValue) {
-                        $key[$keyName] = $keyValue->value;
-                    } elseif ($keyValue instanceof AnyValue) {
-                        $key[$keyName] = '[AnyValue]';
-                    }
-                }
-
-                ksort($key, SORT_STRING);
-                $newArray[$caseSensitive
-                    ? json_encode($key, JSON_THROW_ON_ERROR)
-                    : strtolower(json_encode($key, JSON_THROW_ON_ERROR))] = $value;
-            } else {
-                $newArray[] = $value;
-            }
-        }
-
-        ksort($newArray, SORT_STRING);
-        $array = $newArray;
-    }
-
-    private function normalizeConstraints($expected, $actual): void
-    {
-        if (is_array($expected)) {
-            foreach ($expected as $key => $value) {
-                if (!$value instanceof Constraint || !isset($actual[$key]) || !$actual[$key] instanceof Constraint) {
-                    continue;
-                }
-
-                $this->normalizeConstraintPair($value, $actual[$key]);
-            }
-        } elseif ($expected instanceof Constraint && $actual instanceof Constraint) {
-            $this->normalizeConstraintPair($expected, $actual);
-        }
-    }
-
-    private function normalizeConstraintPair(Constraint $expectedConstraint, Constraint $actualConstraint): void
-    {
-        if ($expectedConstraint::class !== $actualConstraint::class) {
-            return;
-        }
-
-        foreach (array_keys((array) $expectedConstraint) as $name) {
-            if ($expectedConstraint->getName() instanceof AnyValue) {
-                $actualConstraint->name($expectedConstraint->getName());
-            } elseif ($expectedConstraint->getName() instanceof AnyCaseValue) {
-                $actualConstraintName = $actualConstraint->getName();
-
-                $this->assertIsString($actualConstraintName);
-
-                $actualConstraint->name(new AnyCaseValue($actualConstraintName));
-            }
-        }
-    }
-
     public function testWorkWithUniqueConstraint(): void
     {
         $tableName = 'test_table_with';
-        $constraintName = 't_constraint';
+        $indexName = 't_constraint';
         $columnName = 't_field';
 
         $db = $this->getConnection();
 
         $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName);
-        $db->createCommand()->addUnique($tableName, $constraintName, $columnName)->execute();
+        $db->createCommand()->addUnique($tableName, $indexName, $columnName)->execute();
 
-        /** @var Constraint[] $constraints */
-        $constraints = $db->getSchema()->getTableUniques($tableName, true);
+        $this->assertEquals(
+            [$indexName => new Index($indexName, [$columnName], true)],
+            $db->getSchema()->getTableUniques($tableName),
+        );
 
-        $this->assertIsArray($constraints);
-        $this->assertCount(1, $constraints);
-        $this->assertInstanceOf(Constraint::class, $constraints[0]);
-        $this->assertEquals($constraintName, $constraints[0]->getName());
-        $this->assertEquals([$columnName], $constraints[0]->getColumnNames());
+        $db->createCommand()->dropUnique($tableName, $indexName)->execute();
 
-        $db->createCommand()->dropUnique($tableName, $constraintName)->execute();
+        $constraints = $db->getSchema()->getTableUniques($tableName);
 
-        $constraints = $db->getSchema()->getTableUniques($tableName, true);
-
-        $this->assertIsArray($constraints);
-        $this->assertCount(0, $constraints);
+        $this->assertSame([], $constraints);
 
         $this->dropTableForIndexAndConstraintTests($db, $tableName);
 
@@ -949,22 +763,21 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $db->getQuoter()->quoteColumnName($columnName) . ' > 0'
         )->execute();
 
-        /** @var CheckConstraint[] $constraints */
+        /** @var Check[] $constraints */
         $constraints = $db->getSchema()->getTableChecks($tableName, true);
 
         $this->assertIsArray($constraints);
         $this->assertCount(1, $constraints);
-        $this->assertInstanceOf(CheckConstraint::class, $constraints[0]);
-        $this->assertEquals($constraintName, $constraints[0]->getName());
-        $this->assertEquals([$columnName], $constraints[0]->getColumnNames());
-        $this->assertStringContainsString($columnName, $constraints[0]->getExpression());
+        $this->assertInstanceOf(Check::class, $constraints[$constraintName]);
+        $this->assertEquals($constraintName, $constraints[$constraintName]->name);
+        $this->assertEquals([$columnName], $constraints[$constraintName]->columnNames);
+        $this->assertStringContainsString($columnName, $constraints[$constraintName]->expression);
 
         $db->createCommand()->dropCheck($tableName, $constraintName)->execute();
 
         $constraints = $db->getSchema()->getTableChecks($tableName, true);
 
-        $this->assertIsArray($constraints);
-        $this->assertCount(0, $constraints);
+        $this->assertSame([], $constraints);
 
         $this->dropTableForIndexAndConstraintTests($db, $tableName);
 
@@ -982,22 +795,21 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName);
         $db->createCommand()->addDefaultValue($tableName, $constraintName, $columnName, 919)->execute();
 
-        /** @var DefaultValueConstraint[] $constraints */
+        /** @var DefaultValue[] $constraints */
         $constraints = $db->getSchema()->getTableDefaultValues($tableName, true);
 
         $this->assertIsArray($constraints);
         $this->assertCount(1, $constraints);
-        $this->assertInstanceOf(DefaultValueConstraint::class, $constraints[0]);
-        $this->assertEquals($constraintName, $constraints[0]->getName());
-        $this->assertEquals([$columnName], $constraints[0]->getColumnNames());
-        $this->assertStringContainsString('919', $constraints[0]->getValue());
+        $this->assertEquals(
+            new DefaultValue($constraintName, [$columnName], '((919))'),
+            $constraints[$constraintName]
+        );
 
         $db->createCommand()->dropDefaultValue($tableName, $constraintName)->execute();
 
         $constraints = $db->getSchema()->getTableDefaultValues($tableName, true);
 
-        $this->assertIsArray($constraints);
-        $this->assertCount(0, $constraints);
+        $this->assertSame([], $constraints);
 
         $this->dropTableForIndexAndConstraintTests($db, $tableName);
 
@@ -1015,11 +827,10 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName);
         $db->createCommand()->addPrimaryKey($tableName, $constraintName, $columnName)->execute();
 
-        $constraints = $db->getSchema()->getTablePrimaryKey($tableName, true);
-
-        $this->assertInstanceOf(Constraint::class, $constraints);
-        $this->assertEquals($constraintName, $constraints->getName());
-        $this->assertEquals([$columnName], $constraints->getColumnNames());
+        $this->assertEquals(
+            new Index($constraintName, [$columnName], true, true),
+            $db->getSchema()->getTablePrimaryKey($tableName),
+        );
 
         $db->createCommand()->dropPrimaryKey($tableName, $constraintName)->execute();
 
@@ -1032,9 +843,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::withIndexDataProvider
-     */
+    #[DataProviderExternal(SchemaProvider::class, 'withIndexDataProvider')]
     public function testWorkWithIndex(
         ?string $indexType = null,
         ?string $indexMethod = null,
@@ -1047,49 +856,20 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $columnName = 't_field';
 
         $db = $this->getConnection();
-        $qb = $db->getQueryBuilder();
+        $command = $db->createCommand();
 
         $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName, $columnType);
 
-        $indexSql = $qb->createIndex($tableName, $indexName, $columnName, $indexType, $indexMethod);
-        $db->createCommand($indexSql)->execute();
+        $command->createIndex($tableName, $indexName, $columnName, $indexType, $indexMethod)->execute();
 
-        /** @var IndexConstraint[] $indexes */
-        $indexes = $db->getSchema()->getTableIndexes($tableName, true);
-        $this->assertIsArray($indexes);
-        $this->assertCount(1, $indexes);
-        $this->assertInstanceOf(IndexConstraint::class, $indexes[0]);
-        $this->assertEquals($indexName, $indexes[0]->getName());
-        $this->assertEquals([$columnName], $indexes[0]->getColumnNames());
-        $this->assertSame($isUnique, $indexes[0]->isUnique());
-        $this->assertSame($isPrimary, $indexes[0]->isPrimary());
+        $this->assertEquals(
+            [$indexName => new Index($indexName, [$columnName], $isUnique, $isPrimary)],
+            $db->getSchema()->getTableIndexes($tableName),
+        );
 
         $this->dropTableForIndexAndConstraintTests($db, $tableName);
 
         $db->close();
-    }
-
-    /**
-     * @link https://github.com/yiisoft/db/issues/718
-     */
-    public function testIssue718(): void
-    {
-        $db = $this->getConnection();
-
-        if ($db->getDriverName() === 'oci' || $db->getDriverName() === 'sqlite' || $db->getDriverName() === 'sqlsrv') {
-            $this->markTestSkipped('Test is not supported by sqlite, oci and sqlsrv drivers.');
-        }
-
-        if ($db->getTableSchema('{{%table}}', true) !== null) {
-            $db->createCommand()->dropTable('{{%table}}')->execute();
-        }
-
-        $db->createCommand()->createTable('{{%table}}', ['array' => 'json'])->execute();
-        $db->createCommand()->insert('{{%table}}', ['array' => [1, 2]])->execute();
-
-        $result = str_replace(' ', '', $db->createCommand('SELECT * FROM {{%table}}')->queryScalar());
-
-        $this->assertSame('[1,2]', trim($result));
     }
 
     #[DataProviderExternal(SchemaProvider::class, 'resultColumns')]

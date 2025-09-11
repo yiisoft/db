@@ -6,13 +6,13 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryPartsInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**
@@ -313,9 +313,9 @@ interface DQLQueryBuilderInterface
     /**
      * @throws InvalidArgumentException
      *
-     * @return object Instance of {@see ExpressionBuilderInterface} for the given expression.
+     * @return ExpressionBuilderInterface Instance of {@see ExpressionBuilderInterface} for the given expression.
      */
-    public function getExpressionBuilder(ExpressionInterface $expression): object;
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface;
 
     /**
      * Creates a `SELECT EXISTS()` SQL statement.
@@ -334,6 +334,8 @@ interface DQLQueryBuilderInterface
      * ```php
      * ['LIKE' => \Yiisoft\Db\Condition\LikeCondition::class]
      * ```
+     *
+     * @psalm-param array<string, class-string<ConditionInterface>> $classes
      */
     public function setConditionClasses(array $classes): void;
 
@@ -342,7 +344,7 @@ interface DQLQueryBuilderInterface
      *
      * @param string[] $builders Array of builders to merge with the pre-defined ones in property.
      *
-     * @psalm-param array<string, class-string<ExpressionBuilderInterface>> $builders
+     * @psalm-param array<class-string<ExpressionInterface>, class-string<ExpressionBuilderInterface>> $builders
      */
     public function setExpressionBuilders(array $builders): void;
 

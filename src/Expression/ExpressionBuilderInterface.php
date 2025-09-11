@@ -15,7 +15,21 @@ namespace Yiisoft\Db\Expression;
  * database queries, without having to worry about the specific syntax of the underlying database.
  *
  * @see ExpressionInterface
+ *
+ * @template T as ExpressionInterface
  */
 interface ExpressionBuilderInterface
 {
+    /**
+     * Method builds the raw SQL from the expression that will not be additionally
+     * escaped or quoted.
+     *
+     * @param ExpressionInterface $expression The expression to be built.
+     * @param array $params The binding parameters.
+     * @throws \InvalidArgumentException If builder can't handle expression passed.
+     * @return string The raw SQL that will not be additionally escaped or quoted.
+     *
+     * @psalm-param T $expression
+     */
+    public function build(ExpressionInterface $expression, array &$params = []): string;
 }

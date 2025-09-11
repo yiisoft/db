@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Throwable;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
@@ -300,9 +296,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const TYPE_JSON = 'json';
 
     /**
-     * @return string|null The default schema name.
+     * @return string The default schema name.
      */
-    public function getDefaultSchema(): string|null;
+    public function getDefaultSchema(): string;
 
     /**
      * Determines the SQL data type for the given PHP data value.
@@ -328,9 +324,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available schema names. If this is `false`, schema names fetched
      * before (if available) will be returned.
      *
-     * @throws NotSupportedException
-     *
-     * @return array All schemas name in the database, except system schemas.
+     * @return string[] All schemas name in the database, except system schemas.
      */
     public function getSchemaNames(bool $refresh = false): array;
 
@@ -343,9 +337,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available table names. If this is `false`, table names fetched
      * before (if available) will be returned.
      *
-     * @throws NotSupportedException
-     *
-     * @return array All tables name in the database.
+     * @return string[] All tables name in the database.
      */
     public function getTableNames(string $schema = '', bool $refresh = false): array;
 
@@ -363,11 +355,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @param TableSchemaInterface $table The table metadata.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
+     * @return string[][] All unique indexes for the given table.
      *
-     * @return array All unique indexes for the given table.
+     * @deprecated Use {@see getTableUniques()}. Will be removed in version 3.0
      */
     public function findUniqueIndexes(TableSchemaInterface $table): array;
 
@@ -390,9 +380,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
-     * @return array The metadata for all tables in the database.
-     *
-     * @psalm-return list<TableSchemaInterface>
+     * @return TableSchemaInterface[] The metadata for all tables in the database.
      */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array;
 
@@ -429,7 +417,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available view names. If this is false, view names fetched
      * before (if available) will be returned.
      *
-     * @return array All view names in the database.
+     * @return string[] All view names in the database.
      */
     public function getViewNames(string $schema = '', bool $refresh = false): array;
 

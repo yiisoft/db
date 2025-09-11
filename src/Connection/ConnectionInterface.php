@@ -16,6 +16,7 @@ use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Query\QueryPartsInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -94,6 +95,13 @@ interface ConnectionInterface
      * It does nothing if the connection is already closed.
      */
     public function close(): void;
+
+    /**
+     * Returns the column builder class name for the current DB connection.
+     *
+     * @psalm-return class-string<ColumnBuilder>
+     */
+    public function getColumnBuilderClass(): string;
 
     /**
      * Returns the column factory for creating column instances.
@@ -258,7 +266,9 @@ interface ConnectionInterface
      *
      * @return mixed Result of callback function.
      *
-     * @psalm-param Closure(ConnectionInterface):mixed|Closure(ConnectionInterface):void $closure
+     * @psalm-template Result
+     * @psalm-param Closure(ConnectionInterface): Result $closure
+     * @psalm-return Result
      */
     public function transaction(Closure $closure, ?string $isolationLevel = null): mixed;
 }
