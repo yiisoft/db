@@ -13,8 +13,6 @@ use function is_array;
 use function is_string;
 
 /**
- * @internal
- *
  * Represents `IN` and `NOT IN` operators.
  */
 abstract class AbstractIn implements ConditionInterface

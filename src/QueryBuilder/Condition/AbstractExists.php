@@ -10,8 +10,6 @@ use Yiisoft\Db\Query\QueryInterface;
 use function sprintf;
 
 /**
- * @internal
- *
  * Represents `EXISTS` and `NOT EXISTS` operators.
  */
 abstract class AbstractExists implements ConditionInterface
