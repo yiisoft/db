@@ -12,8 +12,6 @@ use function is_string;
 use function sprintf;
 
 /**
- * @internal
- *
  * Condition that represents `LIKE` operator.
  */
 abstract class AbstractLike implements ConditionInterface
