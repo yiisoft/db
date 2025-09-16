@@ -846,12 +846,12 @@ class Query implements QueryInterface
     }
 
     /**
-     * @psalm-param list<array> $rows
+     * @psalm-param array<array> $rows
      *
      * @return array[]|object[]
      *
      * @psalm-return (
-     *     $rows is non-empty-list<array>
+     *     $rows is non-empty-array<array>
      *         ? non-empty-array<array|object>
      *         : array[]|object[]
      * )

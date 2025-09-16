@@ -74,7 +74,7 @@ final class BatchQueryResult implements BatchQueryResultInterface
     /**
      * Reads and collects rows for batch.
      *
-     * @psalm-return list<array>
+     * @psalm-return array<array>
      */
     private function getRows(): array
     {
@@ -87,12 +87,8 @@ final class BatchQueryResult implements BatchQueryResultInterface
             $count < $this->batchSize && $this->dataReader->valid();
             ++$count, $this->dataReader->next()
         ) {
-            $index = $this->dataReader->isIndexed()
-                ? $this->dataReader->key()
-                : ($this->index * $this->batchSize + $count);
-
             /** @var array */
-            $rows[$index] = $this->dataReader->current();
+            $rows[($this->index + 1) * $this->batchSize + $count] = $this->dataReader->current();
         }
 
         return $rows;

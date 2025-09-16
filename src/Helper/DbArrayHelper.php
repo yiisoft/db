@@ -171,7 +171,7 @@ final class DbArrayHelper
      *
      * @return array[]|object[] The indexed array.
      *
-     * @psalm-param list<array> $rows
+     * @psalm-param array<array> $rows
      * @psalm-param IndexBy|null $indexBy
      * @psalm-param ResultCallback|null $resultCallback
      */
