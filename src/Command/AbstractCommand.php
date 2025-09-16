@@ -8,6 +8,7 @@ use Closure;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -510,9 +511,14 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql);
     }
 
-    public function update(string $table, array $columns, array|string $condition = '', array $params = []): static
-    {
-        $sql = $this->getQueryBuilder()->update($table, $columns, $condition, $params);
+    public function update(
+        string $table,
+        array $columns,
+        array|ExpressionInterface|string $condition = '',
+        array|ExpressionInterface|string|null $from = null,
+        array $params = []
+    ): static {
+        $sql = $this->getQueryBuilder()->update($table, $columns, $condition, $from, $params);
         return $this->setSql($sql)->bindValues($params);
     }
 

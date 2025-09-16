@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Debug;
 use Closure;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
@@ -481,8 +482,13 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
-    public function update(string $table, array $columns, array|string $condition = '', array $params = []): static
-    {
+    public function update(
+        string $table,
+        array $columns,
+        array|ExpressionInterface|string $condition = '',
+        array|ExpressionInterface|string|null $from = null,
+        array $params = []
+    ): static {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 

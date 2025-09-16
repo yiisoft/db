@@ -137,6 +137,8 @@
 - Chg #1037: Change result type of `QueryBuilderInterface::getExpressionBuilder()` and
   `DQLQueryBuilderInterface::getExpressionBuilder()` methods to `ExpressionBuilderInterface` (@vjik)
 - New #1029, #1048: Add functions as expressions (@Tigrov)
+- Enh #1038: Add ability to pass `FROM` clause to `CommandInterface::update()` and `DMLQueryBuilderInterface::update()` methods (@rustamwin)
+- Enh #1038: Allow passing `ExpressionInterface` as condition in `CommandInterface::update()` and `DMLQueryBuilderInterface::update()` methods (@rustamwin)
 - Enh #1042: Refactor `AbstractDMLQueryBuilder` class to `upsert()` method (@Tigrov)
 - New #1040, #1043: Add `DateTimeValue` class (@vjik, @Tigrov)
 - Enh #1045: Support multi-operand functions in `CommandInterface::upsert()` and `DMLQueryBuilderInterface::upsert()` 

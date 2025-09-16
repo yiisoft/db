@@ -1689,7 +1689,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
     public function testUpdate(
         string $table,
         array $columns,
-        array|string $conditions,
+        array|ExpressionInterface|string $conditions,
+        array|ExpressionInterface|string|null $from,
         array $params,
         array $expectedValues,
         int $expectedCount,
@@ -1697,7 +1698,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $count = $command->update($table, $columns, $conditions, $params)->execute();
+        $count = $command->update($table, $columns, $conditions, $from, $params)->execute();
 
         $this->assertSame($expectedCount, $count);
 
