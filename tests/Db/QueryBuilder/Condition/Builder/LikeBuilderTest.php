@@ -11,6 +11,7 @@ use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\QueryBuilder\Condition\Builder\LikeBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
+use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -31,6 +32,25 @@ final class LikeBuilderTest extends TestCase
 
         $params = [];
         $likeBuilder->build($likeCondition, $params);
+
+        $this->assertCount(1, $params);
+
+        /** @var Param $param */
+        $param = reset($params);
+        $this->assertSame($expected, $param->value);
+        $this->assertSame(DataType::STRING, $param->type);
+    }
+
+    #[TestWith(['%test%', 'test', true])]
+    #[TestWith(['%te\_st%', 'te_st', true])]
+    #[TestWith(['%te_st%', 'te_st', false])]
+    public function testStringableValue(string $expected, string $value, bool $escape): void
+    {
+        $condition = new Like('column', new Stringable($value), escape: $escape);
+        $builder = new LikeBuilder($this->getConnection()->getQueryBuilder());
+
+        $params = [];
+        $builder->build($condition, $params);
 
         $this->assertCount(1, $params);
 
