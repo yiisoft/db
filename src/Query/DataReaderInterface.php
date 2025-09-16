@@ -69,6 +69,8 @@ interface DataReaderInterface extends Iterator, Countable
      */
     public function indexBy(Closure|string|null $indexBy): static;
 
+    public function isIndexed(): bool;
+
     /**
      * Sets the callback, to be called on all rows of the query result before returning them.
      *

@@ -83,12 +83,16 @@ final class BatchQueryResult implements BatchQueryResultInterface
         $this->dataReader ??= $this->query->createCommand()->query();
 
         for (
-            $leftCount = $this->batchSize;
-            $leftCount > 0 && $this->dataReader->valid();
-            --$leftCount, $this->dataReader->next()
+            $count = 0;
+            $count < $this->batchSize && $this->dataReader->valid();
+            ++$count, $this->dataReader->next()
         ) {
+            $index = $this->dataReader->isIndexed()
+                ? $this->dataReader->key()
+                : ($this->index * $this->batchSize + $count);
+
             /** @var array */
-            $rows[] = $this->dataReader->current();
+            $rows[$index] = $this->dataReader->current();
         }
 
         return $rows;
