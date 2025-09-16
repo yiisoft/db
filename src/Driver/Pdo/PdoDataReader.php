@@ -149,11 +149,6 @@ final class PdoDataReader implements DataReaderInterface
         return $this;
     }
 
-    public function isIndexed(): bool
-    {
-        return $this->indexBy !== null;
-    }
-
     public function resultCallback(Closure|null $resultCallback): static
     {
         $this->resultCallback = $resultCallback;
