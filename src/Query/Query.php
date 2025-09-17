@@ -268,9 +268,7 @@ class Query implements QueryInterface
     {
         return $this->db
             ->createBatchQueryResult($this)
-            ->batchSize($batchSize)
-            ->indexBy($this->indexBy)
-            ->resultCallback($this->resultCallback);
+            ->batchSize($batchSize);
     }
 
     public function column(): array
