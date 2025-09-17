@@ -99,6 +99,11 @@ interface BatchQueryResultInterface extends Iterator
     public function batchSize(int $value): static;
 
     /**
+     * @psalm-param IndexBy|null $indexBy
+     */
+    public function indexBy(Closure|string|null $indexBy): static;
+
+    /**
      * Sets a callback function to be called for the result of the query.
      *
      * @psalm-param ResultCallback|null $callback

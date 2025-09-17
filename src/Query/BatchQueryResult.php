@@ -12,6 +12,7 @@ use Throwable;
  *
  * A batch query is a group of many SQL statements that are executed together as a single unit.
  *
+ * @psalm-import-type IndexBy from QueryInterface
  * @psalm-import-type ResultCallback from BatchQueryResultInterface
  */
 final class BatchQueryResult implements BatchQueryResultInterface
@@ -26,6 +27,12 @@ final class BatchQueryResult implements BatchQueryResultInterface
      * @var DataReaderInterface|null The data reader associated with this batch query.
      */
     private DataReaderInterface|null $dataReader = null;
+
+    /**
+     * @psalm-var IndexBy|null $indexBy
+     */
+    private Closure|string|null $indexBy = null;
+
     /**
      * @var Closure|null A callback function to process the result rows.
      * @psalm-var ResultCallback|null
@@ -80,15 +87,19 @@ final class BatchQueryResult implements BatchQueryResultInterface
     {
         $rows = [];
 
-        $this->dataReader ??= $this->query->createCommand()->query();
+        $this->dataReader ??= $this->query->createCommand()->query()->indexBy($this->indexBy);
 
         for (
             $count = 0;
             $count < $this->batchSize && $this->dataReader->valid();
             ++$count, $this->dataReader->next()
         ) {
+            /** @var int|string $key */
+            $key = $this->indexBy === null
+                ? ($this->index + 1) * $this->batchSize + $count
+                : $this->dataReader->key();
             /** @var array */
-            $rows[($this->index + 1) * $this->batchSize + $count] = $this->dataReader->current();
+            $rows[$key] = $this->dataReader->current();
         }
 
         return $rows;
@@ -135,6 +146,12 @@ final class BatchQueryResult implements BatchQueryResultInterface
     {
         $this->batchSize = $value;
 
+        return $this;
+    }
+
+    public function indexBy(Closure|string|null $indexBy): static
+    {
+        $this->indexBy = $indexBy;
         return $this;
     }
 
