@@ -195,4 +195,59 @@ abstract class CommonQueryTest extends AbstractQueryTest
 
         $this->assertSame($expected, $result);
     }
+
+    public function testBatchWithResultCallback(): void
+    {
+        $db = $this->getConnection(true);
+
+        $batch = (new Query($db))
+            ->select('name')
+            ->from('customer')
+            ->limit(2)
+            ->resultCallback(
+                static fn(array $rows) => array_map(
+                    static fn(array $row) => $row['name'] . ' (ok)',
+                    $rows,
+                ),
+            )
+            ->batch(1);
+
+        $results = [];
+        foreach ($batch as $rows) {
+            $results[] = $rows;
+        }
+
+        $this->assertSame(
+            [
+                [0 => 'user1 (ok)'],
+                [1 => 'user2 (ok)'],
+            ],
+            $results,
+        );
+    }
+
+    public function testBatchWithIndexBy(): void
+    {
+        $db = $this->getConnection(true);
+
+        $batch = (new Query($db))
+            ->select(['name', 'email'])
+            ->from('customer')
+            ->limit(2)
+            ->indexBy('name')
+            ->batch(1);
+
+        $results = [];
+        foreach ($batch as $rows) {
+            $results[] = array_keys($rows);
+        }
+
+        $this->assertSame(
+            [
+                ['user1'],
+                ['user2'],
+            ],
+            $results,
+        );
+    }
 }
