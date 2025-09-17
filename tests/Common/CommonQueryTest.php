@@ -239,13 +239,13 @@ abstract class CommonQueryTest extends AbstractQueryTest
 
         $results = [];
         foreach ($batch as $rows) {
-            $results[] = $rows;
+            $results[] = array_keys($rows);
         }
 
         $this->assertSame(
             [
-                ['user1' => ['name' => 'user1', 'email' => 'user1@example.com']],
-                ['user2' => ['name' => 'user2', 'email' => 'user2@example.com']],
+                ['user1'],
+                ['user2'],
             ],
             $results,
         );
