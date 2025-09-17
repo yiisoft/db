@@ -13,7 +13,7 @@ use Throwable;
  * A batch query is a group of many SQL statements that are executed together as a single unit.
  *
  * @psalm-import-type IndexBy from QueryInterface
- * @psalm-import-type ResultCallback from BatchQueryResultInterface
+ * @psalm-import-type ResultCallback from QueryInterface
  */
 final class BatchQueryResult implements BatchQueryResultInterface
 {

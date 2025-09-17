@@ -33,7 +33,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  * @extends Iterator<int, array>
  *
  * @psalm-import-type IndexBy from QueryInterface
- * @psalm-type ResultCallback = Closure(non-empty-array<array>):non-empty-array<array|object>
+ * @psalm-import-type ResultCallback from QueryInterface
  */
 interface BatchQueryResultInterface extends Iterator
 {
