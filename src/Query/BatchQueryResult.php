@@ -89,15 +89,16 @@ final class BatchQueryResult implements BatchQueryResultInterface
 
         $this->dataReader ??= $this->query->createCommand()->query()->indexBy($this->indexBy);
 
+        $isContinuousIndex = $this->indexBy === null;
+        $startIndex = $isContinuousIndex ? ($this->index + 2) * $this->batchSize : 0;
+
         for (
-            $count = 0;
-            $count < $this->batchSize && $this->dataReader->valid();
-            ++$count, $this->dataReader->next()
+            $leftCount = $this->batchSize;
+            $leftCount > 0 && $this->dataReader->valid();
+            --$leftCount, $this->dataReader->next()
         ) {
             /** @var int|string $key */
-            $key = $this->indexBy === null
-                ? ($this->index + 1) * $this->batchSize + $count
-                : $this->dataReader->key();
+            $key = $isContinuousIndex ? $startIndex - $leftCount : $this->dataReader->key();
             /** @var array */
             $rows[$key] = $this->dataReader->current();
         }
