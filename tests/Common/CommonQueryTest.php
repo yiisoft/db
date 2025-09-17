@@ -225,4 +225,29 @@ abstract class CommonQueryTest extends AbstractQueryTest
             $results,
         );
     }
+
+    public function testBatchWithIndexBy(): void
+    {
+        $db = $this->getConnection(true);
+
+        $batch = (new Query($db))
+            ->select(['name', 'email'])
+            ->from('customer')
+            ->limit(2)
+            ->indexBy('name')
+            ->batch(1);
+
+        $results = [];
+        foreach ($batch as $rows) {
+            $results[] = $rows;
+        }
+
+        $this->assertSame(
+            [
+                ['user1' => ['name' => 'user1', 'email' => 'user1@example.com']],
+                ['user2' => ['name' => 'user2', 'email' => 'user2@example.com']],
+            ],
+            $results,
+        );
+    }
 }
