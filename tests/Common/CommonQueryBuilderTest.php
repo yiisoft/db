@@ -193,6 +193,8 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
             ':qp2' => new Param('3.14', DataType::STRING),
             ':qp3' => new Param('1', DataType::STRING),
         ], $params);
+
+        $db->close();
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'caseXBuilder')]

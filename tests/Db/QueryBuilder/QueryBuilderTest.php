@@ -257,6 +257,8 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->assertSame($expectedSql, $sql);
         $this->assertEquals($expectedParams, $params);
+
+        $db->close();
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
