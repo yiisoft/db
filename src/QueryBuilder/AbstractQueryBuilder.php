@@ -575,9 +575,14 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->truncateTable($table);
     }
 
-    public function update(string $table, array $columns, array|string $condition, array &$params = []): string
-    {
-        return $this->dmlBuilder->update($table, $columns, $condition, $params);
+    public function update(
+        string $table,
+        array $columns,
+        array|ExpressionInterface|string $condition,
+        array|ExpressionInterface|string|null $from = null,
+        array &$params = []
+    ): string {
+        return $this->dmlBuilder->update($table, $columns, $condition, $from, $params);
     }
 
     public function upsert(

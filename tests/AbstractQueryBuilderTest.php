@@ -2223,6 +2223,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertEmpty($params);
+
+        $db->close();
     }
 
     public function testTruncateTable(): void
@@ -2251,13 +2253,16 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
+
+        $db->close();
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
-        array|string $condition,
+        array|ExpressionInterface|string $condition,
+        array|ExpressionInterface|string|null $from,
         array $params,
         string $expectedSql,
         array $expectedParams = [],
@@ -2265,11 +2270,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
-        $sql = $qb->update($table, $columns, $condition, $params);
+        $sql = $qb->update($table, $columns, $condition, $from, $params);
         $sql = $db->getQuoter()->quoteSql($sql);
 
         $this->assertSame($expectedSql, $sql);
         $this->assertEquals($expectedParams, $params);
+
+        $db->close();
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
@@ -2299,6 +2306,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(1, $countAfter - $countBefore);
 
         $db->createCommand($sql, $params)->execute();
+
+        $db->close();
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsertReturning')]
@@ -2329,6 +2338,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(1, $countAfter - $countBefore);
 
         $db->createCommand($sql, $params)->execute();
+
+        $db->close();
     }
 
     public function testOverrideParameters1(): void
@@ -2352,6 +2363,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes('SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]] = \'test1\')'),
             $command->getRawSql()
         );
+
+        $db->close();
     }
 
     public function testOverrideParameters2(): void
@@ -2375,6 +2388,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes('SELECT * FROM [[animal]] WHERE (id = 1) AND ([[type]] = \'test2\')'),
             $command->getRawSql()
         );
+
+        $db->close();
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildColumnDefinition')]

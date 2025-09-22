@@ -20,6 +20,8 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $query = (new Query($db))->from('customer')->where(['id' => 0]);
 
         $this->assertSame([], $query->all());
+
+        $db->close();
     }
 
     public function testAllWithIndexBy(): void
@@ -154,6 +156,8 @@ abstract class CommonQueryTest extends AbstractQueryTest
 
 
         $this->assertSame('user1', $result);
+
+        $db->close();
     }
 
     public static function dataLikeCaseSensitive(): iterable
@@ -174,6 +178,8 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->scalar();
 
         $this->assertSame($expected, $result);
+
+        $db->close();
     }
 
     public static function dataLikeCaseInsensitive(): iterable
@@ -194,6 +200,8 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->scalar();
 
         $this->assertSame($expected, $result);
+
+        $db->close();
     }
 
     public function testBatchWithResultCallback(): void
@@ -224,6 +232,8 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ],
             $results,
         );
+
+        $db->close();
     }
 
     public function testBatchWithIndexBy(): void
@@ -249,5 +259,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ],
             $results,
         );
+
+        $db->close();
     }
 }
