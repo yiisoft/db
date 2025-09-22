@@ -244,6 +244,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change return type of `key()` method to `int` in `BatchQueryResultInterface` and `BatchQueryResult` class;
 - Change return type of `current()` method to `array` in `BatchQueryResultInterface` and `BatchQueryResult` class;
 - Remove `null` from return type of `getQuery()` method in `BatchQueryResultInterface` and `BatchQueryResult` class;
+- Add `indexBy()` method to `BatchQueryResultInterface` and `BatchQueryResult` class;
 - Remove parameters from `each()` method in `QueryInterface` and `Query` class;
 - Change return type of `each()` method to `DataReaderInterface` in `QueryInterface` and `Query` class;
 - Add `$columnFactory` parameter to `AbstractPdoConnection::__construct()` constructor;

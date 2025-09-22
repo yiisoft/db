@@ -43,7 +43,9 @@ abstract class AbstractConnection implements ConnectionInterface
 
     public function createBatchQueryResult(QueryInterface $query): BatchQueryResultInterface
     {
-        return new BatchQueryResult($query);
+        return (new BatchQueryResult($query))
+            ->indexBy($query->getIndexBy())
+            ->resultCallback($query->getResultCallback());
     }
 
     public function createQuery(): QueryInterface

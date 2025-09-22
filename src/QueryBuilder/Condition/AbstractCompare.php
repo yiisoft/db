@@ -11,8 +11,6 @@ use function array_key_exists;
 use function is_string;
 
 /**
- * @internal
- *
  * Abstract condition that represents comparison operators.
  */
 abstract class AbstractCompare implements ConditionInterface

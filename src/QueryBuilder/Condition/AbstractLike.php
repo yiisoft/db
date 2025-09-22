@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use InvalidArgumentException;
+use Stringable;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 use function is_int;
@@ -12,8 +13,6 @@ use function is_string;
 use function sprintf;
 
 /**
- * @internal
- *
  * Condition that represents `LIKE` operator.
  */
 abstract class AbstractLike implements ConditionInterface
@@ -24,7 +23,7 @@ abstract class AbstractLike implements ConditionInterface
 
     /**
      * @param ExpressionInterface|string $column The column name.
-     * @param ExpressionInterface|int|iterable|string|null $value The value to the right of operator.
+     * @param ExpressionInterface|int|iterable|string|Stringable|null $value The value to the right of operator.
      * @param bool|null $caseSensitive Whether the comparison is case-sensitive. `null` means using the default
      * behavior.
      * @param bool $escape Whether to escape the value. Defaults to `true`. If `false`, the value will be used as is
@@ -34,7 +33,7 @@ abstract class AbstractLike implements ConditionInterface
      */
     final public function __construct(
         public readonly string|ExpressionInterface $column,
-        public readonly iterable|int|string|ExpressionInterface|null $value,
+        public readonly iterable|int|string|Stringable|ExpressionInterface|null $value,
         public readonly ?bool $caseSensitive = null,
         public readonly bool $escape = self::DEFAULT_ESCAPE,
         public readonly LikeMode $mode = self::DEFAULT_MODE,

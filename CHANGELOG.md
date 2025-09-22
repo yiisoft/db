@@ -152,6 +152,10 @@
 - New #1057: Add `CompositeExpression` class (@vjik)
 - Chg #1058: Refactor `Expression` class: declare `$expression` and `$params` as public readonly properties, remove 
   `getParams()` method (@vjik)
+- New #1062: `Stringable` value support in `Like` and `NotLike` conditions (@vjik)
+- New #1063: Add `indexBy()` method to `BatchQueryResultInterface` and `BatchQueryResult` class (@vjik)
+- Chg #1063: `AbstractConnection::createBatchQueryResult()` passes parameters `indexBy` and `resultCallback` to
+  `BatchQueryResult` being created (@vjik)
 
 ## 1.3.0 March 21, 2024
 

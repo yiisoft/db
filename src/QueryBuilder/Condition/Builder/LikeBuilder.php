@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
+use Stringable;
 use Traversable;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
@@ -86,7 +87,7 @@ class LikeBuilder implements ExpressionBuilderInterface
 
         $parts = [];
         foreach ($values as $value) {
-            /** @var ExpressionInterface|int|string $value */
+            /** @var ExpressionInterface|int|string|Stringable $value */
             $placeholderName = $this->preparePlaceholderName($value, $expression, $params);
             $parts[] = "$column $operator $placeholderName" . static::ESCAPE_SQL;
         }
@@ -132,12 +133,16 @@ class LikeBuilder implements ExpressionBuilderInterface
      * @return string
      */
     protected function preparePlaceholderName(
-        string|int|ExpressionInterface $value,
+        string|Stringable|int|ExpressionInterface $value,
         Like|NotLike $condition,
         array &$params,
     ): string {
         if ($value instanceof ExpressionInterface) {
             return $this->queryBuilder->buildExpression($value, $params);
+        }
+
+        if ($value instanceof Stringable) {
+            $value = (string) $value;
         }
 
         if (is_string($value) && $condition->escape) {

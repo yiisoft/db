@@ -12,7 +12,8 @@ use Throwable;
  *
  * A batch query is a group of many SQL statements that are executed together as a single unit.
  *
- * @psalm-import-type ResultCallback from BatchQueryResultInterface
+ * @psalm-import-type IndexBy from QueryInterface
+ * @psalm-import-type ResultCallback from QueryInterface
  */
 final class BatchQueryResult implements BatchQueryResultInterface
 {
@@ -26,6 +27,12 @@ final class BatchQueryResult implements BatchQueryResultInterface
      * @var DataReaderInterface|null The data reader associated with this batch query.
      */
     private DataReaderInterface|null $dataReader = null;
+
+    /**
+     * @psalm-var IndexBy|null $indexBy
+     */
+    private Closure|string|null $indexBy = null;
+
     /**
      * @var Closure|null A callback function to process the result rows.
      * @psalm-var ResultCallback|null
@@ -74,21 +81,26 @@ final class BatchQueryResult implements BatchQueryResultInterface
     /**
      * Reads and collects rows for batch.
      *
-     * @psalm-return list<array>
+     * @psalm-return array<array>
      */
     private function getRows(): array
     {
         $rows = [];
 
-        $this->dataReader ??= $this->query->createCommand()->query();
+        $this->dataReader ??= $this->query->createCommand()->query()->indexBy($this->indexBy);
+
+        $isContinuousIndex = $this->indexBy === null;
+        $startIndex = $isContinuousIndex ? ($this->index + 2) * $this->batchSize : 0;
 
         for (
             $leftCount = $this->batchSize;
             $leftCount > 0 && $this->dataReader->valid();
             --$leftCount, $this->dataReader->next()
         ) {
+            /** @var int|string $key */
+            $key = $isContinuousIndex ? $startIndex - $leftCount : $this->dataReader->key();
             /** @var array */
-            $rows[] = $this->dataReader->current();
+            $rows[$key] = $this->dataReader->current();
         }
 
         return $rows;
@@ -135,6 +147,12 @@ final class BatchQueryResult implements BatchQueryResultInterface
     {
         $this->batchSize = $value;
 
+        return $this;
+    }
+
+    public function indexBy(Closure|string|null $indexBy): static
+    {
+        $this->indexBy = $indexBy;
         return $this;
     }
 
