@@ -156,6 +156,7 @@
 - New #1063: Add `indexBy()` method to `BatchQueryResultInterface` and `BatchQueryResult` class (@vjik)
 - Chg #1063: `AbstractConnection::createBatchQueryResult()` passes parameters `indexBy` and `resultCallback` to
   `BatchQueryResult` being created (@vjik)
+- Enh #1064: Remove duplicate code in favor of the `DbArrayHelper::queryAsArray()` method (@rustamwin)
 
 ## 1.3.0 March 21, 2024
 
