@@ -7,6 +7,8 @@ namespace Yiisoft\Db\Helper;
 use Closure;
 use JsonSerializable;
 use Traversable;
+use Yiisoft\Db\Constant\GettypeResult;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 use function array_column;
@@ -285,6 +287,19 @@ final class DbArrayHelper
         }
 
         return get_object_vars($object);
+    }
+
+    public static function queryAsArray(array|ExpressionInterface|string $query): array
+    {
+        /**
+         * @var array
+         * @psalm-suppress PossiblyInvalidArgument
+         */
+        return match (gettype($query)) {
+            GettypeResult::ARRAY => $query,
+            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($query), -1, PREG_SPLIT_NO_EMPTY),
+            default => [$query],
+        };
     }
 
     /**

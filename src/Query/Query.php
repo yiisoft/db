@@ -425,15 +425,7 @@ class Query implements QueryInterface
 
     public function from(array|ExpressionInterface|string $tables): static
     {
-        /**
-         * @var array
-         * @psalm-suppress PossiblyInvalidArgument
-         */
-        $this->from = match (gettype($tables)) {
-            GettypeResult::ARRAY => $tables,
-            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($tables), -1, PREG_SPLIT_NO_EMPTY),
-            default => [$tables],
-        };
+        $this->from = DbArrayHelper::queryAsArray($tables);
 
         return $this;
     }
@@ -530,15 +522,7 @@ class Query implements QueryInterface
 
     public function groupBy(array|string|ExpressionInterface $columns): static
     {
-        /**
-         * @var array
-         * @psalm-suppress PossiblyInvalidArgument
-         */
-        $this->groupBy = match (gettype($columns)) {
-            GettypeResult::ARRAY => $columns,
-            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
-            default => [$columns],
-        };
+        $this->groupBy = DbArrayHelper::queryAsArray($columns);
 
         return $this;
     }
@@ -999,15 +983,14 @@ class Query implements QueryInterface
      */
     private function normalizeSelect(array|bool|float|int|string|ExpressionInterface $columns): array
     {
+        if (is_scalar($columns) && !is_string($columns)) {
+            $columns = [$columns];
+        }
+
         /**
          * @var SelectValue
-         * @psalm-suppress InvalidArgument
          */
-        $columns = match (gettype($columns)) {
-            GettypeResult::ARRAY => $columns,
-            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
-            default => [$columns],
-        };
+        $columns = DbArrayHelper::queryAsArray($columns);
 
         $select = [];
 
