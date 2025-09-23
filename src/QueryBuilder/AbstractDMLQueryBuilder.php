@@ -8,7 +8,6 @@ use Iterator;
 use IteratorAggregate;
 use Traversable;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
