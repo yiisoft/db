@@ -7,6 +7,8 @@ namespace Yiisoft\Db\Helper;
 use Closure;
 use JsonSerializable;
 use Traversable;
+use Yiisoft\Db\Constant\GettypeResult;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 use function array_column;
@@ -285,6 +287,29 @@ final class DbArrayHelper
         }
 
         return get_object_vars($object);
+    }
+
+    /**
+     * Normalizes raw input into an array of expression values.
+     *
+     * @param array|ExpressionInterface|string $raw Raw input to be normalized. It can be:
+     *  - an array of expression values;
+     *  - a single expression object;
+     *  - a string with comma-separated expression values.
+     *
+     * @return array An array of normalized expressions.
+     */
+    public static function normalizeExpressions(array|ExpressionInterface|string $raw): array
+    {
+        /**
+         * @var array
+         * @psalm-suppress PossiblyInvalidArgument
+         */
+        return match (gettype($raw)) {
+            GettypeResult::ARRAY => $raw,
+            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($raw), -1, PREG_SPLIT_NO_EMPTY),
+            default => [$raw],
+        };
     }
 
     /**

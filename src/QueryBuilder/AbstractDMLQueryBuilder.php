@@ -8,7 +8,6 @@ use Iterator;
 use IteratorAggregate;
 use Traversable;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
@@ -17,6 +16,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Function\MultiOperandFunction;
+use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -149,7 +149,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $sql = 'UPDATE ' . $this->quoter->quoteTableName($table) . ' SET ' . implode(', ', $updates);
         $where = $this->queryBuilder->buildWhere($condition, $params);
         if ($from !== null) {
-            $fromClause = $this->queryBuilder->buildFrom($this->prepareFromTables($from), $params);
+            $from = DbArrayHelper::normalizeExpressions($from);
+            $fromClause = $this->queryBuilder->buildFrom($from, $params);
             $sql .=  $fromClause === '' ? '' : ' ' . $fromClause;
         }
 
@@ -501,19 +502,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         }
 
         return [$uniqueNames, $insertNames, null];
-    }
-
-    protected function prepareFromTables(array|ExpressionInterface|string $from): array
-    {
-        /**
-         * @var array
-         * @psalm-suppress PossiblyInvalidArgument
-         */
-        return match (gettype($from)) {
-            GettypeResult::ARRAY => $from,
-            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($from), -1, PREG_SPLIT_NO_EMPTY),
-            default => [$from],
-        };
     }
 
     /**

@@ -9,7 +9,6 @@ use LogicException;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -27,7 +26,6 @@ use function array_shift;
 use function array_unshift;
 use function count;
 use function current;
-use function gettype;
 use function is_array;
 use function is_int;
 use function is_numeric;
@@ -425,15 +423,7 @@ class Query implements QueryInterface
 
     public function from(array|ExpressionInterface|string $tables): static
     {
-        /**
-         * @var array
-         * @psalm-suppress PossiblyInvalidArgument
-         */
-        $this->from = match (gettype($tables)) {
-            GettypeResult::ARRAY => $tables,
-            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($tables), -1, PREG_SPLIT_NO_EMPTY),
-            default => [$tables],
-        };
+        $this->from = DbArrayHelper::normalizeExpressions($tables);
 
         return $this;
     }
@@ -530,15 +520,7 @@ class Query implements QueryInterface
 
     public function groupBy(array|string|ExpressionInterface $columns): static
     {
-        /**
-         * @var array
-         * @psalm-suppress PossiblyInvalidArgument
-         */
-        $this->groupBy = match (gettype($columns)) {
-            GettypeResult::ARRAY => $columns,
-            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
-            default => [$columns],
-        };
+        $this->groupBy = DbArrayHelper::normalizeExpressions($columns);
 
         return $this;
     }
@@ -999,15 +981,14 @@ class Query implements QueryInterface
      */
     private function normalizeSelect(array|bool|float|int|string|ExpressionInterface $columns): array
     {
+        if (is_scalar($columns) && !is_string($columns)) {
+            $columns = [$columns];
+        }
+
         /**
          * @var SelectValue
-         * @psalm-suppress InvalidArgument
          */
-        $columns = match (gettype($columns)) {
-            GettypeResult::ARRAY => $columns,
-            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
-            default => [$columns],
-        };
+        $columns = DbArrayHelper::normalizeExpressions($columns);
 
         $select = [];
 
