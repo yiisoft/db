@@ -423,7 +423,7 @@ class Query implements QueryInterface
 
     public function from(array|ExpressionInterface|string $tables): static
     {
-        $this->from = DbArrayHelper::queryAsArray($tables);
+        $this->from = DbArrayHelper::normalizeToArray($tables);
 
         return $this;
     }
@@ -520,7 +520,7 @@ class Query implements QueryInterface
 
     public function groupBy(array|string|ExpressionInterface $columns): static
     {
-        $this->groupBy = DbArrayHelper::queryAsArray($columns);
+        $this->groupBy = DbArrayHelper::normalizeToArray($columns);
 
         return $this;
     }
@@ -988,7 +988,7 @@ class Query implements QueryInterface
         /**
          * @var SelectValue
          */
-        $columns = DbArrayHelper::queryAsArray($columns);
+        $columns = DbArrayHelper::normalizeToArray($columns);
 
         $select = [];
 

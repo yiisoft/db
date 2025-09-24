@@ -289,16 +289,16 @@ final class DbArrayHelper
         return get_object_vars($object);
     }
 
-    public static function queryAsArray(array|ExpressionInterface|string $query): array
+    public static function normalizeToArray(array|ExpressionInterface|string $expression): array
     {
         /**
          * @var array
          * @psalm-suppress PossiblyInvalidArgument
          */
-        return match (gettype($query)) {
-            GettypeResult::ARRAY => $query,
-            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($query), -1, PREG_SPLIT_NO_EMPTY),
-            default => [$query],
+        return match (gettype($expression)) {
+            GettypeResult::ARRAY => $expression,
+            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($expression), -1, PREG_SPLIT_NO_EMPTY),
+            default => [$expression],
         };
     }
 

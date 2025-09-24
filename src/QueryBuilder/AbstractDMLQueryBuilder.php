@@ -149,7 +149,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $sql = 'UPDATE ' . $this->quoter->quoteTableName($table) . ' SET ' . implode(', ', $updates);
         $where = $this->queryBuilder->buildWhere($condition, $params);
         if ($from !== null) {
-            $from = DbArrayHelper::queryAsArray($from);
+            $from = DbArrayHelper::normalizeToArray($from);
             $fromClause = $this->queryBuilder->buildFrom($from, $params);
             $sql .=  $fromClause === '' ? '' : ' ' . $fromClause;
         }
