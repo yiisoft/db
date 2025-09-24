@@ -289,7 +289,17 @@ final class DbArrayHelper
         return get_object_vars($object);
     }
 
-    public static function normalizeToArray(array|ExpressionInterface|string $expression): array
+    /**
+     * Normalizes raw input into an array of expression values.
+     *
+     * @param array|ExpressionInterface|string $raw Raw input to be normalized. It can be:
+     *  - an array of expression values;
+     *  - a single expression object;
+     *  - a string with comma-separated expression values.
+     *
+     * @return array An array of normalized expressions.
+     */
+    public static function normalizeExpressions(array|ExpressionInterface|string $raw): array
     {
         /**
          * @var array
