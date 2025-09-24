@@ -305,10 +305,10 @@ final class DbArrayHelper
          * @var array
          * @psalm-suppress PossiblyInvalidArgument
          */
-        return match (gettype($expression)) {
-            GettypeResult::ARRAY => $expression,
-            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($expression), -1, PREG_SPLIT_NO_EMPTY),
-            default => [$expression],
+        return match (gettype($raw)) {
+            GettypeResult::ARRAY => $raw,
+            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($raw), -1, PREG_SPLIT_NO_EMPTY),
+            default => [$raw],
         };
     }
 
