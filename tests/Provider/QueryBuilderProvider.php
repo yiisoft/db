@@ -1233,7 +1233,7 @@ class QueryBuilderProvider
                     ':qp0' => new Param('{{test}}', DataType::STRING),
                 ],
             ],
-            [
+            'from table' => [
                 '{{table}}',
                 ['name' => '{{tmp}}.{{name}}'],
                 [],
@@ -1248,7 +1248,7 @@ class QueryBuilderProvider
                     ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
                 ],
             ],
-            [
+            'from array' => [
                 '{{table}}',
                 ['name' => '{{tmp}}.{{name}}'],
                 [],
@@ -1263,7 +1263,7 @@ class QueryBuilderProvider
                     ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
                 ],
             ],
-            [
+            'from table w/ condition' => [
                 '{{table}}',
                 ['name' => '{{tmp}}.{{name}}'],
                 ['id' => 1],
@@ -1278,7 +1278,7 @@ class QueryBuilderProvider
                     ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
                 ],
             ],
-            [
+            'from expression' => [
                 '{{table}}',
                 ['name' => '{{tmp}}.{{name}}'],
                 [],
@@ -1293,7 +1293,7 @@ class QueryBuilderProvider
                     ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
                 ],
             ],
-            [
+            'from query' => [
                 '{{table}}',
                 ['name' => '{{tmp}}.{{name}}'],
                 [],
@@ -1308,7 +1308,7 @@ class QueryBuilderProvider
                     ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
                 ],
             ],
-            [
+            'from query w/ alias' => [
                 '{{table}}',
                 ['name' => '{{tmp}}'],
                 [],

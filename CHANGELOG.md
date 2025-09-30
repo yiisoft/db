@@ -157,6 +157,7 @@
 - Chg #1063: `AbstractConnection::createBatchQueryResult()` passes parameters `indexBy` and `resultCallback` to
   `BatchQueryResult` being created (@vjik)
 - Enh #1064: Remove duplicate code in favor of the `DbArrayHelper::normalizeExpressions()` method (@rustamwin)
+- Enh #1065: Allow to use table name as a column prefix in update queries (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

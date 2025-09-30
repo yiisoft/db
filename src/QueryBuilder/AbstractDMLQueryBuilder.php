@@ -406,14 +406,26 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @return string[]
      */
-    protected function prepareUpdateSets(string $table, array $columns, array &$params, bool $forUpsert = false): array
-    {
+    protected function prepareUpdateSets(
+        string $table,
+        array $columns,
+        array &$params,
+        bool $forUpsert = false,
+        bool $useTableName = false,
+    ): array {
         $sets = [];
         $columns = $this->normalizeColumnNames($columns);
         $tableColumns = $this->schema->getTableSchema($table)?->getColumns() ?? [];
         $typecastColumns = $this->typecasting ? $tableColumns : [];
         $queryBuilder = $this->queryBuilder;
         $quoter = $this->quoter;
+
+        if ($useTableName) {
+            $quotedTableName = $quoter->quoteTableName($table);
+            $columnPrefix = "$quotedTableName.";
+        } else {
+            $columnPrefix = '';
+        }
 
         foreach ($columns as $name => $value) {
             if (isset($typecastColumns[$name])) {
@@ -436,7 +448,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 $builtValue = $queryBuilder->buildValue($value, $params);
             }
 
-            $sets[] = "$quotedName=$builtValue";
+            $sets[] = "$columnPrefix$quotedName=$builtValue";
         }
 
         return $sets;
