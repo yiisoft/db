@@ -2022,7 +2022,7 @@ class QueryBuilderProvider
                     when3: new WhenThen(3, '3'),
                     else: $param = new Param(4, DataType::INTEGER),
                 ),
-                static::replaceQuotes("CASE [[column_name]] WHEN 1 THEN 1 WHEN 2 THEN (1 + 1) WHEN 3 THEN :qp0 ELSE :qp1 END"),
+                static::replaceQuotes('CASE [[column_name]] WHEN 1 THEN 1 WHEN 2 THEN (1 + 1) WHEN 3 THEN :qp0 ELSE :qp1 END'),
                 [
                     ':qp0' => new Param('3', DataType::STRING),
                     ':qp1' => $param,

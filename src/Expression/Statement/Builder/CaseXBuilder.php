@@ -12,7 +12,6 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function gettype;
 use function is_array;
-use function is_string;
 
 /**
  * Builds expressions for {@see CaseX}.
