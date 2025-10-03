@@ -78,11 +78,12 @@ final class CaseX implements ExpressionInterface
      * - `string` is treated as a table column name which will be quoted before usage in the SQL statement;
      * - `array` is treated as a condition to check, see {@see QueryInterface::where()};
      * - other values will be converted to their string representation using {@see QueryBuilderInterface::buildValue()}.
-     * If not provided, the `CASE` expression will be a WHEN-THEN structure without a specific case value.
-     * @param ColumnInterface|string $valueType Optional data type of the CASE expression which can be used in some DBMS
-     * to specify the expected type (for example in PostgreSQL).
-     * @param mixed|WhenThen ...$args List of `WHEN` conditions and their corresponding results represented
-     * as {@see WhenThen} instances or `ELSE` value in the `CASE` expression.
+     * If not provided, the `CASE` expression will be a `WHEN-THEN` structure without a specific case value.
+     * @param ColumnInterface|string $valueType Optional data type of the `CASE` expression which can be used
+     * in some DBMS to specify the expected type (for example, in PostgreSQL).
+     * @param mixed|WhenThen ...$args List of `WHEN-THEN` conditions and their corresponding results represented
+     * as {@see WhenThen} instances or `ELSE` value in the `CASE` expression. String `ELSE` value will be quoted
+     * before usage in the SQL statement.
      */
     public function __construct(
         public readonly mixed $value = null,
