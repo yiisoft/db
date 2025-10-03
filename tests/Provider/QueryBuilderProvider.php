@@ -8,7 +8,7 @@ use ArrayIterator;
 use DateTimeImmutable;
 use DateTimeZone;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Expression\Statement\When;
+use Yiisoft\Db\Expression\Statement\WhenThen;
 use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Value\Param;
@@ -30,6 +30,7 @@ use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\All;
 use Yiisoft\Db\QueryBuilder\Condition\Between;
+use Yiisoft\Db\QueryBuilder\Condition\Equals;
 use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
@@ -2015,21 +2016,24 @@ class QueryBuilderProvider
         return [
             'with case expression' => [
                 new CaseX(
-                    '(1 + 2)',
-                    when1: new When(1, 1),
-                    when2: new When(2, new Expression('2')),
-                    when3: new When(3, '(2 + 1)'),
+                    'column_name',
+                    when1: new WhenThen(1, 1),
+                    when2: new WhenThen(2, new Expression('(1 + 1)')),
+                    when3: new WhenThen(3, '3'),
                     else: $param = new Param(4, DataType::INTEGER),
                 ),
-                'CASE (1 + 2) WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN (2 + 1) ELSE :qp0 END',
-                [':qp0' => $param],
-                3,
+                static::replaceQuotes("CASE [[column_name]] WHEN 1 THEN 1 WHEN 2 THEN (1 + 1) WHEN 3 THEN :qp0 ELSE :qp1 END"),
+                [
+                    ':qp0' => new Param('3', DataType::STRING),
+                    ':qp1' => $param,
+                ],
+                2,
             ],
             'without case expression' => [
                 new CaseX(
-                    when1: new When(['=', 'column_name', 1], new Value('a')),
-                    when2: new When(
-                        static::replaceQuotes('[[column_name]] = 2'),
+                    when1: new WhenThen(['=', 'column_name', 1], 'a'),
+                    when2: new WhenThen(
+                        new Equals('column_name', 2),
                         (new Query(self::getDb()))->select($param = new Param('b', DataType::STRING))
                     ),
                 ),

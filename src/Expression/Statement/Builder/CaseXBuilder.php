@@ -11,6 +11,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function gettype;
+use function is_array;
 use function is_string;
 
 /**
@@ -37,19 +38,37 @@ class CaseXBuilder implements ExpressionBuilderInterface
         $sql = 'CASE';
 
         if ($expression->value !== null) {
-            $sql .= ' ' . $this->buildCondition($expression->value, $params);
+            $sql .= ' ' . $this->buildCaseValue($expression->value, $params);
         }
 
-        foreach ($expression->when as $when) {
-            $sql .= ' WHEN ' . $this->buildCondition($when->condition, $params);
-            $sql .= ' THEN ' . $this->buildResult($when->result, $params);
+        foreach ($expression->whenThen as $whenThen) {
+            $sql .= ' WHEN ' . $this->buildCondition($whenThen->when, $params);
+            $sql .= ' THEN ' . $this->queryBuilder->buildValue($whenThen->then, $params);
         }
 
         if ($expression->hasElse()) {
-            $sql .= ' ELSE ' . $this->buildResult($expression->else, $params);
+            $sql .= ' ELSE ' . $this->queryBuilder->buildValue($expression->else, $params);
         }
 
         return $sql . ' END';
+    }
+
+    /**
+     * Builds the case value part of the CASE expression based on their type.
+     *
+     * @return string The SQL condition string.
+     */
+    protected function buildCaseValue(mixed $value, array &$params): string
+    {
+        /**
+         * @var string
+         * @psalm-suppress MixedArgument
+         */
+        return match (gettype($value)) {
+            GettypeResult::ARRAY => $this->queryBuilder->buildCondition($value, $params),
+            GettypeResult::STRING => $this->queryBuilder->getQuoter()->quoteColumnName($value),
+            default => $this->queryBuilder->buildValue($value, $params),
+        };
     }
 
     /**
@@ -59,28 +78,10 @@ class CaseXBuilder implements ExpressionBuilderInterface
      */
     protected function buildCondition(mixed $condition, array &$params): string
     {
-        /**
-         * @var string
-         * @psalm-suppress MixedArgument
-         */
-        return match (gettype($condition)) {
-            GettypeResult::ARRAY => $this->queryBuilder->buildCondition($condition, $params),
-            GettypeResult::STRING => $condition,
-            default => $this->queryBuilder->buildValue($condition, $params),
-        };
-    }
-
-    /**
-     * Builds the result part of the `CASE` expression based on its type.
-     *
-     * @return string The SQL result string.
-     */
-    protected function buildResult(mixed $result, array &$params): string
-    {
-        if (is_string($result)) {
-            return $result;
+        if (is_array($condition)) {
+            return $this->queryBuilder->buildCondition($condition, $params);
         }
 
-        return $this->queryBuilder->buildValue($result, $params);
+        return $this->queryBuilder->buildValue($condition, $params);
     }
 }
