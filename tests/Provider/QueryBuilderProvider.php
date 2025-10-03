@@ -2029,6 +2029,16 @@ class QueryBuilderProvider
                 ],
                 2,
             ],
+            'with case condition' => [
+                new CaseX(
+                    ['=', 'column_name', 1],
+                    when1: new WhenThen(true, 1),
+                    else: 2,
+                ),
+                static::replaceQuotes('CASE [[column_name]] = 1 WHEN TRUE THEN 1 ELSE 2 END'),
+                [],
+                2,
+            ],
             'without case expression' => [
                 new CaseX(
                     when1: new WhenThen(['=', 'column_name', 1], 'a'),
