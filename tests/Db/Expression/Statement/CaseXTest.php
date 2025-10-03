@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Expression\Value;
+namespace Yiisoft\Db\Tests\Db\Expression\Statement;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\Statement\CaseX;
-use Yiisoft\Db\Expression\Statement\When;
+use Yiisoft\Db\Expression\Statement\WhenThen;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -24,7 +24,7 @@ final class CaseXTest extends TestCase
     {
         return [
             'null' => [null],
-            'string' => ['field = 1'],
+            'string' => ['field'],
             'expression' => [new Expression('field = 1')],
             'boolean' => [true],
             'float' => [2.3],
@@ -36,22 +36,22 @@ final class CaseXTest extends TestCase
     #[DataProvider('dataValues')]
     public function testConstruct(mixed $value): void
     {
-        $case = new CaseX($value, when: $when = new When(1, 2));
+        $case = new CaseX($value, when: $whenThen = new WhenThen(1, 2));
 
         $this->assertSame($value, $case->value);
         $this->assertSame('', $case->valueType);
-        $this->assertSame([$when], $case->when);
+        $this->assertSame([$whenThen], $case->whenThen);
     }
 
     public function testConstructType(): void
     {
-        $case = new CaseX(valueType: 'int', when: new When(1, 2));
+        $case = new CaseX(valueType: 'int', when: new WhenThen(1, 2));
 
         $this->assertNull($case->value);
         $this->assertSame('int', $case->valueType);
 
         $intCol = new IntegerColumn();
-        $case = new CaseX(valueType: $intCol, when: new When(1, 2));
+        $case = new CaseX(valueType: $intCol, when: new WhenThen(1, 2));
         $this->assertNull($case->value);
         $this->assertSame($intCol, $case->valueType);
     }
@@ -59,43 +59,43 @@ final class CaseXTest extends TestCase
     public function testConstructorWhen()
     {
         // Test with one when clauses
-        $when = new When('field = 1', 'result1');
-        $case = new CaseX(when: $when);
+        $whenThen = new WhenThen('value', 'result1');
+        $case = new CaseX(when: $whenThen);
 
         $this->assertNull($case->value);
         $this->assertSame('', $case->valueType);
-        $this->assertSame([$when], $case->when);
+        $this->assertSame([$whenThen], $case->whenThen);
 
         // Test with multiple when clauses
-        $when = [
-            'when0' => new When('field = 1', 'result1'),
-            'when1' => new When('field = 2', 'result2'),
+        $whenThen = [
+            'when0' => new WhenThen('value1', 'result1'),
+            'when1' => new WhenThen('value2', 'result2'),
         ];
-        $case = new CaseX(...$when);
+        $case = new CaseX(...$whenThen);
 
         $this->assertNull($case->value);
         $this->assertSame('', $case->valueType);
-        $this->assertSame(array_values($when), $case->when);
+        $this->assertSame(array_values($whenThen), $case->whenThen);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('`CASE` expression must have at least one `WHEN` clause.');
+        $this->expectExceptionMessage('`CASE` expression must have at least one `WHEN-THEN` clause.');
 
         new CaseX();
     }
 
     public function testElse(): void
     {
-        $case = new CaseX(when: new When(1, 2));
+        $case = new CaseX(when: new WhenThen(1, 2));
 
         $this->assertFalse($case->hasElse());
         $this->assertFalse(isset($case->else));
 
-        $case = new CaseX(when: new When(1, 2), else: null);
+        $case = new CaseX(when: new WhenThen(1, 2), else: null);
 
         $this->assertTrue($case->hasElse());
         $this->assertNull($case->else);
 
-        $case = new CaseX(when: new When(1, 2), else: 'result');
+        $case = new CaseX(when: new WhenThen(1, 2), else: 'result');
 
         $this->assertTrue($case->hasElse());
         $this->assertSame('result', $case->else);
@@ -103,14 +103,14 @@ final class CaseXTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('`CASE` expression can have only one `ELSE` value.');
 
-        new CaseX(when: new When(1, 2), else1: 'result1', else2: 'result2');
+        new CaseX(when: new WhenThen(1, 2), else1: 'result1', else2: 'result2');
     }
 
     public function testWhen(): void
     {
-        $when = new When('field = 1', 'result1');
+        $when = new WhenThen('value', 'result1');
 
-        $this->assertSame('field = 1', $when->condition);
-        $this->assertSame('result1', $when->result);
+        $this->assertSame('value', $when->when);
+        $this->assertSame('result1', $when->then);
     }
 }
