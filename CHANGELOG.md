@@ -158,6 +158,7 @@
   `BatchQueryResult` being created (@vjik)
 - Enh #1064: Remove duplicate code in favor of the `DbArrayHelper::normalizeExpressions()` method (@rustamwin)
 - Enh #1065: Allow to use table name as a column prefix in update queries (@Tigrov)
+- Enh #1068: Quote string values as column names when join condition is an associative array (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
