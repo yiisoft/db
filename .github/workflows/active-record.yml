@@ -45,6 +45,7 @@ jobs:
         ports:
           - 1521:1521
         env:
+          ORACLE_RANDOM_PASSWORD: yes
           ORACLE_DATABASE: ar_test
           APP_USER: yii
           APP_USER_PASSWORD: q1w2e3r4
