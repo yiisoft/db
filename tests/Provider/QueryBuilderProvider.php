@@ -2152,7 +2152,7 @@ class QueryBuilderProvider
                 Longest::class,
                 [new Value('short'), $stringParam],
                 static::replaceQuotes(
-                    "(SELECT value FROM (SELECT :qp0 AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) DESC LIMIT 1)",
+                    '(SELECT value FROM (SELECT :qp0 AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) DESC LIMIT 1)',
                 ),
                 'string',
                 [
@@ -2184,7 +2184,7 @@ class QueryBuilderProvider
                 Shortest::class,
                 [new Value('short'), $stringParam],
                 static::replaceQuotes(
-                    "(SELECT value FROM (SELECT :qp0 AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) ASC LIMIT 1)",
+                    '(SELECT value FROM (SELECT :qp0 AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) ASC LIMIT 1)',
                 ),
                 'short',
                 [
