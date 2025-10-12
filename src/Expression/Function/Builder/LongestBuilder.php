@@ -13,9 +13,9 @@ use Yiisoft\Db\Expression\Function\MultiOperandFunction;
  *
  * ```SQL
  * (SELECT value FROM (
- *     SELECT operand1 AS value
+ *     SELECT "column1" AS value
  *     UNION
- *     SELECT operand2 AS value
+ *     SELECT "column2" AS value
  * ) AS t ORDER BY LENGTH(value) DESC LIMIT 1)
  * ```
  *

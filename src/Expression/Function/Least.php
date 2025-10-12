@@ -12,11 +12,11 @@ use Yiisoft\Db\Expression\Function\Builder\LeastBuilder;
  * Example usage:
  *
  * ```php
- * $least = new Least(1, 'a + b', $db->select('column')->from('table')->where(['id' => 1]));
+ * $least = new Least(1, '(a + b)', $db->select('column')->from('table')->where(['id' => 1]));
  * ```
  *
  * ```sql
- * LEAST(1, a + b, (SELECT "column" FROM "table" WHERE "id" = 1))
+ * LEAST(1, (a + b), (SELECT "column" FROM "table" WHERE "id" = 1))
  * ```
  *
  * @see LeastBuilder for building SQL representations of this function expression.

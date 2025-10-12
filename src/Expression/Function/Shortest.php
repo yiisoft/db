@@ -15,7 +15,7 @@ use Yiisoft\Db\Expression\Function\Builder\ShortestBuilder;
  * Example usage:
  *
  * ```php
- * $shortest = new Shortest('short', 'longer', 'longest');
+ * $shortest = new Shortest(new Value('short'), 'column_name');
  * ```
  *
  * @see ShortestBuilder for building SQL representations of this function expression.
