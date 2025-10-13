@@ -97,8 +97,8 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
-      - name: Install yiisoft/cache, yiisoft/factory and yiisoft/middleware-dispatcher
-        run: composer require yiisoft/cache yiisoft/factory yiisoft/middleware-dispatcher
+      - name: Install yiisoft/cache, yiisoft/factory, yiisoft/middleware-dispatcher, yiisoft/event-dispatcher and yiisoft/test-support
+        run: composer require yiisoft/cache yiisoft/factory yiisoft/middleware-dispatcher yiisoft/event-dispatcher yiisoft/test-support
 
       - name: Install db-sqlite, db-mysql, db-pgsql, db-mssql, db-oracle and active-record.
         uses: yiisoft/actions/install-packages@master
