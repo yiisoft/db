@@ -38,6 +38,12 @@ in methods `select()` and `addSelect()` of your classes that implement `Yiisoft\
 Add support any scalar values for `$columns` parameter of these methods in your classes that implement
 `Yiisoft\Db\Query\QueryPartsInterface` or inherit `Yiisoft\Db\Query\Query`.
 
+### Join condition and an associative array
+
+When join condition in the following methods `join()`, `innerJoin()`, `leftJoin()`,
+`rightJoin()` of `Yiisoft\Db\Query\Query` class is an associative array, its string values will be quoted
+as column names.
+
 ### Build `Expression` instances inside `Expression::$params`
 
 `ExpressionBuilder` is replaced by an abstract class `AbstractExpressionBuilder` with an instance of the 
