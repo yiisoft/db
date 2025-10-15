@@ -36,7 +36,7 @@ jobs:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_DATABASE: ar-test
           MYSQL_USER: yii
-          MYSQL_PASSWORD: 'q1w2e3r4'
+          MYSQL_PASSWORD: q1w2e3r4
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -97,8 +97,8 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
-      - name: Install yiisoft/cache, yiisoft/factory, yiisoft/middleware-dispatcher, yiisoft/event-dispatcher and yiisoft/test-support
-        run: composer require yiisoft/cache yiisoft/factory yiisoft/middleware-dispatcher yiisoft/event-dispatcher yiisoft/test-support
+      - name: Install AR dependencies
+        run: composer require yiisoft/cache yiisoft/factory yiisoft/middleware-dispatcher yiisoft/test-support
 
       - name: Install db-sqlite, db-mysql, db-pgsql, db-mssql, db-oracle and active-record.
         uses: yiisoft/actions/install-packages@master
