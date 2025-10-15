@@ -376,14 +376,13 @@ interface QueryPartsInterface
      * Sets the {@see indexBy} property.
      *
      * @param Closure|string|null $column The name of the column by which the query results should be indexed by.
-     * This can also be callable (for example, anonymous function) that returns the index value based on the given row
-     * data.
+     * This can also be callable (for example, anonymous function) that returns the index value based on the given data.
      * The signature of the callable should be:
      *
      * ```php
-     * function (array $row): array-key
+     * function (array|object $data): int|string
      * {
-     *     // return the index value corresponding to $row
+     *     // return the index value corresponding to $data
      * }
      * ```
      *

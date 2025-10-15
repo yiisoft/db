@@ -27,7 +27,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  *
  * Sorting is supported via {@see orderBy()} and items can be limited to match some conditions using {@see where()}.
  *
- * @psalm-type IndexBy = Closure(array):array-key|string
+ * @psalm-type IndexBy = Closure(array|object):int|string
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface
  * @psalm-type ResultCallback = Closure(non-empty-array<array>):non-empty-array<array|object>
