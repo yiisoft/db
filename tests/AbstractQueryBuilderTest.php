@@ -462,23 +462,34 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals([':id' => 200], $query->getParams());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testBuildJoin(): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
+        $params = [];
+
         $query = (new Query($db))
             ->from('admin_user')
             ->join('INNER JOIN', 'admin_profile', 'admin_user.id = admin_profile.user_id');
-        $params = [];
 
         $this->assertSame(
             static::replaceQuotes(
                 <<<SQL
                 INNER JOIN [[admin_profile]] ON admin_user.id = admin_profile.user_id
+                SQL
+            ),
+            $qb->buildJoin($query->getJoins(), $params),
+        );
+
+        // Join with an array condition
+        $query = (new Query($db))
+            ->from('admin_user')
+            ->join('INNER JOIN', 'admin_profile', ['admin_user.id' => 'admin_profile.user_id']);
+
+        $this->assertSame(
+            static::replaceQuotes(
+                <<<SQL
+                INNER JOIN [[admin_profile]] ON [[admin_user]].[[id]] = [[admin_profile]].[[user_id]]
                 SQL
             ),
             $qb->buildJoin($query->getJoins(), $params),
