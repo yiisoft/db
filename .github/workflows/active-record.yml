@@ -34,8 +34,9 @@ jobs:
         image: mysql:latest
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
-          MYSQL_PASSWORD: ''
-          MYSQL_DATABASE: yiitest
+          MYSQL_DATABASE: ar-test
+          MYSQL_USER: yii
+          MYSQL_PASSWORD: q1w2e3r4
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -44,8 +45,10 @@ jobs:
         ports:
           - 1521:1521
         env:
-          ORACLE_DATABASE : yiitest
-          ORACLE_PASSWORD : root
+          ORACLE_RANDOM_PASSWORD: yes
+          ORACLE_DATABASE: ar_test
+          APP_USER: yii
+          APP_USER_PASSWORD: q1w2e3r4
         options: >-
           --name=oci
           --health-cmd healthcheck.sh
@@ -53,11 +56,11 @@ jobs:
           --health-timeout 5s
           --health-retries 10
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: root
-          POSTGRES_DB: yiitest
+          POSTGRES_DB: ar-test
+          POSTGRES_USER: yii
+          POSTGRES_PASSWORD: q1w2e3r4
         ports:
           - 5432:5432
         options: --name=postgres --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -78,7 +81,7 @@ jobs:
           sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
       - name: Create MS SQL Database.
-        run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
+        run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE [ar-test]'
 
       - name: Checkout.
         uses: actions/checkout@v4
@@ -94,8 +97,8 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
-      - name: Install yiisoft/cache, yiisoft/factory and yiisoft/middleware-dispatcher
-        run: composer require yiisoft/cache yiisoft/factory yiisoft/middleware-dispatcher
+      - name: Install AR dependencies
+        run: composer require yiisoft/cache yiisoft/factory yiisoft/middleware-dispatcher yiisoft/test-support
 
       - name: Install db-sqlite, db-mysql, db-pgsql, db-mssql, db-oracle and active-record.
         uses: yiisoft/actions/install-packages@master
