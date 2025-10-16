@@ -74,6 +74,7 @@ use function trim;
  * @psalm-import-type SelectValue from QueryPartsInterface
  * @psalm-import-type IndexBy from QueryInterface
  * @psalm-import-type ResultCallback from QueryInterface
+ * @psalm-import-type Join from QueryInterface
  */
 class Query implements QueryInterface
 {
@@ -84,6 +85,7 @@ class Query implements QueryInterface
     protected array $from = [];
     protected array $groupBy = [];
     protected array|ExpressionInterface|string|null $having = null;
+    /** @psalm-var list<Join> */
     protected array $join = [];
     protected array $orderBy = [];
     protected array $params = [];

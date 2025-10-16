@@ -160,7 +160,7 @@
 - Enh #1065: Allow to use table name as a column prefix in update queries (@Tigrov)
 - Enh #1068: Quote string values as column names when join condition is an associative array (@Tigrov)
 - Chg #1070: Change "IndexBy" closure signature to `Closure(array|object):int|string` (@vjik)
-- Enh #1072: Narrow psalm types of `TableSchemaInterface::getPrimaryKey()` and `Index::$columnNames` (@vjik)
+- Enh #1072: Improve psalm types (@vjik)
 
 ## 1.3.0 March 21, 2024
 

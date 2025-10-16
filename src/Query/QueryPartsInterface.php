@@ -19,6 +19,9 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * @psalm-type SelectValue = array<array-key, ExpressionInterface|scalar>
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type IndexBy from QueryInterface
+ * @psalm-import-type JoinTable from QueryInterface
+ * @psalm-import-type JoinOn from QueryInterface
+ * @psalm-import-type Join from QueryInterface
  */
 interface QueryPartsInterface
 {
@@ -405,6 +408,8 @@ interface QueryPartsInterface
      * how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
      *
+     * @psalm-param JoinTable $table
+     * @psalm-param JoinOn $on
      * @psalm-param ParamsType $params
      */
     public function innerJoin(array|string $table, array|string $on = '', array $params = []): static;
@@ -435,6 +440,8 @@ interface QueryPartsInterface
      * ```
      * @param array $params The parameters (name => value) to bind to the query.
      *
+     * @psalm-param JoinTable $table
+     * @psalm-param JoinOn $on
      * @psalm-param ParamsType $params
      */
     public function join(string $type, array|string $table, array|string $on = '', array $params = []): static;
@@ -454,6 +461,8 @@ interface QueryPartsInterface
      * how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
      *
+     * @psalm-param JoinTable $table
+     * @psalm-param JoinOn $on
      * @psalm-param ParamsType $params
      */
     public function leftJoin(array|string $table, array|string $on = '', array $params = []): static;
@@ -573,6 +582,8 @@ interface QueryPartsInterface
      * Please refer to {@see join()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
+     * @psalm-param JoinTable $table
+     * @psalm-param JoinOn $on
      * @psalm-param ParamsType $params
      */
     public function rightJoin(array|string $table, array|string $on = '', array $params = []): static;
@@ -620,6 +631,8 @@ interface QueryPartsInterface
      *     ['LEFT JOIN', 'table3', 'table1.id = table3.id'],
      * ]
      * ```
+     *
+     * @psalm-param list<Join> $value
      */
     public function setJoins(array $value): static;
 
