@@ -13,6 +13,7 @@ use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Function\MultiOperandFunction;
@@ -436,8 +437,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
             if ($forUpsert && $value instanceof MultiOperandFunction && empty($value->getOperands())) {
                 $quotedTableName ??= $quoter->quoteTableName($table);
-                $value->add("$quotedTableName.$quotedName")
-                    ->add("EXCLUDED.$quotedName");
+                $value->add(new Expression("$quotedTableName.$quotedName"))
+                    ->add(new Expression("EXCLUDED.$quotedName"));
 
                 if (isset($tableColumns[$name]) && $value instanceof ArrayMerge) {
                     $value->type($tableColumns[$name]);

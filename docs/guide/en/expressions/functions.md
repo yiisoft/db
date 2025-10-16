@@ -2,12 +2,11 @@
 
 The library provides several classes to represent SQL functions as expressions.
 
-> [!WARNING]
-> The functions do not quote string values or column names, use [Value](../../../../src/Expression/Value/Value.php)
-> object for string values and [ColumnName](../../../../src/Expression/Value/ColumnName.php) object for column names
-> or quote the values directly.
+> [!IMPORTANT]
+> The functions quote string values as column names, except when they contain a parentheses `(`, in which case they
+> will be treated as raw SQL expressions. Use [Value](../../../../src/Expression/Value/Value.php) object for string values.
 > 
-> For example, `new Longest(new Value('short'), new ColumnName('column'), "'longest'")`
+> For example, `new Longest(new Value('short'), 'column_name')` will be rendered as `LONGEST('short', "column_name")`.
 
 The following expression classes are available:
 
@@ -24,7 +23,7 @@ The [ArrayMerge](../../../../src/Expression/Function/ArrayMerge.php) expression 
 into one array.
 
 ```php
-new ArrayMerge(['a', 'b'], new Column('array_col'), $db->select(['array_col'])->from('table'));
+new ArrayMerge(['a', 'b'], 'array_col', $db->select(['array_col'])->from('table'));
 ```
 
 ## Greatest
@@ -32,7 +31,7 @@ The [Greatest](../../../../src/Expression/Function/Greatest.php) expression allo
 in a list of expressions.
 
 ```php
-new Greatest(1, new Column('int_col'), $db->select(['int_col'])->from('table'));
+new Greatest(1, 'int_col', $db->select(['int_col'])->from('table'));
 ```
 
 ## Least
@@ -40,7 +39,7 @@ The [Least](../../../../src/Expression/Function/Least.php) expression allows you
 in a list of expressions.
 
 ```php
-new Least(1, new Column('int_col'), $db->select(['int_col'])->from('table'));
+new Least(1, 'int_col', $db->select(['int_col'])->from('table'));
 ```
 
 ## Length
@@ -48,7 +47,7 @@ The [Length](../../../../src/Expression/Function/Length.php) expression allows y
 
 ```php
 new Length(new Value('string'));
-new Length(new Column('string_col'));
+new Length('string_col');
 new Length($db->select(['string_col'])->from('table'));
 ```
 
@@ -57,7 +56,7 @@ The [Longest](../../../../src/Expression/Function/Longest.php) expression allows
 in a list of expressions.
 
 ```php
-new Longest(new Value('short'), new Column('string_col'), $db->select(['string_col'])->from('table'));
+new Longest(new Value('short'), 'string_col', $db->select(['string_col'])->from('table'));
 ```
 
 ## Shortest
@@ -65,5 +64,5 @@ The [Shortest](../../../../src/Expression/Function/Shortest.php) expression allo
 in a list of expressions.
 
 ```php
-new Shortest(new Value('short'), new Column('string_col'), $db->select(['string_col'])->from('table'));
+new Shortest(new Value('short'), 'string_col', $db->select(['string_col'])->from('table'));
 ```

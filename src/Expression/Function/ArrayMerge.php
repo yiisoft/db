@@ -12,13 +12,13 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
  * Example usage:
  *
  * ```php
- * $arrayMerge = new ArrayMerge('operand1', 'operand2');
+ * $arrayMerge = new ArrayMerge('column1', 'column2');
  * ```
  *
  * For example, it will be generated into the following SQL expression in PostgreSQL:
  *
  * ```sql
- * ARRAY(SELECT DISTINCT UNNEST(operand1 || operand2))
+ * ARRAY(SELECT DISTINCT UNNEST("column1" || "column2"))
  * ```
  */
 final class ArrayMerge extends MultiOperandFunction

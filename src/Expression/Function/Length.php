@@ -13,11 +13,11 @@ use Yiisoft\Db\Expression\Function\Builder\LengthBuilder;
  * Example usage:
  *
  * ```php
- * $length = new Length('expression');
+ * $length = new Length('column_name');
  * ```
  *
  * ```sql
- * LENGTH(expression)
+ * LENGTH("column_name")
  * ```
  *
  * @see LengthBuilder for building SQL representations of this function expression.
@@ -26,6 +26,8 @@ final class Length implements ExpressionInterface
 {
     /**
      * @param ExpressionInterface|string $operand The expression for which to calculate the length.
+     * String values will be treated as column names, except when they contain a parentheses `(`,
+     * in which case they will be treated as raw SQL expressions.
      */
     public function __construct(
         public readonly string|ExpressionInterface $operand

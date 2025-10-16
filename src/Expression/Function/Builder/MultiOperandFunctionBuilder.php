@@ -70,7 +70,7 @@ abstract class MultiOperandFunctionBuilder implements ExpressionBuilderInterface
     protected function buildOperand(mixed $operand, array &$params): string
     {
         if (is_string($operand)) {
-            return $operand;
+            return $this->queryBuilder->getQuoter()->quoteColumnName($operand);
         }
 
         return $this->queryBuilder->buildValue($operand, $params);

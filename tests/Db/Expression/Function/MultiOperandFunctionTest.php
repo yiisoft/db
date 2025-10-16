@@ -48,16 +48,16 @@ final class MultiOperandFunctionTest extends TestCase
                 [1, 1.5, '1 + 2', $query],
             ]],
             Longest::class => [Longest::class, [
-                ['expression'],
+                ['column_name'],
                 [$stringValue],
                 [$query],
-                ['expression', $stringValue, $query],
+                ['column_name', $stringValue, $query],
             ]],
             Shortest::class => [Shortest::class, [
-                ['expression'],
+                ['column_name'],
                 [$stringValue],
                 [$query],
-                ['expression', $stringValue, $query],
+                ['column_name', $stringValue, $query],
             ]],
         ];
     }

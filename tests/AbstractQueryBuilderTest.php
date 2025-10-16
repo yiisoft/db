@@ -2474,7 +2474,19 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
 
         $this->assertSame($expectedSql, $qb->buildExpression($length, $params));
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
+    }
+
+    public function testLengthBuilderWithColumnName(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $length = new Length('column_name');
+        $params = [];
+
+        $this->assertSame(static::replaceQuotes('LENGTH([[column_name]])'), $qb->buildExpression($length, $params));
+        $this->assertSame([], $params);
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'multiOperandFunctionBuilder')]
@@ -2495,6 +2507,23 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expectedSql, $sql);
         Assert::arraysEquals($expectedParams, $params);
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'multiOperandFunctionClasses')]
+    public function testMultiOperandFunctionBuilderWithColumnNames(string $class): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $expression = new $class('column1', 'column2', 'column3');
+        $params = [];
+
+        $sql = $qb->buildExpression($expression, $params);
+
+        $this->assertStringContainsString(static::replaceQuotes('[[column1]]'), $sql);
+        $this->assertStringContainsString(static::replaceQuotes('[[column2]]'), $sql);
+        $this->assertStringContainsString(static::replaceQuotes('[[column3]]'), $sql);
+        $this->assertSame([], $params);
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'multiOperandFunctionClasses')]
