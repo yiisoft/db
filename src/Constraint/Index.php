@@ -19,6 +19,8 @@ final class Index
      * @param string[] $columnNames The list of column names the constraint belongs to.
      * @param bool $isUnique Whether the index is unique.
      * @param bool $isPrimaryKey Whether the index was created for a primary key.
+     *
+     * @psalm-param list<string> $columnNames
      */
     public function __construct(
         public readonly string $name = '',
