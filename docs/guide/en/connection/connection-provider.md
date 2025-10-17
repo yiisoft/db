@@ -1,7 +1,7 @@
 # Define the Database Connection using ConnectionProvider
 
 For some cases when the database connection cannot be set via dependency injection, you can use the `ConnectionProvider`
-to define the DB connection and then use it where needed.
+class to define the DB connection and then get it where needed.
 
 ## Bootstrap configuration
 
