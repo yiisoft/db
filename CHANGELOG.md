@@ -161,6 +161,7 @@
 - Enh #1068: Quote string values as column names when join condition is an associative array (@Tigrov)
 - Chg #1070: Change "IndexBy" closure signature to `Closure(array|object):int|string` (@vjik)
 - Enh #1072: Improve psalm types (@vjik)
+- New #1074: Add `ConnectionProvider` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
