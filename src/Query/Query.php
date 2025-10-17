@@ -86,7 +86,7 @@ class Query implements QueryInterface
     protected array $groupBy = [];
     protected array|ExpressionInterface|string|null $having = null;
     /** @psalm-var list<Join> */
-    protected array $join = [];
+    protected array $joins = [];
     protected array $orderBy = [];
     protected array $params = [];
     /** @psalm-var ResultCallback|null $resultCallback */
@@ -462,7 +462,7 @@ class Query implements QueryInterface
 
     public function getJoins(): array
     {
-        return $this->join;
+        return $this->joins;
     }
 
     public function getLimit(): ExpressionInterface|int|null
@@ -553,19 +553,19 @@ class Query implements QueryInterface
 
     public function innerJoin(array|string $table, array|string $on = '', array $params = []): static
     {
-        $this->join[] = ['INNER JOIN', $table, $on];
+        $this->joins[] = ['INNER JOIN', $table, $on];
         return $this->addParams($params);
     }
 
     public function join(string $type, array|string $table, array|string $on = '', array $params = []): static
     {
-        $this->join[] = [$type, $table, $on];
+        $this->joins[] = [$type, $table, $on];
         return $this->addParams($params);
     }
 
     public function leftJoin(array|string $table, array|string $on = '', array $params = []): static
     {
-        $this->join[] = ['LEFT JOIN', $table, $on];
+        $this->joins[] = ['LEFT JOIN', $table, $on];
         return $this->addParams($params);
     }
 
@@ -681,7 +681,7 @@ class Query implements QueryInterface
 
     public function rightJoin(array|string $table, array|string $on = '', array $params = []): static
     {
-        $this->join[] = ['RIGHT JOIN', $table, $on];
+        $this->joins[] = ['RIGHT JOIN', $table, $on];
         return $this->addParams($params);
     }
 
@@ -708,7 +708,7 @@ class Query implements QueryInterface
 
     public function setJoins(array $value): static
     {
-        $this->join = $value;
+        $this->joins = $value;
         return $this;
     }
 
