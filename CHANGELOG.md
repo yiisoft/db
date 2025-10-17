@@ -162,6 +162,7 @@
 - Chg #1070: Change "IndexBy" closure signature to `Closure(array|object):int|string` (@vjik)
 - Enh #1072: Improve psalm types (@vjik)
 - New #1074: Add `ConnectionProvider` class (@Tigrov)
+- Chg #1075: Rename `Query::$join` property to `$joins` (@vjik)
 
 ## 1.3.0 March 21, 2024
 
