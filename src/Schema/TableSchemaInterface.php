@@ -139,9 +139,9 @@ interface TableSchemaInterface
     public function getOptions(): array;
 
     /**
-     * @return array The primary key column names.
+     * @return string[] The primary key column names.
      *
-     * @psalm-return string[]
+     * @psalm-return list<string>
      */
     public function getPrimaryKey(): array;
 

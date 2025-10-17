@@ -28,10 +28,13 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * Sorting is supported via {@see orderBy()} and items can be limited to match some conditions using {@see where()}.
  *
  * @psalm-type IndexBy = Closure(array|object):int|string
- * @psalm-import-type ParamsType from ConnectionInterface
- * @psalm-import-type SelectValue from QueryPartsInterface
  * @psalm-type ResultCallback = Closure(non-empty-array<array>):non-empty-array<array|object>
  * @psalm-type ResultCallbackOne = Closure(array):(array|object)
+ * @psalm-type JoinTable = array<string,string>|string
+ * @psalm-type JoinOn = array<string,string>|string
+ * @psalm-type Join = list{string, JoinTable, JoinOn}
+ * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type SelectValue from QueryPartsInterface
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
@@ -191,6 +194,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *     ['LEFT JOIN', 'table3', 'table1.id = table3.id'],
      * ]
      * ```
+     *
+     * @psalm-return list<Join>
      */
     public function getJoins(): array;
 
