@@ -33,7 +33,7 @@ use Yiisoft\Db\Mssql\Dsn;
 
 return [
     'yiisoft/db-mssql' => [
-        'dsn' => (new Dsn('sqlsrv', 'localhost', 'yiitest'))->asString(),
+        'dsn' => new Dsn('sqlsrv', 'localhost', 'yiitest'),
         'username' => 'user',
         'password' => 'password',
     ],
@@ -53,13 +53,13 @@ use Yiisoft\Db\Mssql\Driver;
 use Yiisoft\Db\Mssql\Dsn;
 
 // Dsn.
-$dsn = (new Dsn('sqlsrv', 'localhost', 'yiitest'))->asString();
+$dsn = new Dsn('sqlsrv', 'localhost', 'yiitest');
 
 // PSR-16 cache implementation.
 $arrayCache = new ArrayCache();
 
 // Schema cache.
-$schemaCache = new SchemaCache($cache);
+$schemaCache = new SchemaCache($arrayCache);
 
 // PDO driver.
 $pdoDriver = new Driver($dsn, 'user', 'password'); 
