@@ -31,7 +31,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * @psalm-type ResultCallback = Closure(non-empty-array<array>):non-empty-array<array|object>
  * @psalm-type ResultCallbackOne = Closure(array):(array|object)
  * @psalm-type JoinTable = array<string, ExpressionInterface|string>|ExpressionInterface|string
- * @psalm-type JoinOn = array<string, ExpressionInterface|string>|ExpressionInterface|string
+ * @psalm-type JoinOn = array<ExpressionInterface|string>|ExpressionInterface|string
  * @psalm-type Join = list{string, JoinTable, JoinOn}
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface

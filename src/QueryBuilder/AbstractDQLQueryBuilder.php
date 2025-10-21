@@ -273,7 +273,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $joins[$i] = "$joinType $table";
 
             if (isset($join[2])) {
-                if (is_array($join[2])) {
+                if (is_array($join[2]) && !isset($join[2][0])) {
                     foreach ($join[2] as &$column) {
                         if (is_string($column)) {
                             $column = new ColumnName($column);
