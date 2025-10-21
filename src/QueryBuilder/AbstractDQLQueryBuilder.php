@@ -257,6 +257,13 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         }
 
         foreach ($joins as $i => $join) {
+            /** @psalm-suppress DocblockTypeContradiction */
+            if (!is_array($join) || !isset($join[0], $join[1])) {
+                throw new Exception(
+                    'A join clause must be specified as an array of join type, join table, and optionally join condition.',
+                );
+            }
+
             [$joinType, $table] = $join;
 
             $tables = $this->quoteTableNames(is_array($table) ? $table : [$table], $params);
