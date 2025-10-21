@@ -555,8 +555,7 @@ class Query implements QueryInterface
         array|ExpressionInterface|string $table,
         array|ExpressionInterface|string $on = '',
         array $params = [],
-    ): static
-    {
+    ): static {
         $this->joins[] = ['INNER JOIN', $table, $on];
         return $this->addParams($params);
     }
@@ -566,8 +565,7 @@ class Query implements QueryInterface
         array|ExpressionInterface|string $table,
         array|ExpressionInterface|string $on = '',
         array $params = [],
-    ): static
-    {
+    ): static {
         $this->joins[] = [$type, $table, $on];
         return $this->addParams($params);
     }
@@ -576,8 +574,7 @@ class Query implements QueryInterface
         array|ExpressionInterface|string $table,
         array|ExpressionInterface|string $on = '',
         array $params = [],
-    ): static
-    {
+    ): static {
         $this->joins[] = ['LEFT JOIN', $table, $on];
         return $this->addParams($params);
     }
@@ -696,8 +693,7 @@ class Query implements QueryInterface
         array|ExpressionInterface|string $table,
         array|ExpressionInterface|string $on = '',
         array $params = [],
-    ): static
-    {
+    ): static {
         $this->joins[] = ['RIGHT JOIN', $table, $on];
         return $this->addParams($params);
     }
