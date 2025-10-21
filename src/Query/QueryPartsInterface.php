@@ -396,7 +396,7 @@ interface QueryPartsInterface
     /**
      * Appends an `INNER JOIN` part to the query.
      *
-     * @param array|string $table The table to be joined.
+     * @param array|ExpressionInterface|string $table The table to be joined.
      * Use a string to represent the name of the table to be joined.
      * The table name can contain a schema prefix (such as 'public.user') and/or table alias (such as 'user u').
      * The method will automatically quote the table name unless it has some parenthesis (which means the table is
@@ -404,15 +404,19 @@ interface QueryPartsInterface
      * Use an array to represent joining with a sub-query. The array must contain only one element.
      * The value must be a {@see Query} object representing the sub-query while the corresponding key represents the
      * alias for the sub-query.
-     * @param array|string $on The join condition that should appear in the ON part. Please refer to {@see join()} on
-     * how to specify this parameter.
+     * @param array|ExpressionInterface|string $on The join condition that should appear in the ON part. Please refer to
+     * {@see join()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
      *
      * @psalm-param JoinTable $table
      * @psalm-param JoinOn $on
      * @psalm-param ParamsType $params
      */
-    public function innerJoin(array|string $table, array|string $on = '', array $params = []): static;
+    public function innerJoin(
+        array|ExpressionInterface|string $table,
+        array|ExpressionInterface|string $on = '',
+        array $params = [],
+    ): static;
 
     /**
      * Appends a JOIN part to the query.
@@ -420,7 +424,7 @@ interface QueryPartsInterface
      * The first parameter specifies what type of join it is.
      *
      * @param string $type The type of join, such as `INNER JOIN`, `LEFT JOIN`.
-     * @param array|string $table The table to join.
+     * @param array|ExpressionInterface|string $table The table to join.
      * Use a string to represent the name of the table to join.
      * The table name can contain a schema prefix (such as 'public.user') and/or table alias (e.g. 'user u').
      * The method will automatically quote the table name unless it has some parenthesis (which means the table is
@@ -428,8 +432,8 @@ interface QueryPartsInterface
      * Use an array to represent joining with a sub-query. The array must contain only one element.
      * The value must be a {@see Query} object representing the sub-query while the corresponding key represents the
      * alias for the sub-query.
-     * @param array|string $on The join condition that should appear in the ON part. Please refer to {@see where()} on
-     * how to specify this parameter.
+     * @param array|ExpressionInterface|string $on The join condition that should appear in the ON part. Please refer to
+     * {@see where()} on how to specify this parameter.
      * Note that the array format of {@see where()} is designed to match columns to values instead of columns to
      * columns, so the following would **not** work as expected: `['post.author_id' => 'user.id']`, it would match the
      * `post.author_id` column value against the string `'user.id'`.
@@ -444,12 +448,17 @@ interface QueryPartsInterface
      * @psalm-param JoinOn $on
      * @psalm-param ParamsType $params
      */
-    public function join(string $type, array|string $table, array|string $on = '', array $params = []): static;
+    public function join(
+        string $type,
+        array|ExpressionInterface|string $table,
+        array|ExpressionInterface|string $on = '',
+        array $params = [],
+    ): static;
 
     /**
      * Appends a `LEFT OUTER JOIN` part to the query.
      *
-     * @param array|string $table The table to join.
+     * @param array|ExpressionInterface|string $table The table to join.
      * Use a string to represent the name of the table to join.
      * The table name can contain a schema prefix (such as 'public.user') and/or table alias (such as 'user u').
      * The method will automatically quote the table name unless it has some parenthesis (which means the table is
@@ -457,15 +466,19 @@ interface QueryPartsInterface
      * Use an array to represent joining with a sub-query. The array must contain only one element.
      * The value must be a {@see Query} object representing the sub-query while the corresponding key represents the
      * alias for the sub-query.
-     * @param array|string $on The join condition that should appear in the ON part. Please refer to {@see join()} on
-     * how to specify this parameter.
+     * @param array|ExpressionInterface|string $on The join condition that should appear in the ON part. Please refer to
+     * {@see join()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
      *
      * @psalm-param JoinTable $table
      * @psalm-param JoinOn $on
      * @psalm-param ParamsType $params
      */
-    public function leftJoin(array|string $table, array|string $on = '', array $params = []): static;
+    public function leftJoin(
+        array|ExpressionInterface|string $table,
+        array|ExpressionInterface|string $on = '',
+        array $params = [],
+    ): static;
 
     /**
      * Sets the `LIMIT` part of the query.
@@ -570,7 +583,7 @@ interface QueryPartsInterface
     /**
      * Appends a `RIGHT OUTER JOIN` part to the query.
      *
-     * @param array|string $table The table to be joined.
+     * @param array|ExpressionInterface|string $table The table to be joined.
      * Use a string to represent the name of the table to be joined.
      * The table name can contain a schema prefix (such as `public.user`) and/or table alias (such as `user u`).
      * The method will automatically quote the table name unless it has some parenthesis (which means the table is
@@ -578,7 +591,7 @@ interface QueryPartsInterface
      * Use an array to represent joining with a sub-query. The array must contain only one element.
      * The value must be a {@see Query} object representing the sub-query while the corresponding key represents the
      * alias for the sub-query.
-     * @param array|string $on The join condition that should appear in the ON part.
+     * @param array|ExpressionInterface|string $on The join condition that should appear in the ON part.
      * Please refer to {@see join()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
@@ -586,7 +599,11 @@ interface QueryPartsInterface
      * @psalm-param JoinOn $on
      * @psalm-param ParamsType $params
      */
-    public function rightJoin(array|string $table, array|string $on = '', array $params = []): static;
+    public function rightJoin(
+        array|ExpressionInterface|string $table,
+        array|ExpressionInterface|string $on = '',
+        array $params = [],
+    ): static;
 
     /**
      * Sets the `SELECT` part of the query.

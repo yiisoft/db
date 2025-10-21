@@ -551,19 +551,32 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function innerJoin(array|string $table, array|string $on = '', array $params = []): static
+    public function innerJoin(
+        array|ExpressionInterface|string $table,
+        array|ExpressionInterface|string $on = '',
+        array $params = [],
+    ): static
     {
         $this->joins[] = ['INNER JOIN', $table, $on];
         return $this->addParams($params);
     }
 
-    public function join(string $type, array|string $table, array|string $on = '', array $params = []): static
+    public function join(
+        string $type,
+        array|ExpressionInterface|string $table,
+        array|ExpressionInterface|string $on = '',
+        array $params = [],
+    ): static
     {
         $this->joins[] = [$type, $table, $on];
         return $this->addParams($params);
     }
 
-    public function leftJoin(array|string $table, array|string $on = '', array $params = []): static
+    public function leftJoin(
+        array|ExpressionInterface|string $table,
+        array|ExpressionInterface|string $on = '',
+        array $params = [],
+    ): static
     {
         $this->joins[] = ['LEFT JOIN', $table, $on];
         return $this->addParams($params);
@@ -679,7 +692,11 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function rightJoin(array|string $table, array|string $on = '', array $params = []): static
+    public function rightJoin(
+        array|ExpressionInterface|string $table,
+        array|ExpressionInterface|string $on = '',
+        array $params = [],
+    ): static
     {
         $this->joins[] = ['RIGHT JOIN', $table, $on];
         return $this->addParams($params);

@@ -256,25 +256,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             return '';
         }
 
-        /**
-         * @psalm-var array<
-         *   array-key,
-         *   array{
-         *     0?:string,
-         *     1?:array<array-key, Query|string>|string,
-         *     2?:array|ExpressionInterface|string|null
-         *   }|null
-         * > $joins
-         */
         foreach ($joins as $i => $join) {
-            if (!is_array($join) || !isset($join[0], $join[1])) {
-                throw new Exception(
-                    'A join clause must be specified as an array of join type, join table, and optionally join '
-                    . 'condition.'
-                );
-            }
-
-            /* 0:join type, 1:join table, 2:on-condition (optional) */
             [$joinType, $table] = $join;
 
             $tables = $this->quoteTableNames((array) $table, $params);
@@ -284,7 +266,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $joins[$i] = "$joinType $table";
 
             if (isset($join[2])) {
-                if (is_array($join[2]) && !isset($join[2][0])) {
+                if (is_array($join[2])) {
                     foreach ($join[2] as &$column) {
                         if (is_string($column)) {
                             $column = new ColumnName($column);
