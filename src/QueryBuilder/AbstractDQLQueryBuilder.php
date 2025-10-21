@@ -259,7 +259,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         foreach ($joins as $i => $join) {
             [$joinType, $table] = $join;
 
-            $tables = $this->quoteTableNames((array) $table, $params);
+            $tables = $this->quoteTableNames(is_array($table) ? $table : [$table], $params);
 
             /** @var string $table */
             $table = reset($tables);
@@ -626,9 +626,11 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                     $table = $this->quoter->quoteTableName($table);
                 }
                 $tables[$i] = "$table " . $this->quoter->quoteTableName($i);
-            } elseif ($table instanceof ExpressionInterface && is_string($i)) {
+            } elseif ($table instanceof ExpressionInterface) {
                 $table = $this->buildExpression($table, $params);
-                $tables[$i] = "$table " . $this->quoter->quoteTableName($i);
+                $tables[$i] = is_string($i)
+                    ? "$table " . $this->quoter->quoteTableName($i)
+                    : $table;
             } elseif (is_string($table) && !str_contains($table, '(')) {
                 $tableWithAlias = $this->extractAlias($table);
                 if (is_array($tableWithAlias)) { // with alias
