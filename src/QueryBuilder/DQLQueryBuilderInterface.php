@@ -20,6 +20,7 @@ use Yiisoft\Db\Query\QueryInterface;
  *
  * @link https://en.wikipedia.org/wiki/Data_query_language
  *
+ * @psalm-import-type Join from QueryInterface
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface
  */
@@ -163,6 +164,7 @@ interface DQLQueryBuilderInterface
      *
      * @return string The `JOIN` clause built from {@see \Yiisoft\Db\Query\Query::join()}.
      *
+     * @psalm-param list<Join> $joins
      * @psalm-param ParamsType $params
      */
     public function buildJoin(array $joins, array &$params): string;

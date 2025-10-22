@@ -163,6 +163,7 @@
 - Enh #1072: Improve psalm types (@vjik)
 - New #1074: Add `ConnectionProvider` class (@Tigrov)
 - Chg #1075: Rename `Query::$join` property to `$joins` (@vjik)
+- New #1076: Allow to use expressions as table name or condition in "join" query methods (@vjik)
 
 ## 1.3.0 March 21, 2024
 

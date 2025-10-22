@@ -288,4 +288,5 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
   namespace;
 - Remove `StaleObjectException`, `UnknownMethodException`, `UnknownPropertyException` classes;
 - Remove `Expression::getParams()` method, use `$params` property instead;
-
+- Allow `ExpressionInterface` for `$table` and `$on` parameters of `QueryPartsInterface` methods: `join()`,
+  `innerJoin()`, `leftJoin()`, `rightJoin()`;

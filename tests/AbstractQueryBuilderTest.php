@@ -496,6 +496,94 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
+    public function testBuildJoinWithExpressionTable(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+        $params = [];
+
+        $query = (new Query($db))
+            ->from('admin_user')
+            ->join('INNER JOIN', new Expression('(SELECT * FROM admin_profile) ap'), ['admin_user.id' => 'ap.user_id']);
+
+        $this->assertSame(
+            static::replaceQuotes(
+                <<<SQL
+                INNER JOIN (SELECT * FROM admin_profile) ap ON [[admin_user]].[[id]] = [[ap]].[[user_id]]
+                SQL
+            ),
+            $qb->buildJoin($query->getJoins(), $params),
+        );
+    }
+
+    public function testBuildJoinWithArrayExpressionTable(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+        $params = [];
+
+        $query = (new Query($db))
+            ->from('admin_user')
+            ->join(
+                'INNER JOIN',
+                ['ap' => new Expression('(SELECT * FROM admin_profile)')],
+                ['admin_user.id' => 'ap.user_id'],
+            );
+
+        $this->assertSame(
+            static::replaceQuotes(
+                <<<SQL
+                INNER JOIN (SELECT * FROM admin_profile) [[ap]] ON [[admin_user]].[[id]] = [[ap]].[[user_id]]
+                SQL
+            ),
+            $qb->buildJoin($query->getJoins(), $params),
+        );
+    }
+
+    public function testBuildJoinWithExpressionCondition(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+        $params = [];
+
+        $conditionExpression = new Expression('admin_user.id = admin_profile.user_id AND admin_profile.status = 1');
+        $query = (new Query($db))
+            ->from('admin_user')
+            ->join('LEFT JOIN', 'admin_profile', $conditionExpression);
+
+        $this->assertSame(
+            static::replaceQuotes(
+                <<<SQL
+                LEFT JOIN [[admin_profile]] ON admin_user.id = admin_profile.user_id AND admin_profile.status = 1
+                SQL
+            ),
+            $qb->buildJoin($query->getJoins(), $params),
+        );
+    }
+
+    public function testBuildJoinWithBothExpressions(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+        $params = [];
+
+        $tableExpression = new Expression('(SELECT * FROM admin_profile WHERE active = 1) ap');
+        $conditionExpression = new Expression('admin_user.id = ap.user_id');
+
+        $query = (new Query($db))
+            ->from('admin_user')
+            ->join('RIGHT JOIN', $tableExpression, $conditionExpression);
+
+        $this->assertSame(
+            static::replaceQuotes(
+                <<<SQL
+                RIGHT JOIN (SELECT * FROM admin_profile WHERE active = 1) ap ON admin_user.id = ap.user_id
+                SQL
+            ),
+            $qb->buildJoin($query->getJoins(), $params),
+        );
+    }
+
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildLikeCondition')]
     public function testBuildLikeCondition(
         array|ExpressionInterface $condition,
