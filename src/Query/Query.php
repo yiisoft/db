@@ -29,6 +29,7 @@ use function current;
 use function is_array;
 use function is_int;
 use function is_numeric;
+use function is_scalar;
 use function is_string;
 use function key;
 use function preg_match;
@@ -75,6 +76,7 @@ use function trim;
  * @psalm-import-type IndexBy from QueryInterface
  * @psalm-import-type ResultCallback from QueryInterface
  * @psalm-import-type Join from QueryInterface
+ * @psalm-import-type From from QueryInterface
  */
 class Query implements QueryInterface
 {
@@ -82,6 +84,7 @@ class Query implements QueryInterface
     protected array $select = [];
     protected string|null $selectOption = null;
     protected bool $distinct = false;
+    /** @psalm-var From */
     protected array $from = [];
     protected array $groupBy = [];
     protected array|ExpressionInterface|string|null $having = null;
@@ -523,7 +526,6 @@ class Query implements QueryInterface
     public function groupBy(array|string|ExpressionInterface $columns): static
     {
         $this->groupBy = DbArrayHelper::normalizeExpressions($columns);
-
         return $this;
     }
 
@@ -1000,9 +1002,6 @@ class Query implements QueryInterface
             $columns = [$columns];
         }
 
-        /**
-         * @var SelectValue
-         */
         $columns = DbArrayHelper::normalizeExpressions($columns);
 
         $select = [];

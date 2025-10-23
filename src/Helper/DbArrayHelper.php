@@ -17,6 +17,7 @@ use function array_map;
 use function array_multisort;
 use function count;
 use function get_object_vars;
+use function gettype;
 use function is_array;
 use function is_string;
 use function iterator_to_array;
@@ -298,12 +299,17 @@ final class DbArrayHelper
      *  - a string with comma-separated expression values.
      *
      * @return array An array of normalized expressions.
+     *
+     * @psalm-template T as array
+     * @psalm-param T|ExpressionInterface|string $raw
+     * @psalm-return ($raw is string ? list<string> : ($raw is ExpressionInterface ? list{ExpressionInterface} : T))
+     *
+     * @psalm-suppress InvalidReturnType,InvalidFalsableReturnType Psalm cannot correct parse method code.
      */
     public static function normalizeExpressions(array|ExpressionInterface|string $raw): array
     {
         /**
-         * @var array
-         * @psalm-suppress PossiblyInvalidArgument
+         * @psalm-suppress PossiblyInvalidArgument,FalsableReturnStatement,InvalidReturnStatement
          */
         return match (gettype($raw)) {
             GettypeResult::ARRAY => $raw,
