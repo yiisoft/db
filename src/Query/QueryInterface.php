@@ -33,6 +33,8 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * @psalm-type JoinTable = array<string, ExpressionInterface|string>|ExpressionInterface|string
  * @psalm-type JoinOn = array<ExpressionInterface|string>|ExpressionInterface|string
  * @psalm-type Join = list{string, JoinTable, JoinOn}
+ * @psalm-type From = array<string|ExpressionInterface>
+ * @psalm-type RawFrom = array<string|ExpressionInterface>|ExpressionInterface|string
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface
  */

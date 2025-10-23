@@ -31,6 +31,7 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
  * A command instance is usually created by calling {@see ConnectionInterface::createCommand}.
  *
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type RawFrom from QueryInterface
  * @psalm-import-type BatchValues from DMLQueryBuilderInterface
  */
 interface CommandInterface
@@ -835,6 +836,7 @@ interface CommandInterface
      * on how to specify FROM part.
      * @param array $params The parameters to bind to the command.
      *
+     * @psalm-param RawFrom|null $from
      * @psalm-param ParamsType $params
      *
      * @throws Exception

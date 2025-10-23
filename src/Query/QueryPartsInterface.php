@@ -22,6 +22,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * @psalm-import-type JoinTable from QueryInterface
  * @psalm-import-type JoinOn from QueryInterface
  * @psalm-import-type Join from QueryInterface
+ * @psalm-import-type RawFrom from QueryInterface
  */
 interface QueryPartsInterface
 {
@@ -326,6 +327,8 @@ interface QueryPartsInterface
      * $subQuery = "(SELECT * FROM `user` WHERE `active` = 1)";
      * $query = (new \Yiisoft\Db\Query\Query)->from(['activeusers' => $subQuery]);
      * ```
+     *
+     * @psalm-param RawFrom $tables
      */
     public function from(array|ExpressionInterface|string $tables): static;
 
