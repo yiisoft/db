@@ -300,16 +300,17 @@ final class DbArrayHelper
      *
      * @return array An array of normalized expressions.
      *
-     * @psalm-template T as array
-     * @psalm-param T|ExpressionInterface|string $raw
-     * @psalm-return ($raw is string ? list<string> : ($raw is ExpressionInterface ? list{ExpressionInterface} : T))
+     * @psalm-template TArray as array
+     * @psalm-template TExpression as ExpressionInterface
+     * @psalm-param TArray|TExpression|string $raw
+     * @psalm-return ($raw is string ? list<string> : ($raw is ExpressionInterface ? list{TExpression} : TArray))
      *
-     * @psalm-suppress InvalidReturnType,InvalidFalsableReturnType Psalm cannot correct parse method code.
+     * @psalm-suppress InvalidFalsableReturnType Psalm cannot correct parse method code.
      */
     public static function normalizeExpressions(array|ExpressionInterface|string $raw): array
     {
         /**
-         * @psalm-suppress PossiblyInvalidArgument,FalsableReturnStatement,InvalidReturnStatement
+         * @psalm-suppress PossiblyInvalidArgument,FalsableReturnStatement
          */
         return match (gettype($raw)) {
             GettypeResult::ARRAY => $raw,
