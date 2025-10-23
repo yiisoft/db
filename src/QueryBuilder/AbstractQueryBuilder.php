@@ -212,7 +212,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->buildFor($values);
     }
 
-    public function buildFrom(array|null $tables, array &$params): string
+    public function buildFrom(array $tables, array &$params): string
     {
         return $this->dqlBuilder->buildFrom($tables, $params);
     }

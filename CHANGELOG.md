@@ -160,10 +160,11 @@
 - Enh #1065: Allow to use table name as a column prefix in update queries (@Tigrov)
 - Enh #1068: Quote string values as column names when join condition is an associative array (@Tigrov)
 - Chg #1070: Change "IndexBy" closure signature to `Closure(array|object):int|string` (@vjik)
-- Enh #1072, #1077: Improve psalm types (@vjik)
+- Enh #1072, #1077, #1078: Improve psalm types (@vjik)
 - New #1074: Add `ConnectionProvider` class (@Tigrov)
 - Chg #1075: Rename `Query::$join` property to `$joins` (@vjik)
 - New #1076: Allow to use expressions as table name or condition in "join" query methods (@vjik)
+- Chg #1078: Change type of `$tables` to `array` in `DQLQueryBuilderInterface::buildFrom()` (@vjik) 
 
 ## 1.3.0 March 21, 2024
 
