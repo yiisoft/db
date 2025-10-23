@@ -618,6 +618,8 @@ interface CommandInterface
      * @return array|false The primary key values or false if the command fails.
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
+     *
+     * @psalm-return array<string, mixed>|false
      */
     public function insertReturningPks(string $table, array|QueryInterface $columns): array|false;
 
@@ -920,6 +922,7 @@ interface CommandInterface
      *
      * @psalm-param array<string, mixed>|QueryInterface $insertColumns
      * @psalm-param ParamsType $params
+     * @psalm-return array<string, mixed>|false
      *
      * @see upsertReturningPks()
      */

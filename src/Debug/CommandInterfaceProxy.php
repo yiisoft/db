@@ -318,7 +318,7 @@ final class CommandInterfaceProxy implements CommandInterface
 
     public function insertReturningPks(string $table, array|QueryInterface $columns): array|false
     {
-        /** @var array|false */
+        /** @psalm-var array<string, mixed>|false */
         return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
@@ -509,7 +509,7 @@ final class CommandInterfaceProxy implements CommandInterface
         array|bool $updateColumns = true,
         array|null $returnColumns = null,
     ): array|false {
-        /** @var array|false */
+        /** @psalm-var array<string, mixed>|false */
         return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
