@@ -279,6 +279,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Remove `BetweenColumns` condition;
 - Change `QueryBuilderInterface::getExpressionBuilder()` result type to `ExpressionBuilderInterface`;
 - Change `DQLQueryBuilderInterface::getExpressionBuilder()` result type to `ExpressionBuilderInterface`;
+- Change type of `$tables` to `array` in `DQLQueryBuilderInterface::buildFrom()`;
 - Rename `ArrayExpression` to `ArrayValue` and move it to `Yiisoft\Db\Expression\Value` namespace;
 - Rename `ArrayExpressionBuilder` to `ArrayValueBuilder` and move it to `Yiisoft\Db\Expression\Value\Builder` namespace;
 - Rename `JsonExpression` to `JsonValue` and move it to `Yiisoft\Db\Expression\Value` namespace;

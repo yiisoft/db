@@ -113,7 +113,7 @@ interface DQLQueryBuilderInterface
     public function buildFor(array $values): string;
 
     /**
-     * @param array|null $tables The tables to process.
+     * @param array $tables The tables to process.
      * @param array $params The binding parameters to populate.
      *
      * @throws Exception
@@ -124,7 +124,7 @@ interface DQLQueryBuilderInterface
      *
      * @psalm-param ParamsType $params
      */
-    public function buildFrom(array|null $tables, array &$params): string;
+    public function buildFrom(array $tables, array &$params): string;
 
     /**
      * @param array $columns The columns to group by.

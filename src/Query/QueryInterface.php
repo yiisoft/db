@@ -165,6 +165,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     /**
      * @return array The "from" value.
+     * @psalm-return From
      */
     public function getFrom(): array;
 
