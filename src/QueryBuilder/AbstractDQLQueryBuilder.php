@@ -165,12 +165,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         }
 
         $columns = array_map(
-            function (string|ExpressionInterface $column): string {
-                if ($column instanceof ExpressionInterface) {
-                    return $this->buildExpression($column);
-                }
-                return $this->quoter->quoteColumnName($column);
-            },
+            fn(string|ExpressionInterface $column): string => $column instanceof ExpressionInterface
+                ? $this->buildExpression($column)
+                : $this->quoter->quoteColumnName($column),
             $columns,
         );
 
