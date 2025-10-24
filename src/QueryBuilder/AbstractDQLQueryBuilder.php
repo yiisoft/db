@@ -169,10 +169,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                 if ($column instanceof ExpressionInterface) {
                     return $this->buildExpression($column);
                 }
-                if (!str_contains($column, '(')) {
-                    return $this->quoter->quoteColumnName($column);
-                }
-                return $column;
+                return $this->quoter->quoteColumnName($column);
             },
             $columns,
         );
