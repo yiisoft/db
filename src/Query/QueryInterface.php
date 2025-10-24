@@ -30,7 +30,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * @psalm-type IndexBy = Closure(array|object):int|string
  * @psalm-type ResultCallback = Closure(non-empty-array<array>):non-empty-array<array|object>
  * @psalm-type ResultCallbackOne = Closure(array):(array|object)
- * @psalm-type JoinTable = array<string, ExpressionInterface|string>|ExpressionInterface|string
+ * @psalm-type JoinTable = array<ExpressionInterface|string>|ExpressionInterface|string
  * @psalm-type Join = list{string, JoinTable, array|ExpressionInterface|string}
  * @psalm-type From = array<string|ExpressionInterface>
  * @psalm-type RawFrom = array<string|ExpressionInterface>|ExpressionInterface|string
