@@ -57,6 +57,8 @@ interface DQLQueryBuilderInterface
      *
      * @throws Exception
      * @throws InvalidArgumentException
+     *
+     * @psalm-param array<ExpressionInterface|string>|string $columns
      */
     public function buildColumns(array|string $columns): string;
 
