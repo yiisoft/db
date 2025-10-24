@@ -20,7 +20,6 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type IndexBy from QueryInterface
  * @psalm-import-type JoinTable from QueryInterface
- * @psalm-import-type JoinOn from QueryInterface
  * @psalm-import-type Join from QueryInterface
  * @psalm-import-type RawFrom from QueryInterface
  */
@@ -412,7 +411,6 @@ interface QueryPartsInterface
      * @param array $params The parameters (name => value) to bind to the query.
      *
      * @psalm-param JoinTable $table
-     * @psalm-param JoinOn $on
      * @psalm-param ParamsType $params
      */
     public function innerJoin(
@@ -448,7 +446,6 @@ interface QueryPartsInterface
      * @param array $params The parameters (name => value) to bind to the query.
      *
      * @psalm-param JoinTable $table
-     * @psalm-param JoinOn $on
      * @psalm-param ParamsType $params
      */
     public function join(
@@ -474,7 +471,6 @@ interface QueryPartsInterface
      * @param array $params The parameters (name => value) to bind to the query.
      *
      * @psalm-param JoinTable $table
-     * @psalm-param JoinOn $on
      * @psalm-param ParamsType $params
      */
     public function leftJoin(
@@ -599,7 +595,6 @@ interface QueryPartsInterface
      * @param array $params The parameters (name => value) to be bound to the query.
      *
      * @psalm-param JoinTable $table
-     * @psalm-param JoinOn $on
      * @psalm-param ParamsType $params
      */
     public function rightJoin(

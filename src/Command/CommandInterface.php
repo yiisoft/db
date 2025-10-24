@@ -118,6 +118,8 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
+     * @psalm-param array<ExpressionInterface|string>|string $columns
+     * @psalm-param array<ExpressionInterface|string>|string $referenceColumns
      * @psalm-param ReferentialAction::*|null $delete
      * @psalm-param ReferentialAction::*|null $update
      */
@@ -306,6 +308,7 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
+     * @psalm-param array<ExpressionInterface|string>|string $columns
      * @psalm-param IndexType::*|null $indexType
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.

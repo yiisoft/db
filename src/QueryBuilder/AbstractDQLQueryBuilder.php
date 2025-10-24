@@ -160,19 +160,23 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                 return $columns;
             }
 
+            /** @var list<string> We use valid regular expressions, so the result is always a list of strings */
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
 
-        /** @psalm-var array<array-key, ExpressionInterface|string> $columns */
-        foreach ($columns as $i => $column) {
-            if ($column instanceof ExpressionInterface) {
-                $columns[$i] = $this->buildExpression($column);
-            } elseif (!str_contains($column, '(')) {
-                $columns[$i] = $this->quoter->quoteColumnName($column);
-            }
-        }
+        $columns = array_map(
+            function (string|ExpressionInterface $column): string {
+                if ($column instanceof ExpressionInterface) {
+                    return $this->buildExpression($column);
+                }
+                if (!str_contains($column, '(')) {
+                    return $this->quoter->quoteColumnName($column);
+                }
+                return $column;
+            },
+            $columns,
+        );
 
-        /** @psalm-var string[] $columns */
         return implode(', ', $columns);
     }
 
@@ -268,7 +272,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
             $tables = $this->quoteTableNames(is_array($table) ? $table : [$table], $params);
 
-            /** @var string $table */
             $table = reset($tables);
             $joins[$i] = "$joinType $table";
 
