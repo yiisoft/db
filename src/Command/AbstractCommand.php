@@ -547,10 +547,8 @@ abstract class AbstractCommand implements CommandInterface
 
         $this->setSql($sql)->bindValues($params);
 
-        /** @psalm-var array<string, mixed>|bool $result */
-        $result = $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
-
-        return is_array($result) ? $result : false;
+        /** @psalm-var array<string, mixed>|false */
+        return $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
     }
 
     public function upsertReturningPks(
