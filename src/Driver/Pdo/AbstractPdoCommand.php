@@ -259,7 +259,6 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
                 $result = $this->phpTypecastRows([$result])[0];
             }
         } elseif ($this->is($queryMode, self::QUERY_MODE_SCALAR)) {
-            /** @psalm-var mixed $result */
             $result = $this->pdoStatement?->fetchColumn();
 
             if (
