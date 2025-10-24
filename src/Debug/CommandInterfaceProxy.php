@@ -316,9 +316,9 @@ final class CommandInterfaceProxy implements CommandInterface
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function insertReturningPks(string $table, array|QueryInterface $columns): array|false
+    public function insertReturningPks(string $table, array|QueryInterface $columns): array
     {
-        /** @psalm-var array<string, mixed>|false */
+        /** @psalm-var array<string, mixed> */
         return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
@@ -508,8 +508,8 @@ final class CommandInterfaceProxy implements CommandInterface
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
         array|null $returnColumns = null,
-    ): array|false {
-        /** @psalm-var array<string, mixed>|false */
+    ): array {
+        /** @psalm-var array<string, mixed> */
         return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
@@ -517,8 +517,8 @@ final class CommandInterfaceProxy implements CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-    ): array|false {
-        /** @var array|false */
+    ): array {
+        /** @var array */
         return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 

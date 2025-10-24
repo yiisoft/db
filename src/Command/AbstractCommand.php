@@ -381,12 +381,10 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function insertReturningPks(string $table, array|QueryInterface $columns): array|false
+    public function insertReturningPks(string $table, array|QueryInterface $columns): array
     {
         if (empty($this->db->getSchema()->getTableSchema($table)?->getPrimaryKey())) {
-            if ($this->insert($table, $columns)->execute() === 0) {
-                return false;
-            }
+            $this->insert($table, $columns)->execute();
             return [];
         }
 
@@ -395,7 +393,7 @@ abstract class AbstractCommand implements CommandInterface
 
         $this->setSql($sql)->bindValues($params);
 
-        /** @psalm-var array<string, mixed>|false */
+        /** @psalm-var array<string, mixed> */
         return $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
     }
 
@@ -535,7 +533,7 @@ abstract class AbstractCommand implements CommandInterface
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
         array|null $returnColumns = null,
-    ): array|false {
+    ): array {
         if ($returnColumns === []) {
             $this->upsert($table, $insertColumns, $updateColumns)->execute();
             return [];
@@ -547,7 +545,7 @@ abstract class AbstractCommand implements CommandInterface
 
         $this->setSql($sql)->bindValues($params);
 
-        /** @psalm-var array<string, mixed>|false */
+        /** @psalm-var array<string, mixed> */
         return $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
     }
 
@@ -555,9 +553,8 @@ abstract class AbstractCommand implements CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-    ): array|false {
+    ): array {
         $primaryKeys = $this->db->getSchema()->getTableSchema($table)?->getPrimaryKey() ?? [];
-
         return $this->upsertReturning($table, $insertColumns, $updateColumns, $primaryKeys);
     }
 

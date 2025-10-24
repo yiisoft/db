@@ -618,13 +618,13 @@ interface CommandInterface
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array|false The primary key values or false if the command fails.
+     * @return array The primary key values.
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      *
-     * @psalm-return array<string, mixed>|false
+     * @psalm-return array<string, mixed>
      */
-    public function insertReturningPks(string $table, array|QueryInterface $columns): array|false;
+    public function insertReturningPks(string $table, array|QueryInterface $columns): array;
 
     /**
      * Prepares the SQL statement to be executed.
@@ -925,7 +925,7 @@ interface CommandInterface
      *
      * @psalm-param array<string, mixed>|QueryInterface $insertColumns
      * @psalm-param ParamsType $params
-     * @psalm-return array<string, mixed>|false
+     * @psalm-return array<string, mixed>
      *
      * @see upsertReturningPks()
      */
@@ -934,7 +934,7 @@ interface CommandInterface
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
         array|null $returnColumns = null,
-    ): array|false;
+    ): array;
 
     /**
      * Creates a command to insert rows into a database table if they don't already exist (matching unique constraints)
@@ -963,7 +963,7 @@ interface CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-    ): array|false;
+    ): array;
 
     /**
      * Returns copy of the instance with enabled or disabled typecasting of values when inserting or updating records.
