@@ -71,7 +71,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->withQuery($with, 'statuses')
             ->from('statuses');
 
-        $count = $query->select('COUNT(*)')->createCommand()->queryScalar();
+        $count = $query->select('COUNT(*)')->scalar();
 
         $this->assertEquals(2, $count);
 
