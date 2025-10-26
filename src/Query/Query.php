@@ -95,13 +95,13 @@ class Query implements QueryInterface
     /** @psalm-var ResultCallback|null $resultCallback */
     protected Closure|null $resultCallback = null;
     protected array $union = [];
-    protected array $withQueries = [];
+    /** @var WithQuery[] */
+    protected array $with = [];
     /** @psalm-var IndexBy|null $indexBy */
     protected Closure|string|null $indexBy = null;
     protected ExpressionInterface|int|null $limit = null;
     protected ExpressionInterface|int|null $offset = null;
     protected array|string|ExpressionInterface|null $where = null;
-    protected array $with = [];
 
     /**
      * @psalm-var list<string>
@@ -518,9 +518,9 @@ class Query implements QueryInterface
         return $this->where;
     }
 
-    public function getWithQueries(): array
+    public function getWith(): array
     {
-        return $this->withQueries;
+        return $this->with;
     }
 
     public function groupBy(array|string|ExpressionInterface $columns): static
@@ -777,18 +777,18 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function withQuery(
+    public function addWith(
         QueryInterface|string $query,
         ExpressionInterface|string $alias,
         bool $recursive = false
     ): static {
-        $this->withQueries[] = ['query' => $query, 'alias' => $alias, 'recursive' => $recursive];
+        $this->with[] = new WithQuery($query, $alias, $recursive);
         return $this;
     }
 
-    public function withQueries(array $withQueries): static
+    public function with(array $queries): static
     {
-        $this->withQueries = $withQueries;
+        $this->with = $queries;
         return $this;
     }
 

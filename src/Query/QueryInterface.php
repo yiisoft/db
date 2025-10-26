@@ -34,6 +34,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * @psalm-type Join = list{string, JoinTable, array|ExpressionInterface|string}
  * @psalm-type From = array<string|ExpressionInterface>
  * @psalm-type RawFrom = array<string|ExpressionInterface>|ExpressionInterface|string
+ * @psalm-type With = array{query:string|QueryInterface, alias:ExpressionInterface|string, recursive:bool}
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface
  */
@@ -269,9 +270,9 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function getWhere(): array|string|ExpressionInterface|null;
 
     /**
-     * @return array The withQueries value.
+     * @return WithQuery[] The "with" value.
      */
-    public function getWithQueries(): array;
+    public function getWith(): array;
 
     /**
      * Executes the query and returns a single row of a result.

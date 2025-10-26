@@ -305,9 +305,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->buildWhere($condition, $params);
     }
 
-    public function buildWithQueries(array $withs, array &$params): string
+    public function buildWith(array $withs, array &$params): string
     {
-        return $this->dqlBuilder->buildWithQueries($withs, $params);
+        return $this->dqlBuilder->buildWith($withs, $params);
     }
 
     public function checkIntegrity(string $schema = '', string $table = '', bool $check = true): string

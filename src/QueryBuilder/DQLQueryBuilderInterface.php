@@ -12,6 +12,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryPartsInterface;
+use Yiisoft\Db\Query\WithQuery;
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -288,7 +289,7 @@ interface DQLQueryBuilderInterface
     ): string;
 
     /**
-     * @param array $withs The `WITH` queries to process.
+     * @param WithQuery[] $withs The `WITH` queries to process.
      * @param array $params The binding parameters to populate.
      *
      * @throws Exception
@@ -296,11 +297,11 @@ interface DQLQueryBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      *
-     * @return string The `WITH` clause built from {@see \Yiisoft\Db\Query\Query::with}.
+     * @return string The `WITH` clause built from {@see \Yiisoft\Db\Query\Query::addWith}.
      *
      * @psalm-param ParamsType $params
      */
-    public function buildWithQueries(array $withs, array &$params): string;
+    public function buildWith(array $withs, array &$params): string;
 
     /**
      * Transforms one condition defined in array format (as described in {@see \Yiisoft\Db\Query\Query::where()} to

@@ -814,18 +814,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
     public function testBuildWithQueries(): void
     {
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $query = (new Query($db))->withQuery((new Query($db))->from('admin_user')->from('admin_profile'), 'cte');
+        $query = (new Query($db))->addWith((new Query($db))->from('admin_user')->from('admin_profile'), 'cte');
         $params = [];
 
         $this->assertSame(
@@ -834,16 +828,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 WITH [[cte]] AS (SELECT * FROM [[admin_profile]])
                 SQL
             ),
-            $qb->buildWithQueries($query->getWithQueries(), $params),
+            $qb->buildWith($query->getWith(), $params),
         );
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
     public function testBuildWithComplexSelect(): void
     {
         $db = $this->getConnection();
@@ -1253,12 +1241,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([':to' => 4], $params);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
     public function testBuildWithQuery(): void
     {
         $db = $this->getConnection();
@@ -1268,8 +1250,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $with2Query = (new Query($db))->select('id')->from('t2')->innerJoin('a1', 't2.id = a1.id')->where('expr = 2');
         $with3Query = (new Query($db))->select('id')->from('t3')->where('expr = 3');
         $query = (new Query($db))
-            ->withQuery($with1Query, 'a1')
-            ->withQuery($with2Query->union($with3Query), 'a2')
+            ->addWith($with1Query, 'a1')
+            ->addWith($with2Query->union($with3Query), 'a2')
             ->from('a2');
 
         [$sql, $params] = $qb->build($query);
@@ -1286,19 +1268,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([], $params);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
     public function testBuildWithQueryRecursive(): void
     {
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
         $with1Query = (new Query($db))->select('id')->from('t1')->where('expr = 1');
-        $query = (new Query($db))->withQuery($with1Query, 'a1', true)->from('a1');
+        $query = (new Query($db))->addWith($with1Query, 'a1', true)->from('a1');
 
         [$sql, $params] = $qb->build($query);
 
@@ -1316,14 +1292,14 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([], $params);
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::cteAliases */
-    public function testBuildWithQueryAlias($alias, $expected)
+    #[DataProviderExternal(QueryBuilderProvider::class, 'cteAliases')]
+    public function testBuildWithQueryAlias($alias, $expected): void
     {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
         $withQuery = (new Query($db))->from('t');
-        $query = (new Query($db))->withQuery($withQuery, $alias)->from('t');
+        $query = (new Query($db))->addWith($withQuery, $alias)->from('t');
 
         [$sql, $params] = $qb->build($query);
 
@@ -1337,12 +1313,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([], $params);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
     public function testBuildWithSelectExpression(): void
     {
         $db = $this->getConnection();

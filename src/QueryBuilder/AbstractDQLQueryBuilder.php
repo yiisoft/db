@@ -144,7 +144,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $sql = "($sql)$this->separator$union";
         }
 
-        $with = $this->buildWithQueries($query->getWithQueries(), $params);
+        $with = $this->buildWith($query->getWith(), $params);
 
         if ($with !== '') {
             $sql = "$with$this->separator$sql";
@@ -422,7 +422,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return ($where === '') ? '' : ('WHERE ' . $where);
     }
 
-    public function buildWithQueries(array $withs, array &$params): string
+    public function buildWith(array $withs, array &$params): string
     {
         if (empty($withs)) {
             return '';
@@ -431,19 +431,20 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         $recursive = false;
         $result = [];
 
-        /** @psalm-var array{query:string|Query, alias:ExpressionInterface|string, recursive:bool}[] $withs */
         foreach ($withs as $with) {
-            if ($with['recursive']) {
+            if ($with->recursive) {
                 $recursive = true;
             }
 
-            if ($with['query'] instanceof QueryInterface) {
-                [$with['query'], $params] = $this->build($with['query'], $params);
+            if ($with->query instanceof QueryInterface) {
+                [$withQuery, $params] = $this->build($with->query, $params);
+            } else {
+                $withQuery = $with->query;
             }
 
-            $quotedAlias = $this->quoteCteAlias($with['alias']);
+            $quotedAlias = $this->quoteCteAlias($with->alias);
 
-            $result[] = $quotedAlias . ' AS (' . $with['query'] . ')';
+            $result[] = $quotedAlias . ' AS (' . $withQuery . ')';
         }
 
         return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);

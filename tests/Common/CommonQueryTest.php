@@ -58,7 +58,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $db->close();
     }
 
-    public function testWithQuery()
+    public function testWithQuery(): void
     {
         $db = $this->getConnection(true);
 
@@ -68,7 +68,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->from('customer');
 
         $query = (new Query($db))
-            ->withQuery($with, 'statuses')
+            ->addWith($with, 'statuses')
             ->from('statuses');
 
         $this->assertEquals(2, $query->count());
@@ -76,7 +76,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $db->close();
     }
 
-    public function testWithQueryRecursive()
+    public function testWithQueryRecursive(): void
     {
         $db = $this->getConnection();
         $quoter = $db->getQuoter();
@@ -95,7 +95,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->union($union, true);
 
         $sum = (new Query($db))
-            ->withQuery($with, 't(n)', true)
+            ->addWith($with, 't(n)', true)
             ->from('t')
             ->sum($quotedName);
 
