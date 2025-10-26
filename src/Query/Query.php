@@ -823,7 +823,6 @@ class Query implements QueryInterface
             && empty($this->groupBy)
             && empty($this->having)
             && empty($this->union)
-            && empty($this->withQueries)
         ) {
             $select = $this->select;
             $order = $this->orderBy;

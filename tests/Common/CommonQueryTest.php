@@ -71,9 +71,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->withQuery($with, 'statuses')
             ->from('statuses');
 
-        $count = $query->select('COUNT(*)')->scalar();
-
-        $this->assertEquals(2, $count);
+        $this->assertEquals(2, $query->count());
 
         $db->close();
     }
@@ -97,10 +95,9 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->union($union, true);
 
         $sum = (new Query($db))
-            ->select('SUM(n)')
             ->withQuery($with, 't(n)', true)
             ->from('t')
-            ->scalar();
+            ->sum($quotedName);
 
         $this->assertEquals(55, $sum);
 
