@@ -819,7 +819,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $query = (new Query($db))->addWithQuery((new Query($db))->from('admin_user')->from('admin_profile'), 'cte');
+        $query = (new Query($db))->withQuery((new Query($db))->from('admin_user')->from('admin_profile'), 'cte');
         $params = [];
 
         $this->assertSame(
@@ -1250,7 +1250,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $with2Query = (new Query($db))->select('id')->from('t2')->innerJoin('a1', 't2.id = a1.id')->where('expr = 2');
         $with3Query = (new Query($db))->select('id')->from('t3')->where('expr = 3');
         $query = (new Query($db))
-            ->addWithQuery($with1Query, 'a1')
+            ->withQuery($with1Query, 'a1')
             ->addWithQuery($with2Query->union($with3Query), 'a2')
             ->from('a2');
 
@@ -1274,7 +1274,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
         $with1Query = (new Query($db))->select('id')->from('t1')->where('expr = 1');
-        $query = (new Query($db))->addWithQuery($with1Query, 'a1', true)->from('a1');
+        $query = (new Query($db))->withQuery($with1Query, 'a1', true)->from('a1');
 
         [$sql, $params] = $qb->build($query);
 
@@ -1299,7 +1299,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $withQuery = (new Query($db))->from('t');
-        $query = (new Query($db))->addWithQuery($withQuery, $alias)->from('t');
+        $query = (new Query($db))->withQuery($withQuery, $alias)->from('t');
 
         [$sql, $params] = $qb->build($query);
 
