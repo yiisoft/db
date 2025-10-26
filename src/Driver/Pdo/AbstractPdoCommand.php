@@ -196,28 +196,15 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     }
 
     /**
-     * Executes a prepared statement.
-     *
-     * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
+     * A wrapper around {@see pdoStatementExecute()} to support transactions and retry handlers.
      *
      * @throws Exception
-     * @throws Throwable
      */
     protected function internalExecute(): void
     {
         for ($attempt = 0; ; ++$attempt) {
             try {
-                set_error_handler(
-                    static fn(int $errorNumber, string $errorString): bool =>
-                        str_starts_with($errorString, 'Packets out of order. Expected '),
-                    E_WARNING,
-                );
-
-                try {
-                    $this->pdoStatement?->execute();
-                } finally {
-                    restore_error_handler();
-                }
+                $this->pdoStatementExecute();
                 break;
             } catch (PDOException $e) {
                 $rawSql ??= $this->getRawSql();
@@ -228,6 +215,16 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
                 }
             }
         }
+    }
+
+    /**
+     * Executes a prepared statement.
+     *
+     * @throws PDOException
+     */
+    protected function pdoStatementExecute(): void
+    {
+        $this->pdoStatement?->execute();
     }
 
     /**
