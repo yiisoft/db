@@ -437,14 +437,14 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             }
 
             if ($withQuery->query instanceof QueryInterface) {
-                [$withQuery, $params] = $this->build($withQuery->query, $params);
+                [$querySql, $params] = $this->build($withQuery->query, $params);
             } else {
-                $withQuery = $withQuery->query;
+                $querySql = $withQuery->query;
             }
 
             $quotedAlias = $this->quoteCteAlias($withQuery->alias);
 
-            $result[] = $quotedAlias . ' AS (' . $withQuery . ')';
+            $result[] = $quotedAlias . ' AS (' . $querySql . ')';
         }
 
         return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);
