@@ -96,7 +96,7 @@ class Query implements QueryInterface
     protected Closure|null $resultCallback = null;
     protected array $union = [];
     /** @var WithQuery[] */
-    protected array $with = [];
+    protected array $withQueries = [];
     /** @psalm-var IndexBy|null $indexBy */
     protected Closure|string|null $indexBy = null;
     protected ExpressionInterface|int|null $limit = null;
@@ -518,9 +518,9 @@ class Query implements QueryInterface
         return $this->where;
     }
 
-    public function getWith(): array
+    public function getWithQueries(): array
     {
-        return $this->with;
+        return $this->withQueries;
     }
 
     public function groupBy(array|string|ExpressionInterface $columns): static
@@ -777,18 +777,27 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function addWith(
+    public function withQuery(
         QueryInterface|string $query,
         ExpressionInterface|string $alias,
         bool $recursive = false
     ): static {
-        $this->with[] = new WithQuery($query, $alias, $recursive);
+        $this->withQueries = [new WithQuery($query, $alias, $recursive)];
         return $this;
     }
 
-    public function with(array $queries): static
+    public function addWithQuery(
+        QueryInterface|string $query,
+        ExpressionInterface|string $alias,
+        bool $recursive = false
+    ): static {
+        $this->withQueries[] = new WithQuery($query, $alias, $recursive);
+        return $this;
+    }
+
+    public function withQueries(WithQuery ...$queries): static
     {
-        $this->with = $queries;
+        $this->withQueries = $queries;
         return $this;
     }
 
@@ -814,7 +823,7 @@ class Query implements QueryInterface
             && empty($this->groupBy)
             && empty($this->having)
             && empty($this->union)
-            && empty($this->with)
+            && empty($this->withQueries)
         ) {
             $select = $this->select;
             $order = $this->orderBy;

@@ -68,7 +68,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->from('customer');
 
         $query = (new Query($db))
-            ->addWith($with, 'statuses')
+            ->addWithQuery($with, 'statuses')
             ->from('statuses');
 
         $this->assertEquals(2, $query->count());
@@ -95,7 +95,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->union($union, true);
 
         $sum = (new Query($db))
-            ->addWith($with, 't(n)', true)
+            ->addWithQuery($with, 't(n)', true)
             ->from('t')
             ->sum($quotedName);
 

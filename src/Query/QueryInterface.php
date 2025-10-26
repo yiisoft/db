@@ -271,7 +271,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     /**
      * @return WithQuery[] The "with" value.
      */
-    public function getWith(): array;
+    public function getWithQueries(): array;
 
     /**
      * Executes the query and returns a single row of a result.

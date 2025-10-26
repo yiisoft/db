@@ -11,8 +11,8 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  *
  * A data structure holds the information for a single "WITH" query clause.
  *
- * @see QueryPartsInterface::addWith()
- * @see QueryPartsInterface::with()
+ * @see QueryPartsInterface::addWithQuery()
+ * @see QueryPartsInterface::withQueries()
  */
 final class WithQuery
 {

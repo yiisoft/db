@@ -144,7 +144,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $sql = "($sql)$this->separator$union";
         }
 
-        $with = $this->buildWith($query->getWith(), $params);
+        $with = $this->buildWithQueries($query->getWithQueries(), $params);
 
         if ($with !== '') {
             $sql = "$with$this->separator$sql";
@@ -422,16 +422,16 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return ($where === '') ? '' : ('WHERE ' . $where);
     }
 
-    public function buildWith(array $withs, array &$params): string
+    public function buildWithQueries(array $queries, array &$params): string
     {
-        if (empty($withs)) {
+        if (empty($queries)) {
             return '';
         }
 
         $recursive = false;
         $result = [];
 
-        foreach ($withs as $with) {
+        foreach ($queries as $with) {
             if ($with->recursive) {
                 $recursive = true;
             }

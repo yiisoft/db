@@ -25,7 +25,7 @@ $recursiveQuery = (new Query($db))
 $mainQuery = (new Query($db))
     ->select(['parent', 'child'])
     ->from('{{%t1}}')
-    ->with($initialQuery->union($recursiveQuery), 't1', true);
+    ->withQueries($initialQuery->union($recursiveQuery), 't1', true);
 ```
 
 `\Yiisoft\Db\Query\Query::withQuery()` pode ser chamado múltiplas vezes para acrescentar mais CTEs à consulta principal.
