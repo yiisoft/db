@@ -165,7 +165,7 @@
 - Chg #1075: Rename `Query::$join` property to `$joins` (@vjik)
 - New #1076: Allow to use expressions as table name or condition in "join" query methods (@vjik)
 - Chg #1078: Change type of `$tables` to `array` in `DQLQueryBuilderInterface::buildFrom()` (@vjik)
-- Chg #1082: Add `pdoStatementExecute()` protected method to `AbstractPdoCommand` class and cleanup `internalExecute()`
+- Chg #1083: Add `pdoStatementExecute()` protected method to `AbstractPdoCommand` class and cleanup `internalExecute()`
   method (@vjik)
 
 ## 1.3.0 March 21, 2024
