@@ -269,7 +269,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function getWhere(): array|string|ExpressionInterface|null;
 
     /**
-     * @return WithQuery[] The "with" value.
+     * @return WithQuery[] The "withQueries" value.
      */
     public function getWithQueries(): array;
 
