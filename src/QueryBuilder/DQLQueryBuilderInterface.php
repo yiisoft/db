@@ -289,7 +289,7 @@ interface DQLQueryBuilderInterface
     ): string;
 
     /**
-     * @param WithQuery[] $queries The `WITH` queries to process.
+     * @param WithQuery[] $withQueries The `WITH` queries to process.
      * @param array $params The binding parameters to populate.
      *
      * @throws Exception
@@ -301,7 +301,7 @@ interface DQLQueryBuilderInterface
      *
      * @psalm-param ParamsType $params
      */
-    public function buildWithQueries(array $queries, array &$params): string;
+    public function buildWithQueries(array $withQueries, array &$params): string;
 
     /**
      * Transforms one condition defined in array format (as described in {@see \Yiisoft\Db\Query\Query::where()} to

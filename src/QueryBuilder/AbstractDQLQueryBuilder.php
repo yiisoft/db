@@ -422,27 +422,27 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return ($where === '') ? '' : ('WHERE ' . $where);
     }
 
-    public function buildWithQueries(array $queries, array &$params): string
+    public function buildWithQueries(array $withQueries, array &$params): string
     {
-        if (empty($queries)) {
+        if (empty($withQueries)) {
             return '';
         }
 
         $recursive = false;
         $result = [];
 
-        foreach ($queries as $with) {
-            if ($with->recursive) {
+        foreach ($withQueries as $withQuery) {
+            if ($withQuery->recursive) {
                 $recursive = true;
             }
 
-            if ($with->query instanceof QueryInterface) {
-                [$withQuery, $params] = $this->build($with->query, $params);
+            if ($withQuery->query instanceof QueryInterface) {
+                [$withQuery, $params] = $this->build($withQuery->query, $params);
             } else {
-                $withQuery = $with->query;
+                $withQuery = $withQuery->query;
             }
 
-            $quotedAlias = $this->quoteCteAlias($with->alias);
+            $quotedAlias = $this->quoteCteAlias($withQuery->alias);
 
             $result[] = $quotedAlias . ' AS (' . $withQuery . ')';
         }
