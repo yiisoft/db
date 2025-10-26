@@ -778,9 +778,9 @@ interface QueryPartsInterface
     public function setWhere(array|string|ExpressionInterface|null $condition, array $params = []): static;
 
     /**
-     * Prepends an SQL statement using `WITH` syntax.
+     * Set an SQL statement using `WITH` syntax.
      *
-     * @param QueryInterface|string $query The SQL statement to append using `UNION`.
+     * @param QueryInterface|string $query The SQL statement.
      * @param ExpressionInterface|string $alias The query alias in `WITH` construction.
      * To specify the alias in plain SQL, you may pass an instance of {@see ExpressionInterface}.
      * @param bool $recursive Its `true` if using `WITH RECURSIVE` and `false` if using `WITH`.
