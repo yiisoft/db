@@ -25,9 +25,6 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function array_keys;
 use function array_map;
-use function restore_error_handler;
-use function set_error_handler;
-use function str_starts_with;
 
 /**
  * Represents a database command that can be executed using a PDO (PHP Data Object) database connection.
