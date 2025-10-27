@@ -167,6 +167,9 @@
 - Chg #1078: Change type of `$tables` to `array` in `DQLQueryBuilderInterface::buildFrom()` (@vjik)
 - Chg #1083: Add `pdoStatementExecute()` protected method to `AbstractPdoCommand` class and cleanup `internalExecute()`
   method (@vjik)
+- New #1082: Add `WithQuery` class that holds the information for a single "WITH" query clause (@vjik)
+- New #1082: Add `QueryPartsInterface::addWithQuery()` method (@vjik)
+- Chg #1082: `QueryPartsInterface::withQuery()` method replace "WITH" clause instead of adding before (@vjik)
 
 ## 1.3.0 March 21, 2024
 
