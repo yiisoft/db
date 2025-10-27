@@ -814,12 +814,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
     public function testBuildWithQueries(): void
     {
         $db = $this->getConnection();
@@ -838,12 +832,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
     public function testBuildWithComplexSelect(): void
     {
         $db = $this->getConnection();
@@ -1253,12 +1241,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([':to' => 4], $params);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
     public function testBuildWithQuery(): void
     {
         $db = $this->getConnection();
@@ -1269,7 +1251,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $with3Query = (new Query($db))->select('id')->from('t3')->where('expr = 3');
         $query = (new Query($db))
             ->withQuery($with1Query, 'a1')
-            ->withQuery($with2Query->union($with3Query), 'a2')
+            ->addWithQuery($with2Query->union($with3Query), 'a2')
             ->from('a2');
 
         [$sql, $params] = $qb->build($query);
@@ -1286,12 +1268,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([], $params);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
     public function testBuildWithQueryRecursive(): void
     {
         $db = $this->getConnection();
@@ -1316,8 +1292,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([], $params);
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::cteAliases */
-    public function testBuildWithQueryAlias($alias, $expected)
+    #[DataProviderExternal(QueryBuilderProvider::class, 'cteAliases')]
+    public function testBuildWithQueryAlias($alias, $expected): void
     {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
@@ -1337,12 +1313,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([], $params);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
     public function testBuildWithSelectExpression(): void
     {
         $db = $this->getConnection();

@@ -14,6 +14,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Query\WithQuery;
 use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -745,10 +746,14 @@ abstract class AbstractQueryTest extends TestCase
     {
         $db = $this->getConnection();
 
+        $withQueries = [
+            new WithQuery('query1', 'q1'),
+            new WithQuery('query2', 'q2'),
+        ];
         $query = new Query($db);
-        $query->withQueries(['query1', 'query2']);
+        $query->withQueries(...$withQueries);
 
-        $this->assertSame(['query1', 'query2'], $query->getWithQueries());
+        $this->assertSame($withQueries, $query->getWithQueries());
     }
 
     public function testColumnWithIndexBy(): void

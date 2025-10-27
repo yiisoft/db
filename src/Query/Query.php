@@ -95,13 +95,13 @@ class Query implements QueryInterface
     /** @psalm-var ResultCallback|null $resultCallback */
     protected Closure|null $resultCallback = null;
     protected array $union = [];
+    /** @var WithQuery[] */
     protected array $withQueries = [];
     /** @psalm-var IndexBy|null $indexBy */
     protected Closure|string|null $indexBy = null;
     protected ExpressionInterface|int|null $limit = null;
     protected ExpressionInterface|int|null $offset = null;
     protected array|string|ExpressionInterface|null $where = null;
-    protected array $with = [];
 
     /**
      * @psalm-var list<string>
@@ -782,13 +782,22 @@ class Query implements QueryInterface
         ExpressionInterface|string $alias,
         bool $recursive = false
     ): static {
-        $this->withQueries[] = ['query' => $query, 'alias' => $alias, 'recursive' => $recursive];
+        $this->withQueries = [new WithQuery($query, $alias, $recursive)];
         return $this;
     }
 
-    public function withQueries(array $withQueries): static
+    public function addWithQuery(
+        QueryInterface|string $query,
+        ExpressionInterface|string $alias,
+        bool $recursive = false
+    ): static {
+        $this->withQueries[] = new WithQuery($query, $alias, $recursive);
+        return $this;
+    }
+
+    public function withQueries(WithQuery ...$queries): static
     {
-        $this->withQueries = $withQueries;
+        $this->withQueries = $queries;
         return $this;
     }
 
@@ -814,7 +823,6 @@ class Query implements QueryInterface
             && empty($this->groupBy)
             && empty($this->having)
             && empty($this->union)
-            && empty($this->with)
         ) {
             $select = $this->select;
             $order = $this->orderBy;

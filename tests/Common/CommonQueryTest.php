@@ -58,7 +58,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $db->close();
     }
 
-    public function testWithQuery()
+    public function testWithQuery(): void
     {
         $db = $this->getConnection(true);
 
@@ -76,7 +76,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $db->close();
     }
 
-    public function testWithQueryRecursive()
+    public function testWithQueryRecursive(): void
     {
         $db = $this->getConnection();
         $quoter = $db->getQuoter();

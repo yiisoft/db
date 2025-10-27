@@ -422,28 +422,29 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return ($where === '') ? '' : ('WHERE ' . $where);
     }
 
-    public function buildWithQueries(array $withs, array &$params): string
+    public function buildWithQueries(array $withQueries, array &$params): string
     {
-        if (empty($withs)) {
+        if (empty($withQueries)) {
             return '';
         }
 
         $recursive = false;
         $result = [];
 
-        /** @psalm-var array{query:string|Query, alias:ExpressionInterface|string, recursive:bool}[] $withs */
-        foreach ($withs as $with) {
-            if ($with['recursive']) {
+        foreach ($withQueries as $withQuery) {
+            if ($withQuery->recursive) {
                 $recursive = true;
             }
 
-            if ($with['query'] instanceof QueryInterface) {
-                [$with['query'], $params] = $this->build($with['query'], $params);
+            if ($withQuery->query instanceof QueryInterface) {
+                [$querySql, $params] = $this->build($withQuery->query, $params);
+            } else {
+                $querySql = $withQuery->query;
             }
 
-            $quotedAlias = $this->quoteCteAlias($with['alias']);
+            $quotedAlias = $this->quoteCteAlias($withQuery->alias);
 
-            $result[] = $quotedAlias . ' AS (' . $with['query'] . ')';
+            $result[] = $quotedAlias . ' AS (' . $querySql . ')';
         }
 
         return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);
