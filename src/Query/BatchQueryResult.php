@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
-use Throwable;
 
 /**
  * Represents the result of a batch query execution.
