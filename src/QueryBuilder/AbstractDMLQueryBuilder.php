@@ -312,7 +312,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Prepare select-subQuery and field names for `INSERT INTO ... SELECT` SQL statement.
      *
-     * @param QueryInterface $columns Object, which represents a select query.
+     * @param QueryInterface $query Object, which represents a select query.
      * @param array $params The parameters to bind to the generated SQL statement. These parameters will be included
      * in the result, with the more parameters generated during the query building process.
      *
@@ -325,10 +325,10 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @psalm-param ParamsType $params
      */
-    protected function getQueryColumnNames(QueryInterface $columns, array &$params = []): array
+    protected function getQueryColumnNames(QueryInterface $query, array &$params = []): array
     {
         /** @psalm-var string[] $select */
-        $select = $columns->getSelect();
+        $select = $query->getSelect();
 
         if (empty($select) || in_array('*', $select, true)) {
             throw new InvalidArgumentException('Expected select query object with enumerated (named) parameters');
@@ -382,6 +382,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
         if ($columns instanceof QueryInterface) {
             $names = $this->getQueryColumnNames($columns, $params);
+            $names = $this->getNormalizeColumnNames($names);
+
             [$values, $params] = $this->queryBuilder->build($columns, $params);
             return [$names, [], $values, $params];
         }
