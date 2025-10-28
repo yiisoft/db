@@ -279,7 +279,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      */
     protected function extractColumnNames(array|Iterator $rows, array $columns): array
     {
-        $columns = $this->getNormalizeColumnNames($columns);
+        $columns = $this->getNormalizedColumnNames($columns);
 
         if (!empty($columns)) {
             return $columns;
@@ -352,7 +352,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             }
         }
 
-        return $this->getNormalizeColumnNames($names);
+        return $this->getNormalizedColumnNames($names);
     }
 
     /**
@@ -504,7 +504,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         if ($insertColumns instanceof QueryInterface) {
             $insertNames = $this->getQueryColumnNames($insertColumns);
         } else {
-            $insertNames = $this->getNormalizeColumnNames(array_keys($insertColumns));
+            $insertNames = $this->getNormalizedColumnNames(array_keys($insertColumns));
         }
 
         $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
@@ -570,7 +570,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     {
         /** @var string[] $columnNames */
         $columnNames = array_keys($columns);
-        $normalizedNames = $this->getNormalizeColumnNames($columnNames);
+        $normalizedNames = $this->getNormalizedColumnNames($columnNames);
 
         return array_combine($normalizedNames, $columns);
     }
@@ -582,7 +582,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @return string[] Normalized column names.
      */
-    protected function getNormalizeColumnNames(array $columns): array
+    protected function getNormalizedColumnNames(array $columns): array
     {
         foreach ($columns as &$name) {
             $name = $this->quoter->ensureColumnName($name);
