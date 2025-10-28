@@ -1103,7 +1103,7 @@ class QueryBuilderProvider
             'carry passed params (query)' => [
                 'customer',
                 (new Query(static::getDb()))
-                    ->select(['email', 'name', 'address', 'is_active', 'related_id'])
+                    ->select(['email', 'customer.name', 'address', 'is_active', 'related_id'])
                     ->from('customer')
                     ->where(
                         [
@@ -1118,7 +1118,7 @@ class QueryBuilderProvider
                 [':phBar' => 'bar'],
                 static::replaceQuotes(
                     <<<SQL
-                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) SELECT [[email]], [[name]], [[address]], [[is_active]], [[related_id]] FROM [[customer]] WHERE ([[email]] = :qp1) AND ([[name]] = :qp2) AND ([[address]] = :qp3) AND ([[is_active]] = FALSE) AND ([[related_id]] IS NULL) AND ([[col]] = CONCAT(:phFoo, :phBar))
+                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) SELECT [[email]], [[customer]].[[name]], [[address]], [[is_active]], [[related_id]] FROM [[customer]] WHERE ([[email]] = :qp1) AND ([[name]] = :qp2) AND ([[address]] = :qp3) AND ([[is_active]] = FALSE) AND ([[related_id]] IS NULL) AND ([[col]] = CONCAT(:phFoo, :phBar))
                     SQL
                 ),
                 [
