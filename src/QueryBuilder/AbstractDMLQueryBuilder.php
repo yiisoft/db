@@ -352,7 +352,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             }
         }
 
-        return $names;
+        return $this->getNormalizeColumnNames($names);
     }
 
     /**
@@ -382,8 +382,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
         if ($columns instanceof QueryInterface) {
             $names = $this->getQueryColumnNames($columns, $params);
-            $names = $this->getNormalizeColumnNames($names);
-
             [$values, $params] = $this->queryBuilder->build($columns, $params);
             return [$names, [], $values, $params];
         }
@@ -506,10 +504,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         if ($insertColumns instanceof QueryInterface) {
             $insertNames = $this->getQueryColumnNames($insertColumns);
         } else {
-            $insertNames = array_keys($insertColumns);
+            $insertNames = $this->getNormalizeColumnNames(array_keys($insertColumns));
         }
 
-        $insertNames = $this->getNormalizeColumnNames($insertNames);
         $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
 
         if ($updateColumns === true) {
