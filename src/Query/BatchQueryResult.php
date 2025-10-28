@@ -63,9 +63,9 @@ final class BatchQueryResult implements BatchQueryResultInterface
     /**
      * Fetches the next batch of data.
      *
-     * @throws Throwable
-     *
      * @return array The data fetched.
+     *
+     * @psalm-return array<array<string,mixed>|object>
      */
     private function fetchData(): array
     {
@@ -81,7 +81,7 @@ final class BatchQueryResult implements BatchQueryResultInterface
     /**
      * Reads and collects rows for batch.
      *
-     * @psalm-return array<array>
+     * @psalm-return array<array<string,mixed>>
      */
     private function getRows(): array
     {
@@ -99,7 +99,7 @@ final class BatchQueryResult implements BatchQueryResultInterface
         ) {
             /** @var int|string $key */
             $key = $isContinuousIndex ? $startIndex - $leftCount : $this->dataReader->key();
-            /** @var array */
+            /** @psalm-var array<string, mixed> */
             $rows[$key] = $this->dataReader->current();
         }
 

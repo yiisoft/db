@@ -234,7 +234,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
             $dataReader = new PdoDataReader($this->pdoStatement);
 
             if ($this->phpTypecasting && ($row = $dataReader->current()) !== false) {
-                /** @var array $row */
+                /** @var array<string,mixed> $row */
                 $dataReader->typecastColumns($this->getResultColumns(array_keys($row)));
             }
 
@@ -246,7 +246,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         }
 
         if ($this->is($queryMode, self::QUERY_MODE_ROW)) {
-            /** @psalm-var array|false $result */
+            /** @psalm-var array<string,mixed>|false $result */
             $result = $this->pdoStatement?->fetch(PDO::FETCH_ASSOC);
 
             if ($this->phpTypecasting && $result !== false) {
@@ -339,7 +339,9 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      *
      * @return ColumnInterface[]
      *
-     * @psalm-param array<int, string|int> $keys
+     * @template T as string|int
+     * @psalm-param list<T> $keys
+     * @psalm-return array<T, ColumnInterface>
      */
     private function getResultColumns(array $keys): array
     {

@@ -688,6 +688,8 @@ interface CommandInterface
      * @throws Throwable If execution failed.
      *
      * @return array|null The first row as an `array` of the query result. `null` if the query results in nothing.
+     *
+     * @psalm-return array<string,mixed>|null
      */
     public function queryOne(): array|null;
 

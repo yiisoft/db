@@ -95,7 +95,7 @@ final class DbArrayHelper
      *
      * @return array[]|object[] The arranged array.
      *
-     * @psalm-param list<array> $rows
+     * @psalm-param list<array<string,mixed>> $rows
      * @psalm-param IndexBy|null $indexBy
      * @psalm-param ResultCallback|null $resultCallback
      */
@@ -174,9 +174,10 @@ final class DbArrayHelper
      *
      * @return array[]|object[] The indexed array.
      *
-     * @psalm-param array<array> $rows
+     * @psalm-param array<array<string,mixed>> $rows
      * @psalm-param IndexBy|null $indexBy
      * @psalm-param ResultCallback|null $resultCallback
+     * @psalm-return array<array<string,mixed>|object>
      */
     public static function index(
         array $rows,
@@ -332,7 +333,7 @@ final class DbArrayHelper
         Closure|null $resultCallback,
         int $depth,
     ): void {
-        /** @var list<array> $rows */
+        /** @var list<array<string,mixed>> $rows */
         foreach ($arranged as &$rows) {
             if ($depth > 1) {
                 self::indexArranged($rows, $indexBy, $resultCallback, $depth - 1);

@@ -434,21 +434,19 @@ abstract class AbstractCommand implements CommandInterface
 
     public function queryColumn(): array
     {
-        /** @psalm-var mixed $results */
         $results = $this->queryInternal(self::QUERY_MODE_COLUMN);
         return is_array($results) ? $results : [];
     }
 
     public function queryOne(): array|null
     {
-        /** @psalm-var mixed $results */
+        /** @psalm-var array<string,mixed>|false $results */
         $results = $this->queryInternal(self::QUERY_MODE_ROW);
         return is_array($results) ? $results : null;
     }
 
     public function queryScalar(): bool|string|null|int|float
     {
-        /** @psalm-var mixed $result */
         $result = $this->queryInternal(self::QUERY_MODE_SCALAR);
 
         if (is_resource($result) && get_resource_type($result) === 'stream') {
