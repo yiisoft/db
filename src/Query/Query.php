@@ -852,14 +852,13 @@ class Query implements QueryInterface
     }
 
     /**
-     * @psalm-param list<array> $rows
-     *
      * @return array[]|object[]
      *
+     * @psalm-param list<array<string,mixed>> $rows
      * @psalm-return (
-     *     $rows is non-empty-list<array>
-     *         ? non-empty-array<array|object>
-     *         : array[]|object[]
+     *     $rows is non-empty-list<array<string,mixed>>
+     *         ? non-empty-array<array<string,mixed>|object>
+     *         : array<array<string,mixed>|object>
      * )
      */
     protected function index(array $rows): array
@@ -867,6 +866,10 @@ class Query implements QueryInterface
         return DbArrayHelper::index($rows, $this->indexBy, $this->resultCallback);
     }
 
+    /**
+     * @psalm-param array<string, mixed> $row
+     * @return array<string, mixed>|object
+     */
     private function callResultCallbackOnOne(array $row): array|object
     {
         /** @psalm-var ResultCallback $this->resultCallback */
