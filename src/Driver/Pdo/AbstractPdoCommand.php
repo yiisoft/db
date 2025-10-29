@@ -339,9 +339,8 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      *
      * @return ColumnInterface[]
      *
-     * @template T as string|int
-     * @psalm-param list<T> $keys
-     * @psalm-return array<T, ColumnInterface>
+     * @psalm-param list<string> $keys
+     * @psalm-return array<string, ColumnInterface>
      */
     private function getResultColumns(array $keys): array
     {
@@ -362,6 +361,8 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      * Typecasts rows from the query result to PHP types according to the column types.
      *
      * @param array[] $rows
+     *
+     * @psalm-param array<array<string,mixed>> $rows
      */
     private function phpTypecastRows(array $rows): array
     {
