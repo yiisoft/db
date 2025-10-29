@@ -234,7 +234,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
             $dataReader = new PdoDataReader($this->pdoStatement);
 
             if ($this->phpTypecasting && ($row = $dataReader->current()) !== false) {
-                /** @var array<string,mixed> $row */
+                /** @psalm-var array<string,mixed> $row */
                 $dataReader->typecastColumns($this->getResultColumns(array_keys($row)));
             }
 
