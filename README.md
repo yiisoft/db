@@ -9,7 +9,7 @@
 [![Total Downloads](https://poser.pugx.org/yiisoft/db/downloads)](https://packagist.org/packages/yiisoft/db)
 [![Build status](https://github.com/yiisoft/db/actions/workflows/build.yml/badge.svg)](https://github.com/yiisoft/db/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/yiisoft/db/branch/master/graph/badge.svg?token=pRr4gci2qj)](https://codecov.io/gh/yiisoft/db)
-[![static analysis](https://github.com/yiisoft/db/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db/actions/workflows/static.yml)
+[![Static analysis](https://github.com/yiisoft/db/actions/workflows/static.yml/badge.svg?branch=master)](https://github.com/yiisoft/db/actions/workflows/static.yml?query=branch%3Amaster)
 [![type-coverage](https://shepherd.dev/github/yiisoft/db/coverage.svg)](https://shepherd.dev/github/yiisoft/db)
 
 Yii Database is a framework-agnostic package to work with different types of databases,
