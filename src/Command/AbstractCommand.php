@@ -413,7 +413,7 @@ abstract class AbstractCommand implements CommandInterface
             return 0;
         }
 
-        /** @var int|bool $execute */
+        /** @var bool|int $execute */
         $execute = $this->queryInternal(self::QUERY_MODE_EXECUTE);
 
         return is_int($execute) ? $execute : 0;
