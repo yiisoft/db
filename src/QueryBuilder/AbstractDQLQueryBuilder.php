@@ -216,7 +216,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             return '';
         }
 
-        /** @psalm-var string[] $tables */
+        /** @var string[] $tables */
         $tables = $this->quoteTableNames($tables, $params);
 
         return 'FROM ' . implode(', ', $tables);

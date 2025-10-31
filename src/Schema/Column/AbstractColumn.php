@@ -102,7 +102,7 @@ abstract class AbstractColumn implements ColumnInterface
             unset($args['defaultValue']);
         }
 
-        /** @var array<string, mixed> $args */
+        /** @psalm-var array<string, mixed> $args */
         foreach ($args as $property => $value) {
             if (property_exists($this, $property)) {
                 $this->$property = $value;

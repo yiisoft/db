@@ -295,11 +295,10 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
 
         $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
 
-        /** @psalm-var string|null $rawSql */
+        /** @var string|null $rawSql */
         $this->profiler?->begin($rawSql ??= $this->getRawSql(), $queryContext);
-        /** @psalm-var string $rawSql */
+        /** @var string $rawSql */
         try {
-            /** @psalm-var mixed $result */
             $result = parent::queryInternal($queryMode);
         } catch (Throwable $e) {
             $this->profiler?->end($rawSql, $queryContext->setException($e));

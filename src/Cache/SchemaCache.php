@@ -124,7 +124,7 @@ final class SchemaCache
             return;
         }
 
-        /** @psalm-var string[] $data */
+        /** @var string[] $data */
         $data = $this->psrCache->get($cacheTag, []);
 
         foreach ($data as $key) {
@@ -224,7 +224,7 @@ final class SchemaCache
             return;
         }
 
-        /** @psalm-var string[] $data */
+        /** @var string[] $data */
         $data = $this->psrCache->get($cacheTag, []);
         $data[] = $key;
         $this->psrCache->set($cacheTag, $data);

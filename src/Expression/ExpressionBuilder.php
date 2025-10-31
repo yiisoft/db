@@ -83,7 +83,7 @@ final class ExpressionBuilder implements ExpressionBuilderInterface
     {
         $nonUniqueParams = [];
 
-        /** @var non-empty-string $name */
+        /** @psalm-var non-empty-string $name */
         foreach ($expressionParams as $name => $value) {
             $paramName = $name[0] === ':' ? substr($name, 1) : $name;
 
@@ -130,7 +130,7 @@ final class ExpressionBuilder implements ExpressionBuilderInterface
     {
         $replacements = [];
 
-        /** @var non-empty-string $name */
+        /** @psalm-var non-empty-string $name */
         foreach ($expressionParams as $name => $value) {
             if (!$value instanceof ExpressionInterface || $value instanceof Param) {
                 continue;
@@ -164,7 +164,7 @@ final class ExpressionBuilder implements ExpressionBuilderInterface
             return $replacements;
         }
 
-        /** @var non-empty-string $value */
+        /** @psalm-var non-empty-string $value */
         foreach ($replacements as $name => $value) {
             if (isset($expressionReplacements[$value])) {
                 $replacements[$name] = $expressionReplacements[$value];

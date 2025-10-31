@@ -142,7 +142,7 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table to add the primary key constraint will to.
      * @param string $name The name of the primary key constraint.
-     * @param array|string $columns Comma separated string or array of columns that the primary key will consist of.
+     * @param string[]|string $columns Comma separated string or array of columns that the primary key will consist of.
      *
      * @return string The SQL statement for adding a primary key constraint to an existing table.
      *
@@ -155,7 +155,7 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table to add the unique constraint to.
      * @param string $name The name of the unique constraint.
-     * @param array|string $columns The name of the column to add the constraint on. If there are many
+     * @param string[]|string $columns The name of the column to add the constraint on. If there are many
      * columns, separate them with commas.
      *
      * @return string The SQL statement for adding a unique constraint to an existing table.

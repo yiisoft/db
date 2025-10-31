@@ -46,7 +46,6 @@ final class Not implements ConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires exactly one operand.");
         }
 
-        /** @psalm-var mixed $firstValue */
         $firstValue = array_shift($condition);
 
         if (

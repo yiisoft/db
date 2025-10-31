@@ -413,7 +413,7 @@ abstract class AbstractCommand implements CommandInterface
             return 0;
         }
 
-        /** @psalm-var int|bool $execute */
+        /** @var int|bool $execute */
         $execute = $this->queryInternal(self::QUERY_MODE_EXECUTE);
 
         return is_int($execute) ? $execute : 0;
@@ -421,7 +421,7 @@ abstract class AbstractCommand implements CommandInterface
 
     public function query(): DataReaderInterface
     {
-        /** @psalm-var DataReaderInterface */
+        /** @var DataReaderInterface */
         return $this->queryInternal(self::QUERY_MODE_CURSOR);
     }
 
@@ -629,7 +629,6 @@ abstract class AbstractCommand implements CommandInterface
 
         $this->internalExecute();
 
-        /** @psalm-var mixed $result */
         $result = $this->internalGetQueryResult($queryMode);
 
         if (!$isReadMode) {

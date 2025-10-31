@@ -200,7 +200,7 @@ class InBuilder implements ExpressionBuilderInterface
     ): string {
         $vss = [];
 
-        /** @psalm-var string[][] $values */
+        /** @var string[][] $values */
         foreach ($values as $value) {
             $vs = [];
             foreach ($columns as $column) {
@@ -252,13 +252,11 @@ class InBuilder implements ExpressionBuilderInterface
     {
         $rawValues = [];
 
-        /** @psalm-var mixed $value */
         foreach ($traversableObject as $value) {
             if (is_array($value)) {
                 $values = array_values($value);
                 $rawValues = array_merge($rawValues, $values);
             } else {
-                /** @psalm-var mixed */
                 $rawValues[] = $value;
             }
         }
