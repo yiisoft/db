@@ -31,7 +31,7 @@ use Yiisoft\Db\Pgsql\Dsn;
 
 return [
     'yiisoft/db-pgsql' => [
-        'dsn' => (new Dsn('pgsql', '127.0.0.1', 'yiitest', '5432'))->asString(),
+        'dsn' => new Dsn('pgsql', '127.0.0.1', 'yiitest', '5432'),
         'username' => 'user',
         'password' => 'password',
     ],
@@ -51,13 +51,13 @@ use Yiisoft\Db\Pgsql\Driver;
 use Yiisoft\Db\Pgsql\Dsn;
 
 // Dsn.
-$dsn = (new Dsn('pgsql', '127.0.0.1', 'yiitest', '5432'))->asString();
+$dsn = new Dsn('pgsql', '127.0.0.1', 'yiitest', '5432');
 
 // PSR-16 cache implementation.
 $arrayCache = new ArrayCache();
 
 // Schema cache.
-$schemaCache = new SchemaCache($cache);
+$schemaCache = new SchemaCache($arrayCache);
 
 // PDO driver.
 $pdoDriver = new Driver($dsn, 'user', 'password'); 
