@@ -333,7 +333,7 @@ final class DbArrayHelper
         Closure|null $resultCallback,
         int $depth,
     ): void {
-        /** @var list<array<string,mixed>> $rows */
+        /** @psalm-var list<array<string,mixed>> $rows */
         foreach ($arranged as &$rows) {
             if ($depth > 1) {
                 self::indexArranged($rows, $indexBy, $resultCallback, $depth - 1);

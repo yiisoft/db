@@ -140,7 +140,7 @@ interface CommandInterface
      *
      * @param string $table The name of the table to add primary key constraint to.
      * @param string $name The name of the primary key constraint.
-     * @param array|string $columns The comma separated string or array of columns that the primary key consists of.
+     * @param string|string[] $columns The comma separated string or array of columns that the primary key consists of.
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
@@ -237,7 +237,7 @@ interface CommandInterface
      *
      * @param string $table The name of the table to add unique constraint to.
      * @param string $name The name of the unique constraint.
-     * @param array|string $columns The name of the column to add unique constraint to. If there are
+     * @param string|string[] $columns The name of the column to add unique constraint to. If there are
      * many columns, use an array or separate them with commas.
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.

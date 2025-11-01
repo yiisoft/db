@@ -104,10 +104,10 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     public function addPrimaryKey(string $table, string $name, array|string $columns): string
     {
         if (is_string($columns)) {
+            /** @psalm-var list<string> */
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
 
-        /** @psalm-var string[] $columns */
         foreach ($columns as $i => $col) {
             $columns[$i] = $this->quoter->quoteColumnName($col);
         }
@@ -121,10 +121,10 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     public function addUnique(string $table, string $name, array|string $columns): string
     {
         if (is_string($columns)) {
+            /** @psalm-var list<string> */
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
 
-        /** @psalm-var string[] $columns */
         foreach ($columns as $i => $col) {
             $columns[$i] = $this->quoter->quoteColumnName($col);
         }

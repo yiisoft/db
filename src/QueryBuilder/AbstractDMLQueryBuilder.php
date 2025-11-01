@@ -238,7 +238,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     protected function prepareBatchInsertValues(string $table, iterable $rows, array $columnNames, array &$params): array
     {
         $values = [];
-        /** @var string[] $names */
         $names = array_values($columnNames);
         $keys = array_fill_keys($names, false);
         $columns = $this->typecasting ? $this->schema->getTableSchema($table)?->getColumns() ?? [] : [];
@@ -327,7 +326,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      */
     protected function getQueryColumnNames(QueryInterface $query, array &$params = []): array
     {
-        /** @psalm-var string[] $select */
+        /** @var string[] $select */
         $select = $query->getSelect();
 
         if (empty($select) || in_array('*', $select, true)) {
@@ -473,7 +472,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $quoter = $this->quoter;
             $sets = [];
 
-            /** @psalm-var string[] $updateNames */
+            /** @var string[] $updateNames */
             foreach ($updateNames as $name) {
                 $quotedName = $quoter->quoteSimpleColumnName($name);
                 $sets[] = "$quotedName=EXCLUDED.$quotedName";
