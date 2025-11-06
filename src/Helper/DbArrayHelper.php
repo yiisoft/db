@@ -103,7 +103,7 @@ final class DbArrayHelper
         array $rows,
         array $arrangeBy = [],
         Closure|string|null $indexBy = null,
-        Closure|null $resultCallback = null,
+        ?Closure $resultCallback = null,
     ): array {
         if (empty($rows)) {
             return [];
@@ -182,7 +182,7 @@ final class DbArrayHelper
     public static function index(
         array $rows,
         Closure|string|null $indexBy = null,
-        Closure|null $resultCallback = null,
+        ?Closure $resultCallback = null,
     ): array {
         if (empty($rows)) {
             return [];
@@ -242,7 +242,7 @@ final class DbArrayHelper
      */
     public static function multisort(
         array &$array,
-        string $key
+        string $key,
     ): void {
         if (empty($array)) {
             return;
@@ -262,7 +262,7 @@ final class DbArrayHelper
             range(1, count($array)),
             SORT_ASC,
             SORT_NUMERIC,
-            $array
+            $array,
         );
     }
 
@@ -330,7 +330,7 @@ final class DbArrayHelper
     private static function indexArranged(
         array &$arranged,
         Closure|string|null $indexBy,
-        Closure|null $resultCallback,
+        ?Closure $resultCallback,
         int $depth,
     ): void {
         /** @psalm-var list<array<string,mixed>> $rows */

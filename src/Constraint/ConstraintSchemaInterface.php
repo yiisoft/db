@@ -135,7 +135,7 @@ interface ConstraintSchemaInterface
      *
      * @return Index|null The information metadata for the primary key of the named table.
      */
-    public function getTablePrimaryKey(string $name, bool $refresh = false): Index|null;
+    public function getTablePrimaryKey(string $name, bool $refresh = false): ?Index;
 
     /**
      * Obtains the unique constraints' information for the named table.

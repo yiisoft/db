@@ -56,7 +56,7 @@ final class QuoterTest extends AbstractQuoterTest
     {
         $this->assertEquals(
             $expected,
-            (new Quoter('"', '"'))->cleanUpTableNames($tables)
+            (new Quoter('"', '"'))->cleanUpTableNames($tables),
         );
     }
 

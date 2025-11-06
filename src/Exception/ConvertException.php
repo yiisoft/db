@@ -18,9 +18,7 @@ final class ConvertException
     private const MGS_INTEGRITY_EXCEPTION_2 = 'ORA-00001: unique constraint';
     private const MSG_INTEGRITY_EXCEPTION_3 = 'SQLSTATE[HY';
 
-    public function __construct(private \Exception $e, private string $rawSql)
-    {
-    }
+    public function __construct(private \Exception $e, private string $rawSql) {}
 
     /**
      * Converts an exception into a more specific one.
@@ -34,9 +32,9 @@ final class ConvertException
         $errorInfo = $this->e instanceof PDOException ? $this->e->errorInfo : null;
 
         return match (
-            str_contains($message, self::MSG_INTEGRITY_EXCEPTION_1) ||
-            str_contains($message, self::MGS_INTEGRITY_EXCEPTION_2) ||
-            str_contains($message, self::MSG_INTEGRITY_EXCEPTION_3)
+            str_contains($message, self::MSG_INTEGRITY_EXCEPTION_1)
+            || str_contains($message, self::MGS_INTEGRITY_EXCEPTION_2)
+            || str_contains($message, self::MSG_INTEGRITY_EXCEPTION_3)
         ) {
             true => new IntegrityException($message, $errorInfo, $this->e),
             default => new Exception($message, $errorInfo, $this->e),

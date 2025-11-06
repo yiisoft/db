@@ -54,7 +54,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertMatchesRegularExpression(
             '/^.*int1.*>.*1.*$/',
-            $schema->getTableChecks('{{test_ck}}')['test_ck_constraint']->expression
+            $schema->getTableChecks('{{test_ck}}')['test_ck_constraint']->expression,
         );
 
         $db->close();
@@ -261,7 +261,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         array $columns,
         string $expected,
         array $expectedParams = [],
-        int $insertedRow = 1
+        int $insertedRow = 1,
     ): void {
         $db = $this->getConnection(true);
 
@@ -313,7 +313,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 $command->setSql(
                     <<<SQL
                     ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,'
-                    SQL
+                    SQL,
                 )->execute();
             }
 
@@ -322,7 +322,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $data = $command->setSql(
                 <<<SQL
                 SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]
-                SQL
+                SQL,
             )->queryAll();
 
             $this->assertCount(3, $data);
@@ -417,7 +417,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     #[DataProviderExternal(CommandProvider::class, 'createIndex')]
-    public function testCreateIndex(array $columns, array $indexColumns, string|null $indexType, string|null $indexMethod): void
+    public function testCreateIndex(array $columns, array $indexColumns, ?string $indexType, ?string $indexMethod): void
     {
         $db = $this->getConnection();
 
@@ -438,7 +438,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertCount($count + 1, $schema->getTableIndexes($tableName));
 
-        $index = array_filter($schema->getTableIndexes($tableName), static fn ($index) => !$index->isPrimaryKey)[$indexName];
+        $index = array_filter($schema->getTableIndexes($tableName), static fn($index) => !$index->isPrimaryKey)[$indexName];
 
         $this->assertSame($indexColumns, $index->columnNames);
 
@@ -474,7 +474,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $records = $command->setSql(
             <<<SQL
             SELECT [[id]], [[bar]], [[name]] FROM [[testCreateTable]];
-            SQL
+            SQL,
         )->queryAll();
 
         $nameCol = $schema->getTableSchema('{{testCreateTable}}', true)->getColumn('name');
@@ -511,7 +511,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $records = $command->setSql(
             <<<SQL
             SELECT [[bar]] FROM {{testCreateView}};
-            SQL
+            SQL,
         )->queryAll();
 
         $this->assertEquals([['bar' => 6]], $records);
@@ -556,8 +556,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $reader = $db->createCommand()
             ->setSql('SELECT * FROM {{customer}} WHERE [[id]]=1')
             ->query()
-            ->indexBy(static fn (array $row): int => (int) $row['id'])
-            ->resultCallback(static fn (array $row): object => (object) $row);
+            ->indexBy(static fn(array $row): int => (int) $row['id'])
+            ->resultCallback(static fn(array $row): object => (object) $row);
 
         $this->assertTrue($reader->valid());
         $this->assertSame(1, $reader->key());
@@ -947,7 +947,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES ('user4@example.com', 'user4', 'address4')
-            SQL
+            SQL,
         );
 
         $this->assertSame(1, $command->execute());
@@ -955,7 +955,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $command->setSql(
             <<<SQL
             SELECT COUNT(*) FROM [[customer]] WHERE [[name]] = 'user4'
-            SQL
+            SQL,
         );
 
         $this->assertEquals(1, $command->queryScalar());
@@ -993,7 +993,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->delete('{{customer}}')->execute();
         $command->insert(
             '{{customer}}',
-            ['[[email]]' => 't1@example.com', '[[name]]' => 'test', '[[address]]' => 'test address']
+            ['[[email]]' => 't1@example.com', '[[name]]' => 'test', '[[address]]' => 'test address'],
         )->execute();
 
         $this->assertEquals(
@@ -1001,14 +1001,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->setSql(
                 <<<SQL
                 SELECT COUNT(*) FROM {{customer}}
-                SQL
+                SQL,
             )->queryScalar(),
         );
 
         $record = $command->setSql(
             <<<SQL
             SELECT [[email]], [[name]], [[address]] FROM {{customer}}
-            SQL
+            SQL,
         )->queryOne();
 
         $this->assertSame(['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'], $record);
@@ -1073,14 +1073,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->setSql(
                 <<<SQL
                 SELECT COUNT(*) FROM {{order_with_null_fk}}
-                SQL
+                SQL,
             )->queryScalar(),
         );
 
         $record = $command->setSql(
             <<<SQL
             SELECT [[created_at]] FROM {{order_with_null_fk}}
-            SQL
+            SQL,
         )->queryOne();
 
         $this->assertEquals(['created_at' => date('Y')], $record);
@@ -1097,7 +1097,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             DELETE FROM [[order_with_null_fk]]
-            SQL
+            SQL,
         )->execute();
         $command->insert('{{order}}', ['customer_id' => 1, 'created_at' => $time, 'total' => 42])->execute();
 
@@ -1118,19 +1118,19 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->setSql(
                 <<<SQL
                 SELECT [[created_at]] FROM [[order_with_null_fk]] WHERE [[customer_id]] = :id
-                SQL
+                SQL,
             )->bindValues([':id' => $orderId])->queryScalar(),
         );
 
         $command->setSql(
             <<<SQL
             DELETE FROM [[order_with_null_fk]]
-            SQL
+            SQL,
         )->execute();
         $command->setSql(
             <<<SQL
             DELETE FROM [[order]]
-            SQL
+            SQL,
         )->execute();
 
         $db->close();
@@ -1144,11 +1144,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             DELETE FROM {{customer}}
-            SQL
+            SQL,
         )->execute();
         $command->insert(
             '{{customer}}',
-            ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address']
+            ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'],
         )->execute();
         $query = (new Query($db))
             ->select(['{{customer}}.{{email}} as name', '{{name}} as email', '{{address}}'])
@@ -1161,14 +1161,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->setSql(
                 <<<SQL
                 SELECT COUNT(*) FROM {{customer}}
-                SQL
+                SQL,
             )->queryScalar(),
         );
 
         $record = $command->setSql(
             <<<SQL
             SELECT [[email]], [[name]], [[address]] FROM {{customer}}
-            SQL
+            SQL,
         )->queryAll();
 
         $this->assertSame(
@@ -1194,7 +1194,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 'email' => 't1@example.com',
                 'name' => 'test',
                 'address' => 'test address',
-            ]
+            ],
         )->execute();
         $query = (new Query($db))
             ->select(['email' => '{{customer}}.{{email}}', 'address' => 'name', 'name' => 'address'])
@@ -1207,14 +1207,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->setSql(
                 <<<SQL
                 SELECT COUNT(*) FROM [[customer]]
-                SQL
+                SQL,
             )->queryScalar(),
         );
 
         $record = $command->setSql(
             <<<SQL
             SELECT [[email]], [[name]], [[address]] FROM [[customer]]
-            SQL
+            SQL,
         )->queryAll();
 
         $this->assertSame(
@@ -1263,7 +1263,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $result = $command->setSql(
             <<<SQL
             SELECT [[blob_col]] FROM {{type}}
-            SQL
+            SQL,
         )->queryOne();
 
         $this->assertIsArray($result);
@@ -1353,7 +1353,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $db->createCommand(
             <<<SQL
             INSERT INTO [[profile]] ([[id]], [[description]]) VALUES (123, 'duplicate')
-            SQL
+            SQL,
         );
         $command->execute();
         $command->execute();
@@ -1366,7 +1366,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $command->insert(
             '{{customer}}',
-            ['name' => 'Some {{weird}} name', 'email' => 'test@example.com', 'address' => 'Some {{%weird}} address']
+            ['name' => 'Some {{weird}} name', 'email' => 'test@example.com', 'address' => 'Some {{%weird}} address'],
         )->execute();
 
         if ($db->getDriverName() === 'pgsql') {
@@ -1388,12 +1388,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->update(
             '{{customer}}',
             ['name' => 'Some {{updated}} name', 'address' => 'Some {{%updated}} address'],
-            ['id' => $customerId]
+            ['id' => $customerId],
         )->execute();
         $customer = $command->setSql(
             <<<SQL
             SELECT [[name]], [[email]], [[address]] FROM {{customer}} WHERE [[id]] = :id
-            SQL
+            SQL,
         )->bindValues([':id' => $customerId])->queryOne();
 
         $this->assertIsArray($customer);
@@ -1411,7 +1411,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             SELECT * FROM [[customer]]
-            SQL
+            SQL,
         );
 
         $this->assertNull($command->getPdoStatement());
@@ -1442,7 +1442,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             SELECT * FROM {{customer}}
-            SQL
+            SQL,
         );
         $rows = $command->queryAll();
 
@@ -1459,7 +1459,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             SELECT * FROM {{customer}} where id = 100
-            SQL
+            SQL,
         );
         $rows = $command->queryAll();
 
@@ -1478,7 +1478,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             SELECT * FROM [[customer]]
-            SQL
+            SQL,
         );
         $rows = $command->queryColumn();
 
@@ -1494,7 +1494,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             SELECT * FROM [[customer]] where id = 100
-            SQL
+            SQL,
         );
         $rows = $command->queryColumn();
 
@@ -1557,7 +1557,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $command->setSql(
             <<<SQL
             SELECT [[id]] FROM [[customer]] WHERE [[id]] = 10
-            SQL
+            SQL,
         );
 
         $this->assertFalse($command->queryScalar());
@@ -1613,7 +1613,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             INSERT INTO [[profile]] ([[description]]) VALUES('command retry')
-            SQL
+            SQL,
         )->execute();
 
         $this->assertNull($db->getTransaction());
@@ -1622,8 +1622,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->setSql(
                 <<<SQL
                 SELECT COUNT(*) FROM [[profile]] WHERE [[description]] = 'command retry'
-                SQL
-            )->queryScalar()
+                SQL,
+            )->queryScalar(),
         );
 
         $attempts = null;
@@ -1632,7 +1632,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             INSERT INTO [[profile]] ([[id]], [[description]]) VALUES(1, 'command retry')
-            SQL
+            SQL,
         );
 
         $command->setRetryHandler(
@@ -1641,7 +1641,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 $hitHandler = true;
 
                 return $attempt <= 2;
-            }
+            },
         );
 
         try {
@@ -1668,7 +1668,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $rows = $command->setSql(
             <<<SQL
             SELECT * FROM [[animal]]
-            SQL
+            SQL,
         )->queryAll();
 
         $this->assertCount(2, $rows);
@@ -1677,7 +1677,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $rows = $command->setSql(
             <<<SQL
             SELECT * FROM {{animal}}
-            SQL
+            SQL,
         )->queryAll();
 
         $this->assertCount(0, $rows);
@@ -1761,7 +1761,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 <<<SQL
                 SELECT COUNT(*) FROM [[T_upsert]]
                 SQL,
-            )->queryScalar()
+            )->queryScalar(),
         );
 
         $this->performAndCompareUpsertResult($db, $firstData);
@@ -1772,7 +1772,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 <<<SQL
                 SELECT COUNT(*) FROM [[T_upsert]]
                 SQL,
-            )->queryScalar()
+            )->queryScalar(),
         );
 
         $this->performAndCompareUpsertResult($db, $secondData);
@@ -1791,43 +1791,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 return $this->showDatabases();
             }
 
-            protected function getQueryBuilder(): QueryBuilderInterface
-            {
-            }
+            protected function getQueryBuilder(): QueryBuilderInterface {}
 
-            protected function internalExecute(): void
-            {
-            }
+            protected function internalExecute(): void {}
         };
 
         $command->prepare();
-    }
-
-    protected function performAndCompareUpsertResult(PdoConnectionInterface $db, array $data): void
-    {
-        $params = [];
-
-        foreach ($data['params'] as $param) {
-            if (is_callable($param)) {
-                $params[] = $param($db);
-            } else {
-                $params[] = $param;
-            }
-        }
-
-        $expected = $data['expected'] ?? $params[1];
-
-        $command = $db->createCommand();
-
-        ($command->upsert(...))(...$params);
-
-        $command->execute();
-
-        $actual = (new Query($db))
-            ->select(['email', 'address' => new Expression($this->upsertTestCharCast), 'status'])
-            ->from('{{T_upsert}}')
-            ->one();
-        $this->assertEquals($expected, $actual, $this->upsertTestCharCast);
     }
 
     public function testDecimalValue(): void
@@ -1838,12 +1807,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $inserted = $db->createCommand()
             ->insertReturningPks(
                 '{{%order}}',
-                ['customer_id' => 1, 'created_at' => 0, 'total' => $decimalValue]
+                ['customer_id' => 1, 'created_at' => 0, 'total' => $decimalValue],
             );
 
         $result = $db->createCommand(
             'select * from {{%order}} where [[id]]=:id',
-            ['id' => $inserted['id']]
+            ['id' => $inserted['id']],
         )->queryOne();
 
         $column = $db->getTableSchema('{{%order}}')->getColumn('total');
@@ -1905,7 +1874,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
-        array|null $returnColumns,
+        ?array $returnColumns,
         array $selectCondition,
         array $expectedValues,
     ): void {
@@ -2112,12 +2081,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertSame(
             static::replaceQuotes("INSERT INTO [[json_table]] ([[json_col]]) VALUES (:qp0$typeHint)"),
-            $command->getSql()
+            $command->getSql(),
         );
         $this->assertEquals([':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)], $command->getParams(false));
         $this->assertSame(
             static::replaceQuotes("INSERT INTO [[json_table]] ([[json_col]]) VALUES ($expectedValue)"),
-            $command->getRawSql()
+            $command->getRawSql(),
         );
         $this->assertSame(1, $command->execute());
 
@@ -2128,5 +2097,32 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $value = (new Query($db))->select('json_col')->from('json_table')->where(['id' => 1])->scalar();
         $this->assertSame('{"a":1,"b":2}', str_replace(' ', '', $value));
+    }
+
+    protected function performAndCompareUpsertResult(PdoConnectionInterface $db, array $data): void
+    {
+        $params = [];
+
+        foreach ($data['params'] as $param) {
+            if (is_callable($param)) {
+                $params[] = $param($db);
+            } else {
+                $params[] = $param;
+            }
+        }
+
+        $expected = $data['expected'] ?? $params[1];
+
+        $command = $db->createCommand();
+
+        ($command->upsert(...))(...$params);
+
+        $command->execute();
+
+        $actual = (new Query($db))
+            ->select(['email', 'address' => new Expression($this->upsertTestCharCast), 'status'])
+            ->from('{{T_upsert}}')
+            ->one();
+        $this->assertEquals($expected, $actual, $this->upsertTestCharCast);
     }
 }

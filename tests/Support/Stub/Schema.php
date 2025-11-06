@@ -37,7 +37,7 @@ class Schema extends AbstractSchema
         return md5(serialize([self::class, ...$metadata]));
     }
 
-    protected function loadResultColumn(array $metadata): ColumnInterface|null
+    protected function loadResultColumn(array $metadata): ?ColumnInterface
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
@@ -77,7 +77,7 @@ class Schema extends AbstractSchema
     /**
      * @throws NotSupportedException
      */
-    protected function loadTablePrimaryKey(string $tableName): Index|null
+    protected function loadTablePrimaryKey(string $tableName): ?Index
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
@@ -90,7 +90,7 @@ class Schema extends AbstractSchema
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
-    protected function loadTableSchema(string $name): TableSchemaInterface|null
+    protected function loadTableSchema(string $name): ?TableSchemaInterface
     {
         return null;
     }

@@ -26,7 +26,7 @@ final class DefaultValueTest extends TestCase
         $defaultValue = new DefaultValue(
             'column_default',
             ['column_name'],
-            '10'
+            '10',
         );
 
         $this->assertSame('column_default', $defaultValue->name);

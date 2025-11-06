@@ -37,7 +37,7 @@ final class ArrayValueTest extends TestCase
     #[DataProvider('constructProvider')]
     public function testConstruct(
         iterable|LazyArrayInterface|QueryInterface|string $value,
-        ColumnInterface|string|null $type = null
+        ColumnInterface|string|null $type = null,
     ): void {
         $arrayValue = new ArrayValue($value, $type);
 

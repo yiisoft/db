@@ -38,7 +38,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD CONSTRAINT [[name]] CHECK (id > 0)
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -58,7 +58,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]] {$columnType}
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -75,7 +75,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 COMMENT ON COLUMN [[customer]].[[id]] IS 'Primary key.'
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -92,7 +92,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 COMMENT ON TABLE [[table]] IS 'comment'
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -106,7 +106,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::addDefaultValue is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::addDefaultValue is not supported by this DBMS.',
         );
 
         $command->addDefaultValue('table', 'name', 'column', 'value');
@@ -118,9 +118,9 @@ final class CommandTest extends AbstractCommandTest
     public function testAddForeignKeySql(
         array|string $columns,
         array|string $referenceColumns,
-        string|null $delete,
-        string|null $update,
-        string $expected
+        ?string $delete,
+        ?string $update,
+        string $expected,
     ): void {
         $db = $this->getConnection();
         $command = $db->createCommand();
@@ -172,7 +172,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] CHANGE [[column]] [[column]] integer
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -193,7 +193,7 @@ final class CommandTest extends AbstractCommandTest
                 ':qp2' => 'value3',
                 ':qp3' => 'value4',
             ],
-            $command->getParams()
+            $command->getParams(),
         );
     }
 
@@ -225,7 +225,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::checkIntegrity is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::checkIntegrity is not supported by this DBMS.',
         );
 
         $command->checkIntegrity('schema', 'table')->execute();
@@ -284,7 +284,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 CREATE VIEW [[view]] AS SELECT * FROM [[table]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -301,7 +301,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 DELETE FROM [[table]] WHERE [[column]] = :qp0
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -318,7 +318,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -335,7 +335,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP COLUMN [[column]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -352,7 +352,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 COMMENT ON COLUMN [[table]].[[column]] IS NULL
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -369,7 +369,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 COMMENT ON TABLE [[table]] IS NULL
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -383,7 +383,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::dropDefaultValue is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::dropDefaultValue is not supported by this DBMS.',
         );
 
         $command->dropDefaultValue('table', 'column');
@@ -400,7 +400,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -417,7 +417,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 DROP INDEX [[name]] ON [[table]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -434,7 +434,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -451,7 +451,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 DROP VIEW [[view]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -489,7 +489,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -503,7 +503,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         $command->createTable('customer', ['id' => 'pk'])->execute();
@@ -538,12 +538,12 @@ final class CommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             SELECT * FROM [[customer]]
-            SQL
+            SQL,
         );
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         $command->query();
@@ -562,7 +562,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         $command->queryAll();
@@ -576,12 +576,12 @@ final class CommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             SELECT * FROM [[customer]]
-            SQL
+            SQL,
         );
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         $command->queryColumn();
@@ -598,7 +598,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         $command->setSql($sql)->queryOne();
@@ -615,7 +615,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         $this->assertEquals(1, $command->setSql($sql)->queryScalar());
@@ -631,7 +631,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] RENAME COLUMN [[oldname]] TO [[newname]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -647,7 +647,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 RENAME TABLE [[table]] TO [[newname]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -659,7 +659,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.',
         );
 
         $db->createCommand()->resetSequence('table', 5);
@@ -670,7 +670,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $handler = static fn (): bool => true;
+        $handler = static fn(): bool => true;
         $command->setRetryHandler($handler);
 
         $this->assertSame($handler, Assert::getPropertyValue($command, 'retryHandler'));
@@ -687,7 +687,7 @@ final class CommandTest extends AbstractCommandTest
             self::replaceQuotes(
                 <<<SQL
                 TRUNCATE TABLE [[table]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -712,7 +712,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsert is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsert is not supported by this DBMS.',
         );
 
         $command->upsert('{{table}}', []);
@@ -721,7 +721,7 @@ final class CommandTest extends AbstractCommandTest
     public function testProfiler(?string $sql = null): void
     {
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
         parent::testProfiler();
     }
@@ -729,7 +729,7 @@ final class CommandTest extends AbstractCommandTest
     public function testProfilerData(?string $sql = null): void
     {
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
         parent::testProfilerData();
     }

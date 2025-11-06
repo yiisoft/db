@@ -129,8 +129,8 @@ interface CommandInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string|null $delete = null,
-        string|null $update = null
+        ?string $delete = null,
+        ?string $update = null,
     ): static;
 
     /**
@@ -229,7 +229,7 @@ interface CommandInterface
         mixed &$value,
         ?int $dataType = null,
         ?int $length = null,
-        mixed $driverOptions = null
+        mixed $driverOptions = null,
     ): static;
 
     /**
@@ -318,7 +318,7 @@ interface CommandInterface
         string $name,
         array|string $columns,
         ?string $indexType = null,
-        ?string $indexMethod = null
+        ?string $indexMethod = null,
     ): static;
 
     /**
@@ -691,7 +691,7 @@ interface CommandInterface
      *
      * @psalm-return array<string,mixed>|null
      */
-    public function queryOne(): array|null;
+    public function queryOne(): ?array;
 
     /**
      * Execute the SQL statement and returns the value of the first column in the first row of data.
@@ -706,7 +706,7 @@ interface CommandInterface
      *
      * @psalm-return null|scalar
      */
-    public function queryScalar(): bool|string|null|int|float;
+    public function queryScalar(): bool|string|int|float|null;
 
     /**
      * Creates an SQL command for renaming a column.
@@ -785,7 +785,7 @@ interface CommandInterface
      *
      * @param Closure|null $handler A PHP callback to handle database exceptions.
      */
-    public function setRetryHandler(Closure|null $handler): static;
+    public function setRetryHandler(?Closure $handler): static;
 
     /**
      * Specifies the SQL statement to execute. The SQL statement will be quoted using
@@ -856,7 +856,7 @@ interface CommandInterface
         array $columns,
         array|ExpressionInterface|string $condition = '',
         array|ExpressionInterface|string|null $from = null,
-        array $params = []
+        array $params = [],
     ): static;
 
     /**
@@ -935,7 +935,7 @@ interface CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-        array|null $returnColumns = null,
+        ?array $returnColumns = null,
     ): array;
 
     /**

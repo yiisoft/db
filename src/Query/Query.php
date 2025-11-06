@@ -82,7 +82,7 @@ class Query implements QueryInterface
 {
     /** @psalm-var SelectValue $select */
     protected array $select = [];
-    protected string|null $selectOption = null;
+    protected ?string $selectOption = null;
     protected bool $distinct = false;
     /** @psalm-var From */
     protected array $from = [];
@@ -93,7 +93,7 @@ class Query implements QueryInterface
     protected array $orderBy = [];
     protected array $params = [];
     /** @psalm-var ResultCallback|null $resultCallback */
-    protected Closure|null $resultCallback = null;
+    protected ?Closure $resultCallback = null;
     protected array $union = [];
     /** @var WithQuery[] */
     protected array $withQueries = [];
@@ -111,9 +111,7 @@ class Query implements QueryInterface
     private bool $emulateExecution = false;
     private bool $typecasting = false;
 
-    public function __construct(protected ConnectionInterface $db)
-    {
-    }
+    public function __construct(protected ConnectionInterface $db) {}
 
     public function addGroupBy(array|string|ExpressionInterface $columns): static
     {
@@ -219,7 +217,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function andFilterCompare(string $column, string|null $value, string $defaultOperator = '='): static
+    public function andFilterCompare(string $column, ?string $value, string $defaultOperator = '='): static
     {
         $operator = $defaultOperator;
 
@@ -259,7 +257,7 @@ class Query implements QueryInterface
         return $this->index($this->createCommand()->queryAll());
     }
 
-    public function average(string $sql): int|float|null|string
+    public function average(string $sql): int|float|string|null
     {
         return match ($this->emulateExecution) {
             true => null,
@@ -488,7 +486,7 @@ class Query implements QueryInterface
         return $this->params;
     }
 
-    public function getResultCallback(): Closure|null
+    public function getResultCallback(): ?Closure
     {
         return $this->resultCallback;
     }
@@ -498,7 +496,7 @@ class Query implements QueryInterface
         return $this->select;
     }
 
-    public function getSelectOption(): string|null
+    public function getSelectOption(): ?string
     {
         return $this->selectOption;
     }
@@ -587,13 +585,13 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function max(string $sql): int|float|null|string
+    public function max(string $sql): int|float|string|null
     {
         $max = $this->queryScalar("MAX($sql)");
         return is_numeric($max) ? $max : null;
     }
 
-    public function min(string $sql): int|float|null|string
+    public function min(string $sql): int|float|string|null
     {
         $min = $this->queryScalar("MIN($sql)");
         return is_numeric($min) ? $min : null;
@@ -685,7 +683,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function resultCallback(Closure|null $resultCallback): static
+    public function resultCallback(?Closure $resultCallback): static
     {
         $this->resultCallback = $resultCallback;
         return $this;
@@ -700,7 +698,7 @@ class Query implements QueryInterface
         return $this->addParams($params);
     }
 
-    public function scalar(): bool|int|null|string|float
+    public function scalar(): bool|int|string|float|null
     {
         return match ($this->emulateExecution) {
             true => null,
@@ -715,7 +713,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function selectOption(string|null $value): static
+    public function selectOption(?string $value): static
     {
         $this->selectOption = $value;
         return $this;
@@ -738,7 +736,7 @@ class Query implements QueryInterface
         return $this->emulateExecution;
     }
 
-    public function sum(string $sql): int|float|null|string
+    public function sum(string $sql): int|float|string|null
     {
         return match ($this->emulateExecution) {
             true => null,
@@ -780,7 +778,7 @@ class Query implements QueryInterface
     public function withQuery(
         QueryInterface|string $query,
         ExpressionInterface|string $alias,
-        bool $recursive = false
+        bool $recursive = false,
     ): static {
         $this->withQueries = [new WithQuery($query, $alias, $recursive)];
         return $this;
@@ -789,7 +787,7 @@ class Query implements QueryInterface
     public function addWithQuery(
         QueryInterface|string $query,
         ExpressionInterface|string $alias,
-        bool $recursive = false
+        bool $recursive = false,
     ): static {
         $this->withQueries[] = new WithQuery($query, $alias, $recursive);
         return $this;
@@ -812,7 +810,7 @@ class Query implements QueryInterface
      * @throws NotSupportedException
      * @throws Throwable
      */
-    protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|null|string|float
+    protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|string|float|null
     {
         if ($this->emulateExecution) {
             return null;
@@ -1026,9 +1024,9 @@ class Query implements QueryInterface
 
             if (is_string($columnDefinition)) {
                 if (
-                    preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $columnDefinition, $matches) &&
-                    !preg_match('/^\d+$/', $matches[2]) &&
-                    !str_contains($matches[2], '.')
+                    preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $columnDefinition, $matches)
+                    && !preg_match('/^\d+$/', $matches[2])
+                    && !str_contains($matches[2], '.')
                 ) {
                     /** Using "columnName as alias" or "columnName alias" syntax */
                     $select[$matches[2]] = $matches[1];

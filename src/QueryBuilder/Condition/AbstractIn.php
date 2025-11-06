@@ -28,9 +28,8 @@ abstract class AbstractIn implements ConditionInterface
      */
     final public function __construct(
         public readonly iterable|string|ExpressionInterface $column,
-        public readonly iterable|QueryInterface $values
-    ) {
-    }
+        public readonly iterable|QueryInterface $values,
+    ) {}
 
     /**
      * Creates a condition based on the given operator and operands.
@@ -70,7 +69,7 @@ abstract class AbstractIn implements ConditionInterface
             foreach ($column as $columnItem) {
                 if (!is_string($columnItem) && !$columnItem instanceof ExpressionInterface) {
                     throw new InvalidArgumentException(
-                        "Operator '$operator' requires column to be string, ExpressionInterface or iterable."
+                        "Operator '$operator' requires column to be string, ExpressionInterface or iterable.",
                     );
                 }
             }
@@ -79,7 +78,7 @@ abstract class AbstractIn implements ConditionInterface
         }
 
         throw new InvalidArgumentException(
-            "Operator '$operator' requires column to be string, ExpressionInterface or iterable."
+            "Operator '$operator' requires column to be string, ExpressionInterface or iterable.",
         );
     }
 
@@ -95,7 +94,7 @@ abstract class AbstractIn implements ConditionInterface
         }
 
         throw new InvalidArgumentException(
-            "Operator '$operator' requires values to be iterable or QueryInterface."
+            "Operator '$operator' requires values to be iterable or QueryInterface.",
         );
     }
 }

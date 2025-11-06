@@ -28,9 +28,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
         protected QuoterInterface $quoter,
-        protected SchemaInterface $schema
-    ) {
-    }
+        protected SchemaInterface $schema,
+    ) {}
 
     public function addCheck(string $table, string $name, string $expression): string
     {
@@ -80,8 +79,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string|null $delete = null,
-        string|null $update = null
+        ?string $delete = null,
+        ?string $update = null,
     ): string {
         $sql = 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
@@ -156,7 +155,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         string $name,
         array|string $columns,
         ?string $indexType = null,
-        ?string $indexMethod = null
+        ?string $indexMethod = null,
     ): string {
         return 'CREATE ' . (!empty($indexType) ? $indexType . ' ' : '') . 'INDEX '
             . $this->quoter->quoteTableName($name)

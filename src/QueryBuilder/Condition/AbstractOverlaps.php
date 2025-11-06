@@ -22,8 +22,7 @@ abstract class AbstractOverlaps implements ConditionInterface
     public function __construct(
         public readonly string|ExpressionInterface $column,
         public readonly iterable|ExpressionInterface $values,
-    ) {
-    }
+    ) {}
 
     /**
      * Creates a condition based on the given operator and operands.
@@ -39,7 +38,7 @@ abstract class AbstractOverlaps implements ConditionInterface
         /** @psalm-suppress UnsafeInstantiation */
         return new static(
             self::validateColumn($operator, $operands[0]),
-            self::validateValues($operator, $operands[1])
+            self::validateValues($operator, $operands[1]),
         );
     }
 
@@ -55,7 +54,7 @@ abstract class AbstractOverlaps implements ConditionInterface
         }
 
         throw new InvalidArgumentException(
-            "Operator \"$operator\" requires column to be string or ExpressionInterface."
+            "Operator \"$operator\" requires column to be string or ExpressionInterface.",
         );
     }
 
@@ -71,7 +70,7 @@ abstract class AbstractOverlaps implements ConditionInterface
         }
 
         throw new InvalidArgumentException(
-            "Operator \"$operator\" requires values to be iterable or ExpressionInterface."
+            "Operator \"$operator\" requires values to be iterable or ExpressionInterface.",
         );
     }
 }

@@ -36,7 +36,7 @@ final class ConnectionTest extends AbstractConnectionTest
     {
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         parent::testSerialized();

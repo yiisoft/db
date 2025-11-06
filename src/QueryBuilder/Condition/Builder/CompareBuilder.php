@@ -28,8 +28,7 @@ class CompareBuilder implements ExpressionBuilderInterface
 {
     public function __construct(
         private readonly QueryBuilderInterface $queryBuilder,
-    ) {
-    }
+    ) {}
 
     /**
      * Build SQL for comparison conditions.
@@ -72,7 +71,7 @@ class CompareBuilder implements ExpressionBuilderInterface
         return $this->queryBuilder->getQuoter()->quoteColumnName($column);
     }
 
-    private function prepareValue(mixed $value, array &$params): string|null
+    private function prepareValue(mixed $value, array &$params): ?string
     {
         if ($value === null) {
             return null;

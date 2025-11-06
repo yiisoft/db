@@ -30,7 +30,6 @@ final class Length implements ExpressionInterface
      * in which case they will be treated as raw SQL expressions.
      */
     public function __construct(
-        public readonly string|ExpressionInterface $operand
-    ) {
-    }
+        public readonly string|ExpressionInterface $operand,
+    ) {}
 }

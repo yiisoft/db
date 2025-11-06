@@ -39,7 +39,7 @@ abstract class AbstractSqlParser
      *
      * @return string|null The next placeholder or null if it is not found.
      */
-    abstract public function getNextPlaceholder(int|null &$position = null): string|null;
+    abstract public function getNextPlaceholder(?int &$position = null): ?string;
 
     /**
      * Parses and returns word symbols. Equals to `\w+` in regular expressions.

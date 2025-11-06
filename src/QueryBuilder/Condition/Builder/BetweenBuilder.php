@@ -21,9 +21,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  */
 class BetweenBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder) {}
 
     /**
      * Build SQL for {@see Between} or {@see NotBetween}.

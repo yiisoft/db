@@ -26,9 +26,7 @@ use function substr;
  */
 final class ExpressionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder) {}
 
     /**
      * Builds an SQL expression from the given expression object.

@@ -59,7 +59,7 @@ abstract class AbstractQuoterTest extends TestCase
     public function testQuoteSimpleColumnName(
         string $columnName,
         string $expectedQuotedColumnName,
-        string $expectedUnQuotedColumnName
+        string $expectedUnQuotedColumnName,
     ): void {
         $db = $this->getConnection();
 

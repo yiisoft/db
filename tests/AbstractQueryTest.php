@@ -285,7 +285,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $query = new Query($db);
         $query->filterWhere(
-            ['and', ['like', 'name', ''], ['like', 'title', ''], ['id' => 1], ['not', ['like', 'name', '']]]
+            ['and', ['like', 'name', ''], ['like', 'title', ''], ['id' => 1], ['not', ['like', 'name', '']]],
         );
 
         $this->assertSame(['and', ['id' => 1]], $query->getWhere());
@@ -445,7 +445,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame(
             [['INNER JOIN', 'profile', 'user.id = profile.user_id'], ['LEFT JOIN', 'order', 'user.id = order.user_id']],
-            $query->getJoins()
+            $query->getJoins(),
         );
     }
 
@@ -617,21 +617,21 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame(
             ['prefix' => 'LEFT(name, 7)', 'prefix_key' => 'LEFT(name, 7)', 'test' => 'LEFT(name,7)'],
-            $query->getSelect()
+            $query->getSelect(),
         );
 
         $query->addSelect(['LEFT(name,7) as test']);
 
         $this->assertSame(
             ['prefix' => 'LEFT(name, 7)', 'prefix_key' => 'LEFT(name, 7)', 'test' => 'LEFT(name,7)'],
-            $query->getSelect()
+            $query->getSelect(),
         );
 
         $query->addSelect(['test' => 'LEFT(name,7)']);
 
         $this->assertSame(
             ['prefix' => 'LEFT(name, 7)', 'prefix_key' => 'LEFT(name, 7)', 'test' => 'LEFT(name,7)'],
-            $query->getSelect()
+            $query->getSelect(),
         );
 
         /**
@@ -660,7 +660,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame(
             ['DISTINCT ON(tour_dates.date_from) tour_dates.date_from', 'tour_dates.id' => 'tour_dates.id'],
-            $query->getSelect()
+            $query->getSelect(),
         );
 
         $query = new Query($db);
@@ -679,14 +679,14 @@ abstract class AbstractQueryTest extends TestCase
         $query->setJoins(
             [
                 ['INNER JOIN', 'table1', 'table1.id = table2.id'],
-            ]
+            ],
         );
 
         $this->assertSame(
             [
                 ['INNER JOIN', 'table1', 'table1.id = table2.id'],
             ],
-            $query->getJoins()
+            $query->getJoins(),
         );
     }
 
@@ -782,7 +782,7 @@ abstract class AbstractQueryTest extends TestCase
         $query = (new Query($db))
             ->select(['name', 'id'])
             ->from('customer')
-            ->indexBy(fn (array $row) => $row['id'] * 2)
+            ->indexBy(fn(array $row) => $row['id'] * 2)
             ->where(['id' => null]);
 
         $this->assertSame([], $query->column());
@@ -846,7 +846,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertNull($query->getResultCallback());
 
-        $query->resultCallback(fn (array $rows) => array_map(fn (array $row) => (object) $row, $rows));
+        $query->resultCallback(fn(array $rows) => array_map(fn(array $row) => (object) $row, $rows));
 
         $this->assertInstanceOf(Closure::class, $query->getResultCallback());
 

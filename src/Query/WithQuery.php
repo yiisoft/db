@@ -24,7 +24,6 @@ final class WithQuery
     public function __construct(
         public readonly QueryInterface|string $query,
         public readonly ExpressionInterface|string $alias,
-        public readonly bool $recursive = false
-    ) {
-    }
+        public readonly bool $recursive = false,
+    ) {}
 }

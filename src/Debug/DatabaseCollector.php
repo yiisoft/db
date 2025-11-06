@@ -170,7 +170,7 @@ final class DatabaseCollector implements SummaryCollectorInterface
     public function getCollected(): array
     {
         $queries = array_values($this->queries);
-        usort($queries, fn (array $a, array $b) => $a['position'] <=> $b['position']);
+        usort($queries, fn(array $a, array $b) => $a['position'] <=> $b['position']);
 
         return [
             'queries' => $this->queries,
@@ -183,7 +183,7 @@ final class DatabaseCollector implements SummaryCollectorInterface
         return [
             'queries' => [
                 'error' => count(
-                    array_filter($this->queries, fn (array $query) => $query['status'] === self::QUERY_STATUS_ERROR)
+                    array_filter($this->queries, fn(array $query) => $query['status'] === self::QUERY_STATUS_ERROR),
                 ),
                 'total' => count($this->queries),
             ],
@@ -191,8 +191,8 @@ final class DatabaseCollector implements SummaryCollectorInterface
                 'error' => count(
                     array_filter(
                         $this->transactions,
-                        static fn (array $query) => $query['status'] === self::TRANSACTION_STATUS_ROLLBACK
-                    )
+                        static fn(array $query) => $query['status'] === self::TRANSACTION_STATUS_ROLLBACK,
+                    ),
                 ),
                 'total' => count($this->transactions),
             ],

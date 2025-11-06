@@ -29,16 +29,6 @@ use const SORT_NATURAL;
 
 abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
 {
-    private function createTebleWithColumn(CommandInterface $command, string|ColumnInterface $column)
-    {
-        try {
-            $command->dropTable('build_column_definition_primary_key')->execute();
-        } catch (Exception) {
-        }
-
-        $command->createTable('build_column_definition_primary_key', ['id' => $column])->execute();
-    }
-
     public function getBuildColumnDefinitionProvider(): array
     {
         return QueryBuilderProvider::buildColumnDefinition();
@@ -105,7 +95,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
             $db->getDriverName() === 'oci'
                 ? [':qp0' => new Param('test', DataType::STRING), ':qp1' => new Param('1', DataType::STRING)]
                 : [':qp0' => new Param('test', DataType::STRING)],
-            $params
+            $params,
         );
 
         $params = [];
@@ -381,5 +371,15 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $result = $query->column();
 
         $this->assertSame([$expected], $result, 'SQL Query: ' . $query->createCommand()->getRawSql());
+    }
+
+    private function createTebleWithColumn(CommandInterface $command, string|ColumnInterface $column)
+    {
+        try {
+            $command->dropTable('build_column_definition_primary_key')->execute();
+        } catch (Exception) {
+        }
+
+        $command->createTable('build_column_definition_primary_key', ['id' => $column])->execute();
     }
 }

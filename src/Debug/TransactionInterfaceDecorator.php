@@ -10,9 +10,8 @@ final class TransactionInterfaceDecorator implements TransactionInterface
 {
     public function __construct(
         private TransactionInterface $decorated,
-        private DatabaseCollector $collector
-    ) {
-    }
+        private DatabaseCollector $collector,
+    ) {}
 
     /**
      * @psalm-suppress PossiblyUndefinedArrayOffset

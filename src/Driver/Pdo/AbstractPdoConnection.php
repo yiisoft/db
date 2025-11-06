@@ -44,19 +44,18 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
 
-    protected PDO|null $pdo = null;
-    protected ServerInfoInterface|null $serverInfo = null;
-    protected bool|null $emulatePrepare = null;
-    protected QueryBuilderInterface|null $queryBuilder = null;
-    protected QuoterInterface|null $quoter = null;
-    protected SchemaInterface|null $schema = null;
+    protected ?PDO $pdo = null;
+    protected ?ServerInfoInterface $serverInfo = null;
+    protected ?bool $emulatePrepare = null;
+    protected ?QueryBuilderInterface $queryBuilder = null;
+    protected ?QuoterInterface $quoter = null;
+    protected ?SchemaInterface $schema = null;
 
     public function __construct(
         protected PdoDriverInterface $driver,
         protected SchemaCache $schemaCache,
-        protected ColumnFactoryInterface|null $columnFactory = null,
-    ) {
-    }
+        protected ?ColumnFactoryInterface $columnFactory = null,
+    ) {}
 
     /**
      * Reset the connection after cloning.
@@ -77,7 +76,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         unset(
             $fields["\000*\000" . 'pdo'],
             $fields["\000*\000" . 'transaction'],
-            $fields["\000*\000" . 'schema']
+            $fields["\000*\000" . 'schema'],
         );
 
         return array_keys($fields);
@@ -138,12 +137,12 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         return $this->driver;
     }
 
-    public function getEmulatePrepare(): bool|null
+    public function getEmulatePrepare(): ?bool
     {
         return $this->emulatePrepare;
     }
 
-    public function getActivePdo(string|null $sql = '', bool|null $forRead = null): PDO
+    public function getActivePdo(?string $sql = '', ?bool $forRead = null): PDO
     {
         $this->open();
         $pdo = $this->getPdo();
@@ -155,7 +154,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         return $pdo;
     }
 
-    public function getPdo(): PDO|null
+    public function getPdo(): ?PDO
     {
         return $this->pdo;
     }

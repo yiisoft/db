@@ -70,14 +70,6 @@ use function stream_get_contents;
 abstract class AbstractCommand implements CommandInterface
 {
     /**
-     * @param ConnectionInterface $db The database connection to use.
-     */
-    public function __construct(
-        protected readonly ConnectionInterface $db,
-    ) {
-    }
-
-    /**
      * Command in this query mode returns count of affected rows.
      *
      * @see execute()
@@ -123,14 +115,21 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * @var string|null Name of the table to refresh schema for. Null means not to refresh the schema.
      */
-    protected string|null $refreshTableName = null;
-    protected Closure|null $retryHandler = null;
+    protected ?string $refreshTableName = null;
+    protected ?Closure $retryHandler = null;
     protected bool $dbTypecasting = true;
     protected bool $phpTypecasting = false;
     /**
      * @var string The SQL statement to execute.
      */
     private string $sql = '';
+
+    /**
+     * @param ConnectionInterface $db The database connection to use.
+     */
+    public function __construct(
+        protected readonly ConnectionInterface $db,
+    ) {}
 
     public function addCheck(string $table, string $name, string $expression): static
     {
@@ -169,7 +168,7 @@ abstract class AbstractCommand implements CommandInterface
         string $referenceTable,
         array|string $referenceColumns,
         ?string $delete = null,
-        ?string $update = null
+        ?string $update = null,
     ): static {
         $sql = $this->getQueryBuilder()->addForeignKey(
             $table,
@@ -178,7 +177,7 @@ abstract class AbstractCommand implements CommandInterface
             $referenceTable,
             $referenceColumns,
             $delete,
-            $update
+            $update,
         );
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
@@ -241,7 +240,7 @@ abstract class AbstractCommand implements CommandInterface
         string $name,
         array|string $columns,
         ?string $indexType = null,
-        ?string $indexMethod = null
+        ?string $indexMethod = null,
     ): static {
         $sql = $this->getQueryBuilder()->createIndex($table, $name, $columns, $indexType, $indexMethod);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -438,14 +437,14 @@ abstract class AbstractCommand implements CommandInterface
         return is_array($results) ? $results : [];
     }
 
-    public function queryOne(): array|null
+    public function queryOne(): ?array
     {
         /** @psalm-var array<string,mixed>|false $results */
         $results = $this->queryInternal(self::QUERY_MODE_ROW);
         return is_array($results) ? $results : null;
     }
 
-    public function queryScalar(): bool|string|null|int|float
+    public function queryScalar(): bool|string|int|float|null
     {
         $result = $this->queryInternal(self::QUERY_MODE_SCALAR);
 
@@ -493,7 +492,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this;
     }
 
-    public function setRetryHandler(Closure|null $handler): static
+    public function setRetryHandler(?Closure $handler): static
     {
         $this->retryHandler = $handler;
         return $this;
@@ -510,7 +509,7 @@ abstract class AbstractCommand implements CommandInterface
         array $columns,
         array|ExpressionInterface|string $condition = '',
         array|ExpressionInterface|string|null $from = null,
-        array $params = []
+        array $params = [],
     ): static {
         $sql = $this->getQueryBuilder()->update($table, $columns, $condition, $from, $params);
         return $this->setSql($sql)->bindValues($params);
@@ -530,7 +529,7 @@ abstract class AbstractCommand implements CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-        array|null $returnColumns = null,
+        ?array $returnColumns = null,
     ): array {
         if ($returnColumns === []) {
             $this->upsert($table, $insertColumns, $updateColumns)->execute();

@@ -133,8 +133,8 @@ interface DDLQueryBuilderInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string|null $delete = null,
-        string|null $update = null
+        ?string $delete = null,
+        ?string $update = null,
     ): string;
 
     /**
@@ -229,7 +229,7 @@ interface DDLQueryBuilderInterface
         string $name,
         array|string $columns,
         ?string $indexType = null,
-        ?string $indexMethod = null
+        ?string $indexMethod = null,
     ): string;
 
     /**

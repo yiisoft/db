@@ -57,7 +57,7 @@ final class LikeTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            "Operator 'LIKE' requires value to be string, int, iterable or ExpressionInterface."
+            "Operator 'LIKE' requires value to be string, int, iterable or ExpressionInterface.",
         );
 
         Like::fromArrayDefinition('LIKE', ['id', false]);
@@ -110,7 +110,7 @@ final class LikeTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            'Operator "LIKE" requires "mode" to be an instance of Yiisoft\Db\QueryBuilder\Condition\LikeMode. Got string.'
+            'Operator "LIKE" requires "mode" to be an instance of Yiisoft\Db\QueryBuilder\Condition\LikeMode. Got string.',
         );
 
         Like::fromArrayDefinition('LIKE', ['id', 'test', 'mode' => 'invalid']);

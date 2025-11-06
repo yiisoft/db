@@ -41,7 +41,7 @@ final class StructuredValueTest extends TestCase
     #[DataProvider('constructProvider')]
     public function testConstruct(
         array|object|string $value,
-        AbstractStructuredColumn|string|null $type = null
+        AbstractStructuredColumn|string|null $type = null,
     ): void {
         $expression = new StructuredValue($value, $type);
 

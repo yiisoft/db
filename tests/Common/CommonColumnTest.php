@@ -26,10 +26,6 @@ abstract class CommonColumnTest extends AbstractColumnTest
 
     protected const DATETIME_COLUMN_TABLE = 'datetime_column_test';
 
-    abstract protected function insertTypeValues(ConnectionInterface $db): void;
-
-    abstract protected function assertTypecastedValues(array $result, bool $allTypecasted = false): void;
-
     public function testQueryWithTypecasting(): void
     {
         $db = $this->getConnection(true);
@@ -179,7 +175,7 @@ abstract class CommonColumnTest extends AbstractColumnTest
 
         $values = array_fill_keys(array_keys($expected), $value);
 
-        $expected = array_map(static fn (string $value) => new DateTimeImmutable($value, new DateTimeZone('UTC')), $expected);
+        $expected = array_map(static fn(string $value) => new DateTimeImmutable($value, new DateTimeZone('UTC')), $expected);
 
         $command->insert(static::DATETIME_COLUMN_TABLE, $values)->execute();
 
@@ -192,4 +188,8 @@ abstract class CommonColumnTest extends AbstractColumnTest
 
         $db->close();
     }
+
+    abstract protected function insertTypeValues(ConnectionInterface $db): void;
+
+    abstract protected function assertTypecastedValues(array $result, bool $allTypecasted = false): void;
 }

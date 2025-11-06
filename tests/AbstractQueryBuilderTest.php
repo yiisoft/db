@@ -55,7 +55,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[CN_check]] ADD CONSTRAINT [[T_constraints_1]] CHECK ([[C_not_null]] > 100)
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -73,7 +73,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
-                SQL . ' ' . $qb->buildColumnDefinition($type)
+                SQL . ' ' . $qb->buildColumnDefinition($type),
             ),
             $sql,
         );
@@ -93,7 +93,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 COMMENT ON COLUMN [[customer]].[[id]] IS 'Primary key.'
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -113,7 +113,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 COMMENT ON TABLE [[customer]] IS 'Customer table.'
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -134,7 +134,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[T_constraints_1]] ALTER COLUMN [[C_default]] SET DEFAULT 1
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -152,9 +152,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
         array|string $columns,
         string $refTable,
         array|string $refColumns,
-        string|null $delete,
-        string|null $update,
-        string $expected
+        ?string $delete,
+        ?string $update,
+        string $expected,
     ): void {
         $db = $this->getConnection();
 
@@ -222,8 +222,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildCondition')]
     public function testBuildCondition(
         array|ExpressionInterface|string $condition,
-        string|null $expected,
-        array $expectedParams
+        ?string $expected,
+        array $expectedParams,
     ): void {
         $db = $this->getConnection();
 
@@ -235,7 +235,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             'SELECT *'
             . ($db->getDriverName() === 'oci' ? ' FROM DUAL' : '')
             . (empty($expected) ? '' : ' WHERE ' . static::replaceQuotes($expected)),
-            $sql
+            $sql,
         );
         Assert::arraysEquals($expectedParams, $params);
     }
@@ -307,7 +307,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[admin_user]] WHERE [[id]] IN (:qp0, :qp1)
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -371,7 +371,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         assertSame(
             static::replaceQuotes('SELECT * FROM [[test]] FOR UPDATE OF {{t1}}'),
-            $sql
+            $sql,
         );
         assertEmpty($params);
     }
@@ -388,7 +388,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 FROM [[admin_user]]
-                SQL
+                SQL,
             ),
             $qb->buildFrom($query->getFrom(), $params),
         );
@@ -410,7 +410,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 GROUP BY [[id]], [[name]]
-                SQL
+                SQL,
             ),
             $qb->buildGroupBy($query->getGroupBy(), $params),
         );
@@ -428,7 +428,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 HAVING [[id]] = 1
-                SQL
+                SQL,
             ),
             $qb->buildHaving($query->getHaving(), $params),
         );
@@ -476,7 +476,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 INNER JOIN [[admin_profile]] ON admin_user.id = admin_profile.user_id
-                SQL
+                SQL,
             ),
             $qb->buildJoin($query->getJoins(), $params),
         );
@@ -490,7 +490,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 INNER JOIN [[admin_profile]] ON [[admin_user]].[[id]] = [[admin_profile]].[[user_id]]
-                SQL
+                SQL,
             ),
             $qb->buildJoin($query->getJoins(), $params),
         );
@@ -510,7 +510,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 INNER JOIN (SELECT * FROM admin_profile) ap ON [[admin_user]].[[id]] = [[ap]].[[user_id]]
-                SQL
+                SQL,
             ),
             $qb->buildJoin($query->getJoins(), $params),
         );
@@ -534,7 +534,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 INNER JOIN (SELECT * FROM admin_profile) [[ap]] ON [[admin_user]].[[id]] = [[ap]].[[user_id]]
-                SQL
+                SQL,
             ),
             $qb->buildJoin($query->getJoins(), $params),
         );
@@ -555,7 +555,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 LEFT JOIN [[admin_profile]] ON admin_user.id = admin_profile.user_id AND admin_profile.status = 1
-                SQL
+                SQL,
             ),
             $qb->buildJoin($query->getJoins(), $params),
         );
@@ -578,7 +578,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 RIGHT JOIN (SELECT * FROM admin_profile WHERE active = 1) ap ON admin_user.id = ap.user_id
-                SQL
+                SQL,
             ),
             $qb->buildJoin($query->getJoins(), $params),
         );
@@ -588,7 +588,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     public function testBuildLikeCondition(
         array|ExpressionInterface $condition,
         string $expected,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         $db = $this->getConnection();
 
@@ -600,7 +600,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             'SELECT *'
             . ($db->getDriverName() === 'oci' ? ' FROM DUAL' : '')
             . (empty($expected) ? '' : ' WHERE ' . static::replaceQuotes($expected)),
-            $sql
+            $sql,
         );
         $this->assertSame(array_keys($expectedParams), array_keys($params));
         foreach ($params as $name => $value) {
@@ -679,7 +679,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 ORDER BY [[id]], [[name]] DESC
-                SQL
+                SQL,
             ),
             $qb->buildOrderBy($query->getOrderBy(), $params),
         );
@@ -704,13 +704,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[admin_user]] ORDER BY [[id]], [[name]] DESC LIMIT 10 OFFSET 5
-                SQL
+                SQL,
             ),
             $qb->buildOrderByAndLimit(
                 static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[admin_user]]
-                    SQL
+                    SQL,
                 ),
                 $query->getOrderBy(),
                 $query->getLimit(),
@@ -737,7 +737,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT [[id]], [[name]], [[email]], [[address]], [[status]]
-                SQL
+                SQL,
             ),
             $qb->buildSelect($query->getSelect(), $params),
         );
@@ -760,7 +760,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT [[id]] AS [[a]]
-                SQL
+                SQL,
             ),
             $qb->buildSelect(['id as a'], $params),
         );
@@ -784,7 +784,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT DISTINCT [[id]], [[name]], [[email]], [[address]], [[status]]
-                SQL
+                SQL,
             ),
             $qb->buildSelect($query->getSelect(), $params, true),
         );
@@ -808,7 +808,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 UNION ( SELECT * FROM [[admin_profile]] )
-                SQL
+                SQL,
             ),
             $qb->buildUnion($query->getUnions(), $params),
         );
@@ -826,7 +826,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 WITH [[cte]] AS (SELECT * FROM [[admin_profile]])
-                SQL
+                SQL,
             ),
             $qb->buildWithQueries($query->getWithQueries(), $params),
         );
@@ -840,7 +840,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $expressionString = static::replaceQuotes(
             <<<SQL
             case t.Status_Id when 1 then 'Acknowledge' when 2 then 'No Action' else 'Unknown Action' END as [[Next Action]]
-            SQL
+            SQL,
         );
 
         $this->assertIsString($expressionString);
@@ -854,7 +854,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                     'Part Cost' => 't.Part_Cost',
                     'st_x(location::geometry) as lon',
                     new Expression($expressionString),
-                ]
+                ],
             )
             ->from('tablename');
 
@@ -864,7 +864,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT [[t]].[[id]] AS [[ID]], [[gsm]].[[username]] AS [[GSM]], [[part]].[[Part]], [[t]].[[Part_Cost]] AS [[Part Cost]], st_x(location::geometry) AS [[lon]], case t.Status_Id when 1 then 'Acknowledge' when 2 then 'No Action' else 'Unknown Action' END as [[Next Action]] FROM [[tablename]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -882,7 +882,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     public function testBuildWithFrom(
         ExpressionInterface|array|string $table,
         string $expectedSql,
-        array $expectedParams = []
+        array $expectedParams = [],
     ): void {
         $db = $this->getConnection();
 
@@ -914,7 +914,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[no_exist_table]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -943,7 +943,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM {{%user}} USE INDEX (primary)
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -960,7 +960,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM {{user}} {{t}} FORCE INDEX (primary) IGNORE INDEX FOR ORDER BY (i1) LEFT JOIN [[profile]] [[p]] ON user.id = profile.user_id USE INDEX (i2)
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -991,7 +991,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM (SELECT * FROM [[user]] WHERE account_id = accounts.id) [[activeusers]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1008,7 +1008,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM (SELECT * FROM [[user]] WHERE account_id = :id) [[activeusers]] WHERE abc = :abc
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1025,7 +1025,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM (SELECT * FROM user WHERE account_id = accounts.id) [[activeusers]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1053,7 +1053,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] GROUP BY [[name]], [[date]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1068,7 +1068,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] GROUP BY [[name]], [[date]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1087,7 +1087,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] WHERE account_id = accounts.id GROUP BY SUBSTR(name, 0, 1), x
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1105,7 +1105,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] GROUP BY SUBSTR(name, 0, :to), x
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1182,7 +1182,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] ORDER BY [[name]], [[date]] DESC
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1197,7 +1197,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] ORDER BY [[name]], [[date]] DESC
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1216,7 +1216,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] WHERE account_id = accounts.id ORDER BY SUBSTR(name, 3, 4) DESC, x ASC
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1234,7 +1234,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[operations]] ORDER BY SUBSTR(name, 3, :to) DESC, x ASC
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1260,7 +1260,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 WITH [[a1]] AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1), [[a2]] AS ((SELECT [[id]] FROM [[t2]] INNER JOIN [[a1]] ON t2.id = a1.id WHERE expr = 2) UNION ( SELECT [[id]] FROM [[t3]] WHERE expr = 3 )) SELECT * FROM [[a2]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1281,7 +1281,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $expected = static::replaceQuotes(
             <<<SQL
             WITH RECURSIVE [[a1]] AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1) SELECT * FROM [[a1]]
-            SQL
+            SQL,
         );
 
         if (in_array($db->getDriverName(), ['oci', 'sqlsrv'], true)) {
@@ -1306,7 +1306,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $expectedSql = static::replaceQuotes(
             <<<SQL
             WITH $expected AS (SELECT * FROM [[t]]) SELECT * FROM [[t]]
-            SQL
+            SQL,
         );
 
         $this->assertSame($expectedSql, $sql);
@@ -1326,7 +1326,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT 1 AS ab FROM [[tablename]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1344,7 +1344,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT 1 AS ab, 2 AS cd, 3 AS [[ef]] FROM [[tablename]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1360,7 +1360,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT SUBSTR(name, 0, :len) FROM [[tablename]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1387,7 +1387,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT *, (SELECT COUNT(*) FROM [[operations]] WHERE account_id = accounts.id) AS [[operations_count]] FROM [[accounts]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1438,9 +1438,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[table]]
-                SQL
+                SQL,
             ),
-            $sql
+            $sql,
         );
         $this->assertEmpty($params);
 
@@ -1452,7 +1452,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT *
                 FROM [[table]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1486,7 +1486,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 (SELECT [[id]] FROM [[TotalExample]] [[t1]] WHERE (w > 0) AND (x < 2)) UNION ( SELECT [[id]] FROM [[TotalTotalExample]] [[t2]] WHERE w > 5 ) UNION ALL ( SELECT [[id]] FROM [[TotalTotalExample]] [[t3]] WHERE w = 3 )
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1546,7 +1546,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (([[w]].[[merchant_id]] = 6) AND ([[w]].[[user_id]] = 210)))) AND ([[t]].[[some_column]] = :qp0)
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1584,7 +1584,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (w.merchant_id = :merchant_id))) AND (t.some_column = :some_value)
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -1620,7 +1620,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(['a = 1', ['and', 'b = 2', ['or', 'c = 3', 'd = 4']]], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(
-            ['and', 'a = 1', ['or', 'b = 2', ['and', 'c = 3', ['or', 'd = 4', 'e = 5']]]]
+            ['and', 'a = 1', ['or', 'b = 2', ['and', 'c = 3', ['or', 'd = 4', 'e = 5']]]],
         );
         $this->assertInstanceOf(AndX::class, $condition);
         $this->assertSame(
@@ -1739,7 +1739,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[T_constraints_1]] DROP CONSTRAINT [[CN_check]]
-                SQL
+                SQL,
             ),
             $qb->dropCheck('T_constraints_1', 'CN_check'),
         );
@@ -1755,7 +1755,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[customer]] DROP COLUMN [[id]]
-                SQL
+                SQL,
             ),
             $qb->dropColumn('customer', 'id'),
         );
@@ -1771,7 +1771,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 COMMENT ON COLUMN [customer].[id] IS NULL
-                SQL
+                SQL,
             ),
             $qb->dropCommentFromColumn('customer', 'id'),
         );
@@ -1787,7 +1787,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 COMMENT ON TABLE [[customer]] IS NULL
-                SQL
+                SQL,
             ),
             $qb->dropCommentFromTable('customer'),
         );
@@ -1807,7 +1807,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[T_constraints_1]] ALTER COLUMN [[C_default]] DROP DEFAULT
-                SQL
+                SQL,
             ),
             $qb->dropDefaultValue('T_constraints_1', 'CN_pk'),
         );
@@ -1823,7 +1823,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[T_constraints_3]] DROP CONSTRAINT [[CN_constraints_3]]
-                SQL
+                SQL,
             ),
             $qb->dropForeignKey('T_constraints_3', 'CN_constraints_3'),
         );
@@ -1839,7 +1839,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 DROP INDEX [[CN_constraints_2_single]] ON [[T_constraints_2]]
-                SQL
+                SQL,
             ),
             $qb->dropIndex('T_constraints_2', 'CN_constraints_2_single'),
         );
@@ -1855,7 +1855,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[T_constraints_1]] DROP CONSTRAINT [[CN_pk]]
-                SQL
+                SQL,
             ),
             $qb->dropPrimaryKey('T_constraints_1', 'CN_pk'),
         );
@@ -1905,7 +1905,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[test_uq]] DROP CONSTRAINT [[test_uq_constraint]]
-                SQL
+                SQL,
             ),
             $qb->dropUnique('test_uq', 'test_uq_constraint'),
         );
@@ -1921,7 +1921,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 DROP VIEW [[animal_view]]
-                SQL
+                SQL,
             ),
             $qb->dropview('animal_view'),
         );
@@ -1950,7 +1950,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         array|QueryInterface $columns,
         array $params,
         string $expectedSQL,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         $db = $this->getConnection();
 
@@ -1966,7 +1966,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         array|QueryInterface $columns,
         array $params,
         string $expectedSQL,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         $db = $this->getConnection(true);
         $qb = $db->getQueryBuilder();
@@ -1995,7 +1995,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[alpha]] RENAME COLUMN [[string_identifier]] TO [[string_identifier_test]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -2012,7 +2012,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 RENAME TABLE [[alpha]] TO [[alpha-test]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -2081,12 +2081,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         if ($db->getDriverName() === 'db') {
             $this->expectException(NotSupportedException::class);
             $this->expectExceptionMessage(
-                'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.'
+                'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.',
             );
         } else {
             $this->expectException(InvalidArgumentException::class);
             $this->expectExceptionMessage(
-                "There is not sequence associated with table 'type'."
+                "There is not sequence associated with table 'type'.",
             );
         }
 
@@ -2105,7 +2105,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         if ($db->getDriverName() === 'db') {
             $this->expectException(NotSupportedException::class);
             $this->expectExceptionMessage(
-                'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.'
+                'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.',
             );
         } else {
             $this->expectException(InvalidArgumentException::class);
@@ -2146,7 +2146,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $expected = static::replaceQuotes(
             <<<SQL
             SELECT 1 AS ab FROM [[tablename]]
-            SQL
+            SQL,
         );
 
         $this->assertSame($expected, $sql);
@@ -2163,7 +2163,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $expected = static::replaceQuotes(
             <<<SQL
             SELECT 1 AS ab, 2 AS cd, 3 AS [[ef]] FROM [[tablename]]
-            SQL
+            SQL,
         );
 
         $this->assertSame($expected, $sql);
@@ -2178,7 +2178,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $expected = static::replaceQuotes(
             <<<SQL
             SELECT SUBSTR(name, 0, :len) FROM [[tablename]]
-            SQL
+            SQL,
         );
 
         $this->assertSame($expected, $sql);
@@ -2199,7 +2199,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $expected = static::replaceQuotes(
             <<<SQL
             SELECT *, (SELECT COUNT(*) FROM [[operations]] WHERE account_id = accounts.id) AS [[operations_count]] FROM [[accounts]]
-            SQL
+            SQL,
         );
         $subquery = (new Query($db))->select('COUNT(*)')->from('operations')->where('account_id = accounts.id');
         $query = (new Query($db))->select('*')->from('accounts')->addSelect(['operations_count' => $subquery]);
@@ -2266,9 +2266,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT * FROM [[table]]
-                SQL
+                SQL,
             ),
-            $sql
+            $sql,
         );
         $this->assertEmpty($params);
 
@@ -2280,7 +2280,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT *
                 FROM [[table]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -2300,7 +2300,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 TRUNCATE TABLE [[customer]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -2311,7 +2311,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 TRUNCATE TABLE [[T_constraints_1]]
-                SQL
+                SQL,
             ),
             $sql,
         );
@@ -2347,7 +2347,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         string $expectedSql,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         $db = $this->getConnection(true);
 
@@ -2377,7 +2377,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
-        array|null $returnColumns,
+        ?array $returnColumns,
         string $expectedSql,
         array $expectedParams,
     ): void {
@@ -2423,7 +2423,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals([':id', ':qp2', ':qp2_0',], array_keys($command->getParams()));
         $this->assertEquals(
             static::replaceQuotes('SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]] = \'test1\')'),
-            $command->getRawSql()
+            $command->getRawSql(),
         );
 
         $db->close();
@@ -2448,7 +2448,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals([':qp1', ':qp1_0',], array_keys($command->getParams()));
         $this->assertEquals(
             static::replaceQuotes('SELECT * FROM [[animal]] WHERE (id = 1) AND ([[type]] = \'test2\')'),
-            $command->getRawSql()
+            $command->getRawSql(),
         );
 
         $db->close();

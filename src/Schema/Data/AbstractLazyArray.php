@@ -35,15 +35,6 @@ abstract class AbstractLazyArray implements ArrayAccess, Countable, JsonSerializ
     protected array|string $value;
 
     /**
-     * Parses the string retrieved value from the database into an array.
-     *
-     * @param string $value The string retrieved value from the database that can be parsed into an array.
-     *
-     * @return array|null The parsed array or `null` if the string value cannot be parsed.
-     */
-    abstract protected function parse(string $value): array|null;
-
-    /**
      * @param string $value The string retrieved value from the database that can be parsed into an array.
      * @param ColumnInterface|null $column The column information. This is used to typecast values.
      * @param int $dimension The number of indices needed to select an element.
@@ -52,11 +43,20 @@ abstract class AbstractLazyArray implements ArrayAccess, Countable, JsonSerializ
      */
     public function __construct(
         string $value,
-        private readonly ColumnInterface|null $column = null,
+        private readonly ?ColumnInterface $column = null,
         private readonly int $dimension = 1,
     ) {
         $this->value = $value;
     }
+
+    /**
+     * Parses the string retrieved value from the database into an array.
+     *
+     * @param string $value The string retrieved value from the database that can be parsed into an array.
+     *
+     * @return array|null The parsed array or `null` if the string value cannot be parsed.
+     */
+    abstract protected function parse(string $value): ?array;
 
     /**
      * Typecasts the array values to PHP types according to the column information.
@@ -75,7 +75,7 @@ abstract class AbstractLazyArray implements ArrayAccess, Countable, JsonSerializ
             return array_map($this->column->phpTypecast(...), $value);
         }
 
-        array_walk_recursive($value, function (string|null &$val): void {
+        array_walk_recursive($value, function (?string &$val): void {
             /** @psalm-suppress PossiblyNullReference */
             $val = $this->column->phpTypecast($val);
         });

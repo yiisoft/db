@@ -37,7 +37,7 @@ final class JsonValueTest extends TestCase
     #[DataProvider('constructProvider')]
     public function testConstruct(
         mixed $value,
-        string|null $type = null
+        ?string $type = null,
     ): void {
         $expression = new JsonValue($value, $type);
 

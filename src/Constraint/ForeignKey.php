@@ -34,8 +34,7 @@ final class ForeignKey
         public readonly string $foreignSchemaName = '',
         public readonly string $foreignTableName = '',
         public readonly array $foreignColumnNames = [],
-        public readonly string|null $onDelete = null,
-        public readonly string|null $onUpdate = null,
-    ) {
-    }
+        public readonly ?string $onDelete = null,
+        public readonly ?string $onUpdate = null,
+    ) {}
 }

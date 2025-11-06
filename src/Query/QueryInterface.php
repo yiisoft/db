@@ -227,7 +227,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @psalm-return ResultCallback|null
      */
-    public function getResultCallback(): Closure|null;
+    public function getResultCallback(): ?Closure;
 
     /**
      * @return array The "select" value.
@@ -238,7 +238,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     /**
      * @return string|null The "select option" value.
      */
-    public function getSelectOption(): string|null;
+    public function getSelectOption(): ?string;
 
     /**
      * Returns table names used in {@see from()} indexed by aliases.
@@ -326,7 +326,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @psalm-param ResultCallback|null $resultCallback
      */
-    public function resultCallback(Closure|null $resultCallback): static;
+    public function resultCallback(?Closure $resultCallback): static;
 
     /**
      * Returns the query results as a scalar value.
@@ -340,7 +340,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @return bool|float|int|string|null The value of the first column in the first row of the query result. False is
      * returned if the query result is empty.
      */
-    public function scalar(): bool|int|null|string|float;
+    public function scalar(): bool|int|string|float|null;
 
     /**
      * @return bool Whether to emulate query execution.

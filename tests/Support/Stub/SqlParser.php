@@ -8,7 +8,7 @@ use Yiisoft\Db\Syntax\AbstractSqlParser;
 
 class SqlParser extends AbstractSqlParser
 {
-    public function getNextPlaceholder(int|null &$position = null): string|null
+    public function getNextPlaceholder(?int &$position = null): ?string
     {
         $result = null;
         $length = $this->length - 1;

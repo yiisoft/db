@@ -9,6 +9,4 @@ use Yiisoft\Db\Tests\AbstractColumnDefinitionParserTest;
 /**
  * @group db
  */
-final class ColumnDefinitionParserTest extends AbstractColumnDefinitionParserTest
-{
-}
+final class ColumnDefinitionParserTest extends AbstractColumnDefinitionParserTest {}

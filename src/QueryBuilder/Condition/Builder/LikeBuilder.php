@@ -49,8 +49,7 @@ class LikeBuilder implements ExpressionBuilderInterface
 
     public function __construct(
         private readonly QueryBuilderInterface $queryBuilder,
-    ) {
-    }
+    ) {}
 
     /**
      * Build SQL for {@see Like} or {@see NotLike}.

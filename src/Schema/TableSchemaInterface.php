@@ -45,13 +45,13 @@ interface TableSchemaInterface
      * Set the comment of the table or `null` if there is no comment.
      * Not all DBMS support this.
      */
-    public function comment(string|null $comment): static;
+    public function comment(?string $comment): static;
 
     /**
      * Set SQL for creating this table, empty string if it is not found, or `null` if it is not initialized.
      * Supported by MySQL and Oracle DBMS.
      */
-    public function createSql(string|null $sql): static;
+    public function createSql(?string $sql): static;
 
     /**
      * Set default value constraints of this table.
@@ -77,7 +77,7 @@ interface TableSchemaInterface
      *
      * @param string $name The column name.
      */
-    public function getColumn(string $name): ColumnInterface|null;
+    public function getColumn(string $name): ?ColumnInterface;
 
     /**
      * @return string[] The names of all columns in this table.
@@ -95,13 +95,13 @@ interface TableSchemaInterface
     /**
      * Returns the comment of the table or `null` if no comment.
      */
-    public function getComment(): string|null;
+    public function getComment(): ?string;
 
     /**
      * Returns SQL for create this table, empty string if it is not found, or `null` if it is not initialized.
      * Supported by MySQL and Oracle DBMS.
      */
-    public function getCreateSql(): string|null;
+    public function getCreateSql(): ?string;
 
     /**
      * @return DefaultValue[] The default value constraints of this table.
@@ -153,7 +153,7 @@ interface TableSchemaInterface
     /**
      * Return the sequence name for the primary key or `null` if no sequence.
      */
-    public function getSequenceName(): string|null;
+    public function getSequenceName(): ?string;
 
     /**
      * Returns the unique indexes of this table.
@@ -191,5 +191,5 @@ interface TableSchemaInterface
     /**
      * Set a sequence name for the primary key or `null` if no sequence.
      */
-    public function sequenceName(string|null $sequenceName): static;
+    public function sequenceName(?string $sequenceName): static;
 }

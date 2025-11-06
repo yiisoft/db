@@ -28,7 +28,7 @@ final class QueryTest extends AbstractQueryTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         (new Query($db))->select('name')->from('customer')->orderBy(['id' => SORT_DESC])->column();
@@ -40,7 +40,7 @@ final class QueryTest extends AbstractQueryTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         (new Query($db))->from('customer')->count();
@@ -52,7 +52,7 @@ final class QueryTest extends AbstractQueryTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         (new Query($db))->from('customer')->where(['status' => 2])->exists();
@@ -67,7 +67,7 @@ final class QueryTest extends AbstractQueryTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         $query->column();
@@ -79,7 +79,7 @@ final class QueryTest extends AbstractQueryTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         (new Query($db))->from('customer')->where(['status' => 2])->one();
@@ -89,7 +89,7 @@ final class QueryTest extends AbstractQueryTest
     {
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         parent::testColumnWithIndexBy();

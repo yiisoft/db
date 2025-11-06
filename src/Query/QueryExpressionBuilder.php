@@ -20,9 +20,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  */
 final class QueryExpressionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(private QueryBuilderInterface $queryBuilder) {}
 
     /**
      * @param QueryInterface $expression

@@ -12,10 +12,8 @@ abstract class AbstractSqlParserTest extends TestCase
 {
     use TestTrait;
 
-    abstract protected function createSqlParser(string $sql): AbstractSqlParser;
-
     /** @dataProvider \Yiisoft\Db\Tests\Provider\SqlParserProvider::getNextPlaceholder */
-    public function testGetNextPlaceholder(string $sql, string|null $expectedPlaceholder, int|null $expectedPosition): void
+    public function testGetNextPlaceholder(string $sql, ?string $expectedPlaceholder, ?int $expectedPosition): void
     {
         $parser = $this->createSqlParser($sql);
 
@@ -39,4 +37,6 @@ abstract class AbstractSqlParserTest extends TestCase
         $this->assertSame($expectedPlaceholders, $placeholders);
         $this->assertSame($expectedPositions, $positions);
     }
+
+    abstract protected function createSqlParser(string $sql): AbstractSqlParser;
 }

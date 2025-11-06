@@ -37,9 +37,7 @@ use function is_array;
  */
 class NotBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder) {}
 
     /**
      * Build SQL for {@see Not}.
