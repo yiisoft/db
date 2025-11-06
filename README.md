@@ -48,6 +48,26 @@ composer require yiisoft/db yiisoft/db-sqlite
 
 ## General Usage
 
+To connect to a database, create an instance of the appropriate driver:
+
+```php
+use Yiisoft\Db\Sqlite\Connection;
+use Yiisoft\Db\Sqlite\Driver;
+
+/**
+ * @var Psr\SimpleCache\CacheInterface $cache 
+ */
+
+// Creating a database connection
+$db = new Connection(
+    new Driver('sqlite:memory:'),
+    new SchemaCache($cache),
+);
+```
+
+You can then use the `$db` object to execute SQL queries, manage transactions, and perform other database operations.
+Here are some examples:
+
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
 
