@@ -14,8 +14,8 @@
 [![type-coverage](https://shepherd.dev/github/yiisoft/db/coverage.svg)](https://shepherd.dev/github/yiisoft/db)
 [![psalm-level](https://shepherd.dev/github/yiisoft/db/level.svg)](https://shepherd.dev/github/yiisoft/db)
 
-Yii Database is a framework-agnostic database abstraction layer that provides a set of classes to connect and interact 
-with various database management systems (DBMS) using a unified API, including a powerful query builder.
+Framework-agnostic database abstraction layer that provides a set of classes to connect and interact with various
+database management systems (DBMS) using a unified API, including a powerful query builder.
 
 Available database drivers:
 
