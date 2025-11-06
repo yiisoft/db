@@ -51,26 +51,30 @@ composer require yiisoft/db yiisoft/db-sqlite
 To connect to a database, create an instance of the appropriate driver:
 
 ```php
-use Yiisoft\Db\Sqlite\Connection;
-use Yiisoft\Db\Sqlite\Driver;
-
 /**
- * @var Psr\SimpleCache\CacheInterface $cache 
+ * @var Yiisoft\Db\Connection\ConnectionInterface $db
  */
 
-// Creating a database connection
-$db = new Connection(
-    new Driver('sqlite:memory:'),
-    new SchemaCache($cache),
-);
-
-// Query builder usage
-$rows = (new Query($db))  
+// Query builder
+use Yiisoft\Db\Connection\ConnectionInterface;$rows = $db 
     ->select(['id', 'email'])  
     ->from('{{%user}}')  
     ->where(['last_name' => 'Smith'])  
     ->limit(10)  
     ->all();
+
+// Insert
+$db->createCommand()
+    ->insert('{{%user}}', ['email' => 'mike@example.com', 'first_name' => 'Mike', 'last_name' => 'Smith'])
+    ->execute();
+
+// Transaction
+$db->transaction(
+    static function (ConnectionInterface $db) {
+        $db->createCommand()->update('{{%user}}', ['status' => 'active'], ['id' => 1])->execute();
+        $db->createCommand()->update('{{%profile}}', ['visibility' => 'public'], ['user_id' => 1])->execute();
+    }
+)
 ```
 
 ## Documentation
