@@ -48,8 +48,6 @@ composer require yiisoft/db yiisoft/db-sqlite
 
 ## General Usage
 
-To connect to a database, create an instance of the appropriate driver:
-
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
 
