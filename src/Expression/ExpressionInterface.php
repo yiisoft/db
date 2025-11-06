@@ -18,6 +18,4 @@ namespace Yiisoft\Db\Expression;
  *
  * The default implementation is a class {@see Expression}.
  */
-interface ExpressionInterface
-{
-}
+interface ExpressionInterface {}

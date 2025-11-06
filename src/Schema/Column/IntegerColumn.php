@@ -40,7 +40,7 @@ class IntegerColumn extends AbstractColumn
         };
     }
 
-    public function phpTypecast(mixed $value): int|null
+    public function phpTypecast(mixed $value): ?int
     {
         if ($value === null) {
             return null;

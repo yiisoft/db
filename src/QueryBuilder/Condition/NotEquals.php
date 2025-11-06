@@ -7,6 +7,4 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 /**
  * Represents a not equals condition like `"column" <> value`.
  */
-final class NotEquals extends AbstractCompare
-{
-}
+final class NotEquals extends AbstractCompare {}

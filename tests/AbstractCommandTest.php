@@ -41,7 +41,7 @@ abstract class AbstractCommandTest extends TestCase
             static::replaceQuotes(
                 <<<SQL
                 SELECT [[id]], [[t.name]] FROM [[customer]] t
-                SQL
+                SQL,
             ),
             $command->getSql(),
         );
@@ -159,7 +159,7 @@ abstract class AbstractCommandTest extends TestCase
         $command->setSql(
             <<<SQL
             SELECT * FROM [[customer]]
-            SQL
+            SQL,
         );
 
         $this->assertNull($command->getPdoStatement());
@@ -186,7 +186,7 @@ abstract class AbstractCommandTest extends TestCase
         $command->setRawSql(
             <<<SQL
             SELECT 123
-            SQL
+            SQL,
         );
 
         $this->assertSame('SELECT 123', $command->getRawSql());
@@ -204,7 +204,7 @@ abstract class AbstractCommandTest extends TestCase
         $command->setSql(
             <<<SQL
             SELECT 123
-            SQL
+            SQL,
         );
 
         $this->assertSame('SELECT 123', $command->getSql());
@@ -249,9 +249,7 @@ abstract class AbstractCommandTest extends TestCase
         $db->open();
 
         $profiler = new class ($this, $sql) implements ProfilerInterface {
-            public function __construct(private TestCase $test, private string $sql)
-            {
-            }
+            public function __construct(private TestCase $test, private string $sql) {}
 
             public function begin(string $token, ContextInterface|array $context = []): void
             {

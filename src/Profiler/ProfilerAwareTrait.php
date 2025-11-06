@@ -12,9 +12,9 @@ namespace Yiisoft\Db\Profiler;
  */
 trait ProfilerAwareTrait
 {
-    protected ProfilerInterface|null $profiler = null;
+    protected ?ProfilerInterface $profiler = null;
 
-    public function setProfiler(ProfilerInterface|null $profiler): void
+    public function setProfiler(?ProfilerInterface $profiler): void
     {
         $this->profiler = $profiler;
     }

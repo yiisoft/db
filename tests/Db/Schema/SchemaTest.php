@@ -124,7 +124,7 @@ final class SchemaTest extends AbstractSchemaTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Schema does not support fetching all schema names.'
+            'Yiisoft\Db\Tests\Support\Stub\Schema does not support fetching all schema names.',
         );
 
         $schema->getSchemaNames();
@@ -252,7 +252,7 @@ final class SchemaTest extends AbstractSchemaTest
             ->expects($this->exactly(2))
             ->method('loadTableSchema')
             ->will(
-                $this->onConsecutiveCalls($this->createTableSchemaStub(), $this->createTableSchemaStub())
+                $this->onConsecutiveCalls($this->createTableSchemaStub(), $this->createTableSchemaStub()),
             );
         $schemaMock->enableCache(true);
         $noCacheTable = $schemaMock->getTableSchema('T_constraints_1', true);
@@ -274,7 +274,7 @@ final class SchemaTest extends AbstractSchemaTest
             ->expects($this->exactly(2))
             ->method('loadTableSchema')
             ->will(
-                $this->onConsecutiveCalls($this->createTableSchemaStub(), $this->createTableSchemaStub())
+                $this->onConsecutiveCalls($this->createTableSchemaStub(), $this->createTableSchemaStub()),
             );
         $schemaMock->enableCache(false);
         $noCacheTable = $schemaMock->getTableSchema('T_constraints_1', true);

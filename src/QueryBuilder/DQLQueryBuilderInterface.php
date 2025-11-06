@@ -226,7 +226,7 @@ interface DQLQueryBuilderInterface
         array $orderBy,
         ExpressionInterface|int|null $limit,
         ExpressionInterface|int|null $offset,
-        array &$params = []
+        array &$params = [],
     ): string;
 
     /**
@@ -251,7 +251,7 @@ interface DQLQueryBuilderInterface
         array $columns,
         array &$params,
         bool $distinct = false,
-        ?string $selectOption = null
+        ?string $selectOption = null,
     ): string;
 
     /**
@@ -285,7 +285,7 @@ interface DQLQueryBuilderInterface
      */
     public function buildWhere(
         array|string|ConditionInterface|ExpressionInterface|null $condition,
-        array &$params = []
+        array &$params = [],
     ): string;
 
     /**

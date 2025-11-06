@@ -21,6 +21,4 @@ use Yiisoft\Db\Expression\Function\Builder\LeastBuilder;
  *
  * @see LeastBuilder for building SQL representations of this function expression.
  */
-final class Least extends MultiOperandFunction
-{
-}
+final class Least extends MultiOperandFunction {}

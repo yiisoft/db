@@ -85,7 +85,7 @@ interface DataReaderInterface extends Iterator, Countable
      *
      * @psalm-param ResultCallbackOne|null $resultCallback
      */
-    public function resultCallback(Closure|null $resultCallback): static;
+    public function resultCallback(?Closure $resultCallback): static;
 
     /**
      * Sets the columns for type casting the query results.

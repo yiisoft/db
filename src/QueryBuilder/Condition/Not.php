@@ -21,9 +21,8 @@ final class Not implements ConditionInterface
      * @param array|ExpressionInterface|string|null $condition The condition to negate.
      */
     public function __construct(
-        public readonly ExpressionInterface|array|null|string $condition,
-    ) {
-    }
+        public readonly ExpressionInterface|array|string|null $condition,
+    ) {}
 
     /**
      * Creates a condition based on the given operator and operands.
@@ -40,7 +39,7 @@ final class Not implements ConditionInterface
      *
      * @throws InvalidArgumentException If the number of operands isn't 1.
      */
-    private static function validateCondition(string $operator, array $condition): ExpressionInterface|array|null|string
+    private static function validateCondition(string $operator, array $condition): ExpressionInterface|array|string|null
     {
         if (count($condition) !== 1) {
             throw new InvalidArgumentException("Operator '$operator' requires exactly one operand.");
@@ -49,16 +48,16 @@ final class Not implements ConditionInterface
         $firstValue = array_shift($condition);
 
         if (
-            is_array($firstValue) ||
-            $firstValue instanceof ExpressionInterface ||
-            is_string($firstValue) ||
-            $firstValue === null
+            is_array($firstValue)
+            || $firstValue instanceof ExpressionInterface
+            || is_string($firstValue)
+            || $firstValue === null
         ) {
             return $firstValue;
         }
 
         throw new InvalidArgumentException(
-            "Operator '$operator' requires condition to be array, string, null or ExpressionInterface."
+            "Operator '$operator' requires condition to be array, string, null or ExpressionInterface.",
         );
     }
 }

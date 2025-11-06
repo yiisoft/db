@@ -7,6 +7,4 @@ namespace Yiisoft\Db\Exception;
 /**
  * Represents an exception caused by calling a method in the wrong way.
  */
-final class InvalidCallException extends Exception
-{
-}
+final class InvalidCallException extends Exception {}

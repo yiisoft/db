@@ -190,13 +190,13 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
                     /** @psalm-suppress ArgumentTypeCoercion */
                     $info['column'] = $this->fromDbType(
                         $info['dbType'],
-                        array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1])
+                        array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1]),
                     );
                 } elseif ($type !== ColumnType::ARRAY) {
                     /** @psalm-suppress ArgumentTypeCoercion */
                     $info['column'] = $this->fromType(
                         $type,
-                        array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1])
+                        array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1]),
                     );
                 }
             }
@@ -355,7 +355,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      * @psalm-param ColumnInfo $info
      * @psalm-assert ColumnInfo $info
      */
-    protected function mapType(array $map, string $type, array &$info = []): string|null
+    protected function mapType(array $map, string $type, array &$info = []): ?string
     {
         if (!isset($map[$type])) {
             return null;
@@ -378,7 +378,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      *
      * @return mixed The normalized default value.
      */
-    protected function normalizeDefaultValue(string|null $defaultValue, ColumnInterface $column): mixed
+    protected function normalizeDefaultValue(?string $defaultValue, ColumnInterface $column): mixed
     {
         if (
             $defaultValue === null

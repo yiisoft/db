@@ -18,6 +18,4 @@ namespace Yiisoft\Db\Expression\Function;
  *
  * @see LongestBuilder for building SQL representations of this function expression.
  */
-final class Longest extends MultiOperandFunction
-{
-}
+final class Longest extends MultiOperandFunction {}

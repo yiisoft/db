@@ -36,7 +36,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
 
         $query = (new Query($db))
             ->from('customer')
-            ->indexBy(fn (array $row) => $row['id'] * 2);
+            ->indexBy(fn(array $row) => $row['id'] * 2);
 
         $this->assertSame([2, 4, 6], array_keys($query->all()));
 
@@ -50,7 +50,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $result = (new Query($db))
             ->select(['id', 'name'])
             ->from('customer')
-            ->indexBy(fn ($row) => $row['id'] * 2)
+            ->indexBy(fn($row) => $row['id'] * 2)
             ->column();
 
         $this->assertEquals([2 => '1', 4 => '2', 6 => '3'], $result);
@@ -121,7 +121,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
 
         $query = (new Query($db))
             ->from('customer')
-            ->resultCallback(fn (array $rows) => array_map(fn (array $row) => (object) $row, $rows));
+            ->resultCallback(fn(array $rows) => array_map(fn(array $row) => (object) $row, $rows));
 
         foreach ($query->all() as $row) {
             $this->assertIsObject($row);
@@ -137,7 +137,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $query = (new Query($db))
             ->from('customer')
             ->where(['id' => 2])
-            ->resultCallback(fn (array $rows) => [(object) $rows[0]]);
+            ->resultCallback(fn(array $rows) => [(object) $rows[0]]);
 
         $this->assertIsObject($query->one());
 

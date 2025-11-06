@@ -23,8 +23,7 @@ abstract class AbstractBetween implements ConditionInterface
         public readonly string|ExpressionInterface $column,
         public readonly mixed $intervalStart,
         public readonly mixed $intervalEnd,
-    ) {
-    }
+    ) {}
 
     /**
      * Creates a condition based on the given operator and operands.
@@ -56,7 +55,7 @@ abstract class AbstractBetween implements ConditionInterface
         }
 
         throw new InvalidArgumentException(
-            "Operator '$operator' requires column to be string or ExpressionInterface."
+            "Operator '$operator' requires column to be string or ExpressionInterface.",
         );
     }
 }

@@ -26,7 +26,7 @@ final class CheckTest extends TestCase
         $check = new Check(
             'not_empty',
             ['column_name'],
-            "column_name != ''"
+            "column_name != ''",
         );
 
         $this->assertSame('not_empty', $check->name);

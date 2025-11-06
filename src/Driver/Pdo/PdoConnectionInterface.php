@@ -39,7 +39,7 @@ interface PdoConnectionInterface extends ConnectionInterface
      *
      * @see PDO
      */
-    public function getPdo(): PDO|null;
+    public function getPdo(): ?PDO;
 
     /**
      * Returns current DB driver.
@@ -53,7 +53,7 @@ interface PdoConnectionInterface extends ConnectionInterface
      *
      * @see setEmulatePrepare()
      */
-    public function getEmulatePrepare(): bool|null;
+    public function getEmulatePrepare(): ?bool;
 
     /**
      * Whether to turn on prepare statements emulation on PHP side.

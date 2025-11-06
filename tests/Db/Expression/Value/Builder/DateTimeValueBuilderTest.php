@@ -215,7 +215,7 @@ final class DateTimeValueBuilderTest extends TestCase
     public function testBuild(string $expectedResult, array $expectedParams, DateTimeValue $value): void
     {
         $builder = new DateTimeValueBuilder(
-            $this->getConnection()->getQueryBuilder()
+            $this->getConnection()->getQueryBuilder(),
         );
 
         $params = [];

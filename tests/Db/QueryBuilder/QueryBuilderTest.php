@@ -65,7 +65,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::addDefaultValue is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::addDefaultValue is not supported by this DBMS.',
         );
 
         $qb->addDefaultValue('table', 'name', 'column', 'value');
@@ -110,7 +110,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::checkIntegrity is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::checkIntegrity is not supported by this DBMS.',
         );
 
         $qb = $db->getQueryBuilder();
@@ -134,7 +134,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 \t[[created_at]] datetime NOT NULL,
                 \tUNIQUE test_email_unique (email)
                 )
-                SQL
+                SQL,
             ),
             $qb->createTable(
                 'test',
@@ -160,7 +160,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
             <<<SQL
             CREATE VIEW [testCreateView] AS SELECT {{bar}} FROM {{testCreateViewTable}} WHERE [bar] > '5'
             SQL,
-            $qb->createView('testCreateView', $subQuery)
+            $qb->createView('testCreateView', $subQuery),
         );
     }
 
@@ -172,7 +172,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::dropDefaultValue is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::dropDefaultValue is not supported by this DBMS.',
         );
 
         $qb->dropDefaultValue('T_constraints_1', 'CN_pk');
@@ -184,8 +184,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->expectException(InvalidArgumentException::class);
 
-        $expression = new class () implements ExpressionInterface {
-        };
+        $expression = new class implements ExpressionInterface {};
         $qb = $db->getQueryBuilder();
         $qb->getExpressionBuilder($expression);
     }
@@ -196,7 +195,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array|QueryInterface $columns,
         array $params,
         string $expectedSQL,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         $db = $this->getConnection();
         $qb = new QueryBuilder($db);
@@ -211,7 +210,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array|QueryInterface $columns,
         array $params,
         string $expectedSql,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         $db = $this->getConnection();
 
@@ -219,7 +218,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::insertReturningPks() is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::insertReturningPks() is not supported by this DBMS.',
         );
 
         $qb->insertReturningPks($table, $columns, $params);
@@ -233,7 +232,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.',
         );
 
         $qb->resetSequence('T_constraints_1', 'id');
@@ -267,13 +266,13 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         string|array $expectedSql,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         $db = $this->getConnection();
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsert is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsert is not supported by this DBMS.',
         );
 
         $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns);
@@ -283,13 +282,13 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     public function testUpsertExecute(
         string $table,
         array|QueryInterface $insertColumns,
-        array|bool $updateColumns
+        array|bool $updateColumns,
     ): void {
         $db = $this->getConnection();
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsert is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsert is not supported by this DBMS.',
         );
 
         $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns);
@@ -300,16 +299,16 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
-        array|null $returnColumns,
+        ?array $returnColumns,
         string $expectedSql,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsertReturning() is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsertReturning() is not supported by this DBMS.',
         );
 
         $qb->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns);

@@ -22,9 +22,7 @@ use function str_contains;
  */
 class SimpleBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder) {}
 
     /**
      * Build SQL for {@see Simple}.

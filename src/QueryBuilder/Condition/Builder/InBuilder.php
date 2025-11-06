@@ -35,9 +35,7 @@ use function str_contains;
  */
 class InBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(protected QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(protected QueryBuilderInterface $queryBuilder) {}
 
     /**
      * Build SQL for {@see In} or {@see NotIn}.
@@ -157,7 +155,7 @@ class InBuilder implements ExpressionBuilderInterface
         string $operator,
         array|string $columns,
         ExpressionInterface $values,
-        array &$params = []
+        array &$params = [],
     ): string {
         $query = '';
         $sql = $this->queryBuilder->buildExpression($values, $params);
@@ -193,10 +191,10 @@ class InBuilder implements ExpressionBuilderInterface
      * @psalm-param array<string|ExpressionInterface> $columns
      */
     protected function buildCompositeInCondition(
-        string|null $operator,
+        ?string $operator,
         array $columns,
         iterable|Iterator $values,
-        array &$params = []
+        array &$params = [],
     ): string {
         $vss = [];
 

@@ -33,19 +33,9 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      */
     protected const TYPES_WITH_SCALE = [];
 
-    /**
-     * Get the database column type for the given column.
-     *
-     * @param ColumnInterface $column The column object.
-     *
-     * @return string The database column type.
-     */
-    abstract protected function getDbType(ColumnInterface $column): string;
-
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
-    ) {
-    }
+    ) {}
 
     public function build(ColumnInterface $column): string
     {
@@ -93,6 +83,15 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
 
         return "$dbType($size,$scale)";
     }
+
+    /**
+     * Get the database column type for the given column.
+     *
+     * @param ColumnInterface $column The column object.
+     *
+     * @return string The database column type.
+     */
+    abstract protected function getDbType(ColumnInterface $column): string;
 
     /**
      * Builds the auto increment clause for the column.

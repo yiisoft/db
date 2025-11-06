@@ -48,7 +48,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -59,7 +59,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -70,7 +70,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -81,7 +81,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE CASCADE
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -92,7 +92,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE CASCADE ON UPDATE CASCADE
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -103,7 +103,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -114,7 +114,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]]) ON DELETE CASCADE
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -125,7 +125,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]]) ON DELETE CASCADE ON UPDATE CASCADE
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -136,7 +136,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE NO ACTION ON UPDATE RESTRICT
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -147,7 +147,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE SET DEFAULT ON UPDATE SET NULL
-                    SQL
+                    SQL,
                 ),
             ],
         ];
@@ -172,7 +172,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] PRIMARY KEY ([[int1]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -182,7 +182,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] PRIMARY KEY ([[int1]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -192,7 +192,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] PRIMARY KEY ([[int3]], [[int4]])
-                    SQL
+                    SQL,
                 ),
             ],
         ];
@@ -217,7 +217,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] UNIQUE ([[int1]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -227,7 +227,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] UNIQUE ([[int1]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -237,7 +237,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int3]], [[int4]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -247,7 +247,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int1]], [[int2]])
-                    SQL
+                    SQL,
                 ),
             ],
         ];
@@ -266,7 +266,7 @@ class CommandProvider
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (0, 0, :qp0, TRUE), (0, 0, :qp1, FALSE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':qp0' => 'test string',
@@ -286,7 +286,7 @@ class CommandProvider
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 1.1, :qp0, TRUE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':qp0' => 'Kyiv {{city}}, Ukraine',
@@ -299,7 +299,7 @@ class CommandProvider
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (0, 0, :qp0, FALSE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':qp0' => 'Kyiv {{city}}, Ukraine',
@@ -316,7 +316,7 @@ class CommandProvider
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:exp1, 1, :qp1, FALSE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':exp1' => 42,
@@ -330,7 +330,7 @@ class CommandProvider
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -343,7 +343,7 @@ class CommandProvider
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -356,7 +356,7 @@ class CommandProvider
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -369,7 +369,7 @@ class CommandProvider
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -382,7 +382,7 @@ class CommandProvider
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -395,7 +395,7 @@ class CommandProvider
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -403,12 +403,12 @@ class CommandProvider
             ],
             'empty columns and objects' => [
                 'type',
-                'values' => [(object)['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
+                'values' => [(object) ['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
                 [],
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -421,7 +421,7 @@ class CommandProvider
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -429,7 +429,7 @@ class CommandProvider
             ],
             'empty columns and Traversable values' => [
                 'type',
-                'values' => new class () implements IteratorAggregate {
+                'values' => new class implements IteratorAggregate {
                     public function getIterator(): Traversable
                     {
                         yield ['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1];
@@ -439,7 +439,7 @@ class CommandProvider
                 'expected' => static::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
+                    SQL,
                 ),
                 'expectedParams' => [
                     ':qp0' => '10',
@@ -454,7 +454,7 @@ class CommandProvider
                 ['int_col', 'char_col', 'float_col', 'bool_col', 'json_col'],
                 'expected' => static::replaceQuotes(
                     'INSERT INTO [[type]] ([[int_col]], [[char_col]], [[float_col]], [[bool_col]], [[json_col]])'
-                        . ' VALUES (1, :qp0, 0, TRUE, :qp1), (2, :qp2, -1, FALSE, :qp3)'
+                        . ' VALUES (1, :qp0, 0, TRUE, :qp1), (2, :qp2, -1, FALSE, :qp3)',
                 ),
                 'expectedParams' => [
                     ':qp0' => 'a',
@@ -489,7 +489,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     CREATE INDEX [[name]] ON [[table]] ([[column]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -501,7 +501,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     CREATE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -513,7 +513,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     CREATE UNIQUE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -525,7 +525,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     CREATE FULLTEXT INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -537,7 +537,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     CREATE SPATIAL INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -549,7 +549,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     CREATE BITMAP INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL
+                    SQL,
                 ),
             ],
         ];
@@ -571,7 +571,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -582,7 +582,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -593,7 +593,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -604,7 +604,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = NULL
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -615,7 +615,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2
-                    SQL
+                    SQL,
                 ),
             ],
             /**
@@ -629,7 +629,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[active]] = FALSE
-                    SQL
+                    SQL,
                 ),
             ],
             /**
@@ -643,7 +643,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] IN (1, 2)
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -661,7 +661,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -672,7 +672,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -683,7 +683,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[name]] = 'Alfa'
-                    SQL
+                    SQL,
                 ),
             ],
             [
@@ -694,7 +694,7 @@ class CommandProvider
                 static::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[product]] WHERE [[price]] = 123.45
-                    SQL
+                    SQL,
                 ),
             ],
         ];
@@ -770,7 +770,7 @@ class CommandProvider
                 '{{customer}}',
                 ['status' => new Expression(
                     '1 + :val',
-                    ['val' => new Expression('2 + :val', ['val' => 3])]
+                    ['val' => new Expression('2 + :val', ['val' => 3])],
                 )],
                 '[[name]] != :val',
                 null,

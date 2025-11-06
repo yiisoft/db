@@ -11,6 +11,4 @@ use Yiisoft\Db\Tests\AbstractTableSchemaTest;
  *
  * @psalm-suppress PropertyNotSetInConstructor
  */
-final class TableSchemaTest extends AbstractTableSchemaTest
-{
-}
+final class TableSchemaTest extends AbstractTableSchemaTest {}

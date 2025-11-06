@@ -51,7 +51,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      *
      * @link https://www.php.net/manual/en/class.pdostatement.php
      */
-    protected PDOStatement|null $pdoStatement = null;
+    protected ?PDOStatement $pdoStatement = null;
 
     /**
      * @param PdoConnectionInterface $db The PDO database connection to use.
@@ -69,7 +69,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         $this->pdoStatement = null;
     }
 
-    public function getPdoStatement(): PDOStatement|null
+    public function getPdoStatement(): ?PDOStatement
     {
         return $this->pdoStatement;
     }
@@ -77,9 +77,9 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     public function bindParam(
         int|string $name,
         mixed &$value,
-        int|null $dataType = null,
-        int|null $length = null,
-        mixed $driverOptions = null
+        ?int $dataType = null,
+        ?int $length = null,
+        mixed $driverOptions = null,
     ): static {
         $this->prepare();
 
@@ -98,7 +98,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         return $this;
     }
 
-    public function bindValue(int|string $name, mixed $value, int|null $dataType = null): static
+    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static
     {
         if ($dataType === null) {
             $dataType = $this->db->getSchema()->getDataType($value);
@@ -130,7 +130,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         return $this;
     }
 
-    public function prepare(bool|null $forRead = null): void
+    public function prepare(?bool $forRead = null): void
     {
         if (isset($this->pdoStatement)) {
             $this->bindPendingParams();
@@ -188,7 +188,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
             self::QUERY_MODE_COLUMN => 'queryColumn',
             self::QUERY_MODE_CURSOR => 'query',
             self::QUERY_MODE_SCALAR => 'queryScalar',
-            self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE => 'insertReturningPks'
+            self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE => 'insertReturningPks',
         };
     }
 
@@ -322,7 +322,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     /**
      * Returns the column instance from the query result by the index, or `null` if the column type cannot be determined.
      */
-    private function getResultColumn(int $index): ColumnInterface|null
+    private function getResultColumn(int $index): ?ColumnInterface
     {
         $metadata = $this->pdoStatement?->getColumnMeta($index);
 

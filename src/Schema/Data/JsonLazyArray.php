@@ -33,7 +33,7 @@ final class JsonLazyArray implements LazyArrayInterface, ArrayAccess, Countable,
      * @param string $value The string retrieved value from the database that can be parsed into an array.
      */
     public function __construct(
-        string $value
+        string $value,
     ) {
         $this->value = $value;
     }

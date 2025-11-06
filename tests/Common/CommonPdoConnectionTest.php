@@ -75,7 +75,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
                 <<<SQL
                 SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction1'
                 SQL,
-            )->queryScalar()
+            )->queryScalar(),
         );
         $this->assertEquals(
             '1',
@@ -83,7 +83,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
                 <<<SQL
                 SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction2'
                 SQL,
-            )->queryScalar()
+            )->queryScalar(),
         );
         $this->assertEquals(
             '1',
@@ -91,7 +91,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
                 <<<SQL
                 SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction3'
                 SQL,
-            )->queryScalar()
+            )->queryScalar(),
         );
 
         $db->close();
@@ -197,7 +197,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
                 <<<SQL
                 SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'
                 SQL,
-            )->queryScalar()
+            )->queryScalar(),
         );
 
         $db->close();
@@ -226,7 +226,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
             ->method('log')
             ->with(
                 LogLevel::INFO,
-                'Transaction not committed: nested transaction not supported Yiisoft\Db\Driver\Pdo\AbstractPdoTransaction::commit'
+                'Transaction not committed: nested transaction not supported Yiisoft\Db\Driver\Pdo\AbstractPdoTransaction::commit',
             );
 
         $db->beginTransaction();
@@ -264,7 +264,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
             ->method('log')
             ->with(
                 LogLevel::INFO,
-                'Transaction not rolled back: nested transaction not supported Yiisoft\Db\Driver\Pdo\AbstractPdoTransaction::rollBack'
+                'Transaction not rolled back: nested transaction not supported Yiisoft\Db\Driver\Pdo\AbstractPdoTransaction::rollBack',
             );
 
         $db->beginTransaction();

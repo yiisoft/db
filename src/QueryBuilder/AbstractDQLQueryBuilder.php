@@ -112,7 +112,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
-        private QuoterInterface $quoter
+        private QuoterInterface $quoter,
     ) {
         $this->expressionBuilders = $this->defaultExpressionBuilders();
         $this->conditionClasses = $this->defaultConditionClasses();
@@ -332,7 +332,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         array $orderBy,
         ExpressionInterface|int|null $limit,
         ExpressionInterface|int|null $offset,
-        array &$params = []
+        array &$params = [],
     ): string {
         $orderBy = $this->buildOrderBy($orderBy, $params);
         if ($orderBy !== '') {
@@ -350,7 +350,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         array $columns,
         array &$params,
         bool $distinct = false,
-        ?string $selectOption = null
+        ?string $selectOption = null,
     ): string {
         $select = $distinct ? 'SELECT DISTINCT' : 'SELECT';
 
@@ -416,7 +416,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function buildWhere(
         array|string|ConditionInterface|ExpressionInterface|null $condition,
-        array &$params = []
+        array &$params = [],
     ): string {
         $where = $this->buildCondition($condition, $params);
         return ($where === '') ? '' : ('WHERE ' . $where);
@@ -480,7 +480,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
         if (!isset($this->expressionBuilders[$className])) {
             throw new InvalidArgumentException(
-                'Expression of class ' . $className . ' can not be built in ' . static::class
+                'Expression of class ' . $className . ' can not be built in ' . static::class,
             );
         }
 

@@ -316,7 +316,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @param array $metadata The column metadata from the query result.
      */
-    public function getResultColumn(array $metadata): ColumnInterface|null;
+    public function getResultColumn(array $metadata): ?ColumnInterface;
 
     /**
      * Returns all schema names in the database, except system schemas.
@@ -370,7 +370,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @return TableSchemaInterface|null Table metadata. `null` if the named table doesn't exist.
      */
-    public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null;
+    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface;
 
     /**
      * Returns the metadata for all tables in the database.

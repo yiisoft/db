@@ -201,7 +201,7 @@ interface DMLQueryBuilderInterface
         array $columns,
         array|ExpressionInterface|string $condition,
         array|ExpressionInterface|string|null $from = null,
-        array &$params = []
+        array &$params = [],
     ): string;
 
     /**
@@ -274,7 +274,7 @@ interface DMLQueryBuilderInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-        array|null $returnColumns = null,
+        ?array $returnColumns = null,
         array &$params = [],
     ): string;
 

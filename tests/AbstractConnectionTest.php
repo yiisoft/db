@@ -73,7 +73,7 @@ abstract class AbstractConnectionTest extends TestCase
                 $this->expectException(NotSupportedException::class);
 
                 $db->beginTransaction();
-            }
+            },
         );
     }
 
@@ -99,9 +99,7 @@ abstract class AbstractConnectionTest extends TestCase
         $db = $this->getConnection();
 
         $profiler = new class ($this) implements ProfilerInterface {
-            public function __construct(private TestCase $test)
-            {
-            }
+            public function __construct(private TestCase $test) {}
 
             public function begin(string $token, ContextInterface|array $context = []): void
             {
@@ -144,11 +142,6 @@ abstract class AbstractConnectionTest extends TestCase
         $this->assertNotNull($connection->getPdo());
     }
 
-    private function getProfiler(): ProfilerInterface
-    {
-        return $this->createMock(ProfilerInterface::class);
-    }
-
     public function getColumnBuilderClass(): void
     {
         $db = $this->getConnection();
@@ -176,5 +169,10 @@ abstract class AbstractConnectionTest extends TestCase
         $this->assertSame($columnFactory, $db->getColumnFactory());
 
         $db->close();
+    }
+
+    private function getProfiler(): ProfilerInterface
+    {
+        return $this->createMock(ProfilerInterface::class);
     }
 }

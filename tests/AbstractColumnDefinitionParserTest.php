@@ -17,16 +17,16 @@ abstract class AbstractColumnDefinitionParserTest extends TestCase
 {
     use TestTrait;
 
-    protected function createColumnDefinitionParser(): ColumnDefinitionParser
-    {
-        return new ColumnDefinitionParser();
-    }
-
     #[DataProviderExternal(ColumnDefinitionParserProvider::class, 'parse')]
     public function testParse(string $definition, array $expected): void
     {
         $parser = $this->createColumnDefinitionParser();
 
         $this->assertSame($expected, $parser->parse($definition));
+    }
+
+    protected function createColumnDefinitionParser(): ColumnDefinitionParser
+    {
+        return new ColumnDefinitionParser();
     }
 }

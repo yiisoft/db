@@ -119,7 +119,7 @@ class DateTimeColumn extends AbstractColumn
      *
      * @param string|null $value
      */
-    public function phpTypecast(mixed $value): DateTimeImmutable|null
+    public function phpTypecast(mixed $value): ?DateTimeImmutable
     {
         if (is_string($value)) {
             $phpTimezone = $this->getPhpTimezone();
@@ -216,8 +216,8 @@ class DateTimeColumn extends AbstractColumn
         /** @psalm-suppress PossiblyFalseArgument */
         return match ($value) {
             '' => null,
-            (string)(int) $value => $this->dbTypecastDateTime(DateTimeImmutable::createFromFormat('U', $value)),
-            (string)(float) $value => $this->dbTypecastDateTime(DateTimeImmutable::createFromFormat('U.u', $value)),
+            (string) (int) $value => $this->dbTypecastDateTime(DateTimeImmutable::createFromFormat('U', $value)),
+            (string) (float) $value => $this->dbTypecastDateTime(DateTimeImmutable::createFromFormat('U.u', $value)),
             default => ($datetime = date_create_immutable($value, new DateTimeZone($this->getPhpTimezone()))) !== false
                 ? $this->dbTypecastDateTime($datetime)
                 : $value,

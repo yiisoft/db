@@ -26,7 +26,7 @@ abstract class CommonPdoCommandTest extends TestCase
         string $name,
         mixed $value,
         int $dataType,
-        int|null $length,
+        ?int $length,
         mixed $driverOptions,
         array $expected,
     ): void {
@@ -36,7 +36,7 @@ abstract class CommonPdoCommandTest extends TestCase
         $sql = static::replaceQuotes(
             <<<SQL
             SELECT * FROM [[customer]] WHERE $field = $name
-            SQL
+            SQL,
         );
         $command = $db->createCommand();
         $command->setSql($sql);
@@ -63,7 +63,7 @@ abstract class CommonPdoCommandTest extends TestCase
                 'name' => 'testParams',
                 'email' => 'testParams@example.com',
                 'address' => '1',
-            ]
+            ],
         )->execute();
         $params = [':email' => 'testParams@example.com', ':len' => 5];
         $command = $db->createCommand($sql, $params);
@@ -83,7 +83,7 @@ abstract class CommonPdoCommandTest extends TestCase
         $command->setSql(
             <<<SQL
             INSERT INTO [[customer]] ([[name]], [[email]], [[address]]) VALUES (:name, :email, :address)
-            SQL
+            SQL,
         );
         $email = 'user4@example.com';
         $name = 'user4';
@@ -105,14 +105,14 @@ abstract class CommonPdoCommandTest extends TestCase
         $command->setSql(
             <<<SQL
             INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES (:email, 'user5', 'address5')
-            SQL
+            SQL,
         );
         $command->bindValue(':email', 'user5@example.com');
         $command->execute();
         $command->setSql(
             <<<SQL
             SELECT [[email]] FROM [[customer]] WHERE [[name]] = :name
-            SQL
+            SQL,
         );
         $command->bindValue(':name', 'user5');
 
@@ -211,13 +211,9 @@ abstract class CommonPdoCommandTest extends TestCase
                 $this->showDatabases();
             }
 
-            protected function getQueryBuilder(): QueryBuilderInterface
-            {
-            }
+            protected function getQueryBuilder(): QueryBuilderInterface {}
 
-            protected function internalExecute(): void
-            {
-            }
+            protected function internalExecute(): void {}
         };
 
         $this->expectException(InvalidArgumentException::class);
@@ -236,7 +232,7 @@ abstract class CommonPdoCommandTest extends TestCase
             ->with(
                 LogLevel::INFO,
                 $sql,
-                $params + ['type' => 'query']
+                $params + ['type' => 'query'],
             );
         return $logger;
     }

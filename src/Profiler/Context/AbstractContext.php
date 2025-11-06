@@ -12,11 +12,9 @@ abstract class AbstractContext implements ContextInterface
     protected const METHOD = 'method';
     protected const EXCEPTION = 'exception';
 
-    private Throwable|null $exception = null;
+    private ?Throwable $exception = null;
 
-    public function __construct(private string $method)
-    {
-    }
+    public function __construct(private string $method) {}
 
     public function setException(Throwable $e): static
     {

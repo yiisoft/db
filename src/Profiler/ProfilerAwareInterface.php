@@ -11,5 +11,5 @@ interface ProfilerAwareInterface
      *
      * @param ProfilerInterface|null $profiler The profiler instance.
      */
-    public function setProfiler(ProfilerInterface|null $profiler): void;
+    public function setProfiler(?ProfilerInterface $profiler): void;
 }

@@ -19,10 +19,6 @@ use Yiisoft\Db\Tests\Provider\ColumnFactoryProvider;
 
 abstract class AbstractColumnFactoryTest extends TestCase
 {
-    abstract protected function getColumnFactoryClass(): string;
-
-    abstract protected function getConnection(bool $fixture = false): PdoConnectionInterface;
-
     public function testConstructColumnClassMap(): void
     {
         $definitions = [
@@ -42,7 +38,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testConstructTypeMap(): void
     {
         $map = [
-            'json' => function (string $dbType, array &$info): string|null {
+            'json' => function (string $dbType, array &$info): ?string {
                 if (str_ends_with($info['name'], '_ids')) {
                     $info['column'] = new IntegerColumn();
                     return ColumnType::ARRAY;
@@ -53,7 +49,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         ];
 
         $columnFactoryClass = $this->getColumnFactoryClass();
-        $columnFactory = new $columnFactoryClass(map:  $map);
+        $columnFactory = new $columnFactoryClass(map: $map);
 
         $column = $columnFactory->fromDbType('json', ['name' => 'user_ids']);
 
@@ -133,7 +129,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     }
 
     #[DataProviderExternal(ColumnFactoryProvider::class, 'defaultValueRaw')]
-    public function testFromTypeDefaultValueRaw(string $type, string|null $defaultValueRaw, mixed $expected): void
+    public function testFromTypeDefaultValueRaw(string $type, ?string $defaultValueRaw, mixed $expected): void
     {
         $db = $this->getConnection();
         $columnFactory = $db->getColumnFactory();
@@ -164,4 +160,8 @@ abstract class AbstractColumnFactoryTest extends TestCase
 
         $db->close();
     }
+
+    abstract protected function getColumnFactoryClass(): string;
+
+    abstract protected function getConnection(bool $fixture = false): PdoConnectionInterface;
 }

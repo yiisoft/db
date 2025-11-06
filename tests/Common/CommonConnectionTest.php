@@ -26,12 +26,12 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
                 $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
 
                 throw new Exception('Exception in transaction shortcut');
-            }
+            },
         );
         $profilesCount = $db->createCommand(
             <<<SQL
             SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction shortcut'
-            SQL
+            SQL,
         )->queryScalar();
 
         $this->assertSame(0, $profilesCount, 'profile should not be inserted in transaction shortcut');

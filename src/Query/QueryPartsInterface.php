@@ -108,7 +108,7 @@ interface QueryPartsInterface
      *
      * @throws NotSupportedException If this query doesn't support filtering.
      */
-    public function andFilterCompare(string $column, string|null $value, string $defaultOperator = '='): static;
+    public function andFilterCompare(string $column, ?string $value, string $defaultOperator = '='): static;
 
     /**
      * Adds HAVING condition to the existing one but ignores {@see Query::isEmpty()}.
@@ -633,7 +633,7 @@ interface QueryPartsInterface
      * @param string|null $value More option that should be appended to the 'SELECT' keyword.
      * For example, in MySQL, the option `SQL_CALC_FOUND_ROWS` can be used.
      */
-    public function selectOption(string|null $value): static;
+    public function selectOption(?string $value): static;
 
     /**
      * Specify the joins for a `SELECT` statement in a database query.
@@ -788,7 +788,7 @@ interface QueryPartsInterface
     public function withQuery(
         QueryInterface|string $query,
         ExpressionInterface|string $alias,
-        bool $recursive = false
+        bool $recursive = false,
     ): static;
 
     /**
@@ -802,7 +802,7 @@ interface QueryPartsInterface
     public function addWithQuery(
         QueryInterface|string $query,
         ExpressionInterface|string $alias,
-        bool $recursive = false
+        bool $recursive = false,
     ): static;
 
     /**

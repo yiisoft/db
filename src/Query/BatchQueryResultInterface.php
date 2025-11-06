@@ -108,5 +108,5 @@ interface BatchQueryResultInterface extends Iterator
      *
      * @psalm-param ResultCallback|null $callback
      */
-    public function resultCallback(Closure|null $callback): static;
+    public function resultCallback(?Closure $callback): static;
 }

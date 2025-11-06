@@ -82,8 +82,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         private AbstractDMLQueryBuilder $dmlBuilder,
         private AbstractDQLQueryBuilder $dqlBuilder,
         private AbstractColumnDefinitionBuilder $columnDefinitionBuilder,
-    ) {
-    }
+    ) {}
 
     public function addCheck(string $table, string $name, string $expression): string
     {
@@ -117,7 +116,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         string $referenceTable,
         array|string $referenceColumns,
         ?string $delete = null,
-        ?string $update = null
+        ?string $update = null,
     ): string {
         return $this->ddlBuilder->addForeignKey(
             $table,
@@ -247,7 +246,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         array $orderBy,
         ExpressionInterface|int|null $limit,
         ExpressionInterface|int|null $offset,
-        array &$params = []
+        array &$params = [],
     ): string {
         return $this->dqlBuilder->buildOrderByAndLimit($sql, $orderBy, $limit, $offset, $params);
     }
@@ -256,7 +255,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         array $columns,
         array &$params,
         bool $distinct = false,
-        ?string $selectOption = null
+        ?string $selectOption = null,
     ): string {
         return $this->dqlBuilder->buildSelect($columns, $params, $distinct, $selectOption);
     }
@@ -300,7 +299,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
 
     public function buildWhere(
         array|string|ConditionInterface|ExpressionInterface|null $condition,
-        array &$params = []
+        array &$params = [],
     ): string {
         return $this->dqlBuilder->buildWhere($condition, $params);
     }
@@ -325,7 +324,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         string $name,
         array|string $columns,
         ?string $indexType = null,
-        ?string $indexMethod = null
+        ?string $indexMethod = null,
     ): string {
         return $this->ddlBuilder->createIndex($table, $name, $columns, $indexType, $indexMethod);
     }
@@ -464,7 +463,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                     array_is_list($value)
                         ? new ArrayValue($value)
                         : new JsonValue($value),
-                    $params
+                    $params,
                 ),
                 array_map($this->prepareValue(...), $params),
             ),
@@ -580,7 +579,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         array $columns,
         array|ExpressionInterface|string $condition,
         array|ExpressionInterface|string|null $from = null,
-        array &$params = []
+        array &$params = [],
     ): string {
         return $this->dmlBuilder->update($table, $columns, $condition, $from, $params);
     }
@@ -598,7 +597,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-        array|null $returnColumns = null,
+        ?array $returnColumns = null,
         array &$params = [],
     ): string {
         return $this->dmlBuilder->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);

@@ -30,15 +30,6 @@ abstract class AbstractStructuredLazyArray implements ArrayAccess, Countable, Js
     private array|string $value;
 
     /**
-     * Parses the string retrieved value from the database into an array.
-     *
-     * @param string $value The string retrieved value from the database that can be parsed into an array.
-     *
-     * @return array|null The parsed array or `null` if the string value cannot be parsed.
-     */
-    abstract protected function parse(string $value): array|null;
-
-    /**
      * @param string $value The string retrieved value from the database that can be parsed into an array.
      * @param ColumnInterface[] $columns The structured type columns that are used for value normalization and type
      * casting.
@@ -51,6 +42,15 @@ abstract class AbstractStructuredLazyArray implements ArrayAccess, Countable, Js
     ) {
         $this->value = $value;
     }
+
+    /**
+     * Parses the string retrieved value from the database into an array.
+     *
+     * @param string $value The string retrieved value from the database that can be parsed into an array.
+     *
+     * @return array|null The parsed array or `null` if the string value cannot be parsed.
+     */
+    abstract protected function parse(string $value): ?array;
 
     /**
      * Typecasts the structured values to PHP types according to the column schemas information.

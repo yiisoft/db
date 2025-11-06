@@ -45,6 +45,5 @@ final class StructuredValue implements ExpressionInterface
     public function __construct(
         public readonly array|object|string|null $value,
         public readonly AbstractStructuredColumn|string|null $type = null,
-    ) {
-    }
+    ) {}
 }

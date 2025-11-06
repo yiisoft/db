@@ -27,6 +27,5 @@ final class Index
         public readonly array $columnNames = [],
         public readonly bool $isUnique = false,
         public readonly bool $isPrimaryKey = false,
-    ) {
-    }
+    ) {}
 }

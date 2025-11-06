@@ -21,6 +21,4 @@ use Yiisoft\Db\Expression\Function\Builder\GreatestBuilder;
  *
  * @see GreatestBuilder for building SQL representations of this function expression.
  */
-final class Greatest extends MultiOperandFunction
-{
-}
+final class Greatest extends MultiOperandFunction {}

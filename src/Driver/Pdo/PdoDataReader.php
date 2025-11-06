@@ -35,7 +35,7 @@ final class PdoDataReader implements DataReaderInterface
     private Closure|string|null $indexBy = null;
     private int $index = 0;
     /** @psalm-var ResultCallbackOne|null $resultCallback */
-    private Closure|null $resultCallback = null;
+    private ?Closure $resultCallback = null;
     /** @psalm-var array<string,mixed>|false  */
     private array|false $row;
     /** @psalm-var array<string,ColumnInterface> */
@@ -150,7 +150,7 @@ final class PdoDataReader implements DataReaderInterface
         return $this;
     }
 
-    public function resultCallback(Closure|null $resultCallback): static
+    public function resultCallback(?Closure $resultCallback): static
     {
         $this->resultCallback = $resultCallback;
         return $this;

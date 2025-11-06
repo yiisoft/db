@@ -6,6 +6,4 @@ namespace Yiisoft\Db\Tests\Support\Stub;
 
 use Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder;
 
-final class DQLQueryBuilder extends AbstractDQLQueryBuilder
-{
-}
+final class DQLQueryBuilder extends AbstractDQLQueryBuilder {}

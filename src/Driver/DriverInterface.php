@@ -9,6 +9,4 @@ namespace Yiisoft\Db\Driver;
  *
  * A specific implementation of a database connectivity layer, such as `PDO` or `MySQLi`.
  */
-interface DriverInterface
-{
-}
+interface DriverInterface {}

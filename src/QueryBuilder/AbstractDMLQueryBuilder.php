@@ -61,9 +61,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
         protected QuoterInterface $quoter,
-        protected SchemaInterface $schema
-    ) {
-    }
+        protected SchemaInterface $schema,
+    ) {}
 
     /**
      * @param string[] $columns
@@ -143,7 +142,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         array $columns,
         array|ExpressionInterface|string $condition,
         array|ExpressionInterface|string|null $from = null,
-        array &$params = []
+        array &$params = [],
     ): string {
         $updates = $this->prepareUpdateSets($table, $columns, $params);
 
@@ -173,7 +172,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-        array|null $returnColumns = null,
+        ?array $returnColumns = null,
         array &$params = [],
     ): string {
         throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
@@ -465,8 +464,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     protected function prepareUpsertSets(
         string $table,
         array|bool $updateColumns,
-        array|null $updateNames,
-        array &$params
+        ?array $updateNames,
+        array &$params,
     ): array {
         if ($updateColumns === true) {
             $quoter = $this->quoter;
@@ -498,7 +497,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
-        array &$constraints = []
+        array &$constraints = [],
     ): array {
         if ($insertColumns instanceof QueryInterface) {
             $insertNames = $this->getQueryColumnNames($insertColumns);
@@ -513,47 +512,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         }
 
         return [$uniqueNames, $insertNames, null];
-    }
-
-    /**
-     * Returns all column names belonging to constraints enforcing uniqueness (`PRIMARY KEY`, `UNIQUE INDEX`, etc.)
-     * for the named table removing constraints which didn't cover the specified column list.
-     *
-     * The column list will be unique by column names.
-     *
-     * @param string $name The table name, may contain schema name if any. Don't quote the table name.
-     * @param string[] $columns Source column list.
-     * @param Index[] $indexes This parameter optionally receives a matched index list.
-     * The constraints will be unique by their column names.
-     *
-     * @return string[] The column names.
-    */
-    private function getTableUniqueColumnNames(string $name, array $columns, array &$indexes = []): array
-    {
-        $indexes = $this->schema->getTableUniques($name);
-        $columnNames = [];
-
-        // Remove all indexes which don't cover the specified column list.
-        $indexes = array_values(
-            array_filter(
-                $indexes,
-                static function (Index $index) use ($columns, &$columnNames): bool {
-                    $result = empty(array_diff($index->columnNames, $columns));
-
-                    if ($result) {
-                        $columnNames[] = $index->columnNames;
-                    }
-
-                    return $result;
-                }
-            )
-        );
-
-        if (empty($columnNames)) {
-            return [];
-        }
-
-        return array_unique(array_merge(...$columnNames));
     }
 
     /**
@@ -589,5 +547,46 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         }
 
         return $columns;
+    }
+
+    /**
+     * Returns all column names belonging to constraints enforcing uniqueness (`PRIMARY KEY`, `UNIQUE INDEX`, etc.)
+     * for the named table removing constraints which didn't cover the specified column list.
+     *
+     * The column list will be unique by column names.
+     *
+     * @param string $name The table name, may contain schema name if any. Don't quote the table name.
+     * @param string[] $columns Source column list.
+     * @param Index[] $indexes This parameter optionally receives a matched index list.
+     * The constraints will be unique by their column names.
+     *
+     * @return string[] The column names.
+    */
+    private function getTableUniqueColumnNames(string $name, array $columns, array &$indexes = []): array
+    {
+        $indexes = $this->schema->getTableUniques($name);
+        $columnNames = [];
+
+        // Remove all indexes which don't cover the specified column list.
+        $indexes = array_values(
+            array_filter(
+                $indexes,
+                static function (Index $index) use ($columns, &$columnNames): bool {
+                    $result = empty(array_diff($index->columnNames, $columns));
+
+                    if ($result) {
+                        $columnNames[] = $index->columnNames;
+                    }
+
+                    return $result;
+                },
+            ),
+        );
+
+        if (empty($columnNames)) {
+            return [];
+        }
+
+        return array_unique(array_merge(...$columnNames));
     }
 }

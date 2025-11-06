@@ -31,8 +31,8 @@ final class DbHelper
             str_replace(
                 '), (',
                 " FROM DUAL UNION ALL\nSELECT ",
-                substr($str, 0, -1)
-            )
+                substr($str, 0, -1),
+            ),
         ) . ' FROM DUAL';
 
         foreach ($expectedParams as $param => $value) {
@@ -74,7 +74,7 @@ final class DbHelper
                 explode('--', $drops),
                 explode(';', $statements),
                 explode('/', $triggers),
-                explode(';', $data)
+                explode(';', $data),
             );
         } else {
             $lines = explode(';', file_get_contents($fixture));

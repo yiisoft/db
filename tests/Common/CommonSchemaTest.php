@@ -477,7 +477,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->createCommand(
             <<<SQL
             DELETE FROM [[quoter]]
-            SQL
+            SQL,
         )->execute();
         $data = $this->generateQuoterEscapingValues();
 
@@ -580,7 +580,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         string $tablePrefix,
         string $tableName,
         string $testTablePrefix,
-        string $testTableName
+        string $testTableName,
     ): void {
         $db = $this->getConnection(true);
 
@@ -668,59 +668,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    private function generateQuoterEscapingValues(): array
-    {
-        $result = [];
-        $stringLength = 16;
-
-        for ($i = 32; $i < 128 - $stringLength; $i += $stringLength) {
-            $str = '';
-
-            for ($symbol = $i; $symbol < $i + $stringLength; $symbol++) {
-                $str .= mb_chr($symbol, 'UTF-8');
-            }
-
-            $result[] = $str;
-            $str = '';
-
-            for ($symbol = $i; $symbol < $i + $stringLength; $symbol++) {
-                $str .= mb_chr($symbol, 'UTF-8') . mb_chr($symbol, 'UTF-8');
-            }
-
-            $result[] = $str;
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param ColumnInterface[] $columns
-     */
-    protected function assertTableColumns(array $columns, string $tableName): void
-    {
-        $db = $this->getConnection(true);
-
-        $table = $db->getTableSchema($tableName, true);
-
-        $this->assertNotNull($table);
-
-        foreach ($columns as $name => &$column) {
-            $column = $column->withName($name);
-
-            if ($column->isNotNull() === null) {
-                $column->notNull(false);
-            }
-
-            if ($column->getDefaultValue() === null) {
-                $column->defaultValue(null);
-            }
-        }
-
-        Assert::arraysEquals($columns, $table->getColumns(), "Columns of table '$tableName'.");
-
-        $db->close();
-    }
-
     public function testWorkWithUniqueConstraint(): void
     {
         $tableName = 'test_table_with';
@@ -760,7 +707,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->createCommand()->addCheck(
             $tableName,
             $constraintName,
-            $db->getQuoter()->quoteColumnName($columnName) . ' > 0'
+            $db->getQuoter()->quoteColumnName($columnName) . ' > 0',
         )->execute();
 
         /** @var Check[] $constraints */
@@ -802,7 +749,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertCount(1, $constraints);
         $this->assertEquals(
             new DefaultValue($constraintName, [$columnName], '((919))'),
-            $constraints[$constraintName]
+            $constraints[$constraintName],
         );
 
         $db->createCommand()->dropDefaultValue($tableName, $constraintName)->execute();
@@ -849,7 +796,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         ?string $indexMethod = null,
         ?string $columnType = null,
         bool $isPrimary = false,
-        bool $isUnique = false
+        bool $isUnique = false,
     ): void {
         $tableName = 'test_table_with';
         $indexName = 't_index';
@@ -873,7 +820,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     #[DataProviderExternal(SchemaProvider::class, 'resultColumns')]
-    public function testGetResultColumn(ColumnInterface|null $expected, array $metadata): void
+    public function testGetResultColumn(?ColumnInterface $expected, array $metadata): void
     {
         $db = $this->getConnection();
         $schema = $db->getSchema();
@@ -895,11 +842,39 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
+    /**
+     * @param ColumnInterface[] $columns
+     */
+    protected function assertTableColumns(array $columns, string $tableName): void
+    {
+        $db = $this->getConnection(true);
+
+        $table = $db->getTableSchema($tableName, true);
+
+        $this->assertNotNull($table);
+
+        foreach ($columns as $name => &$column) {
+            $column = $column->withName($name);
+
+            if ($column->isNotNull() === null) {
+                $column->notNull(false);
+            }
+
+            if ($column->getDefaultValue() === null) {
+                $column->defaultValue(null);
+            }
+        }
+
+        Assert::arraysEquals($columns, $table->getColumns(), "Columns of table '$tableName'.");
+
+        $db->close();
+    }
+
     protected function createTableForIndexAndConstraintTests(
         ConnectionInterface $db,
         string $tableName,
         string $columnName,
-        ?string $columnType = null
+        ?string $columnType = null,
     ): void {
         $qb = $db->getQueryBuilder();
 
@@ -925,5 +900,30 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $db->createCommand($qb->dropTable($tableName))->execute();
         $this->assertNull($db->getTableSchema($tableName, true));
+    }
+
+    private function generateQuoterEscapingValues(): array
+    {
+        $result = [];
+        $stringLength = 16;
+
+        for ($i = 32; $i < 128 - $stringLength; $i += $stringLength) {
+            $str = '';
+
+            for ($symbol = $i; $symbol < $i + $stringLength; $symbol++) {
+                $str .= mb_chr($symbol, 'UTF-8');
+            }
+
+            $result[] = $str;
+            $str = '';
+
+            for ($symbol = $i; $symbol < $i + $stringLength; $symbol++) {
+                $str .= mb_chr($symbol, 'UTF-8') . mb_chr($symbol, 'UTF-8');
+            }
+
+            $result[] = $str;
+        }
+
+        return $result;
     }
 }

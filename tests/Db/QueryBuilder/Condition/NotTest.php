@@ -39,7 +39,7 @@ final class NotTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            "Operator 'NOT' requires condition to be array, string, null or ExpressionInterface."
+            "Operator 'NOT' requires condition to be array, string, null or ExpressionInterface.",
         );
 
         Not::fromArrayDefinition('NOT', [false]);

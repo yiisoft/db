@@ -9,6 +9,4 @@ use Yiisoft\Db\Tests\AbstractColumnBuilderTest;
 /**
  * @group db
  */
-final class ColumnBuilderTest extends AbstractColumnBuilderTest
-{
-}
+final class ColumnBuilderTest extends AbstractColumnBuilderTest {}

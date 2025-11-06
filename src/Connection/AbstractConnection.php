@@ -23,7 +23,7 @@ use Yiisoft\Db\Transaction\TransactionInterface;
  */
 abstract class AbstractConnection implements ConnectionInterface
 {
-    protected TransactionInterface|null $transaction = null;
+    protected ?TransactionInterface $transaction = null;
     private bool $enableSavepoint = true;
     private string $tablePrefix = '';
 
@@ -63,12 +63,12 @@ abstract class AbstractConnection implements ConnectionInterface
         return $this->tablePrefix;
     }
 
-    public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null
+    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface
     {
         return $this->getSchema()->getTableSchema($name, $refresh);
     }
 
-    public function getTransaction(): TransactionInterface|null
+    public function getTransaction(): ?TransactionInterface
     {
         return $this->transaction && $this->transaction->isActive() ? $this->transaction : null;
     }

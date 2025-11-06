@@ -24,63 +24,7 @@ use function is_string;
  */
 abstract class AbstractStructuredValueBuilder implements ExpressionBuilderInterface
 {
-    /**
-     * Builds an SQL expression for a string value.
-     *
-     * @param string $value The valid SQL string representation of the structured value.
-     * @param StructuredValue $expression The structured expression.
-     * @param array $params The binding parameters.
-     *
-     * @return string The SQL expression representing the structured value.
-     */
-    abstract protected function buildStringValue(
-        string $value,
-        StructuredValue $expression,
-        array &$params
-    ): string;
-
-    /**
-     * Build a structured expression from a sub-query object.
-     *
-     * @param QueryInterface $query The sub-query object.
-     * @param StructuredValue $expression The structured expression.
-     * @param array $params The binding parameters.
-     *
-     * @return string The sub-query SQL expression representing a structured value.
-     */
-    abstract protected function buildSubquery(
-        QueryInterface $query,
-        StructuredValue $expression,
-        array &$params
-    ): string;
-
-    /**
-     * Builds an SQL expression for a structured value.
-     *
-     * @param array|object $value The structured value.
-     * @param StructuredValue $expression The structured expression.
-     * @param array $params The binding parameters.
-     *
-     * @return string The SQL expression representing the structured value.
-     */
-    abstract protected function buildValue(
-        array|object $value,
-        StructuredValue $expression,
-        array &$params
-    ): string;
-
-    /**
-     * Returns the value of the lazy array as an array or a raw string depending on the implementation.
-     *
-     * @param LazyArrayInterface $value The lazy array value.
-     *
-     * @return array|string The value of the lazy array.
-     */
-    abstract protected function getLazyArrayValue(LazyArrayInterface $value): array|string;
-
-    public function __construct(protected readonly QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(protected readonly QueryBuilderInterface $queryBuilder) {}
 
     /**
      * The method builds the raw SQL from the `$expression` that won't be additionally escaped or quoted.
@@ -112,6 +56,60 @@ abstract class AbstractStructuredValueBuilder implements ExpressionBuilderInterf
 
         return $this->buildValue($value, $expression, $params);
     }
+
+    /**
+     * Builds an SQL expression for a string value.
+     *
+     * @param string $value The valid SQL string representation of the structured value.
+     * @param StructuredValue $expression The structured expression.
+     * @param array $params The binding parameters.
+     *
+     * @return string The SQL expression representing the structured value.
+     */
+    abstract protected function buildStringValue(
+        string $value,
+        StructuredValue $expression,
+        array &$params,
+    ): string;
+
+    /**
+     * Build a structured expression from a sub-query object.
+     *
+     * @param QueryInterface $query The sub-query object.
+     * @param StructuredValue $expression The structured expression.
+     * @param array $params The binding parameters.
+     *
+     * @return string The sub-query SQL expression representing a structured value.
+     */
+    abstract protected function buildSubquery(
+        QueryInterface $query,
+        StructuredValue $expression,
+        array &$params,
+    ): string;
+
+    /**
+     * Builds an SQL expression for a structured value.
+     *
+     * @param array|object $value The structured value.
+     * @param StructuredValue $expression The structured expression.
+     * @param array $params The binding parameters.
+     *
+     * @return string The SQL expression representing the structured value.
+     */
+    abstract protected function buildValue(
+        array|object $value,
+        StructuredValue $expression,
+        array &$params,
+    ): string;
+
+    /**
+     * Returns the value of the lazy array as an array or a raw string depending on the implementation.
+     *
+     * @param LazyArrayInterface $value The lazy array value.
+     *
+     * @return array|string The value of the lazy array.
+     */
+    abstract protected function getLazyArrayValue(LazyArrayInterface $value): array|string;
 
     /**
      * Returns the prepared value of the structured type, where:
