@@ -67,7 +67,14 @@ $rows = $db
 
 // Insert
 $db->createCommand()
-    ->insert('{{%user}}', ['email' => 'mike@example.com', 'first_name' => 'Mike', 'last_name' => 'Smith'])
+    ->insert(
+        '{{%user}}',
+         [
+            'email' => 'mike@example.com',
+            'first_name' => 'Mike',
+            'last_name' => 'Smith',
+         ],
+    )
     ->execute();
 
 // Transaction
