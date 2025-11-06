@@ -51,12 +51,14 @@ composer require yiisoft/db yiisoft/db-sqlite
 To connect to a database, create an instance of the appropriate driver:
 
 ```php
+use Yiisoft\Db\Connection\ConnectionInterface;
+
 /**
- * @var Yiisoft\Db\Connection\ConnectionInterface $db
+ * @var ConnectionInterface $db
  */
 
 // Query builder
-use Yiisoft\Db\Connection\ConnectionInterface;$rows = $db 
+$rows = $db 
     ->select(['id', 'email'])  
     ->from('{{%user}}')  
     ->where(['last_name' => 'Smith'])  
