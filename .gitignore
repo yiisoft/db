@@ -47,3 +47,6 @@ c3.php
 
 # Docker
 docker/docker-compose.override.yml
+
+# PHP CS Fixer
+/.php-cs-fixer.cache
