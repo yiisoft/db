@@ -71,8 +71,12 @@ $db->createCommand()
 // Transaction
 $db->transaction(
     static function (ConnectionInterface $db) {
-        $db->createCommand()->update('{{%user}}', ['status' => 'active'], ['id' => 1])->execute();
-        $db->createCommand()->update('{{%profile}}', ['visibility' => 'public'], ['user_id' => 1])->execute();
+        $db->createCommand()
+            ->update('{{%user}}', ['status' => 'active'], ['id' => 1])
+            ->execute();
+        $db->createCommand()
+            ->update('{{%profile}}', ['visibility' => 'public'], ['user_id' => 1])
+            ->execute();
     }
 )
 ```
