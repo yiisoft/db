@@ -10,18 +10,8 @@ use Yiisoft\Db\Schema\AbstractSchema;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
-/**
- * @psalm-suppress InvalidReturnType
- * @psalm-suppress InvalidNullableReturnType
- * @psalm-suppress NullableReturnStatement
- */
 class Schema extends AbstractSchema
 {
-    public function findUniqueIndexes(TableSchemaInterface $table): array
-    {
-        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
-    }
-
     protected function getCacheKey(string $name): array
     {
         return [];
@@ -70,22 +60,6 @@ class Schema extends AbstractSchema
      * @throws NotSupportedException
      */
     protected function loadTableIndexes(string $tableName): array
-    {
-        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
-    }
-
-    /**
-     * @throws NotSupportedException
-     */
-    protected function loadTablePrimaryKey(string $tableName): ?Index
-    {
-        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
-    }
-
-    /**
-     * @throws NotSupportedException
-     */
-    protected function loadTableUniques(string $tableName): array
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
