@@ -64,19 +64,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         protected SchemaInterface $schema,
     ) {}
 
-    /**
-     * @param string[] $columns
-     *
-     * @psalm-param BatchValues $rows
-     * @psalm-param ParamsType $params
-     *
-     * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
-     */
-    public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
-    {
-        return $this->insertBatch($table, $rows, $columns, $params);
-    }
-
     public function insertBatch(string $table, iterable $rows, array $columns = [], array &$params = []): string
     {
         if (!is_array($rows)) {

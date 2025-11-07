@@ -200,18 +200,6 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    /**
-     * @param string[] $columns
-     *
-     * @psalm-param BatchValues $rows
-     *
-     * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
-     */
-    public function batchInsert(string $table, array $columns, iterable $rows): static
-    {
-        return $this->insertBatch($table, $rows, $columns);
-    }
-
     public function insertBatch(string $table, iterable $rows, array $columns = []): static
     {
         $table = $this->getQueryBuilder()->getQuoter()->getRawTableName($table);
@@ -394,14 +382,6 @@ abstract class AbstractCommand implements CommandInterface
 
         /** @psalm-var array<string, mixed> */
         return $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
-    }
-
-    /**
-     * @deprecated Use {@see insertReturningPks()} instead. It will be removed in version 3.0.0.
-     */
-    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false
-    {
-        return $this->insertReturningPks($table, $columns);
     }
 
     public function execute(): int

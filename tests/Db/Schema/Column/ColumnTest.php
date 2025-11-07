@@ -18,28 +18,9 @@ use Yiisoft\Db\Tests\Support\Stub\Column;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class ColumnTest extends AbstractColumnTest
 {
-    public function testAllowNull(): void
-    {
-        $column = new Column();
-
-        $this->assertTrue($column->isAllowNull());
-        $this->assertSame($column, $column->allowNull());
-        $this->assertTrue($column->isAllowNull());
-
-        $column->allowNull(false);
-
-        $this->assertFalse($column->isAllowNull());
-
-        $column->allowNull(true);
-
-        $this->assertTrue($column->isAllowNull());
-    }
-
     public function testAutoIncrement(): void
     {
         $column = new Column();

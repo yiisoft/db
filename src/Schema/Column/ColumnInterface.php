@@ -13,21 +13,6 @@ use Yiisoft\Db\Constraint\ForeignKey;
 interface ColumnInterface
 {
     /**
-     * Whether to allow `null` values.
-     *
-     * If not set explicitly with this method call, `null` values aren't allowed.
-     *
-     * ```php
-     * $columns = [
-     *     'description' => ColumnBuilder::text()->allowNull(),
-     * ];
-     * ```
-     *
-     * @deprecated Use {@see notNull()} instead. Will be removed in version 2.0.
-     */
-    public function allowNull(bool $allowNull = true): static;
-
-    /**
      * The database assigns auto incremented column a unique value automatically whenever you insert a new row into
      * the table. This is useful for getting unique IDs for data such as customer or employee numbers.
      * You can set the autoIncrement for `INTEGER` or `BIGINT` data types.
@@ -236,16 +221,6 @@ interface ColumnInterface
 
     /** @psalm-mutation-free */
     public function hasDefaultValue(): bool;
-
-    /**
-     * Whether this column is nullable.
-     *
-     * @see allowNull()
-     *
-     * @deprecated Use {@see isNotNull()} instead. Will be removed in version 2.0.
-     * @psalm-mutation-free
-     */
-    public function isAllowNull(): bool;
 
     /**
      * Whether this column is auto incremental.

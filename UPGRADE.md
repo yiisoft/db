@@ -185,8 +185,9 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `TableSchemaInterface::compositeForeignKey()`;
 - `SchemaInterface::createColumn()` - use `ColumnBuilder` instead;
 - `SchemaInterface::isReadQuery()` - use `DbStringHelper::isReadQuery()` instead;
-- `AbstractSchema::resolveTableName()` - use `QuoterInterface::getTableNameParts()` instead;
+- `SchemaInterface::findUniqueIndexes()` - use `SchemaInterface::getTableUniques()` instead;
 - `SchemaInterface::getRawTableName()` - use `QuoterInterface::getRawTableName()` instead;
+- `AbstractSchema::resolveTableName()` - use `QuoterInterface::getTableNameParts()` instead;
 - `AbstractSchema::isReadQuery()` - use `DbStringHelper::isReadQuery()` instead;
 - `AbstractSchema::getRawTableName()` - use `QuoterInterface::getRawTableName()` instead;
 - `AbstractSchema::normalizeRowKeyCase()` - use `array_change_key_case()` instead;
@@ -215,14 +216,9 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 
 ### Remove constants
 
-- `SchemaInterface::TYPE_JSONB`
-- `SchemaInterface::PHP_TYPE_INTEGER`
-- `SchemaInterface::PHP_TYPE_STRING`
-- `SchemaInterface::PHP_TYPE_BOOLEAN`
-- `SchemaInterface::PHP_TYPE_DOUBLE`
-- `SchemaInterface::PHP_TYPE_RESOURCE`
-- `SchemaInterface::PHP_TYPE_ARRAY`
-- `SchemaInterface::PHP_TYPE_NULL`
+- `SchemaInterface::INDEX_*`
+- `SchemaInterface::PHP_TYPE_*`
+- `SchemaInterface::TYPE_*`
 
 ### Other changes
 

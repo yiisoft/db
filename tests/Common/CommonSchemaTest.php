@@ -9,12 +9,10 @@ use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\Depends;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constraint\Check;
 use Yiisoft\Db\Constraint\DefaultValue;
 use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Constraint\Index;
-use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
@@ -87,84 +85,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $tableSchema = $schema->getTableSchema($tableName);
             $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema, $tableName);
         }
-
-        $db->close();
-    }
-
-    public function testFindUniquesIndexes(): void
-    {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand();
-        $schema = $db->getSchema();
-
-        try {
-            $command->dropTable('uniqueIndex')->execute();
-        } catch (Exception) {
-        }
-
-        $command->createTable(
-            'uniqueIndex',
-            ['somecol' => 'string', 'someCol2' => 'string', 'someCol3' => 'string'],
-        )->execute();
-        $tableSchema = $schema->getTableSchema('uniqueIndex', true);
-
-        $this->assertNotNull($tableSchema);
-
-        $uniqueIndexes = $schema->findUniqueIndexes($tableSchema);
-
-        $this->assertSame([], $uniqueIndexes);
-
-        $command->createIndex(
-            'uniqueIndex',
-            'somecolUnique',
-            'somecol',
-            IndexType::UNIQUE,
-        )->execute();
-        $tableSchema = $schema->getTableSchema('uniqueIndex', true);
-
-        $this->assertNotNull($tableSchema);
-
-        $uniqueIndexes = $schema->findUniqueIndexes($tableSchema);
-
-        $this->assertSame(['somecolUnique' => ['somecol']], $uniqueIndexes);
-
-        /**
-         * Create another column with upper case letter that fails postgres.
-         *
-         * @link https://github.com/yiisoft/yii2/issues/10613
-         */
-        $command->createIndex(
-            'uniqueIndex',
-            'someCol2Unique',
-            'someCol2',
-            IndexType::UNIQUE,
-        )->execute();
-        $tableSchema = $schema->getTableSchema('uniqueIndex', true);
-
-        $this->assertNotNull($tableSchema);
-
-        $uniqueIndexes = $schema->findUniqueIndexes($tableSchema);
-
-        $this->assertEquals(['somecolUnique' => ['somecol'], 'someCol2Unique' => ['someCol2']], $uniqueIndexes);
-
-        /** @link https://github.com/yiisoft/yii2/issues/13814 */
-        $command->createIndex(
-            'uniqueIndex',
-            'another unique index',
-            'someCol3',
-            IndexType::UNIQUE,
-        )->execute();
-        $tableSchema = $schema->getTableSchema('uniqueIndex', true);
-
-        $this->assertNotNull($tableSchema);
-
-        $uniqueIndexes = $schema->findUniqueIndexes($tableSchema);
-
-        $this->assertEquals(
-            ['somecolUnique' => ['somecol'], 'someCol2Unique' => ['someCol2'], 'another unique index' => ['someCol3']],
-            $uniqueIndexes,
-        );
 
         $db->close();
     }

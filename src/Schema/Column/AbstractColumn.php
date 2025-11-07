@@ -110,15 +110,6 @@ abstract class AbstractColumn implements ColumnInterface
         }
     }
 
-    /**
-     * @deprecated Use {@see notNull()} instead. Will be removed in version 2.0.
-     */
-    public function allowNull(bool $allowNull = true): static
-    {
-        $this->notNull(!$allowNull);
-        return $this;
-    }
-
     public function autoIncrement(bool $autoIncrement = true): static
     {
         $this->autoIncrement = $autoIncrement;
@@ -239,15 +230,6 @@ abstract class AbstractColumn implements ColumnInterface
         return property_exists($this, 'defaultValue');
     }
 
-    /**
-     * @deprecated Use {@see isNotNull()} instead. Will be removed in version 2.0.
-     * @psalm-mutation-free
-     */
-    public function isAllowNull(): bool
-    {
-        return !$this->isNotNull();
-    }
-
     /** @psalm-mutation-free */
     public function isAutoIncrement(): bool
     {
@@ -282,15 +264,6 @@ abstract class AbstractColumn implements ColumnInterface
     public function isUnsigned(): bool
     {
         return $this->unsigned;
-    }
-
-    /**
-     * @deprecated Will be removed in version 2.0.
-     */
-    public function name(?string $name): static
-    {
-        $this->name = $name;
-        return $this;
     }
 
     public function notNull(?bool $notNull = true): static

@@ -253,23 +253,6 @@ abstract class AbstractSchema implements SchemaInterface
         $this->schemaCache->setEnabled($value);
     }
 
-    /**
-     * @deprecated Use {@see getTableUniques()}. Will be removed in version 3.0
-     */
-    public function findUniqueIndexes(TableSchemaInterface $table): array
-    {
-        $uniques = [];
-        $indexes = $this->getTableIndexes($table->getFullName());
-
-        foreach ($indexes as $index) {
-            if ($index->isUnique) {
-                $uniques[$index->name] = $index->columnNames;
-            }
-        }
-
-        return $uniques;
-    }
-
     public function getViewNames(string $schema = '', bool $refresh = false): array
     {
         if (!isset($this->viewNames[$schema]) || $refresh) {
