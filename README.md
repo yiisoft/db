@@ -32,7 +32,7 @@ Optional packages that provide additional functionality:
 ## Requirements
 
 - PHP 8.1 - 8.4.
-- `pdo` PHP extension
+- `pdo` PHP extension.
 
 ## Installation
 
