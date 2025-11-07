@@ -45,6 +45,11 @@ composer require yiisoft/db yiisoft/db-sqlite
 > [!IMPORTANT]
 > You must install `yiisoft/db` together with at least one database driver (e.g., `yiisoft/db-mysql`,
 > `yiisoft/db-pgsql`, `yiisoft/db-sqlite`, etc.) to actually connect to a database.
+>
+> It also depends on [PSR-16: Common Interface for Caching Libraries](https://www.php-fig.org/psr/psr-16/) and requires
+> the installation of [PSR-16 implementation](https://packagist.org/providers/psr/simple-cache-implementation).
+> For example, [yiisoft/cache](https://github.com/yiisoft/cache) or one of the other
+> [cache handlers](https://github.com/yiisoft/cache#cache-handlers).
 
 ## General Usage
 
