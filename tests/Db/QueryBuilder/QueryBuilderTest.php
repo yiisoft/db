@@ -94,7 +94,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     {
         $db = $this->getConnection();
 
-        $this->expectException(Exception::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
             'A join clause must be specified as an array of join type, join table, and optionally join condition.',
         );
@@ -182,7 +182,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     {
         $db = $this->getConnection();
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(NotSupportedException::class);
 
         $expression = new class implements ExpressionInterface {};
         $qb = $db->getQueryBuilder();

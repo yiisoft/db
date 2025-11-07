@@ -35,9 +35,7 @@ final class LogicalBuilder implements ExpressionBuilderInterface
      *
      * @param AndX|OrX $expression
      *
-     * @throws Exception
      * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
@@ -61,9 +59,7 @@ final class LogicalBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @throws Exception
      * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      *
      * @psalm-param array<array|ExpressionInterface|scalar> $expressions

@@ -56,9 +56,6 @@ class LikeBuilder implements ExpressionBuilderInterface
      *
      * @param Like|NotLike $expression
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
@@ -102,9 +99,6 @@ class LikeBuilder implements ExpressionBuilderInterface
     /**
      * Prepare column to use in SQL.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     protected function prepareColumn(Like|NotLike $condition, array &$params): string
@@ -115,21 +109,13 @@ class LikeBuilder implements ExpressionBuilderInterface
             return $this->queryBuilder->buildExpression($column, $params);
         }
 
-        if (!str_contains($column, '(')) {
-            return $this->queryBuilder->getQuoter()->quoteColumnName($column);
-        }
-
-        return $column;
+        return $this->queryBuilder->getQuoter()->quoteColumnName($column);
     }
 
     /**
      * Prepare value to use in SQL.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
-     * @return string
      */
     protected function preparePlaceholderName(
         string|Stringable|int|ExpressionInterface $value,

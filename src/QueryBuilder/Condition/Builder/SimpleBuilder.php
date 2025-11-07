@@ -29,9 +29,6 @@ class SimpleBuilder implements ExpressionBuilderInterface
      *
      * @param Simple $expression
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
@@ -40,11 +37,9 @@ class SimpleBuilder implements ExpressionBuilderInterface
         $column = $expression->column;
         $value = $expression->value;
 
-        if ($column instanceof ExpressionInterface) {
-            $column = $this->queryBuilder->buildExpression($column, $params);
-        } elseif (!str_contains($column, '(')) {
-            $column = $this->queryBuilder->getQuoter()->quoteColumnName($column);
-        }
+        $column = $column instanceof ExpressionInterface
+            ? $this->queryBuilder->buildExpression($column, $params)
+            : $this->queryBuilder->getQuoter()->quoteColumnName($column);
 
         if ($value === null) {
             return "$column $operator NULL";
@@ -54,8 +49,6 @@ class SimpleBuilder implements ExpressionBuilderInterface
             return "$column $operator {$this->queryBuilder->buildExpression($value, $params)}";
         }
 
-        $phName = $this->queryBuilder->bindParam($value, $params);
-
-        return "$column $operator $phName";
+        return "$column $operator {$this->queryBuilder->buildValue($value, $params)}";
     }
 }

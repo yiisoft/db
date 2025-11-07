@@ -28,9 +28,6 @@ class BetweenBuilder implements ExpressionBuilderInterface
      *
      * @param Between|NotBetween $expression
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
@@ -52,9 +49,6 @@ class BetweenBuilder implements ExpressionBuilderInterface
     /**
      * Attaches `$value` to `$params` array and return placeholder.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     protected function createPlaceholder(mixed $value, array &$params): string

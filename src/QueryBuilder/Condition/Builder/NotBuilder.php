@@ -44,9 +44,7 @@ class NotBuilder implements ExpressionBuilderInterface
      *
      * @param Not $expression
      *
-     * @throws Exception
      * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
