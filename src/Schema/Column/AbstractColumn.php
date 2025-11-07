@@ -111,7 +111,7 @@ abstract class AbstractColumn implements ColumnInterface
     }
 
     /**
-     * @deprecated Use {@see notNull()} instead. Will be removed in version 2.0.
+     * @deprecated Use {@see notNull()} instead. Will be removed in version 3.0.
      */
     public function allowNull(bool $allowNull = true): static
     {
@@ -240,7 +240,7 @@ abstract class AbstractColumn implements ColumnInterface
     }
 
     /**
-     * @deprecated Use {@see isNotNull()} instead. Will be removed in version 2.0.
+     * @deprecated Use {@see isNotNull()} instead. Will be removed in version 3.0.
      * @psalm-mutation-free
      */
     public function isAllowNull(): bool
@@ -285,7 +285,7 @@ abstract class AbstractColumn implements ColumnInterface
     }
 
     /**
-     * @deprecated Will be removed in version 2.0.
+     * @deprecated Will be removed in version 3.0.
      */
     public function name(?string $name): static
     {

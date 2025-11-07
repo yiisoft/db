@@ -23,7 +23,7 @@ interface ColumnInterface
      * ];
      * ```
      *
-     * @deprecated Use {@see notNull()} instead. Will be removed in version 2.0.
+     * @deprecated Use {@see notNull()} instead. Will be removed in version 3.0.
      */
     public function allowNull(bool $allowNull = true): static;
 
@@ -242,7 +242,7 @@ interface ColumnInterface
      *
      * @see allowNull()
      *
-     * @deprecated Use {@see isNotNull()} instead. Will be removed in version 2.0.
+     * @deprecated Use {@see isNotNull()} instead. Will be removed in version 3.0.
      * @psalm-mutation-free
      */
     public function isAllowNull(): bool;
