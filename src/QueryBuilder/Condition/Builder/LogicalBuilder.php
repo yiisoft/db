@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
-use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -35,9 +33,7 @@ final class LogicalBuilder implements ExpressionBuilderInterface
      *
      * @param AndX|OrX $expression
      *
-     * @throws Exception
      * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
@@ -61,9 +57,7 @@ final class LogicalBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @throws Exception
      * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      *
      * @psalm-param array<array|ExpressionInterface|scalar> $expressions

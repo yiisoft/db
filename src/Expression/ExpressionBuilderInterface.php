@@ -26,7 +26,7 @@ interface ExpressionBuilderInterface
      *
      * @param ExpressionInterface $expression The expression to be built.
      * @param array $params The binding parameters.
-     * @throws \InvalidArgumentException If builder can't handle expression passed.
+     *
      * @return string The raw SQL that will not be additionally escaped or quoted.
      *
      * @psalm-param T $expression

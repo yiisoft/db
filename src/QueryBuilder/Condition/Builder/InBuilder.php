@@ -7,9 +7,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 use ArrayAccess;
 use Iterator;
 use Traversable;
-use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -42,9 +40,7 @@ class InBuilder implements ExpressionBuilderInterface
      *
      * @param In|NotIn $expression
      *
-     * @throws Exception
      * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
@@ -115,10 +111,7 @@ class InBuilder implements ExpressionBuilderInterface
     /**
      * Builds `$values` to use in condition.
      *
-     * @throws Exception
      * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
      *
      * @psalm-return string[]
      */
@@ -144,9 +137,6 @@ class InBuilder implements ExpressionBuilderInterface
     /**
      * Build SQL for composite `IN` condition.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      *
      * @psalm-param array<string|ExpressionInterface>|string $columns
@@ -183,8 +173,6 @@ class InBuilder implements ExpressionBuilderInterface
     /**
      * Builds an SQL statement for checking the existence of rows with the specified composite column values.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
      * @throws InvalidArgumentException
      * @throws NotSupportedException
      *

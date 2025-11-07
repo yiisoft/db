@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -35,8 +33,6 @@ class CompareBuilder implements ExpressionBuilderInterface
      *
      * @param Equals|GreaterThan|GreaterThanOrEqual|LessThan|LessThanOrEqual|NotEquals $expression
      *
-     * @throws Exception
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
@@ -58,9 +54,7 @@ class CompareBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @throws InvalidConfigException
      * @throws NotSupportedException
-     * @throws Exception
      */
     private function prepareColumn(string|ExpressionInterface $column, array &$params): string
     {

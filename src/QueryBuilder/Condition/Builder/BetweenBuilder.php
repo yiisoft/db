@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
-use Yiisoft\Db\Exception\Exception;
-use InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -28,9 +25,6 @@ class BetweenBuilder implements ExpressionBuilderInterface
      *
      * @param Between|NotBetween $expression
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
@@ -52,9 +46,6 @@ class BetweenBuilder implements ExpressionBuilderInterface
     /**
      * Attaches `$value` to `$params` array and return placeholder.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     protected function createPlaceholder(mixed $value, array &$params): string

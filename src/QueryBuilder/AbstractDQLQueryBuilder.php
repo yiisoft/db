@@ -8,9 +8,7 @@ use Yiisoft\Db\Expression\CompositeExpression;
 use Yiisoft\Db\Expression\CompositeExpressionBuilder;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Expression\Value\Builder\ParamBuilder;
-use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\Value\Builder\ArrayValueBuilder;
@@ -257,7 +255,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         foreach ($joins as $i => $join) {
             /** @psalm-suppress DocblockTypeContradiction */
             if (!is_array($join) || !isset($join[0], $join[1])) {
-                throw new Exception(
+                throw new InvalidArgumentException(
                     'A join clause must be specified as an array of join type, join table, and optionally join condition.',
                 );
             }
@@ -479,7 +477,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         $className = $expression::class;
 
         if (!isset($this->expressionBuilders[$className])) {
-            throw new InvalidArgumentException(
+            throw new NotSupportedException(
                 'Expression of class ' . $className . ' can not be built in ' . static::class,
             );
         }
@@ -613,8 +611,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     }
 
     /**
-     * @throws Exception
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      *
      * @return array The list of table names with quote.
