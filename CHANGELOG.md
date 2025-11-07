@@ -170,6 +170,7 @@
 - New #1082: Add `WithQuery` class that holds the information for a single "WITH" query clause (@vjik)
 - New #1082: Add `QueryPartsInterface::addWithQuery()` method (@vjik)
 - Chg #1082: `QueryPartsInterface::withQuery()` method replace "WITH" clause instead of adding before (@vjik)
+- Enh #1092: Change the exceptions thrown to be more appropriate (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
