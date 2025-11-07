@@ -2,6 +2,8 @@
 
 ## 2.0.0 under development
 
+- Chg #1091: Remove `SchemaInterface::findUniqueIndexes()` method (@vjik) 
+- Chg #1091: Remove `SchemaInterface::INDEX_*` and `SchemaInterface::TYPE_*` constants (@vjik)
 - Enh #996: Adapt summary data in debug collector (@rustamwin)
 - Chg #990: Delete `Yiisoft\Db\Exception\InvalidArgumentException` and `Yiisoft\Db\Exception\InvalidParamException` and
   use `\InvalidArgumentException` instead (@DikoIbragimov)
