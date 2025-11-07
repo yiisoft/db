@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
