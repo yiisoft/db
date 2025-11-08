@@ -1,7 +1,7 @@
 {
     "name": "yiisoft/db",
     "type": "library",
-    "description": "Yii Database",
+    "description": "Database abstraction layer and query builder",
     "keywords": [
         "yii",
         "sql",
