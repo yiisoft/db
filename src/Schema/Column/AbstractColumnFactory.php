@@ -227,6 +227,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     }
 
     /**
+     * @psalm-param ColumnType::* $type
      * @psalm-param ColumnInfo $info
      * @psalm-return class-string<ColumnInterface>
      */
@@ -290,6 +291,8 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
 
     /**
      * Checks if the column type is a pseudo-type.
+     *
+     * @psalm-assert-if-true PseudoType::* $pseudoType
      */
     protected function isPseudoType(string $pseudoType): bool
     {
@@ -306,6 +309,8 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
 
     /**
      * Checks if the column type is an abstract type.
+     *
+     * @psalm-assert-if-true ColumnType::* $type
      */
     protected function isType(string $type): bool
     {
