@@ -100,9 +100,11 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `bigint`.
      */
-    public static function bigint(?int $size = null): ColumnInterface
+    public static function bigint(?int $size = null, bool $unsigned = false): ColumnInterface
     {
-        return new IntegerColumn(ColumnType::BIGINT, size: $size);
+        return PHP_INT_SIZE === 4 || $unsigned
+            ? new BigIntColumn(ColumnType::BIGINT, size: $size, unsigned: $unsigned)
+            : new IntegerColumn(ColumnType::BIGINT, size: $size, unsigned: $unsigned);
     }
 
     /**
