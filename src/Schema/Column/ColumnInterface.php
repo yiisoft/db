@@ -87,6 +87,8 @@ interface ColumnInterface
      * directly in your code.
      *
      * If the value is `null` or an {@see Expression}, there will be no conversion.
+     *
+     * @throws NotSupportedException
      */
     public function dbTypecast(mixed $value): mixed;
 
@@ -293,7 +295,7 @@ interface ColumnInterface
     /**
      * Converts the input value after retrieval from the database.
      *
-     * @throws NotSupportedException If the value not supported for typecasting.
+     * @throws NotSupportedException
      */
     public function phpTypecast(mixed $value): mixed;
 
