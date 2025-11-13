@@ -1776,6 +1776,7 @@ class QueryBuilderProvider
             'integer(8)' => ['integer(8)', ColumnBuilder::integer(8)],
             'bigint()' => ['bigint', ColumnBuilder::bigint()],
             'bigint(15)' => ['bigint(15)', ColumnBuilder::bigint(15)],
+            'bigint(15) unsigned' => ['bigint(15) UNSIGNED', ColumnBuilder::bigint(15, true)],
             'float()' => ['float', ColumnBuilder::float()],
             'float(10)' => ['float(10)', ColumnBuilder::float(10)],
             'float(10,2)' => ['float(10,2)', ColumnBuilder::float(10, 2)],
