@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Command;
 
 use PHPUnit\Framework\Attributes\DataProviderExternal;
+use Throwable;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -19,8 +20,6 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class CommandTest extends AbstractCommandTest
 {
@@ -541,12 +540,19 @@ final class CommandTest extends AbstractCommandTest
             SQL,
         );
 
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
+        $exception = null;
+        try {
+            $command->query();
+        } catch (Throwable $exception) {
+        }
+
+        $this->assertInstanceOf(NotSupportedException::class, $exception);
+        $this->assertSame(
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
+            $exception->getMessage(),
         );
 
-        $command->query();
+        $db->close();
     }
 
     public function testQueryAll(): void
@@ -560,12 +566,19 @@ final class CommandTest extends AbstractCommandTest
             SQL,
         );
 
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
+        $exception = null;
+        try {
+            $command->queryAll();
+        } catch (Throwable $exception) {
+        }
+
+        $this->assertInstanceOf(NotSupportedException::class, $exception);
+        $this->assertSame(
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
+            $exception->getMessage(),
         );
 
-        $command->queryAll();
+        $db->close();
     }
 
     public function testQueryColumn(): void
@@ -579,12 +592,19 @@ final class CommandTest extends AbstractCommandTest
             SQL,
         );
 
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
+        $exception = null;
+        try {
+            $command->queryColumn();
+        } catch (Throwable $exception) {
+        }
+
+        $this->assertInstanceOf(NotSupportedException::class, $exception);
+        $this->assertSame(
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
+            $exception->getMessage(),
         );
 
-        $command->queryColumn();
+        $db->close();
     }
 
     public function testQueryOne(): void
@@ -596,12 +616,19 @@ final class CommandTest extends AbstractCommandTest
         SELECT * FROM [[customer]] ORDER BY [[id]]
         SQL;
 
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
+        $exception = null;
+        try {
+            $command->setSql($sql)->queryOne();
+        } catch (Throwable $exception) {
+        }
+
+        $this->assertInstanceOf(NotSupportedException::class, $exception);
+        $this->assertSame(
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
+            $exception->getMessage(),
         );
 
-        $command->setSql($sql)->queryOne();
+        $db->close();
     }
 
     public function testQueryScalar(): void
@@ -613,12 +640,19 @@ final class CommandTest extends AbstractCommandTest
         SELECT * FROM [[customer]] ORDER BY [[id]]
         SQL;
 
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
+        $exception = null;
+        try {
+            $command->setSql($sql)->queryScalar();
+        } catch (Throwable $exception) {
+        }
+
+        $this->assertInstanceOf(NotSupportedException::class, $exception);
+        $this->assertSame(
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
+            $exception->getMessage(),
         );
 
-        $this->assertEquals(1, $command->setSql($sql)->queryScalar());
+        $db->close();
     }
 
     public function testRenameColumn(): void

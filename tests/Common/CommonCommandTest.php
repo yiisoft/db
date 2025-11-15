@@ -967,10 +967,16 @@ abstract class CommonCommandTest extends AbstractCommandTest
             default => 'SQLSTATE[42000]',
         };
 
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage($message);
+        $exception = null;
+        try {
+            $command->execute();
+        } catch (Throwable $exception) {
+        }
 
-        $command->execute();
+        $this->assertInstanceOf(Exception::class, $exception);
+        $this->assertStringStartsWith($message, $exception->getMessage());
+
+        $db->close();
     }
 
     public function testExecuteWithoutSql(): void
@@ -1244,6 +1250,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->expectExceptionMessage('Expected select query object with enumerated (named) parameters');
 
         $command->insert('{{customer}}', $query)->execute();
+
+        $db->close();
     }
 
     public function testInsertToBlob(): void
@@ -1357,6 +1365,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         );
         $command->execute();
         $command->execute();
+
+        $db->close();
     }
 
     public function testNoTablenameReplacement(): void
@@ -1429,9 +1439,15 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $db->createCommand('bad SQL');
 
-        $this->expectException(Exception::class);
+        $exception = null;
+        try {
+            $command->query();
+        } catch (Exception $exception) {
+        }
 
-        $command->query();
+        $this->assertInstanceOf(Exception::class, $exception);
+
+        $db->close();
     }
 
     public function testQueryAll(): void
@@ -1746,6 +1762,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ':qp2' => '3.14',
             ':qp3' => '1',
         ], $command->getParams());
+
+        $db->close();
     }
 
     #[DataProviderExternal(CommandProvider::class, 'upsert')]
@@ -1797,6 +1815,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         };
 
         $command->prepare();
+
+        $db->close();
     }
 
     public function testDecimalValue(): void
@@ -1819,6 +1839,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $phpTypecastValue = $column->phpTypecast($result['total']);
 
         $this->assertSame($decimalValue, $phpTypecastValue);
+
+        $db->close();
     }
 
     public function testInsertReturningPksEmptyValues()
@@ -1833,6 +1855,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         };
 
         $this->assertSame($expected, $pkValues);
+
+        $db->close();
     }
 
     public function testInsertReturningPksWithQuery(): void
@@ -1847,6 +1871,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $pkValues = $db->createCommand()->insertReturningPks('customer', $query);
 
         $this->assertEquals(['id' => 4], $pkValues);
+
+        $db->close();
     }
 
     public function testInsertReturningPksEmptyValuesAndNoPk()
@@ -1856,6 +1882,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $pkValues = $db->createCommand()->insertReturningPks('negative_default_values', []);
 
         $this->assertSame([], $pkValues);
+
+        $db->close();
     }
 
     public function testInsertReturningPksWithPhpTypecasting(): void
@@ -1867,6 +1895,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ->insertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
 
         $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
+
+        $db->close();
     }
 
     #[DataProviderExternal(CommandProvider::class, 'upsertReturning')]
@@ -1980,6 +2010,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $pkValues = $db->createCommand()->upsertReturningPks('null_values', []);
 
         $this->assertEquals(['id' => 1], $pkValues);
+
+        $db->close();
     }
 
     public function testUpsertReturningPksEmptyValuesAndNoPk()
@@ -1990,6 +2022,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $pkValues = $command->upsertReturningPks('negative_default_values', []);
 
         $this->assertSame([], $pkValues);
+
+        $db->close();
     }
 
     public function testUpsertReturningPksWithPhpTypecasting(): void
@@ -2013,6 +2047,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test3']);
 
         $this->assertSame(['id_1' => 2, 'id_2' => 2.5], $result);
+
+        $db->close();
     }
 
     public function testUuid(): void
@@ -2097,6 +2133,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $value = (new Query($db))->select('json_col')->from('json_table')->where(['id' => 1])->scalar();
         $this->assertSame('{"a":1,"b":2}', str_replace(' ', '', $value));
+
+        $db->close();
     }
 
     protected function performAndCompareUpsertResult(PdoConnectionInterface $db, array $data): void

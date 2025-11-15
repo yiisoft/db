@@ -74,6 +74,8 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         }
 
         $command->createTable('build_column_definition', $columns)->execute();
+
+        $db->close();
     }
 
     public function testInsertWithoutTypecasting(): void
@@ -222,6 +224,8 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $result = $db->select($length)->scalar();
 
         $this->assertEquals($expectedResult, $result);
+
+        $db->close();
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'multiOperandFunctionBuilder')]
@@ -293,6 +297,8 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $result = $db->select(array_keys($expectedResult))->from($tableName)->one();
 
         $this->assertEquals($expectedResult, $result);
+
+        $db->close();
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'dateTimeValue')]
@@ -373,6 +379,8 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $result = $query->column();
 
         $this->assertSame([$expected], $result, 'SQL Query: ' . $query->createCommand()->getRawSql());
+
+        $db->close();
     }
 
     private function createTebleWithColumn(CommandInterface $command, string|ColumnInterface $column)
