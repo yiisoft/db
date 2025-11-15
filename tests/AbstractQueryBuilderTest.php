@@ -1623,7 +1623,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([1, 2, 3], $condition->values);
     }
 
-    public function te1stCreateOverlapsConditionFromArrayWithInvalidOperandsCount(): void
+    public function testCreateOverlapsConditionFromArrayWithInvalidOperandsCount(): void
     {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
