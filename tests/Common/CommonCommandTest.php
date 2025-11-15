@@ -970,7 +970,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $exception = null;
         try {
             $command->execute();
-        } catch (Throwable $exception) {}
+        } catch (Throwable $exception) {
+        }
 
         $this->assertInstanceOf(Exception::class, $exception);
         $this->assertStringStartsWith($message, $exception->getMessage());
@@ -1441,7 +1442,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $exception = null;
         try {
             $command->query();
-        } catch (Exception $exception) {}
+        } catch (Exception $exception) {
+        }
 
         $this->assertInstanceOf(Exception::class, $exception);
 

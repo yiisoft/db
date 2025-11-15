@@ -543,7 +543,8 @@ final class CommandTest extends AbstractCommandTest
         $exception = null;
         try {
             $command->query();
-        } catch (Throwable $exception) {}
+        } catch (Throwable $exception) {
+        }
 
         $this->assertInstanceOf(NotSupportedException::class, $exception);
         $this->assertSame(
@@ -568,7 +569,8 @@ final class CommandTest extends AbstractCommandTest
         $exception = null;
         try {
             $command->queryAll();
-        } catch (Throwable $exception) {}
+        } catch (Throwable $exception) {
+        }
 
         $this->assertInstanceOf(NotSupportedException::class, $exception);
         $this->assertSame(
@@ -593,7 +595,8 @@ final class CommandTest extends AbstractCommandTest
         $exception = null;
         try {
             $command->queryColumn();
-        } catch (Throwable $exception) {}
+        } catch (Throwable $exception) {
+        }
 
         $this->assertInstanceOf(NotSupportedException::class, $exception);
         $this->assertSame(
@@ -616,7 +619,8 @@ final class CommandTest extends AbstractCommandTest
         $exception = null;
         try {
             $command->setSql($sql)->queryOne();
-        } catch (Throwable $exception) {}
+        } catch (Throwable $exception) {
+        }
 
         $this->assertInstanceOf(NotSupportedException::class, $exception);
         $this->assertSame(
@@ -639,7 +643,8 @@ final class CommandTest extends AbstractCommandTest
         $exception = null;
         try {
             $command->setSql($sql)->queryScalar();
-        } catch (Throwable $exception) {}
+        } catch (Throwable $exception) {
+        }
 
         $this->assertInstanceOf(NotSupportedException::class, $exception);
         $this->assertSame(

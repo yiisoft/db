@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Tests\Common;
 
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Tests\AbstractConnectionTest;
 
 abstract class CommonConnectionTest extends AbstractConnectionTest
@@ -23,7 +22,8 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
         $exception = null;
         try {
             $db->transaction($callable);
-        } catch (Throwable $exception) {}
+        } catch (Throwable $exception) {
+        }
 
         $this->assertInstanceOf(Exception::class, $exception);
 
