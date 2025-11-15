@@ -2162,7 +2162,5 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ->from('{{T_upsert}}')
             ->one();
         $this->assertEquals($expected, $actual, $this->upsertTestCharCast);
-
-        $db->close();
     }
 }
