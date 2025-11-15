@@ -32,7 +32,6 @@ abstract class CommonPdoCommandTest extends TestCase
     ): void {
         $db = $this->getConnection(true);
 
-        /** @psalm-var $sql */
         $sql = static::replaceQuotes(
             <<<SQL
             SELECT * FROM [[customer]] WHERE $field = $name

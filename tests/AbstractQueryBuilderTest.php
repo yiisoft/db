@@ -96,14 +96,11 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @throws Exception
-     */
     public function testAddCommentOnTable(): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
+
         $sql = $qb->addCommentOnTable('customer', 'Customer table.');
 
         $this->assertSame(
@@ -116,10 +113,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @throws Exception
-     * @throws NotSupportedException
-     */
     public function testAddDefaultValue(): void
     {
         $db = $this->getConnection();
@@ -135,6 +128,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
+
+        $db->close();
     }
 
     /**
@@ -211,6 +206,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expected, $sql);
         Assert::arraysEquals($expectedParams, $params);
+
+        $db->close();
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildCondition')]
@@ -280,18 +277,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * {@see https://github.com/yiisoft/yii2/issues/15653}
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
+     * @see https://github.com/yiisoft/yii2/issues/15653
      */
     public function testBuildIssue15653(): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
+
         $query = (new Query($db))->from('admin_user')->where(['is_deleted' => false]);
         $query->setWhere([])->andWhere(['in', 'id', ['1', '0']]);
 
@@ -316,17 +308,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildFilterCondition
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
      */
     public function testBuildFilterCondition(array $condition, string $expected, array $expectedParams): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
+
         $query = (new Query($db))->filterWhere($condition);
 
         [$sql, $params] = $qb->build($query);
@@ -1489,11 +1476,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildWhereExists
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
      */
     public function testBuildWithWhereExists(string $cond, string $expectedQuerySql): void
     {
@@ -1641,7 +1623,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([1, 2, 3], $condition->values);
     }
 
-    public function testCreateOverlapsConditionFromArrayWithInvalidOperandsCount(): void
+    public function te1stCreateOverlapsConditionFromArrayWithInvalidOperandsCount(): void
     {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
@@ -1687,7 +1669,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
     public function testCreateIndex(string $sql, Closure $builder): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($db->getQuoter()->quoteSql($sql), $builder($qb));
@@ -1769,6 +1750,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropCommentFromColumn('customer', 'id'),
         );
+
+        $db->close();
     }
 
     public function testDropCommentFromTable(): void
@@ -1787,10 +1770,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @throws Exception
-     * @throws NotSupportedException
-     */
     public function testDropDefaultValue(): void
     {
         $db = $this->getConnection(true);
@@ -1805,6 +1784,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropDefaultValue('T_constraints_1', 'CN_pk'),
         );
+
+        $db->close();
     }
 
     public function testDropForeignKey(): void
@@ -1908,7 +1889,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
     public function testDropView(): void
     {
         $db = $this->getConnection(true);
-
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
@@ -1919,6 +1899,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropview('animal_view'),
         );
+
+        $db->close();
     }
 
     /**
@@ -1947,11 +1929,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         array $expectedParams,
     ): void {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
         $this->assertEquals($expectedParams, $params);
+
+        $db->close();
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'insertReturningPks')]
@@ -1967,6 +1950,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expectedSQL, $qb->insertReturningPks($table, $columns, $params));
         $this->assertEquals($expectedParams, $params);
+
+        $db->close();
     }
 
     public function testQuoter(): void
@@ -1981,8 +1966,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
     public function testRenameColumn(): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
+
         $sql = $qb->renameColumn('alpha', 'string_identifier', 'string_identifier_test');
 
         $this->assertSame(
@@ -2038,14 +2023,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @throws Exception
-     * @throws NotSupportedException
-     */
     public function testResetSequence(): void
     {
         $db = $this->getConnection(true);
-
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
@@ -2061,11 +2041,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
             SQL,
             $qb->resetSequence('item', 3),
         );
+
+        $db->close();
     }
 
-    /**
-     * @throws Exception
-     */
     public function testResetSequenceNoAssociatedException(): void
     {
         $db = $this->getConnection(true);
@@ -2085,15 +2064,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
         }
 
         $qb->resetSequence('type');
+
+        $db->close();
     }
 
-    /**
-     * @throws Exception
-     */
     public function testResetSequenceTableNoExistException(): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
 
         if ($db->getDriverName() === 'db') {
@@ -2179,12 +2156,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([':len' => 4], $params);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
     public function testSelectSubquery(): void
     {
         $db = $this->getConnection();

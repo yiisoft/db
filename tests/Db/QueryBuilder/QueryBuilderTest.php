@@ -120,7 +120,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     public function testCreateTable(): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
@@ -148,6 +147,8 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 ],
             ),
         );
+
+        $db->close();
     }
 
     public function testCreateView(): void

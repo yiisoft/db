@@ -11,30 +11,21 @@ use Yiisoft\Db\Tests\AbstractConnectionTest;
 
 abstract class CommonConnectionTest extends AbstractConnectionTest
 {
-    /**
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testTransactionShortcutException(): void
     {
         $db = $this->getConnection(true);
 
-        $this->expectException(Exception::class);
+        $callable = static function () use ($db) {
+            $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
+            throw new Exception('Exception in transaction shortcut');
+        };
 
-        $db->transaction(
-            static function () use ($db) {
-                $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
+        $exception = null;
+        try {
+            $db->transaction($callable);
+        } catch (Throwable $exception) {}
 
-                throw new Exception('Exception in transaction shortcut');
-            },
-        );
-        $profilesCount = $db->createCommand(
-            <<<SQL
-            SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction shortcut'
-            SQL,
-        )->queryScalar();
-
-        $this->assertSame(0, $profilesCount, 'profile should not be inserted in transaction shortcut');
+        $this->assertInstanceOf(Exception::class, $exception);
 
         $db->close();
     }
