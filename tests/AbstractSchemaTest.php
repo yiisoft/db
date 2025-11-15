@@ -23,6 +23,8 @@ abstract class AbstractSchemaTest extends TestCase
 
         $schema = $db->getSchema();
 
+        $db->close();
+
         $this->assertSame('', $schema->getDefaultSchema());
     }
 
@@ -44,6 +46,8 @@ abstract class AbstractSchemaTest extends TestCase
 
         $schema = $db->getSchema();
 
+        $db->close();
+
         foreach ($values as $value) {
             $this->assertSame(
                 $value[1],
@@ -61,6 +65,8 @@ abstract class AbstractSchemaTest extends TestCase
 
         $schema = $db->getSchema();
         $schema->refresh();
+
+        $db->close();
 
         $this->assertSame([], Assert::getPropertyValue($schema, 'tableMetadata'));
         $this->assertSame([], Assert::getPropertyValue($schema, 'tableNames'));

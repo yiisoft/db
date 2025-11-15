@@ -14,9 +14,6 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
 {
     use TestTrait;
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function testAliasesFromString(): void
     {
         $db = $this->getConnection();
@@ -24,6 +21,8 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         $query = new Query($db);
         $query->from('profile AS \'prf\', user "usr", service srv, order, [a b] [c d], {{something}} AS myalias');
         $tables = $query->getTablesUsedInFrom();
+
+        $db->close();
 
         $this->assertSame(
             [

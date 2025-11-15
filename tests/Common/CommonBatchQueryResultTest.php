@@ -128,6 +128,8 @@ abstract class CommonBatchQueryResultTest extends TestCase
         $query = $query->from('customer')->orderBy('id')->limit(3);
         $customers = $this->getAllRowsFromBatch($query->batch(2));
 
+        $db->close();
+
         $this->assertCount(3, $customers);
         $this->assertEquals('user1', $customers[0]['name']);
         $this->assertEquals('user2', $customers[1]['name']);
@@ -160,6 +162,8 @@ abstract class CommonBatchQueryResultTest extends TestCase
         $batchQueryResult = new BatchQueryResult($query);
 
         $customers = $this->getAllRowsFromBatch($batchQueryResult);
+
+        $db->close();
 
         $this->assertCount(3, $customers);
         $this->assertEquals('user1', $customers[0]['name']);

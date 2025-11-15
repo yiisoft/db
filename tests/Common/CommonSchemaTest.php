@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Tests\Common;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\Depends;
+use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\Check;
@@ -74,7 +75,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    public function testContraintTablesExistance(): void
+    public function testConstraintTablesExistance(): void
     {
         $db = $this->getConnection(true);
 
@@ -539,53 +540,62 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     #[DataProviderExternal(SchemaProvider::class, 'constraints')]
     public function testTableSchemaConstraints(string $tableName, string $type, mixed $expected): void
     {
-        if ($expected === false) {
-            $this->expectException(NotSupportedException::class);
-        }
-
         $db = $this->getConnection(true);
         $schema = $db->getSchema();
-        $constraints = $schema->{"getTable$type"}($tableName);
 
-        Assert::constraintsEquals($expected, $constraints);
+        $exception = null;
+        try {
+            $constraints = $schema->{"getTable$type"}($tableName);
+        } catch (Throwable $exception) {
+        }
 
         $db->close();
+
+        $expected === false
+            ? $this->assertInstanceOf(NotSupportedException::class, $exception)
+            : Assert::constraintsEquals($expected, $constraints);
     }
 
     #[DataProviderExternal(SchemaProvider::class, 'constraints')]
     public function testTableSchemaConstraintsWithPdoLowercase(string $tableName, string $type, mixed $expected): void
     {
-        if ($expected === false) {
-            $this->expectException(NotSupportedException::class);
-        }
-
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
         $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-        $constraints = $schema->{"getTable$type"}($tableName, true);
 
-        Assert::constraintsEquals($expected, $constraints);
+        $exception = null;
+        try {
+            $constraints = $schema->{"getTable$type"}($tableName, true);
+        } catch (Throwable $exception) {
+        }
 
         $db->close();
+
+        $expected === false
+            ? $this->assertInstanceOf(NotSupportedException::class, $exception)
+            : Assert::constraintsEquals($expected, $constraints);
     }
 
     #[DataProviderExternal(SchemaProvider::class, 'constraints')]
     public function testTableSchemaConstraintsWithPdoUppercase(string $tableName, string $type, mixed $expected): void
     {
-        if ($expected === false) {
-            $this->expectException(NotSupportedException::class);
-        }
-
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
         $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
-        $constraints = $schema->{'getTable' . ucfirst($type)}($tableName, true);
 
-        Assert::constraintsEquals($expected, $constraints);
+        $exception = null;
+        try {
+            $constraints = $schema->{'getTable' . ucfirst($type)}($tableName, true);
+        } catch (Throwable $exception) {
+        }
 
         $db->close();
+
+        $expected === false
+            ? $this->assertInstanceOf(NotSupportedException::class, $exception)
+            : Assert::constraintsEquals($expected, $constraints);
     }
 
     public function testWorkWithUniqueConstraint(): void

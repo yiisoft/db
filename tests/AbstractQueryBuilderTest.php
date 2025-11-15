@@ -37,9 +37,6 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 use function PHPUnit\Framework\assertEmpty;
 use function PHPUnit\Framework\assertSame;
 
-/**
- * @psalm-suppress PropertyNotSetInConstructor
- */
 abstract class AbstractQueryBuilderTest extends TestCase
 {
     use TestTrait;
@@ -142,9 +139,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addForeignKey
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
      */
     public function testAddForeignKey(
         string $name,
