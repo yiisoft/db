@@ -110,6 +110,8 @@ final class QueryTest extends AbstractQueryTest
         $query = $query->withTypecasting(false);
 
         $this->assertFalse(Assert::getPropertyValue($query, 'typecasting'));
+
+        $db->close();
     }
 
     public function testCreateCommandWithTypecasting(): void
@@ -124,6 +126,8 @@ final class QueryTest extends AbstractQueryTest
         $command = $query->withTypecasting()->createCommand();
 
         $this->assertTrue(Assert::getPropertyValue($command, 'phpTypecasting'));
+
+        $db->close();
     }
 
     public static function dataFor(): iterable

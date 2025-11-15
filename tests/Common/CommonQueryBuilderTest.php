@@ -245,6 +245,8 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
             sort($result, SORT_NATURAL);
         }
 
+        $db->close();
+
         $this->assertEquals($expectedResult, $result);
     }
 

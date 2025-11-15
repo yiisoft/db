@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Exception\NotSupportedException;
 
 /**
  * This interface defines a set of methods that must be implemented by a class that represents a database table column.
@@ -86,6 +87,8 @@ interface ColumnInterface
      * directly in your code.
      *
      * If the value is `null` or an {@see Expression}, there will be no conversion.
+     *
+     * @throws NotSupportedException
      */
     public function dbTypecast(mixed $value): mixed;
 
@@ -291,6 +294,8 @@ interface ColumnInterface
 
     /**
      * Converts the input value after retrieval from the database.
+     *
+     * @throws NotSupportedException
      */
     public function phpTypecast(mixed $value): mixed;
 

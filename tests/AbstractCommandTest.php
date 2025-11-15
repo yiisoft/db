@@ -5,29 +5,18 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Throwable;
 use Yiisoft\Db\Expression\Value\Param;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ContextInterface;
 use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
-/**
- * @psalm-suppress RedundantCondition
- */
 abstract class AbstractCommandTest extends TestCase
 {
     use TestTrait;
 
     protected string $upsertTestCharCast = '';
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testAutoQuoting(): void
     {
         $db = $this->getConnection();
@@ -47,10 +36,6 @@ abstract class AbstractCommandTest extends TestCase
         );
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testConstruct(): void
     {
         $db = $this->getConnection();
@@ -68,10 +53,6 @@ abstract class AbstractCommandTest extends TestCase
         $this->assertSame([':name' => 'John Doe'], $command->getParams());
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testGetParams(): void
     {
         $db = $this->getConnection();
@@ -103,19 +84,14 @@ abstract class AbstractCommandTest extends TestCase
         $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
         $this->assertCount(3, $bindedValues);
         $this->assertEquals($param, $bindedValues['int']);
+
+        $db->close();
     }
 
     /**
-     * Test command getRawSql.
-     *
      * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::rawSql
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws \Exception
-     *
-     * {@see https://github.com/yiisoft/yii2/issues/8592}
+     * @see https://github.com/yiisoft/yii2/issues/8592
      */
     public function testGetRawSql(string $sql, array $params, string $expectedRawSql): void
     {
@@ -124,12 +100,10 @@ abstract class AbstractCommandTest extends TestCase
         $command = $db->createCommand($sql, $params);
 
         $this->assertSame($expectedRawSql, $command->getRawSql());
+
+        $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testGetSetSql(): void
     {
         $db = $this->getConnection();
@@ -145,12 +119,10 @@ abstract class AbstractCommandTest extends TestCase
         SQL;
         $command->setSql($sql2);
         $this->assertSame($sql2, $command->getSql());
+
+        $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testPrepareCancel(): void
     {
         $db = $this->getConnection(true);
@@ -171,13 +143,10 @@ abstract class AbstractCommandTest extends TestCase
         $command->cancel();
 
         $this->assertNull($command->getPdoStatement());
+
+        $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws \Exception
-     */
     public function testSetRawSql(): void
     {
         $db = $this->getConnection();
@@ -190,12 +159,10 @@ abstract class AbstractCommandTest extends TestCase
         );
 
         $this->assertSame('SELECT 123', $command->getRawSql());
+
+        $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testSetSql(): void
     {
         $db = $this->getConnection();
@@ -208,14 +175,10 @@ abstract class AbstractCommandTest extends TestCase
         );
 
         $this->assertSame('SELECT 123', $command->getSql());
+
+        $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     * @throws \PHPUnit\Framework\MockObject\Exception
-     */
     public function testProfiler(?string $sql = null): void
     {
         $sql ??= 'SELECT 123';
@@ -233,14 +196,10 @@ abstract class AbstractCommandTest extends TestCase
         $db->setProfiler($profiler);
 
         $db->createCommand($sql)->execute();
+
+        $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     * @throws \PHPUnit\Framework\MockObject\Exception
-     */
     public function testProfilerData(?string $sql = null): void
     {
         $sql ??= 'SELECT 123';
@@ -271,5 +230,7 @@ abstract class AbstractCommandTest extends TestCase
         $db->setProfiler($profiler);
 
         $db->createCommand($sql)->execute();
+
+        $db->close();
     }
 }

@@ -73,7 +73,6 @@ interface ColumnFactoryInterface
      * @param string $pseudoType The pseudo-type.
      * @param array $info The column information. The set of parameters may be different for a specific DBMS.
      *
-     * @psalm-param PseudoType::* $pseudoType
      * @psalm-param ColumnInfo $info
      */
     public function fromPseudoType(string $pseudoType, array $info = []): ColumnInterface;
@@ -84,7 +83,6 @@ interface ColumnFactoryInterface
      * @param string $type The abstract database type.
      * @param array $info The column information. The set of parameters may be different for a specific DBMS.
      *
-     * @psalm-param ColumnType::* $type
      * @psalm-param ColumnInfo $info
      */
     public function fromType(string $type, array $info = []): ColumnInterface;

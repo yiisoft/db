@@ -786,6 +786,8 @@ abstract class AbstractQueryTest extends TestCase
             ->where(['id' => null]);
 
         $this->assertSame([], $query->column());
+
+        $db->close();
     }
 
     /**
@@ -853,5 +855,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->resultCallback(null);
 
         $this->assertNull($query->getResultCallback());
+
+        $db->close();
     }
 }
