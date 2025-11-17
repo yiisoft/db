@@ -231,9 +231,7 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $db->open();
 
         $profiler = new class ($this, $sql) implements ProfilerInterface {
-            public function __construct(private TestCase $test, private string $sql)
-            {
-            }
+            public function __construct(private TestCase $test, private string $sql) {}
 
             public function begin(string $token, ContextInterface|array $context = []): void
             {
