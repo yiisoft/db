@@ -51,6 +51,7 @@
         "yiisoft/dummy-provider": "^1.1",
         "yiisoft/event-dispatcher": "^1.1",
         "yiisoft/log": "^2.1",
+        "yiisoft/test-support": "^3.0",
         "yiisoft/var-dumper": "^1.7",
         "yiisoft/yii-debug": "dev-master"
     },

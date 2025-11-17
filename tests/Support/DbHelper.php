@@ -56,9 +56,6 @@ final class DbHelper
 
     /**
      * Loads the fixture into the database.
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
      */
     public static function loadFixture(PdoConnectionInterface $db, string $fixture): void
     {

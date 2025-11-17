@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Command;
 
 use PHPUnit\Framework\Attributes\DataProviderExternal;
+use PHPUnit\Framework\TestCase;
 use Throwable;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
@@ -13,7 +14,6 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
-use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -21,7 +21,7 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 /**
  * @group db
  */
-final class CommandTest extends AbstractCommandTest
+final class CommandTest extends TestCase
 {
     use TestTrait;
 
@@ -750,22 +750,6 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $command->upsert('{{table}}', []);
-    }
-
-    public function testProfiler(?string $sql = null): void
-    {
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
-        );
-        parent::testProfiler();
-    }
-
-    public function testProfilerData(?string $sql = null): void
-    {
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
-        );
-        parent::testProfilerData();
     }
 
     public function testWithDbTypecasting(): void
