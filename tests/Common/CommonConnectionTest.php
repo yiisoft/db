@@ -65,7 +65,7 @@ abstract class CommonConnectionTest extends IntegrationTestCase
 
     public function testNotProfiler(): void
     {
-        $db = $this->getSharedConnection();
+        $db = $this->createConnection();
 
         $profiler = $this->createMock(ProfilerInterface::class);
 
@@ -78,6 +78,8 @@ abstract class CommonConnectionTest extends IntegrationTestCase
         $db->setProfiler(null);
 
         $this->assertNull(Assert::getPropertyValue($db, 'profiler'));
+
+        $db->close();
     }
 
     public function testProfiler(): void
