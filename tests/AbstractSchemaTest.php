@@ -61,14 +61,17 @@ abstract class AbstractSchemaTest extends TestCase
 
     public function testRefresh(): void
     {
-        $db = $this->getConnection();
+        $schema = $this->getConnection()->getSchema();
 
-        $schema = $db->getSchema();
+        $this->assertNotEmpty($schema->getSchemaNames());
+        $this->assertNotEmpty($schema->getTableNames());
+        $this->assertNotEmpty($schema->getViewNames());
+
         $schema->refresh();
-
-        $db->close();
 
         $this->assertSame([], Assert::getPropertyValue($schema, 'tableMetadata'));
         $this->assertSame([], Assert::getPropertyValue($schema, 'tableNames'));
+        $this->assertSame([], Assert::getPropertyValue($schema, 'schemaNames'));
+        $this->assertSame([], Assert::getPropertyValue($schema, 'viewNames'));
     }
 }

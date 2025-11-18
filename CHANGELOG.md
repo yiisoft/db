@@ -173,6 +173,7 @@
 - New #1082: Add `QueryPartsInterface::addWithQuery()` method (@vjik)
 - Chg #1082: `QueryPartsInterface::withQuery()` method replace "WITH" clause instead of adding before (@vjik)
 - Enh #1092: Change the exceptions thrown to be more appropriate (@Tigrov)
+- Bug #1099: Fix an issue where `AbstractSchema::refresh()` didn't clear schema name and table name caches (@vjik) 
 
 ## 1.3.0 March 21, 2024
 
