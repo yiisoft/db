@@ -35,7 +35,6 @@ phpunit.phar
 # local phpunit config and cache
 /phpunit.xml
 /.phpunit.result.cache
-/tests/Support/runtime/
 
 # NPM packages
 /node_modules

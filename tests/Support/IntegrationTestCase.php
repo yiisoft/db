@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support;
 
+use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Connection\ConnectionInterface;
 
-abstract class IntegrationTestCase extends BaseTestCase
+abstract class IntegrationTestCase extends TestCase
 {
     private static ?ConnectionInterface $connection = null;
 
@@ -48,5 +49,10 @@ abstract class IntegrationTestCase extends BaseTestCase
     protected function getDefaultFixture(): string
     {
         return __DIR__ . '/Fixture/db.sql';
+    }
+
+    protected function replaceQuotes(string $sql): string
+    {
+        return str_replace(['[[', ']]'], ['[', ']'], $sql);
     }
 }

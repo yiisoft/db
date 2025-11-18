@@ -14,13 +14,13 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\BaseTestCase;
+use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 use Yiisoft\Db\Tests\Support\TestHelper;
 
 /**
  * @group db
  */
-final class CommandTest extends BaseTestCase
+final class CommandTest extends IntegrationTestCase
 {
     public function testAddCheck(): void
     {
