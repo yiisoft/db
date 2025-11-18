@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
@@ -79,6 +80,8 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * before (if available) will be returned.
      *
      * @return string[] All schemas name in the database, except system schemas.
+     *
+     * @throws NotSupportedException
      */
     public function getSchemaNames(bool $refresh = false): array;
 
