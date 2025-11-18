@@ -16,7 +16,6 @@ use Yiisoft\Db\Tests\AbstractColumnTest;
 use Yiisoft\Db\Tests\Provider\ColumnProvider;
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 use Yiisoft\Db\Tests\Support\Stringable;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function array_fill_keys;
 use function array_keys;
