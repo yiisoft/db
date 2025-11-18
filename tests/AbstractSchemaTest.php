@@ -62,7 +62,8 @@ abstract class AbstractSchemaTest extends TestCase
 
     public function testRefresh(): void
     {
-        $schema = $this->getConnection()->getSchema();
+        $db = $this->getConnection(true);
+        $schema = $db->getSchema();
 
         try {
             $this->assertNotEmpty($schema->getTableNames());
