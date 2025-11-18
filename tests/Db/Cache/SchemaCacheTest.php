@@ -11,15 +11,12 @@ use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Exception\PsrInvalidArgumentException;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @group db
  */
 final class SchemaCacheTest extends TestCase
 {
-    use TestTrait;
-
     public function testInvalidate(): void
     {
         $schemaCache = new SchemaCache(DbHelper::getPsrCache());

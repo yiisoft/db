@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support;
 
-use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Tests\Support\Stub\StubConnection;
-use Yiisoft\Db\Tests\Support\Stub\StubPdoDriver;
-use Yiisoft\Test\Support\SimpleCache\MemorySimpleCache;
 
 abstract class IntegrationTestCase extends BaseTestCase
 {
@@ -38,12 +34,7 @@ abstract class IntegrationTestCase extends BaseTestCase
 
     protected function createConnection(): ConnectionInterface
     {
-        return new StubConnection(
-            new StubPdoDriver('sqlite::memory:'),
-            new SchemaCache(
-                new MemorySimpleCache(),
-            ),
-        );
+        return TestHelper::createSqliteMemoryConnection();
     }
 
     /**
