@@ -31,7 +31,7 @@ return RectorConfig::configure()
             __DIR__ . '/src/Schema/Data/StringableStream.php',
         ],
         GetDebugTypeRector::class => [
-            __DIR__ . '/tests/AbstractColumnTest.php',
+            __DIR__ . '/tests/Common/CommonColumnTest.php',
         ],
         ReadOnlyPropertyRector::class,
         NullToStrictStringFuncCallArgRector::class,

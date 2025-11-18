@@ -19,6 +19,7 @@ use Yiisoft\Db\Tests\Support\Stringable;
 use function array_fill_keys;
 use function array_keys;
 use function array_map;
+use function gettype;
 use function is_object;
 use function version_compare;
 
@@ -56,7 +57,7 @@ abstract class CommonColumnTest extends IntegrationTestCase
     #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumnsWithException')]
     public function testDbTypecastColumnsWithException(ColumnInterface $column, mixed $value)
     {
-        $type = get_debug_type($value);
+        $type = is_object($value) ? $value::class : gettype($value);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Wrong $type value for {$column->getType()} column.");
