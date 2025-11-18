@@ -48,7 +48,7 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
 
     public function testOpenClose(): void
     {
-        $db = $this->getSharedConnection();
+        $db = $this->createConnection();
 
         $this->assertFalse($db->isActive());
         $this->assertNull($db->getPdo());
@@ -66,7 +66,7 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
 
     public function testOpenCloseWithLogger(): void
     {
-        $db = $this->getSharedConnection();
+        $db = $this->createConnection();
 
         $this->assertFalse($db->isActive());
         $this->assertNull($db->getPdo());
@@ -108,7 +108,7 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
 
     public function testCreateCommandWithLoggerProfiler(): void
     {
-        $db = $this->getSharedConnection();
+        $db = $this->createConnection();
 
         $db->setLogger($this->getLogger());
         $db->setProfiler($this->getProfiler());
@@ -116,6 +116,8 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
 
         $this->assertSame('SELECT 1', $command->getSql());
         $this->assertSame([], $command->getParams());
+
+        $db->close();
     }
 
     public function testCommitTransactionsWithSavepoints(): void
