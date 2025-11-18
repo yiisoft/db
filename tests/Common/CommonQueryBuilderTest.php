@@ -77,7 +77,7 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
             $this->replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
-                SQL. ' ' . $qb->buildColumnDefinition($type),
+                SQL . ' ' . $qb->buildColumnDefinition($type),
             ),
             $sql,
         );
