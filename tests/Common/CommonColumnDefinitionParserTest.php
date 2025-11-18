@@ -2,21 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests;
+namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Syntax\ColumnDefinitionParser;
 use Yiisoft\Db\Tests\Provider\ColumnDefinitionParserProvider;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @group db
  */
-abstract class AbstractColumnDefinitionParserTest extends TestCase
+abstract class CommonColumnDefinitionParserTest extends TestCase
 {
-    use TestTrait;
-
     #[DataProviderExternal(ColumnDefinitionParserProvider::class, 'parse')]
     public function testParse(string $definition, array $expected): void
     {
