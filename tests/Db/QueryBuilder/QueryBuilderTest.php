@@ -124,7 +124,7 @@ final class QueryBuilderTest extends IntegrationTestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 CREATE TABLE [[test]] (
                 \t[[id]] integer PRIMARY KEY AUTOINCREMENT,
@@ -407,17 +407,17 @@ final class QueryBuilderTest extends IntegrationTestCase
         $column = ColumnBuilder::json();
 
         $this->assertSame(
-            self::replaceQuotes("CREATE TABLE [json_table] (\n\t[json_col] json CHECK (json_valid([json_col]))\n)"),
+            $this->replaceQuotes("CREATE TABLE [json_table] (\n\t[json_col] json CHECK (json_valid([json_col]))\n)"),
             $qb->createTable('json_table', ['json_col' => $column]),
         );
 
         $this->assertSame(
-            self::replaceQuotes('ALTER TABLE [json_table] ADD [json_col] json'),
+            $this->replaceQuotes('ALTER TABLE [json_table] ADD [json_col] json'),
             $qb->addColumn('json_table', 'json_col', $column),
         );
 
         $this->assertSame(
-            self::replaceQuotes('ALTER TABLE [json_table] CHANGE [json_col] [json_col] json'),
+            $this->replaceQuotes('ALTER TABLE [json_table] CHANGE [json_col] [json_col] json'),
             $qb->alterColumn('json_table', 'json_col', $column),
         );
     }

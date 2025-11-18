@@ -28,7 +28,6 @@ use Yiisoft\Db\Expression\Function\Shortest;
 use Yiisoft\Db\Expression\Value\JsonValue;
 use Yiisoft\Db\Expression\Value\Value;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\All;
 use Yiisoft\Db\QueryBuilder\Condition\Between;
 use Yiisoft\Db\QueryBuilder\Condition\Equals;
@@ -226,7 +225,7 @@ class QueryBuilderProvider
 
     public static function buildCondition(): array
     {
-        $conditions = [
+        return [
             /* empty values */
             [['like', 'name', []], '0=1', []],
             [['not like', 'name', []], '', []],
@@ -276,12 +275,12 @@ class QueryBuilderProvider
             [new Not(['>', 'score', 50]), '[[score]] <= 50', []],
             [new Not(['>=', 'score', 50]), '[[score]] < 50', []],
             [
-                new Not(['exists', (new Query(static::getDb()))->select('id')->from('users')]),
+                static fn(ConnectionInterface $db) => new Not(['exists', $db->select('id')->from('users')]),
                 'NOT EXISTS (SELECT [[id]] FROM [[users]])',
                 [],
             ],
             [
-                new Not(['not exists', (new Query(static::getDb()))->select('id')->from('users')]),
+                static fn(ConnectionInterface $db) => new Not(['not exists', $db->select('id')->from('users')]),
                 'EXISTS (SELECT [[id]] FROM [[users]])',
                 [],
             ],
@@ -296,10 +295,10 @@ class QueryBuilderProvider
             [['and', 'type=1', ['or', 'id=1', 'id=2']], '(type=1) AND ((id=1) OR (id=2))', []],
             [['and', 'id=1', new Expression('id=:qp0', [':qp0' => 2])], '(id=1) AND (id=:qp0)', [':qp0' => 2]],
             'and-subquery' => [
-                [
+                static fn(ConnectionInterface $db) => [
                     'and',
                     ['expired' => false],
-                    (new Query(static::getDb()))->select('count(*) > 1')->from('queue'),
+                    $db->select('count(*) > 1')->from('queue'),
                 ],
                 '([[expired]] = FALSE) AND ((SELECT count(*) > 1 FROM [[queue]]))',
                 [],
@@ -356,19 +355,19 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                new NotBetween(
+                static fn(ConnectionInterface $db) => new NotBetween(
                     new Expression('NOW()'),
-                    (new Query(static::getDb()))->select('min_date')->from('some_table'),
+                    $db->select('min_date')->from('some_table'),
                     new ColumnName('max_date'),
                 ),
                 'NOW() NOT BETWEEN (SELECT [[min_date]] FROM [[some_table]]) AND [[max_date]]',
                 [],
             ],
             [
-                new NotBetween(
+                static fn(ConnectionInterface $db) => new NotBetween(
                     new Expression('NOW()'),
                     new Expression('min_date'),
-                    (new Query(static::getDb()))->select('max_date')->from('some_table'),
+                    $db->select('max_date')->from('some_table'),
                 ),
                 'NOW() NOT BETWEEN min_date AND (SELECT [[max_date]] FROM [[some_table]])',
                 [],
@@ -376,7 +375,7 @@ class QueryBuilderProvider
 
             /* in */
             [
-                ['in', 'id', [1, 2, (new Query(static::getDb()))->select('three')->from('digits')]],
+                static fn(ConnectionInterface $db) => ['in', 'id', [1, 2, $db->select('three')->from('digits')]],
                 '[[id]] IN (1, 2, (SELECT [[three]] FROM [[digits]]))',
                 [],
             ],
@@ -386,19 +385,19 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                [
+                static fn(ConnectionInterface $db) => [
                     'in',
                     'id',
-                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    $db->select('id')->from('users')->where(['active' => 1]),
                 ],
                 '[[id]] IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
             ],
             [
-                [
+                static fn(ConnectionInterface $db) => [
                     'not in',
                     'id',
-                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    $db->select('id')->from('users')->where(['active' => 1]),
                 ],
                 '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
@@ -484,9 +483,9 @@ class QueryBuilderProvider
             [new In([], [1]), '0=1', []],
             'inCondition-custom-1' => [new In(['id', 'name'], []), '0=1', []],
             'inCondition-custom-2' => [
-                new In(
+                static fn(ConnectionInterface $db) => new In(
                     ['id'],
-                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    $db->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '([[id]]) IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
@@ -507,9 +506,9 @@ class QueryBuilderProvider
                 [':qp0' => new Param('John Doe', DataType::STRING)],
             ],
             'inCondition-custom-6' => [
-                new In(
+                static fn(ConnectionInterface $db) => new In(
                     [new Expression('id')],
-                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    $db->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '(id) IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
@@ -517,17 +516,17 @@ class QueryBuilderProvider
 
             /* exists */
             [
-                [
+                static fn(ConnectionInterface $db) => [
                     'exists',
-                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    $db->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
             ],
             [
-                [
+                static fn(ConnectionInterface $db) => [
                     'not exists',
-                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    $db->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'NOT EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
@@ -552,10 +551,10 @@ class QueryBuilderProvider
                 [':month' => 2],
             ],
             [
-                [
+                static fn(ConnectionInterface $db) => [
                     '=',
                     'date',
-                    (new Query(static::getDb()))->select('max(date)')->from('test')->where(['id' => 5]),
+                    $db->select('max(date)')->from('test')->where(['id' => 5]),
                 ],
                 '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]] = 5)',
                 [],
@@ -569,7 +568,7 @@ class QueryBuilderProvider
                 [':qp0' => new Param('2019-08-01', DataType::STRING)],
             ],
             [
-                ['=', (new Query(static::getDb()))->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
+                static fn(ConnectionInterface $db) => ['=', $db->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
                 '(SELECT COUNT(*) FROM [[test]] WHERE [[id]] = 6) = 0',
                 [],
             ],
@@ -619,13 +618,6 @@ class QueryBuilderProvider
                 [],
             ],
         ];
-
-        /* adjust dbms specific escaping */
-        foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = static::replaceQuotes($condition[1]);
-        }
-
-        return $conditions;
     }
 
     public static function buildFilterCondition(): array
@@ -782,7 +774,7 @@ class QueryBuilderProvider
             ],
 
             /**
-             * {@see https://github.com/yiisoft/yii2/issues/15630}
+             * @see https://github.com/yiisoft/yii2/issues/15630
              */
             [
                 ['like', 'location.title_ru', 'vi%', 'escape' => false, 'mode' => LikeMode::Custom],
@@ -849,8 +841,6 @@ class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = static::replaceQuotes($condition[1]);
-
             if (static::$likeEscapeCharSql !== '') {
                 preg_match_all('/(?P<condition>LIKE.+?)( AND| OR|$)/', $conditions[$i][1], $matches, PREG_SET_ORDER);
 
@@ -881,11 +871,11 @@ class QueryBuilderProvider
         return [
             [
                 'exists',
-                static::replaceQuotes('SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])'),
+                'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
             ],
             [
                 'not exists',
-                static::replaceQuotes('SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])'),
+                'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
             ],
         ];
     }
@@ -1071,14 +1061,14 @@ class QueryBuilderProvider
     {
         return [
             'int' => [1, 'SELECT 1'],
-            'string' => ['custom_string', static::replaceQuotes('SELECT [[custom_string]]')],
+            'string' => ['custom_string', 'SELECT [[custom_string]]'],
             'true' => [true, 'SELECT TRUE'],
             'false' => [false, 'SELECT FALSE'],
             'float' => [12.34, 'SELECT 12.34'],
             'array' => [[1, true, 12.34], 'SELECT 1, TRUE, 12.34'],
             'string keys' => [
                 ['a' => 1, 'b' => true, 12.34],
-                static::replaceQuotes('SELECT 1 AS [[a]], TRUE AS [[b]], 12.34'),
+                'SELECT 1 AS [[a]], TRUE AS [[b]], 12.34',
             ],
         ];
     }
@@ -1526,7 +1516,10 @@ class QueryBuilderProvider
             'null' => [[null], 1],
             'expression' => [new Expression("'[0,1,2,7]'"), 1],
             'json expression' => [new JsonValue([0, 1, 2, 7]), 1],
-            'query expression' => [(new Query(static::getDb()))->select(new JsonValue([0, 1, 2, 7])), 1],
+            'query expression' => [
+                static fn(ConnectionInterface $db) => $db->select(new JsonValue([0, 1, 2, 7])),
+                1,
+            ],
         ];
     }
 
@@ -1627,9 +1620,9 @@ class QueryBuilderProvider
             "extra('')" => ['varchar(255)', ColumnBuilder::string()->extra('')],
             "check('value > 5')" => [
                 'integer CHECK ([[check_col]] > 5)',
-                ColumnBuilder::integer()
+                static fn(ConnectionInterface $db) => ColumnBuilder::integer()
                     ->withName('check_col')
-                    ->check(static::replaceQuotes('[[check_col]] > 5')),
+                    ->check($db->getQuoter()->quoteColumnName('check_col') . ' > 5'),
             ],
             "check('')" => ['integer', ColumnBuilder::integer()->check('')],
             'check(null)' => ['integer', ColumnBuilder::integer()->check(null)],
@@ -1812,7 +1805,7 @@ class QueryBuilderProvider
                 when3: new WhenThen(3, '3'),
                 else: $param = new Param(4, DataType::INTEGER),
             ),
-            static::replaceQuotes('CASE [[column_name]] WHEN 1 THEN 1 WHEN 2 THEN (1 + 1) WHEN 3 THEN :qp0 ELSE :qp1 END'),
+            'CASE [[column_name]] WHEN 1 THEN 1 WHEN 2 THEN (1 + 1) WHEN 3 THEN :qp0 ELSE :qp1 END',
             [
                 ':qp0' => new Param('3', DataType::STRING),
                 ':qp1' => $param,
@@ -1825,7 +1818,7 @@ class QueryBuilderProvider
                 when1: new WhenThen(true, 1),
                 else: 2,
             ),
-            static::replaceQuotes('CASE [[column_name]] = 1 WHEN TRUE THEN 1 ELSE 2 END'),
+            'CASE [[column_name]] = 1 WHEN TRUE THEN 1 ELSE 2 END',
             [],
             2,
         ];
@@ -1985,44 +1978,46 @@ class QueryBuilderProvider
 
     public static function upsertWithMultiOperandFunctions(): array
     {
-        return [[
+        return [
             [
-                'id' => 1,
-                'array_col' => new ArrayValue([1, 2, 3]),
-                'greatest_col' => 10,
-                'least_col' => 10,
-                'longest_col' => 'longest',
-                'shortest_col' => 'longest',
+                [
+                    'id' => 1,
+                    'array_col' => new ArrayValue([1, 2, 3]),
+                    'greatest_col' => 10,
+                    'least_col' => 10,
+                    'longest_col' => 'longest',
+                    'shortest_col' => 'longest',
+                ],
+                [
+                    'id' => 1,
+                    'array_col' => new ArrayValue([3, 4, 5]),
+                    'greatest_col' => 5,
+                    'least_col' => 5,
+                    'longest_col' => 'short',
+                    'shortest_col' => 'short',
+                ],
+                [
+                    'array_col' => (new ArrayMerge())->ordered(),
+                    'greatest_col' => new Greatest(),
+                    'least_col' => new Least(),
+                    'longest_col' => new Longest(),
+                    'shortest_col' => new Shortest(),
+                ],
+                '',
+                [
+                    'array_col' => '[1,2,3,4,5]',
+                    'greatest_col' => 10,
+                    'least_col' => 5,
+                    'longest_col' => 'longest',
+                    'shortest_col' => 'short',
+                ],
+                [
+                    ':qp0' => new Param('[3,4,5]', DataType::STRING),
+                    ':qp1' => new Param('short', DataType::STRING),
+                    ':qp2' => new Param('short', DataType::STRING),
+                ],
             ],
-            [
-                'id' => 1,
-                'array_col' => new ArrayValue([3, 4, 5]),
-                'greatest_col' => 5,
-                'least_col' => 5,
-                'longest_col' => 'short',
-                'shortest_col' => 'short',
-            ],
-            [
-                'array_col' => (new ArrayMerge())->ordered(),
-                'greatest_col' => new Greatest(),
-                'least_col' => new Least(),
-                'longest_col' => new Longest(),
-                'shortest_col' => new Shortest(),
-            ],
-            '',
-            [
-                'array_col' => '[1,2,3,4,5]',
-                'greatest_col' => 10,
-                'least_col' => 5,
-                'longest_col' => 'longest',
-                'shortest_col' => 'short',
-            ],
-            [
-                ':qp0' => new Param('[3,4,5]', DataType::STRING),
-                ':qp1' => new Param('short', DataType::STRING),
-                ':qp2' => new Param('short', DataType::STRING),
-            ],
-        ]];
+        ];
     }
 
     public static function dateTimeValue(): iterable

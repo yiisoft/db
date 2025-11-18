@@ -227,7 +227,7 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
 
         if ($condition instanceof Closure) {
-            $condition = $condition($db->getQueryBuilder());
+            $condition = $condition($db);
         }
 
         $query = (new Query($db))->where($condition);
@@ -1367,9 +1367,7 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $this->assertSame([], $params);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildWhereExists
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildWhereExists')]
     public function testBuildWithWhereExists(string $cond, string $expectedQuerySql): void
     {
         $db = $this->getSharedConnection();
@@ -1383,7 +1381,10 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
 
         [$actualQuerySql, $actualQueryParams] = $db->getQueryBuilder()->build($query);
 
-        $this->assertSame($expectedQuerySql, $actualQuerySql);
+        $this->assertSame(
+            $this->replaceQuotes($expectedQuerySql),
+            $actualQuerySql,
+        );
         $this->assertSame($expectedQueryParams, $actualQueryParams);
     }
 
@@ -2060,7 +2061,7 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $this->assertEmpty($params);
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::selectScalar */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'selectScalar')]
     public function testSelectScalar(array|bool|float|int|string $columns, string $expected): void
     {
         $db = $this->getSharedConnection();
@@ -2070,7 +2071,10 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
 
         [$sql, $params] = $qb->build($query);
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
         $this->assertEmpty($params);
     }
 
@@ -2312,14 +2316,18 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildColumnDefinition')]
-    public function testBuildColumnDefinition(string $expected, ColumnInterface|string $column): void
+    public function testBuildColumnDefinition(string $expected, Closure|ColumnInterface|string $column): void
     {
         $db = $this->getSharedConnection();
-        $qb = $db->getQueryBuilder();
+        $queryBuilder = $db->getQueryBuilder();
+
+        if ($column instanceof Closure) {
+            $column = $column($db);
+        }
 
         $this->assertSame(
             $this->replaceQuotes($expected),
-            $qb->buildColumnDefinition($column),
+            $queryBuilder->buildColumnDefinition($column),
         );
     }
 
@@ -2415,6 +2423,9 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
 
         foreach ($provider as $data) {
             $column = $data[1];
+            if ($column instanceof Closure) {
+                $column = $column($db);
+            }
 
             if ($column instanceof ColumnInterface) {
                 if ($column->isPrimaryKey()) {
@@ -2602,7 +2613,10 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $length = new Length($operand);
         $params = [];
 
-        $this->assertSame($expectedSql, $qb->buildExpression($length, $params));
+        $this->assertSame(
+            $this->replaceQuotes($expectedSql),
+            $qb->buildExpression($length, $params),
+        );
         $this->assertEquals($expectedParams, $params);
 
         $length = new Length($operand);
