@@ -108,9 +108,7 @@ final class CommandTest extends BaseTestCase
         $command->addDefaultValue('table', 'name', 'column', 'value');
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addForeignKeySql
-     */
+    #[DataProviderExternal(CommandProvider::class, 'addForeignKeySql')]
     public function testAddForeignKeySql(
         array|string $columns,
         array|string $referenceColumns,
@@ -127,12 +125,13 @@ final class CommandTest extends BaseTestCase
 
         $sql = $command->addForeignKey($tableName, $name, $columns, $referenceTable, $referenceColumns, $delete, $update)->getSql();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addPrimaryKeySql
-     */
+    #[DataProviderExternal(CommandProvider::class, 'addPrimaryKeySql')]
     public function testAddPrimaryKeySql(string $name, string $tableName, array|string $column, string $expected): void
     {
         $db = TestHelper::createSqliteMemoryConnection();
@@ -140,13 +139,13 @@ final class CommandTest extends BaseTestCase
         $command = $db->createCommand();
         $sql = $command->addPrimaryKey($tableName, $name, $column)->getSql();
 
-
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addUniqueSql
-     */
+    #[DataProviderExternal(CommandProvider::class, 'addUniqueSql')]
     public function testAddUniqueSql(string $name, string $tableName, array|string $column, string $expected): void
     {
         $db = TestHelper::createSqliteMemoryConnection();
@@ -154,7 +153,10 @@ final class CommandTest extends BaseTestCase
         $command = $db->createCommand();
         $sql = $command->addUnique($tableName, $name, $column)->getSql();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
     }
 
     public function testAlterColumn(): void
@@ -193,9 +195,7 @@ final class CommandTest extends BaseTestCase
         );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::createIndexSql
-     */
+    #[DataProviderExternal(CommandProvider::class, 'createIndexSql')]
     public function testCreateIndexSql(
         string $name,
         string $table,
@@ -210,7 +210,10 @@ final class CommandTest extends BaseTestCase
 
         $sql = $command->createIndex($table, $name, $column, $indexType, $indexMethod)->getSql();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
     }
 
     public function testCheckIntegrity(): void

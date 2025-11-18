@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use Closure;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Throwable;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\ColumnType;
@@ -33,6 +35,7 @@ use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
 use function array_filter;
+use function is_callable;
 use function is_string;
 use function setlocale;
 use function str_starts_with;
@@ -111,19 +114,19 @@ abstract class CommonCommandTest extends IntegrationTestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::rawSql
-     *
      * @see https://github.com/yiisoft/yii2/issues/8592
      */
+    #[DataProviderExternal(CommandProvider::class, 'rawSql')]
     public function testGetRawSql(string $sql, array $params, string $expectedRawSql): void
     {
         $db = $this->getSharedConnection();
 
         $command = $db->createCommand($sql, $params);
 
-        $this->assertSame($expectedRawSql, $command->getRawSql());
-
-        $db->close();
+        $this->assertSame(
+            $this->replaceQuotes($expectedRawSql),
+            $command->getRawSql(),
+        );
     }
 
     public function testGetSetSql(): void
@@ -231,7 +234,9 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $db->open();
 
         $profiler = new class ($this, $sql) implements ProfilerInterface {
-            public function __construct(private TestCase $test, private string $sql) {}
+            public function __construct(private TestCase $test, private string $sql)
+            {
+            }
 
             public function begin(string $token, ContextInterface|array $context = []): void
             {
@@ -495,15 +500,16 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $command = $db->createCommand();
         $command->insertBatch($table, $values, $columns);
 
-        $this->assertSame($expected, $command->getSql());
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $command->getSql(),
+        );
         $this->assertSame($expectedParams, $command->getParams());
 
         $command->prepare(false);
         $command->execute();
 
         $this->assertEquals($insertedRow, (new Query($db))->from($table)->count());
-
-        $db->close();
     }
 
     /**
@@ -635,9 +641,9 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $this->loadFixture();
 
         $rows = (
-            static function () {
-                yield ['test@email.com', 'test name', 'test address'];
-            }
+        static function () {
+            yield ['test@email.com', 'test name', 'test address'];
+        }
         )();
         $command = $db->createCommand();
         $command->insertBatch('{{customer}}', $rows, ['email', 'name', 'address']);
@@ -1960,18 +1966,23 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $db->close();
     }
 
+    /**
+     * @param Closure(ConnectionInterface):(array|ExpressionInterface|string|null) $from
+     */
     #[DataProviderExternal(CommandProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
         array|ExpressionInterface|string $conditions,
-        array|ExpressionInterface|string|null $from,
+        Closure $from,
         array $params,
         array $expectedValues,
         int $expectedCount,
     ): void {
         $db = $this->getSharedConnection();
         $this->loadFixture();
+
+        $from = $from($db);
 
         $command = $db->createCommand();
         $count = $command->update($table, $columns, $conditions, $from, $params)->execute();
@@ -2027,11 +2038,22 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $db->close();
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):array)|array $firstData
+     * @param (Closure(ConnectionInterface):array)|array $secondData
+     */
     #[DataProviderExternal(CommandProvider::class, 'upsert')]
-    public function testUpsert(array $firstData, array $secondData): void
+    public function testUpsert(Closure|array $firstData, Closure|array $secondData): void
     {
         $db = $this->getSharedConnection();
         $this->loadFixture();
+
+        if ($firstData instanceof Closure) {
+            $firstData = $firstData($db);
+        }
+        if ($secondData instanceof Closure) {
+            $secondData = $secondData($db);
+        }
 
         $command = $db->createCommand();
 
@@ -2056,8 +2078,6 @@ abstract class CommonCommandTest extends IntegrationTestCase
         );
 
         $this->performAndCompareUpsertResult($db, $secondData);
-
-        $db->close();
     }
 
     public function testPrepareWithEmptySql()
@@ -2071,9 +2091,13 @@ abstract class CommonCommandTest extends IntegrationTestCase
                 return $this->showDatabases();
             }
 
-            protected function getQueryBuilder(): QueryBuilderInterface {}
+            protected function getQueryBuilder(): QueryBuilderInterface
+            {
+            }
 
-            protected function internalExecute(): void {}
+            protected function internalExecute(): void
+            {
+            }
         };
 
         $command->prepare();
@@ -2166,10 +2190,13 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $db->close();
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $insertColumns
+     */
     #[DataProviderExternal(CommandProvider::class, 'upsertReturning')]
     public function testUpsertReturning(
         string $table,
-        array|QueryInterface $insertColumns,
+        Closure|array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         ?array $returnColumns,
         array $selectCondition,
@@ -2177,6 +2204,11 @@ abstract class CommonCommandTest extends IntegrationTestCase
     ): void {
         $db = $this->getSharedConnection();
         $this->loadFixture();
+
+        if ($insertColumns instanceof Closure) {
+            $insertColumns = $insertColumns($db);
+        }
+
         $command = $db->createCommand();
 
         $returnedValues = $command->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns);
@@ -2410,7 +2442,7 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $db->close();
     }
 
-    protected function performAndCompareUpsertResult(PdoConnectionInterface $db, array $data): void
+    protected function performAndCompareUpsertResult(ConnectionInterface $db, array $data): void
     {
         $params = [];
 
