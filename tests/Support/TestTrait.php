@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Support;
 
 use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Driver\Pdo\PdoDriverInterface;
-use Yiisoft\Db\Tests\Support\Stub\PdoDriver;
+use Yiisoft\Db\Tests\Support\Stub\StubPdoDriver;
 
 use function str_replace;
 
@@ -16,7 +16,7 @@ trait TestTrait
 
     protected function getConnection(bool $fixture = false): PdoConnectionInterface
     {
-        $db = new Stub\Connection($this->getDriver(), DbHelper::getSchemaCache());
+        $db = new Stub\StubConnection($this->getDriver(), DbHelper::getSchemaCache());
 
         if ($fixture) {
             DbHelper::loadFixture($db, __DIR__ . '/Fixture/db.sql');
@@ -27,12 +27,12 @@ trait TestTrait
 
     protected static function getDb(): PdoConnectionInterface
     {
-        return new Stub\Connection(new PdoDriver('sqlite::memory:'), DbHelper::getSchemaCache());
+        return new Stub\StubConnection(new StubPdoDriver('sqlite::memory:'), DbHelper::getSchemaCache());
     }
 
     protected function getDriver(): PdoDriverInterface
     {
-        return new PdoDriver($this->dsn);
+        return new StubPdoDriver($this->dsn);
     }
 
     protected static function getDriverName(): string

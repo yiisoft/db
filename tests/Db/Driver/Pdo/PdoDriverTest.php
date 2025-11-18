@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests\Db\Driver\Pdo;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\Stub\PDODriver;
+use Yiisoft\Db\Tests\Support\Stub\StubPdoDriver;
 
 /**
  * @group db
@@ -19,7 +19,7 @@ final class PdoDriverTest extends TestCase
     public function testAttributes(): void
     {
         $dsn = 'sqlite::memory:';
-        $pdoDriver = new PDODriver($dsn);
+        $pdoDriver = new StubPdoDriver($dsn);
         $pdoDriver->attributes([PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
         $this->assertSame(
@@ -31,7 +31,7 @@ final class PdoDriverTest extends TestCase
     public function testGetDriverName(): void
     {
         $dsn = 'sqlite::memory:';
-        $pdoDriver = new PDODriver($dsn);
+        $pdoDriver = new StubPdoDriver($dsn);
 
         $this->assertSame('db', $pdoDriver->getDriverName());
     }
@@ -39,7 +39,7 @@ final class PdoDriverTest extends TestCase
     public function testSetCharSet(): void
     {
         $dsn = 'sqlite::memory:';
-        $pdoDriver = new PDODriver($dsn);
+        $pdoDriver = new StubPdoDriver($dsn);
         $pdoDriver->charset('utf8');
 
         $this->assertSame('utf8', $pdoDriver->getCharSet());
@@ -48,7 +48,7 @@ final class PdoDriverTest extends TestCase
     public function testGetPassword(): void
     {
         $dsn = 'sqlite::memory:';
-        $pdoDriver = new PDODriver($dsn);
+        $pdoDriver = new StubPdoDriver($dsn);
         $pdoDriver->password('password');
 
         $this->assertSame('password', $pdoDriver->getPassword());
@@ -57,7 +57,7 @@ final class PdoDriverTest extends TestCase
     public function testGetUsername(): void
     {
         $dsn = 'sqlite::memory:';
-        $pdoDriver = new PDODriver($dsn);
+        $pdoDriver = new StubPdoDriver($dsn);
         $pdoDriver->username('username');
 
         $this->assertSame('username', $pdoDriver->getUsername());
@@ -70,11 +70,11 @@ final class PdoDriverTest extends TestCase
         }
         $dsn = 'sqlite::memory:';
         try {
-            new PDODriver($dsn, password: null);
+            new StubPdoDriver($dsn, password: null);
         } catch (\TypeError $e) {
             $this->assertTrue($e->getTrace()[0]['args'][2] instanceof \SensitiveParameterValue);
         }
-        $pdoDriver = new PDODriver($dsn);
+        $pdoDriver = new StubPdoDriver($dsn);
         try {
             $pdoDriver->password(null);
         } catch (\TypeError $e) {

@@ -13,7 +13,7 @@ use Yiisoft\Db\Tests\AbstractConnectionTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\ColumnFactory;
-use Yiisoft\Db\Tests\Support\Stub\Connection;
+use Yiisoft\Db\Tests\Support\Stub\StubConnection;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -46,7 +46,7 @@ final class ConnectionTest extends AbstractConnectionTest
     {
         $columnFactory = new ColumnFactory();
 
-        $db = new Connection($this->getDriver(), DbHelper::getSchemaCache(), $columnFactory);
+        $db = new StubConnection($this->getDriver(), DbHelper::getSchemaCache(), $columnFactory);
 
         $this->assertSame($columnFactory, $db->getColumnFactory());
     }

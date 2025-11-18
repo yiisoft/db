@@ -233,6 +233,8 @@ abstract class AbstractSchema implements SchemaInterface
 
         $this->tableNames = [];
         $this->tableMetadata = [];
+        $this->schemaNames = [];
+        $this->viewNames = [];
     }
 
     public function refreshTableSchema(string $name): void

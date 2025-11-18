@@ -14,7 +14,7 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
-final class Connection extends AbstractPdoConnection
+final class StubConnection extends AbstractPdoConnection
 {
     public function createCommand(?string $sql = null, array $params = []): CommandInterface
     {
