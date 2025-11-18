@@ -8,18 +8,17 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\CompositeExpression;
 use Yiisoft\Db\Expression\CompositeExpressionBuilder;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 /**
  * @group db
  */
 final class CompositeExpressionBuilderTest extends TestCase
 {
-    use TestTrait;
-
     public function testBase(): void
     {
-        $builder = new CompositeExpressionBuilder($this->getConnection()->getQueryBuilder());
+        $db = TestHelper::createSqliteMemoryConnection();
+        $builder = new CompositeExpressionBuilder($db->getQueryBuilder());
         $expression = new CompositeExpression([
             'x=1',
             new Expression('AND y=:p', ['p' => 2]),
@@ -34,7 +33,8 @@ final class CompositeExpressionBuilderTest extends TestCase
 
     public function testCustomSeparator(): void
     {
-        $builder = new CompositeExpressionBuilder($this->getConnection()->getQueryBuilder());
+        $db = TestHelper::createSqliteMemoryConnection();
+        $builder = new CompositeExpressionBuilder($db->getQueryBuilder());
         $expression = new CompositeExpression(
             ['x=1', 'y=2'],
             ' AND ',

@@ -11,15 +11,12 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\Statement\CaseX;
 use Yiisoft\Db\Expression\Statement\WhenThen;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @group db
  */
 final class CaseXTest extends TestCase
 {
-    use TestTrait;
-
     public static function dataValues(): array
     {
         return [
