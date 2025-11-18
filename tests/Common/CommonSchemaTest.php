@@ -21,7 +21,6 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\Provider\SchemaProvider;
 use Yiisoft\Db\Tests\Support\Assert;
-
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
 use function count;

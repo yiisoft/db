@@ -15,12 +15,9 @@ use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Tests\AbstractConnectionTest;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 use Yiisoft\Db\Tests\Support\Stub\ColumnFactory;
-use Yiisoft\Db\Tests\Support\Stub\StubConnection;
 
 abstract class CommonConnectionTest extends IntegrationTestCase
 {

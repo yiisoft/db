@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Tests\Common;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\Query;
-
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
 use function iterator_to_array;

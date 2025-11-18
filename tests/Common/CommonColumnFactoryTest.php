@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Schema\Column\AbstractArrayColumn;
 use Yiisoft\Db\Schema\Column\ArrayLazyColumn;
 use Yiisoft\Db\Schema\Column\ColumnInterface;

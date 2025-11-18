@@ -106,11 +106,6 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
         $this->assertTrue($db->getEmulatePrepare());
     }
 
-    protected function getLogger(): LoggerInterface|MockObject
-    {
-        return $this->createMock(LoggerInterface::class);
-    }
-
     public function testCreateCommandWithLoggerProfiler(): void
     {
         $db = $this->getSharedConnection();
@@ -437,6 +432,11 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
         $this->expectExceptionMessage('PDO cannot be initialized.');
 
         $db->getActivePdo();
+    }
+
+    protected function getLogger(): LoggerInterface|MockObject
+    {
+        return $this->createMock(LoggerInterface::class);
     }
 
     private function getProfiler(): ProfilerInterface

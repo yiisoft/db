@@ -206,7 +206,7 @@ final class SchemaTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
 
         $schemaCache = new SchemaCache(
-            new MemorySimpleCache()
+            new MemorySimpleCache(),
         );
 
         $schemaMock = $this->getMockBuilder(Schema::class)

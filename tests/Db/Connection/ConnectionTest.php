@@ -7,18 +7,13 @@ namespace Yiisoft\Db\Tests\Db\Connection;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Tests\AbstractConnectionTest;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\ColumnFactory;
 use Yiisoft\Db\Tests\Support\Stub\StubConnection;
 use Yiisoft\Db\Tests\Support\Stub\StubPdoDriver;
-use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Test\Support\SimpleCache\MemorySimpleCache;
 
 /**
