@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema\Column;
 
+use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
@@ -13,13 +14,12 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\Column\StructuredColumn;
-use Yiisoft\Db\Tests\AbstractColumnTest;
 use Yiisoft\Db\Tests\Support\Stub\Column;
 
 /**
  * @group db
  */
-final class ColumnTest extends AbstractColumnTest
+final class ColumnTest extends TestCase
 {
     public function testAutoIncrement(): void
     {

@@ -7,28 +7,81 @@ namespace Yiisoft\Db\Tests\Common;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractColumnTest;
 use Yiisoft\Db\Tests\Provider\ColumnProvider;
+use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function array_fill_keys;
 use function array_keys;
 use function array_map;
+use function is_object;
 use function version_compare;
 
-abstract class CommonColumnTest extends AbstractColumnTest
+abstract class CommonColumnTest extends IntegrationTestCase
 {
-    use TestTrait;
-
     protected const DATETIME_COLUMN_TABLE = 'datetime_column_test';
+
+    #[DataProviderExternal(ColumnProvider::class, 'predefinedTypes')]
+    public function testPredefinedType(string $className, string $type)
+    {
+        /** @var ColumnInterface $column */
+        $column = new $className();
+
+        $this->assertSame($type, $column->getType());
+    }
+
+    #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumns')]
+    public function testDbTypecastColumns(ColumnInterface $column, array $values)
+    {
+        // Set the timezone for testing purposes, could be any timezone except UTC
+        $oldDatetime = date_default_timezone_get();
+        date_default_timezone_set('America/New_York');
+
+        foreach ($values as [$expected, $value]) {
+            if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {
+                $this->assertEquals($expected, $column->dbTypecast($value));
+            } else {
+                $this->assertSame($expected, $column->dbTypecast($value));
+            }
+        }
+
+        date_default_timezone_set($oldDatetime);
+    }
+
+    #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumnsWithException')]
+    public function testDbTypecastColumnsWithException(ColumnInterface $column, mixed $value)
+    {
+        $type = is_object($value) ? $value::class : gettype($value);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Wrong $type value for {$column->getType()} column.");
+
+        $column->dbTypecast($value);
+    }
+
+    #[DataProviderExternal(ColumnProvider::class, 'phpTypecastColumns')]
+    public function testPhpTypecastColumns(ColumnInterface $column, array $values)
+    {
+        foreach ($values as [$expected, $value]) {
+            if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {
+                $this->assertEquals($expected, $column->phpTypecast($value));
+            } else {
+                $this->assertSame($expected, $column->phpTypecast($value));
+            }
+        }
+    }
 
     public function testQueryWithTypecasting(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $this->insertTypeValues($db);
 
@@ -53,13 +106,12 @@ abstract class CommonColumnTest extends AbstractColumnTest
         $result = $db->select(['float_col'])->from('type')->withTypecasting()->column();
 
         $this->assertSame(1.234, $result[0]);
-
-        $db->close();
     }
 
     public function testCommandWithPhpTypecasting(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $this->insertTypeValues($db);
 
@@ -84,13 +136,13 @@ abstract class CommonColumnTest extends AbstractColumnTest
             ->queryColumn();
 
         $this->assertSame(1.234, $result[0]);
-
-        $db->close();
     }
 
     public function testPhpTypecast(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
         $columns = $db->getTableSchema('type')->getColumns();
 
         $this->insertTypeValues($db);
@@ -104,8 +156,6 @@ abstract class CommonColumnTest extends AbstractColumnTest
         }
 
         $this->assertTypecastedValues($result, true);
-
-        $db->close();
     }
 
     public function createDateTimeColumnTable(ConnectionInterface $db): void
@@ -134,7 +184,7 @@ abstract class CommonColumnTest extends AbstractColumnTest
 
     public function testDateTimeColumnDefaults(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $this->createDateTimeColumnTable($db);
 
@@ -161,14 +211,12 @@ abstract class CommonColumnTest extends AbstractColumnTest
         $this->assertEquals(new DateTimeImmutable('14:11:35 +02:00', $utcTimezone), $columns['timetz']->getDefaultValue());
         $this->assertEquals(new DateTimeImmutable('14:11:35.123456 +02:00', $utcTimezone), $columns['timetz6']->getDefaultValue());
         $this->assertEquals(new DateTimeImmutable('2025-04-19', $utcTimezone), $columns['date']->getDefaultValue());
-
-        $db->close();
     }
 
     #[DataProviderExternal(ColumnProvider::class, 'dateTimeColumn')]
     public function testDateTimeColumn(float|int|string $value, array $expected): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $command = $db->createCommand();
 
         $this->createDateTimeColumnTable($db);
@@ -185,8 +233,6 @@ abstract class CommonColumnTest extends AbstractColumnTest
             ->queryOne();
 
         $this->assertEquals($expected, $result);
-
-        $db->close();
     }
 
     abstract protected function insertTypeValues(ConnectionInterface $db): void;
