@@ -4,15 +4,153 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use PHPUnit\Framework\TestCase;
 use Throwable;
+use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Profiler\Context\ConnectionContext;
+use Yiisoft\Db\Profiler\ContextInterface;
+use Yiisoft\Db\Profiler\ProfilerInterface;
+use Yiisoft\Db\Query\BatchQueryResult;
+use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractConnectionTest;
+use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\IntegrationTestCase;
+use Yiisoft\Db\Tests\Support\Stub\ColumnFactory;
+use Yiisoft\Db\Tests\Support\Stub\StubConnection;
 
-abstract class CommonConnectionTest extends AbstractConnectionTest
+abstract class CommonConnectionTest extends IntegrationTestCase
 {
+    public function testCreateBatchQueryResult(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $query = (new Query($db))->from('customer');
+
+        $this->assertInstanceOf(BatchQueryResult::class, $db->createBatchQueryResult($query));
+    }
+
+    public function testCreateCommand(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $sql = <<<SQL
+        SELECT * FROM customer
+        SQL;
+
+        $params = ['id' => 1];
+        $command = $db->createCommand($sql, $params);
+
+        $this->assertSame($sql, $command->getSql());
+        $this->assertSame($params, $command->getParams());
+    }
+
+    public function testNestedTransactionNotSupported(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $db->setEnableSavepoint(false);
+
+        $this->assertFalse($db->isSavepointEnabled());
+
+        $db->transaction(
+            function (PdoConnectionInterface $db) {
+                $this->assertNotNull($db->getTransaction());
+                $this->expectException(NotSupportedException::class);
+
+                $db->beginTransaction();
+            },
+        );
+    }
+
+    public function testNotProfiler(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $profiler = $this->createMock(ProfilerInterface::class);
+
+        $this->assertNull(Assert::getPropertyValue($db, 'profiler'));
+
+        $db->setProfiler($profiler);
+
+        $this->assertSame($profiler, Assert::getPropertyValue($db, 'profiler'));
+
+        $db->setProfiler(null);
+
+        $this->assertNull(Assert::getPropertyValue($db, 'profiler'));
+    }
+
+    public function testProfiler(): void
+    {
+        $db = $this->createConnection();
+
+        $profiler = new class ($this) implements ProfilerInterface {
+            public function __construct(private TestCase $test) {}
+
+            public function begin(string $token, ContextInterface|array $context = []): void
+            {
+                $this->test->assertInstanceOf(ConnectionContext::class, $context);
+                $this->test->assertSame('connection', $context->getType());
+                $this->test->assertIsArray($context->asArray());
+            }
+
+            public function end(string $token, ContextInterface|array $context = []): void
+            {
+                $this->test->assertInstanceOf(ConnectionContext::class, $context);
+                $this->test->assertSame('connection', $context->getType());
+                $this->test->assertIsArray($context->asArray());
+            }
+        };
+        $db->setProfiler($profiler);
+        $db->open();
+        $db->close();
+    }
+
+    public function testSetTablePrefix(): void
+    {
+        $db = $this->createConnection();
+        $db->setTablePrefix('pre_');
+
+        $this->assertSame('pre_', $db->getTablePrefix());
+
+        $db->close();
+    }
+
+    public function testSerialized(): void
+    {
+        $connection = $this->getSharedConnection();
+        $connection->open();
+        $serialized = serialize($connection);
+        $this->assertNotNull($connection->getPdo());
+
+        $unserialized = unserialize($serialized);
+        $this->assertInstanceOf(PdoConnectionInterface::class, $unserialized);
+        $this->assertNull($unserialized->getPdo());
+        $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
+        $this->assertNotNull($connection->getPdo());
+    }
+
+    public function getColumnBuilderClass(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $this->assertSame(ColumnBuilder::class, $db->getColumnBuilderClass());
+    }
+
+    public function testGetColumnFactory(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $this->assertInstanceOf(ColumnFactory::class, $db->getColumnFactory());
+    }
+
     public function testTransactionShortcutException(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $callable = static function () use ($db) {
             $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
@@ -26,7 +164,5 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
         }
 
         $this->assertInstanceOf(Exception::class, $exception);
-
-        $db->close();
     }
 }

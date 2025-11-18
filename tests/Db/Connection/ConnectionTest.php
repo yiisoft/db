@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Connection;
 
 use PHPUnit\Framework\Attributes\TestWith;
+use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Cache\SchemaCache;
+use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -14,46 +17,34 @@ use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\ColumnFactory;
 use Yiisoft\Db\Tests\Support\Stub\StubConnection;
+use Yiisoft\Db\Tests\Support\Stub\StubPdoDriver;
 use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Test\Support\SimpleCache\MemorySimpleCache;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
-final class ConnectionTest extends AbstractConnectionTest
+final class ConnectionTest extends TestCase
 {
-    use TestTrait;
-
     public function testGetTableSchema(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
 
         $this->assertNull($db->getTableSchema('non_existing_table'));
-    }
-
-    public function testSerialized(): void
-    {
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
-        );
-
-        parent::testSerialized();
     }
 
     public function testConstructColumnFactory(): void
     {
         $columnFactory = new ColumnFactory();
 
-        $db = new StubConnection($this->getDriver(), DbHelper::getSchemaCache(), $columnFactory);
+        $db = $this->createConnection($columnFactory);
 
         $this->assertSame($columnFactory, $db->getColumnFactory());
     }
 
     public function testCreateQuery(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
 
         $this->assertInstanceOf(Query::class, $db->createQuery());
     }
@@ -67,15 +58,26 @@ final class ConnectionTest extends AbstractConnectionTest
     #[TestWith(['columns' => ['column1', 'now()', new Expression('now()')]])]
     public function testSelect(array|bool|float|int|string|ExpressionInterface $columns, ?string $option = null): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
 
         Assert::objectsEquals($db->select($columns, $option), $db->createQuery()->select($columns, $option));
     }
 
     public function testSelectWithoutParams(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
 
         Assert::objectsEquals($db->select(), $db->createQuery());
+    }
+
+    private function createConnection(?ColumnFactory $columnFactory = null): StubConnection
+    {
+        return new StubConnection(
+            new StubPdoDriver('sqlite::memory:'),
+            new SchemaCache(
+                new MemorySimpleCache(),
+            ),
+            $columnFactory,
+        );
     }
 }

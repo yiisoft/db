@@ -125,7 +125,7 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
 
     public function testCommitTransactionsWithSavepoints(): void
     {
-        $db = $this->getSharedConnection();
+        $db = $this->createConnection();
         $this->loadFixture();
 
         $db->setLogger($this->getLogger());
@@ -174,11 +174,13 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
                 SQL,
             )->queryScalar(),
         );
+
+        $db->close();
     }
 
     public function testPartialRollbackTransactionsWithSavePoints(): void
     {
-        $db = $this->getSharedConnection();
+        $db = $this->createConnection();
         $this->loadFixture();
 
         $db->open();
@@ -235,7 +237,7 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
 
     public function testRollbackTransactionsWithSavePoints(): void
     {
-        $db = $this->getSharedConnection();
+        $db = $this->createConnection();
         $this->loadFixture();
         $db->open();
 
@@ -275,20 +277,19 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
 
     public function testTransactionCommitNotActiveTransaction(): void
     {
-        $db = $this->getSharedConnection();
+        $db = $this->createConnection();
 
         $transaction = $db->beginTransaction();
         $db->close();
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Failed to commit transaction: transaction was inactive.');
-
         $transaction->commit();
     }
 
     public function testTransactionCommitSavepoint(): void
     {
-        $db = $this->getSharedConnection();
+        $db = $this->createConnection();
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger
@@ -314,7 +315,7 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
 
     public function testTransactionRollbackNotActiveTransaction(): void
     {
-        $db = $this->getSharedConnection();
+        $db = $this->createConnection();
 
         $transaction = $db->beginTransaction();
         $db->close();
