@@ -2587,13 +2587,17 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'lengthBuilder')]
     public function testLengthBuilder(
-        string|ExpressionInterface $operand,
+        Closure|string|ExpressionInterface $operand,
         string $expectedSql,
         int $expectedResult,
         array $expectedParams = [],
     ): void {
         $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
+
+        if ($operand instanceof Closure) {
+            $operand = $operand($db);
+        }
 
         $length = new Length($operand);
         $params = [];

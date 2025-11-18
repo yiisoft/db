@@ -1864,8 +1864,8 @@ class QueryBuilderProvider
                 [':qp0' => $param],
             ],
             'query' => [
-                static::getDb()->select(new Expression("'four'")),
-                static::replaceQuotes("LENGTH((SELECT 'four'))"),
+                static fn(ConnectionInterface $db) => $db->select(new Expression("'four'")),
+                "LENGTH((SELECT 'four'))",
                 4,
             ],
         ];
