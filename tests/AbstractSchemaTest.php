@@ -68,7 +68,8 @@ abstract class AbstractSchemaTest extends TestCase
             $this->assertNotEmpty($schema->getTableNames());
             $this->assertNotEmpty($schema->getViewNames());
             $this->assertNotEmpty($schema->getSchemaNames());
-        } catch (NotSupportedException) {}
+        } catch (NotSupportedException) {
+        }
 
         $schema->refresh();
 
