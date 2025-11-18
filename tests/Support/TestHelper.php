@@ -15,9 +15,14 @@ final class TestHelper
     {
         return new StubConnection(
             new StubPdoDriver('sqlite::memory:'),
-            new SchemaCache(
-                new MemorySimpleCache(),
-            ),
+            self::createMemorySchemaCache(),
+        );
+    }
+
+    public static function createMemorySchemaCache(): SchemaCache
+    {
+        return new SchemaCache(
+            new MemorySimpleCache(),
         );
     }
 }

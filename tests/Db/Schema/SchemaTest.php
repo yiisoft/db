@@ -14,9 +14,9 @@ use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\TableSchema;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 use Yiisoft\Db\Tests\Support\Stub\Schema;
+use Yiisoft\Db\Tests\Support\TestHelper;
 use Yiisoft\Test\Support\SimpleCache\MemorySimpleCache;
 
 use function count;
@@ -49,7 +49,7 @@ final class SchemaTest extends IntegrationTestCase
         $checks = [new Check('check_1', ['col1', 'col2'], 'col1 > col2')];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableChecks'])
-            ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
+            ->setConstructorArgs([$db, TestHelper::createMemorySchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
         $schemaMock->expects($this->once())->method('loadTableChecks')->willReturn($checks);
@@ -65,7 +65,7 @@ final class SchemaTest extends IntegrationTestCase
         $defaultValues = [new DefaultValue('DF__T_constra__C_def__6203C3C6', ['C_default'], '((0))')];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableDefaultValues'])
-            ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
+            ->setConstructorArgs([$db, TestHelper::createMemorySchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
         $schemaMock->expects($this->once())->method('loadTableDefaultValues')->willReturn($defaultValues);
@@ -87,7 +87,7 @@ final class SchemaTest extends IntegrationTestCase
         )];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableForeignKeys'])
-            ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
+            ->setConstructorArgs([$db, TestHelper::createMemorySchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
         $schemaMock->expects($this->once())->method('loadTableForeignKeys')->willReturn($foreignKeys);
@@ -103,7 +103,7 @@ final class SchemaTest extends IntegrationTestCase
         $indexes = [new Index('PK__T_constr__A9FAE80AC2B18E65', ['"C_id'], true, true)];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableIndexes'])
-            ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
+            ->setConstructorArgs([$db, TestHelper::createMemorySchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
         $schemaMock->expects($this->once())->method('loadTableIndexes')->willReturn($indexes);
@@ -150,7 +150,7 @@ final class SchemaTest extends IntegrationTestCase
         $pksConstraint = new Index('PK__T_constr__A9FAE80AC2B18E65', ['"C_id'], true, true);
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'getTablePrimaryKey'])
-            ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
+            ->setConstructorArgs([$db, TestHelper::createMemorySchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
         $schemaMock->expects($this->once())->method('getTablePrimaryKey')->willReturn($pksConstraint);
@@ -167,7 +167,7 @@ final class SchemaTest extends IntegrationTestCase
         $uniquesConstraint = [new Index('CN_unique', ['C_unique'], true)];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'getTableUniques'])
-            ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
+            ->setConstructorArgs([$db, TestHelper::createMemorySchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
         $schemaMock->expects($this->once())->method('getTableUniques')->willReturn($uniquesConstraint);
@@ -187,7 +187,7 @@ final class SchemaTest extends IntegrationTestCase
 
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableSchema'])
-            ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
+            ->setConstructorArgs([$db, TestHelper::createMemorySchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
         $schemaMock->expects($this->once())->method('loadTableSchema')->willReturn($this->createTableSchemaStub());
@@ -238,7 +238,7 @@ final class SchemaTest extends IntegrationTestCase
 
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableSchema'])
-            ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
+            ->setConstructorArgs([$db, TestHelper::createMemorySchemaCache()])
             ->getMock();
         $schemaMock
             ->expects($this->exactly(2))
@@ -261,7 +261,7 @@ final class SchemaTest extends IntegrationTestCase
 
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableSchema'])
-            ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
+            ->setConstructorArgs([$db, TestHelper::createMemorySchemaCache()])
             ->getMock();
         $schemaMock
             ->expects($this->exactly(2))

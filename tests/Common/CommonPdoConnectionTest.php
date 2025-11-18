@@ -14,8 +14,8 @@ use Yiisoft\Db\Driver\Pdo\PdoDriverInterface;
 use Yiisoft\Db\Driver\Pdo\PdoServerInfo;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Profiler\ProfilerInterface;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
+use Yiisoft\Db\Tests\Support\TestHelper;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 abstract class CommonPdoConnectionTest extends IntegrationTestCase
@@ -423,7 +423,7 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
         ])
             ->setConstructorArgs([
                 $this->getSharedConnection()->getDriver(),
-                DbHelper::getSchemaCache(),
+                TestHelper::createMemorySchemaCache(),
             ])
             ->getMock();
         $db->expects(self::once())
