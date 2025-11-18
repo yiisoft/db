@@ -1881,115 +1881,104 @@ class QueryBuilderProvider
         ];
     }
 
-    public static function multiOperandFunctionBuilder(): array
+    public static function multiOperandFunctionBuilder(): iterable
     {
-        $stringQuery = static::getDb()->select(new Expression("'longest'"));
-        $stringQuerySql = "(SELECT 'longest')";
-        $intQuery = static::getDb()->select(10);
-        $intQuerySql = '(SELECT 10)';
-        $stringParam = new Param('string', DataType::STRING);
-
-        return [
-            'Greatest with 1 operand' => [
-                Greatest::class,
-                ['(1 + 2)'],
-                '((1 + 2))',
-                3,
+        yield 'Greatest with 1 operand' => [
+            Greatest::class,
+            ['(1 + 2)'],
+            '((1 + 2))',
+            3,
+        ];
+        yield 'Greatest with 2 operands' => [
+            Greatest::class,
+            [1, '(1 + 2)'],
+            'GREATEST(1, (1 + 2))',
+            3,
+        ];
+        yield 'Greatest with 4 operands' => [
+            Greatest::class,
+            static fn(Connectioninterface $db) => [1, 1.5, '(1 + 2)', $db->select(10)],
+            "GREATEST(1, 1.5, (1 + 2), (SELECT 10))",
+            10,
+        ];
+        yield 'Least with 1 operand' => [
+            Least::class,
+            ['(1 + 2)'],
+            '((1 + 2))',
+            3,
+        ];
+        yield 'Least with 2 operands' => [
+            Least::class,
+            [1, '(1 + 2)'],
+            'LEAST(1, (1 + 2))',
+            1,
+        ];
+        yield 'Least with 4 operands' => [
+            Least::class,
+            static fn(Connectioninterface $db) => [1, 1.5, '(1 + 2)', $db->select(10)],
+            "LEAST(1, 1.5, (1 + 2), (SELECT 10))",
+            1,
+        ];
+        yield 'Longest with 1 operand' => [
+            Longest::class,
+            [new Value('string')],
+            '(:qp0)',
+            'string',
+            [':qp0' => new Param('string', DataType::STRING)],
+        ];
+        yield 'Longest with 2 operands' => [
+            Longest::class,
+            [new Value('short'), new Param('string', DataType::STRING)],
+            '(SELECT value FROM (SELECT :qp0 AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) DESC LIMIT 1)',
+            'string',
+            [
+                ':qp0' => new Param('short', DataType::STRING),
+                ':qp1' => new Param('string', DataType::STRING),
             ],
-            'Greatest with 2 operands' => [
-                Greatest::class,
-                [1, '(1 + 2)'],
-                'GREATEST(1, (1 + 2))',
-                3,
+        ];
+        yield 'Longest with 3 operands' => [
+            Longest::class,
+            static fn(Connectioninterface $db) => [
+                new Value('short'),
+                $db->select(new Expression("'longest'")),
+                new Param('string', DataType::STRING),
             ],
-            'Greatest with 4 operands' => [
-                Greatest::class,
-                [1, 1.5, '(1 + 2)', $intQuery],
-                "GREATEST(1, 1.5, (1 + 2), $intQuerySql)",
-                10,
+            "(SELECT value FROM (SELECT :qp0 AS value UNION SELECT (SELECT 'longest') AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) DESC LIMIT 1)",
+            'longest',
+            [
+                ':qp0' => new Param('short', DataType::STRING),
+                ':qp1' => new Param('string', DataType::STRING),
             ],
-
-            'Least with 1 operand' => [
-                Least::class,
-                ['(1 + 2)'],
-                '((1 + 2))',
-                3,
+        ];
+        yield 'Shortest with 1 operand' => [
+            Shortest::class,
+            [new Value('short')],
+            '(:qp0)',
+            'short',
+            [':qp0' => new Param('short', DataType::STRING)],
+        ];
+        yield 'Shortest with 2 operands' => [
+            Shortest::class,
+            [new Value('short'), new Param('string', DataType::STRING)],
+            '(SELECT value FROM (SELECT :qp0 AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) ASC LIMIT 1)',
+            'short',
+            [
+                ':qp0' => new Param('short', DataType::STRING),
+                ':qp1' => new Param('string', DataType::STRING),
             ],
-            'Least with 2 operands' => [
-                Least::class,
-                [1, '(1 + 2)'],
-                'LEAST(1, (1 + 2))',
-                1,
+        ];
+        yield 'Shortest with 3 operands' => [
+            Shortest::class,
+            static fn(Connectioninterface $db) => [
+                new Value('short'),
+                $db->select(new Expression("'longest'")),
+                new Param('string', DataType::STRING),
             ],
-            'Least with 4 operands' => [
-                Least::class,
-                [1, 1.5, '(1 + 2)', $intQuery],
-                "LEAST(1, 1.5, (1 + 2), $intQuerySql)",
-                1,
-            ],
-
-            'Longest with 1 operand' => [
-                Longest::class,
-                [new Value('string')],
-                '(:qp0)',
-                'string',
-                [':qp0' => $stringParam],
-            ],
-            'Longest with 2 operands' => [
-                Longest::class,
-                [new Value('short'), $stringParam],
-                static::replaceQuotes(
-                    '(SELECT value FROM (SELECT :qp0 AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) DESC LIMIT 1)',
-                ),
-                'string',
-                [
-                    ':qp0' => new Param('short', DataType::STRING),
-                    ':qp1' => $stringParam,
-                ],
-            ],
-            'Longest with 3 operands' => [
-                Longest::class,
-                [new Value('short'), $stringQuery, $stringParam],
-                static::replaceQuotes(
-                    "(SELECT value FROM (SELECT :qp0 AS value UNION SELECT $stringQuerySql AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) DESC LIMIT 1)",
-                ),
-                'longest',
-                [
-                    ':qp0' => new Param('short', DataType::STRING),
-                    ':qp1' => $stringParam,
-                ],
-            ],
-
-            'Shortest with 1 operand' => [
-                Shortest::class,
-                [new Value('short')],
-                '(:qp0)',
-                'short',
-                [':qp0' => new Param('short', DataType::STRING)],
-            ],
-            'Shortest with 2 operands' => [
-                Shortest::class,
-                [new Value('short'), $stringParam],
-                static::replaceQuotes(
-                    '(SELECT value FROM (SELECT :qp0 AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) ASC LIMIT 1)',
-                ),
-                'short',
-                [
-                    ':qp0' => new Param('short', DataType::STRING),
-                    ':qp1' => $stringParam,
-                ],
-            ],
-            'Shortest with 3 operands' => [
-                Shortest::class,
-                [new Value('short'), $stringQuery, $stringParam],
-                static::replaceQuotes(
-                    "(SELECT value FROM (SELECT :qp0 AS value UNION SELECT $stringQuerySql AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) ASC LIMIT 1)",
-                ),
-                'short',
-                [
-                    ':qp0' => new Param('short', DataType::STRING),
-                    ':qp1' => $stringParam,
-                ],
+            "(SELECT value FROM (SELECT :qp0 AS value UNION SELECT (SELECT 'longest') AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) ASC LIMIT 1)",
+            'short',
+            [
+                ':qp0' => new Param('short', DataType::STRING),
+                ':qp1' => new Param('string', DataType::STRING),
             ],
         ];
     }

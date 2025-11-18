@@ -2607,16 +2607,23 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $this->assertEquals($expectedResult, $result);
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):array)|array $operands
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'multiOperandFunctionBuilder')]
     public function testMultiOperandFunctionBuilder(
         string $class,
-        array $operands,
+        Closure|array $operands,
         string $expectedSql,
         array|string|int $expectedResult,
         array $expectedParams = [],
     ): void {
         $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
+
+        if ($operands instanceof Closure) {
+            $operands = $operands($db);
+        }
 
         $expression = new $class(...$operands);
         $params = [];
