@@ -15,7 +15,6 @@ use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\Value\JsonValue;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Support\Stringable;
 
@@ -62,7 +61,7 @@ class CommandProvider
                 ['int3'],
                 ReferentialAction::CASCADE,
                 null,
-                'ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE CASCADE'
+                'ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE CASCADE',
             ],
             [
                 ['int1'],
@@ -328,8 +327,8 @@ class CommandProvider
                     [2, 'b', -1.0, false, new JsonValue(['d' => 'e', 'f' => false, 'g' => [4, 5, null]])],
                 ],
                 ['int_col', 'char_col', 'float_col', 'bool_col', 'json_col'],
-                'expected' =>
-                    'INSERT INTO [[type]] ([[int_col]], [[char_col]], [[float_col]], [[bool_col]], [[json_col]])'
+                'expected'
+                    => 'INSERT INTO [[type]] ([[int_col]], [[char_col]], [[float_col]], [[bool_col]], [[json_col]])'
                         . ' VALUES (1, :qp0, 0, TRUE, :qp1), (2, :qp2, -1, FALSE, :qp3)',
                 'expectedParams' => [
                     ':qp0' => 'a',

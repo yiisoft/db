@@ -14,6 +14,7 @@ use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use stdClass;
 use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
@@ -76,7 +77,7 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
             $this->replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
-                SQL . ' ' . $qb->buildColumnDefinition($type),
+                SQL. ' ' . $qb->buildColumnDefinition($type),
             ),
             $sql,
         );
@@ -133,9 +134,7 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addForeignKey
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'addForeignKey')]
     public function testAddForeignKey(
         string $name,
         string $table,
@@ -151,12 +150,13 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $qb = $db->getQueryBuilder();
         $sql = $qb->addForeignKey($table, $name, $columns, $refTable, $refColumns, $delete, $update);
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addPrimaryKey
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'addPrimaryKey')]
     public function testAddPrimaryKey(string $name, string $table, array|string $columns, string $expected): void
     {
         $db = $this->getSharedConnection();
@@ -164,20 +164,24 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $qb = $db->getQueryBuilder();
         $sql = $qb->addPrimaryKey($table, $name, $columns);
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addUnique
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'addUnique')]
     public function testAddUnique(string $name, string $table, array|string $columns, string $expected): void
     {
         $db = $this->getSharedConnection();
-
         $qb = $db->getQueryBuilder();
+
         $sql = $qb->addUnique($table, $name, $columns);
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'alterColumn')]
@@ -207,17 +211,24 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $params = [];
         $sql = $qb->insertBatch($table, $rows, $columns, $params);
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
         Assert::arraysEquals($expectedParams, $params);
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildCondition')]
     public function testBuildCondition(
-        array|ExpressionInterface|string $condition,
+        Closure|array|ExpressionInterface|string $condition,
         ?string $expected,
         array $expectedParams,
     ): void {
         $db = $this->getSharedConnection();
+
+        if ($condition instanceof Closure) {
+            $condition = $condition($db->getQueryBuilder());
+        }
 
         $query = (new Query($db))->where($condition);
 
@@ -295,9 +306,7 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildFilterCondition
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildFilterCondition')]
     public function testBuildFilterCondition(array $condition, string $expected, array $expectedParams): void
     {
         $db = $this->getSharedConnection();
@@ -803,9 +812,7 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $this->assertEmpty($params);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildFrom
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildFrom')]
     public function testBuildWithFrom(
         ExpressionInterface|array|string $table,
         string $expectedSql,
@@ -818,7 +825,10 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
 
         [$sql, $params] = $queryBuilder->build($query);
 
-        $this->assertSame($expectedSql, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expectedSql),
+            $sql,
+        );
         $this->assertSame($expectedParams, $params);
     }
 
@@ -1566,15 +1576,18 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'delete')]
-    public function testDelete(string $table, array|string $condition, string $expectedSQL, array $expectedParams): void
+    public function testDelete(string $table, array|string $condition, string $expectedSql, array $expectedParams): void
     {
         $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
         $actualParams = [];
-        $actualSQL = $qb->delete($table, $condition, $actualParams);
+        $actualSql = $qb->delete($table, $condition, $actualParams);
 
-        $this->assertSame($expectedSQL, $actualSQL);
+        $this->assertSame(
+            $this->replaceQuotes($expectedSql),
+            $actualSql,
+        );
         $this->assertSame($expectedParams, $actualParams);
     }
 
@@ -1788,10 +1801,13 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         );
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $columns
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'insert')]
     public function testInsert(
         string $table,
-        array|QueryInterface $columns,
+        Closure|array|QueryInterface $columns,
         array $params,
         string $expectedSQL,
         array $expectedParams,
@@ -1799,23 +1815,35 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
-        $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
+        if ($columns instanceof Closure) {
+            $columns = $columns($db);
+        }
+
+        $this->assertSame(
+            $this->replaceQuotes($expectedSQL),
+            $qb->insert($table, $columns, $params),
+        );
         $this->assertEquals($expectedParams, $params);
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'insertReturningPks')]
     public function testInsertReturningPks(
         string $table,
-        array|QueryInterface $columns,
+        Closure|array|QueryInterface $columns,
         array $params,
-        string $expectedSQL,
+        string $expectedSql,
         array $expectedParams,
     ): void {
         $db = $this->getSharedConnection();
         $this->loadFixture();
+
         $qb = $db->getQueryBuilder();
 
-        $this->assertSame($expectedSQL, $qb->insertReturningPks($table, $columns, $params));
+        if ($columns instanceof Closure) {
+            $columns = $columns($db);
+        }
+
+        $this->assertSame($expectedSql, $qb->insertReturningPks($table, $columns, $params));
         $this->assertEquals($expectedParams, $params);
     }
 
@@ -2133,12 +2161,15 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         );
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|ExpressionInterface|string|null))|array|ExpressionInterface|string|null $from
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
         array|ExpressionInterface|string $condition,
-        array|ExpressionInterface|string|null $from,
+        Closure|array|ExpressionInterface|string|null $from,
         array $params,
         string $expectedSql,
         array $expectedParams = [],
@@ -2146,23 +2177,37 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
+        if ($from instanceof Closure) {
+            $from = $from($db);
+        }
+
         $sql = $qb->update($table, $columns, $condition, $from, $params);
         $sql = $db->getQuoter()->quoteSql($sql);
 
-        $this->assertSame($expectedSql, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expectedSql),
+            $sql,
+        );
         $this->assertEquals($expectedParams, $params);
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $insertColumns
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
     public function testUpsert(
         string $table,
-        array|QueryInterface $insertColumns,
+        Closure|array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         string $expectedSql,
         array $expectedParams,
     ): void {
         $db = $this->getSharedConnection();
         $this->loadFixture();
+
+        if ($insertColumns instanceof Closure) {
+            $insertColumns = $insertColumns($db);
+        }
 
         $params = [];
         $sql = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
@@ -2183,10 +2228,13 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $db->createCommand($sql, $params)->execute();
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $insertColumns
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsertReturning')]
     public function testUpsertReturning(
         string $table,
-        array|QueryInterface $insertColumns,
+        Closure|array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         ?array $returnColumns,
         string $expectedSql,
@@ -2194,6 +2242,10 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
     ): void {
         $db = $this->getSharedConnection();
         $this->loadFixture();
+
+        if ($insertColumns instanceof Closure) {
+            $insertColumns = $insertColumns($db);
+        }
 
         $qb = $db->getQueryBuilder();
 
@@ -2265,7 +2317,10 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
-        $this->assertSame($expected, $qb->buildColumnDefinition($column));
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $qb->buildColumnDefinition($column),
+        );
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'prepareParam')]
@@ -2498,9 +2553,12 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         ], $params);
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):CaseX)|CaseX $case
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'caseXBuilder')]
     public function testCaseXBuilder(
-        CaseX $case,
+        Closure|CaseX $case,
         string $expectedSql,
         array $expectedParams,
         string|int $expectedResult,
@@ -2508,9 +2566,16 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
+        if ($case instanceof Closure) {
+            $case = $case($db);
+        }
+
         $params = [];
 
-        $this->assertSame($expectedSql, $qb->buildExpression($case, $params));
+        $this->assertSame(
+            $this->replaceQuotes($expectedSql),
+            $qb->buildExpression($case, $params),
+        );
         $this->assertEquals($expectedParams, $params);
 
         $result = $db->select($case)

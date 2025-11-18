@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 
+use Closure;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
@@ -79,6 +81,8 @@ final class QueryBuilderTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $qb = new QueryBuilder($db);
         $params = [];
+
+        $expected = $this->replaceQuotes($expected);
 
         try {
             $this->assertSame($expected, $qb->insertBatch($table, $rows, $columns, $params));
@@ -186,10 +190,13 @@ final class QueryBuilderTest extends IntegrationTestCase
         $qb->getExpressionBuilder($expression);
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $columns
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'insert')]
     public function testInsert(
         string $table,
-        array|QueryInterface $columns,
+        Closure|array|QueryInterface $columns,
         array $params,
         string $expectedSQL,
         array $expectedParams,
@@ -197,21 +204,31 @@ final class QueryBuilderTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $qb = new QueryBuilder($db);
 
-        $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
+        if ($columns instanceof Closure) {
+            $columns = $columns($db);
+        }
+
+        $this->assertSame(
+            $this->replaceQuotes($expectedSQL),
+            $qb->insert($table, $columns, $params),
+        );
         $this->assertEquals($expectedParams, $params);
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'insertReturningPks')]
     public function testInsertReturningPks(
         string $table,
-        array|QueryInterface $columns,
+        Closure|array|QueryInterface $columns,
         array $params,
         string $expectedSql,
         array $expectedParams,
     ): void {
         $db = $this->getSharedConnection();
-
         $qb = $db->getQueryBuilder();
+
+        if ($columns instanceof Closure) {
+            $columns = $columns($db);
+        }
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
@@ -235,12 +252,15 @@ final class QueryBuilderTest extends IntegrationTestCase
         $qb->resetSequence('T_constraints_1', 'id');
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|ExpressionInterface|string|null))|array|ExpressionInterface|string|null $from
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
         array|ExpressionInterface|string $condition,
-        array|ExpressionInterface|string|null $from,
+        Closure|array|ExpressionInterface|string|null $from,
         array $params,
         string $expectedSql,
         array $expectedParams = [],
@@ -248,25 +268,39 @@ final class QueryBuilderTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
+        if ($from instanceof Closure) {
+            $from = $from($db);
+        }
+
         $sql = $qb->update($table, $columns, $condition, $from, $params);
         $sql = $db->getQuoter()->quoteSql($sql);
 
-        $this->assertSame($expectedSql, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expectedSql),
+            $sql,
+        );
         $this->assertEquals($expectedParams, $params);
 
         $db->close();
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $insertColumns
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
     public function testUpsert(
         string $table,
-        array|QueryInterface $insertColumns,
+        Closure|array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         string|array $expectedSql,
         array $expectedParams,
     ): void {
         $db = $this->getSharedConnection();
 
+        if ($insertColumns instanceof Closure) {
+            $insertColumns = $insertColumns($db);
+        }
+
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
             'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsert is not supported by this DBMS.',
@@ -275,14 +309,21 @@ final class QueryBuilderTest extends IntegrationTestCase
         $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns);
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $insertColumns
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
     public function testUpsertExecute(
         string $table,
-        array|QueryInterface $insertColumns,
+        Closure|array|QueryInterface $insertColumns,
         array|bool $updateColumns,
     ): void {
         $db = $this->getSharedConnection();
 
+        if ($insertColumns instanceof Closure) {
+            $insertColumns = $insertColumns($db);
+        }
+
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
             'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsert is not supported by this DBMS.',
@@ -291,6 +332,9 @@ final class QueryBuilderTest extends IntegrationTestCase
         $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns);
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $insertColumns
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsertReturning')]
     public function testUpsertReturning(
         string $table,

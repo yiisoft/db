@@ -234,9 +234,7 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $db->open();
 
         $profiler = new class ($this, $sql) implements ProfilerInterface {
-            public function __construct(private TestCase $test, private string $sql)
-            {
-            }
+            public function __construct(private TestCase $test, private string $sql) {}
 
             public function begin(string $token, ContextInterface|array $context = []): void
             {
@@ -641,9 +639,9 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $this->loadFixture();
 
         $rows = (
-        static function () {
-            yield ['test@email.com', 'test name', 'test address'];
-        }
+            static function () {
+                yield ['test@email.com', 'test name', 'test address'];
+            }
         )();
         $command = $db->createCommand();
         $command->insertBatch('{{customer}}', $rows, ['email', 'name', 'address']);
@@ -2091,13 +2089,9 @@ abstract class CommonCommandTest extends IntegrationTestCase
                 return $this->showDatabases();
             }
 
-            protected function getQueryBuilder(): QueryBuilderInterface
-            {
-            }
+            protected function getQueryBuilder(): QueryBuilderInterface {}
 
-            protected function internalExecute(): void
-            {
-            }
+            protected function internalExecute(): void {}
         };
 
         $command->prepare();
