@@ -123,7 +123,7 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
     public function testCommitTransactionsWithSavepoints(): void
     {
         $db = $this->createConnection();
-        $this->loadFixture();
+        $this->loadFixture(db: $db);
 
         $db->setLogger($this->getLogger());
         $command = $db->createCommand();
@@ -178,7 +178,7 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
     public function testPartialRollbackTransactionsWithSavePoints(): void
     {
         $db = $this->createConnection();
-        $this->loadFixture();
+        $this->loadFixture(db: $db);
 
         $db->open();
 
@@ -235,7 +235,8 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
     public function testRollbackTransactionsWithSavePoints(): void
     {
         $db = $this->createConnection();
-        $this->loadFixture();
+        $this->loadFixture(db: $db);
+
         $db->open();
 
         $command = $db->createCommand();
@@ -374,8 +375,7 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
             ->willReturn(0);
         $transactionMock->expects(self::once())
             ->method('rollBack')
-            ->willThrowException(new Exception('rollbackTransactionOnLevel'))
-        ;
+            ->willThrowException(new Exception('rollbackTransactionOnLevel'));
 
         $db = $this->getMockBuilder(AbstractPdoConnection::class)->onlyMethods([
             'createTransaction',

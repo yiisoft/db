@@ -150,7 +150,7 @@ abstract class CommonPdoCommandTest extends IntegrationTestCase
     public function testColumnCase(): void
     {
         $db = $this->createConnection();
-        $this->loadFixture();
+        $this->loadFixture(db: $db);
 
         $this->assertSame(PDO::CASE_NATURAL, $db->getActivePdo()->getAttribute(PDO::ATTR_CASE));
 
