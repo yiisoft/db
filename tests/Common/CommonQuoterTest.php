@@ -29,11 +29,13 @@ abstract class CommonQuoterTest extends IntegrationTestCase
     #[DataProviderExternal(QuoterProvider::class, 'rawTableNames')]
     public function testGetRawTableName(string $tableName, string $expected, string $tablePrefix = ''): void
     {
-        $db = $this->getSharedConnection();
+        $db = $this->createConnection();
 
         $db->setTablePrefix($tablePrefix);
 
         $this->assertSame($expected, $db->getQuoter()->getRawTableName($tableName));
+
+        $db->close();
     }
 
     #[DataProviderExternal(QuoterProvider::class, 'tableNameParts')]

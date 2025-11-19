@@ -489,8 +489,8 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         string $testTablePrefix,
         string $testTableName,
     ): void {
-        $db = $this->getSharedConnection();
-        $this->loadFixture();
+        $db = $this->createConnection();
+        $this->loadFixture(db: $db);
 
         $schema = $db->getSchema();
         $schema->enableCache(true);
@@ -520,6 +520,8 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $this->assertInstanceOf(TableSchemaInterface::class, $testRefreshedTable);
         $this->assertEquals($refreshedTable, $testRefreshedTable);
         $this->assertNotSame($testNoCacheTable, $testRefreshedTable);
+
+        $db->close();
     }
 
     #[DataProviderExternal(SchemaProvider::class, 'constraints')]
