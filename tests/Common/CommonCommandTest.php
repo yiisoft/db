@@ -1965,14 +1965,14 @@ abstract class CommonCommandTest extends IntegrationTestCase
     }
 
     /**
-     * @param Closure(ConnectionInterface):(array|ExpressionInterface|string|null) $from
+     * @param Closure(ConnectionInterface):(array|ExpressionInterface|string|null)|array|ExpressionInterface|string|null $from
      */
     #[DataProviderExternal(CommandProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
         array|ExpressionInterface|string $conditions,
-        Closure $from,
+        Closure|array|ExpressionInterface|string|null $from,
         array $params,
         array $expectedValues,
         int $expectedCount,
@@ -1980,7 +1980,9 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $this->loadFixture();
 
-        $from = $from($db);
+        if ($from instanceof Closure) {
+            $from = $from($db);
+        }
 
         $command = $db->createCommand();
         $count = $command->update($table, $columns, $conditions, $from, $params)->execute();
