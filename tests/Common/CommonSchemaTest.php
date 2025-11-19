@@ -85,9 +85,9 @@ abstract class CommonSchemaTest extends IntegrationTestCase
     }
 
     #[DataProviderExternal(SchemaProvider::class, 'columns')]
-    public function testColumns(array $columns, string $tableName): void
+    public function testColumns(array $columns, string $tableName, ?string $dump = null): void
     {
-        $this->assertTableColumns($columns, $tableName);
+        $this->assertTableColumns($columns, $tableName, $dump);
     }
 
     public function testCompositeFk(): void
@@ -751,10 +751,10 @@ abstract class CommonSchemaTest extends IntegrationTestCase
     /**
      * @param ColumnInterface[] $columns
      */
-    protected function assertTableColumns(array $columns, string $tableName): void
+    protected function assertTableColumns(array $columns, string $tableName, ?string $dump = null): void
     {
         $db = $this->getSharedConnection();
-        $this->loadFixture();
+        $this->loadFixture($dump);
 
         $table = $db->getTableSchema($tableName, true);
 
