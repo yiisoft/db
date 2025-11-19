@@ -65,8 +65,10 @@ abstract class AbstractSchemaTest extends TestCase
         $db = $this->getConnection(true);
         $schema = $db->getSchema();
 
+        $this->assertNotEmpty($schema->getTableNames());
+        $schema->getResultColumn(['type' => 'integer']);
+
         try {
-            $this->assertNotEmpty($schema->getTableNames());
             $this->assertNotEmpty($schema->getViewNames());
             $this->assertNotEmpty($schema->getSchemaNames());
         } catch (NotSupportedException) {
