@@ -47,8 +47,7 @@ abstract class CommonConnectionTest extends IntegrationTestCase
 
     public function testNestedTransactionNotSupported(): void
     {
-        $db = $this->getSharedConnection();
-
+        $db = $this->createConnection();
         $db->setEnableSavepoint(false);
 
         $this->assertFalse($db->isSavepointEnabled());
@@ -61,6 +60,8 @@ abstract class CommonConnectionTest extends IntegrationTestCase
                 $db->beginTransaction();
             },
         );
+
+        $db->close();
     }
 
     public function testNotProfiler(): void
@@ -120,16 +121,18 @@ abstract class CommonConnectionTest extends IntegrationTestCase
 
     public function testSerialized(): void
     {
-        $connection = $this->getSharedConnection();
-        $connection->open();
-        $serialized = serialize($connection);
-        $this->assertNotNull($connection->getPdo());
+        $db = $this->createConnection();
+        $db->open();
+        $serialized = serialize($db);
+        $this->assertNotNull($db->getPdo());
 
         $unserialized = unserialize($serialized);
         $this->assertInstanceOf(PdoConnectionInterface::class, $unserialized);
         $this->assertNull($unserialized->getPdo());
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
-        $this->assertNotNull($connection->getPdo());
+        $this->assertNotNull($db->getPdo());
+
+        $db->close();
     }
 
     public function getColumnBuilderClass(): void
@@ -148,8 +151,8 @@ abstract class CommonConnectionTest extends IntegrationTestCase
 
     public function testTransactionShortcutException(): void
     {
-        $db = $this->getSharedConnection();
-        $this->loadFixture();
+        $db = $this->createConnection();
+        $this->loadFixture(db: $db);
 
         $callable = static function () use ($db) {
             $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
@@ -163,5 +166,7 @@ abstract class CommonConnectionTest extends IntegrationTestCase
         }
 
         $this->assertInstanceOf(Exception::class, $exception);
+
+        $db->close();
     }
 }
