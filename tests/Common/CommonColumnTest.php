@@ -192,13 +192,7 @@ abstract class CommonColumnTest extends IntegrationTestCase
         $utcTimezone = new DateTimeZone('UTC');
 
         $this->assertEquals(
-            new Expression(match ($db->getDriverName()) {
-                'sqlsrv' => 'getdate()',
-                'pgsql' => version_compare($db->getServerInfo()->getVersion(), '10', '<')
-                    ? 'now()'
-                    : 'CURRENT_TIMESTAMP',
-                default => 'CURRENT_TIMESTAMP',
-            }),
+            $this->createTimestampDefaultValue(),
             $columns['timestamp']->getDefaultValue(),
         );
         $this->assertEquals(new DateTimeImmutable('2025-04-19 14:11:35', $utcTimezone), $columns['datetime']->getDefaultValue());
@@ -232,6 +226,11 @@ abstract class CommonColumnTest extends IntegrationTestCase
             ->queryOne();
 
         $this->assertEquals($expected, $result);
+    }
+
+    protected function createTimestampDefaultValue(): mixed
+    {
+        return new Expression('CURRENT_TIMESTAMP');
     }
 
     abstract protected function insertTypeValues(ConnectionInterface $db): void;
