@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\DataType;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -61,14 +62,21 @@ abstract class AbstractSchemaTest extends TestCase
 
     public function testRefresh(): void
     {
-        $db = $this->getConnection();
-
+        $db = $this->getConnection(true);
         $schema = $db->getSchema();
-        $schema->refresh();
 
-        $db->close();
+        try {
+            $this->assertNotEmpty($schema->getTableNames());
+            $this->assertNotEmpty($schema->getViewNames());
+            $this->assertNotEmpty($schema->getSchemaNames());
+        } catch (NotSupportedException) {
+        }
+
+        $schema->refresh();
 
         $this->assertSame([], Assert::getPropertyValue($schema, 'tableMetadata'));
         $this->assertSame([], Assert::getPropertyValue($schema, 'tableNames'));
+        $this->assertSame([], Assert::getPropertyValue($schema, 'schemaNames'));
+        $this->assertSame([], Assert::getPropertyValue($schema, 'viewNames'));
     }
 }
