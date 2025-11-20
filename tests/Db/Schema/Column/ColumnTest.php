@@ -56,7 +56,7 @@ final class ColumnTest extends TestCase
     #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumnsWithException')]
     public function testDbTypecastColumnsWithException(ColumnInterface $column, mixed $value)
     {
-        $type = is_object($value) ? $value::class : gettype($value);
+        $type = get_debug_type($value);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Wrong $type value for {$column->getType()} column.");
