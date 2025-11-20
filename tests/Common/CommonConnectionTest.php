@@ -17,7 +17,7 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
-use Yiisoft\Db\Tests\Support\Stub\ColumnFactory;
+use Yiisoft\Db\Tests\Support\Stub\StubColumnFactory;
 
 abstract class CommonConnectionTest extends IntegrationTestCase
 {
@@ -146,7 +146,7 @@ abstract class CommonConnectionTest extends IntegrationTestCase
     {
         $db = $this->getSharedConnection();
 
-        $this->assertInstanceOf(ColumnFactory::class, $db->getColumnFactory());
+        $this->assertInstanceOf(StubColumnFactory::class, $db->getColumnFactory());
     }
 
     public function testTransactionShortcutException(): void

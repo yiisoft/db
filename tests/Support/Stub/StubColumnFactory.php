@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests\Support\Stub;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
 
-class ColumnFactory extends AbstractColumnFactory
+class StubColumnFactory extends AbstractColumnFactory
 {
     protected function getType(string $dbType, array $info = []): string
     {

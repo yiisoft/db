@@ -42,7 +42,7 @@ final class StubConnection extends AbstractPdoConnection
 
     public function getColumnFactory(): ColumnFactoryInterface
     {
-        return $this->columnFactory ??= new ColumnFactory();
+        return $this->columnFactory ??= new StubColumnFactory();
     }
 
     public function getQueryBuilder(): QueryBuilderInterface

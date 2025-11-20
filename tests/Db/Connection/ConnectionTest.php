@@ -11,7 +11,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\Stub\ColumnFactory;
+use Yiisoft\Db\Tests\Support\Stub\StubColumnFactory;
 use Yiisoft\Db\Tests\Support\Stub\StubConnection;
 use Yiisoft\Db\Tests\Support\Stub\StubPdoDriver;
 use Yiisoft\Test\Support\SimpleCache\MemorySimpleCache;
@@ -30,7 +30,7 @@ final class ConnectionTest extends TestCase
 
     public function testConstructColumnFactory(): void
     {
-        $columnFactory = new ColumnFactory();
+        $columnFactory = new StubColumnFactory();
 
         $db = $this->createConnection($columnFactory);
 
@@ -65,7 +65,7 @@ final class ConnectionTest extends TestCase
         Assert::objectsEquals($db->select(), $db->createQuery());
     }
 
-    private function createConnection(?ColumnFactory $columnFactory = null): StubConnection
+    private function createConnection(?StubColumnFactory $columnFactory = null): StubConnection
     {
         return new StubConnection(
             new StubPdoDriver('sqlite::memory:'),
