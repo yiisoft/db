@@ -19,6 +19,7 @@ use Yiisoft\Db\Schema\Column\StructuredColumn;
 use Yiisoft\Db\Tests\Provider\ColumnProvider;
 use Yiisoft\Db\Tests\Support\Stub\Column;
 
+use function gettype;
 use function is_object;
 
 /**
@@ -56,7 +57,7 @@ final class ColumnTest extends TestCase
     #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumnsWithException')]
     public function testDbTypecastColumnsWithException(ColumnInterface $column, mixed $value)
     {
-        $type = get_debug_type($value);
+        $type = is_object($value) ? $value::class : gettype($value);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Wrong $type value for {$column->getType()} column.");
