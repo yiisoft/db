@@ -137,6 +137,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function refreshTableSchema(string $name): void;
 
     /**
+     * Refreshes all cached view names.
+     */
+    public function refreshSchemaViewNames(): void;
+
+    /**
      * Enable or disable the schema cache.
      *
      * @param bool $value Whether to enable or disable the schema cache.

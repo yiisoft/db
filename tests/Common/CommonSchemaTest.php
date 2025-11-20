@@ -283,13 +283,45 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $schema = $db->getSchema();
 
         $tempTableName = 'testTemporaryTable';
-        $db->createCommand()->createTable($tempTableName, [
-            'id' => ColumnBuilder::primaryKey(),
-            'name' => ColumnBuilder::string()->notNull(),
-        ])->execute();
+        $db->createCommand()
+            ->createTable(
+                $tempTableName,
+                [
+                    'id' => ColumnBuilder::primaryKey(),
+                    'name' => ColumnBuilder::string()->notNull(),
+                ],
+            )
+            ->execute();
 
         $this->assertTrue($schema->hasTable('order'));
-        $this->assertTrue($schema->hasTable('category'));
+        $this->assertTrue($schema->hasTable($tempTableName));
+        $this->assertFalse($schema->hasTable('no_such_table'));
+
+        $db->createCommand()->dropTable($tempTableName)->execute();
+
+        $this->assertFalse($schema->hasTable($tempTableName));
+        $this->assertTrue($schema->hasTable('order'));
+    }
+
+    public function testHasTableWithSqlRemoving(): void
+    {
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
+        $schema = $db->getSchema();
+
+        $tempTableName = 'testTemporaryTable';
+        $db->createCommand()
+            ->createTable(
+                $tempTableName,
+                [
+                    'id' => ColumnBuilder::primaryKey(),
+                    'name' => ColumnBuilder::string()->notNull(),
+                ]
+            )
+            ->execute();
+
+        $this->assertTrue($schema->hasTable('order'));
         $this->assertTrue($schema->hasTable($tempTableName));
         $this->assertFalse($schema->hasTable('no_such_table'));
 
@@ -375,8 +407,7 @@ abstract class CommonSchemaTest extends IntegrationTestCase
 
         $db->createCommand()->dropView('animal_view')->execute();
 
-        $this->assertTrue($schema->hasView('animal_view'));
-        $this->assertFalse($schema->hasView('animal_view', '', true));
+        $this->assertFalse($schema->hasView('animal_view'));
     }
 
     public function testNegativeDefaultValues(): void

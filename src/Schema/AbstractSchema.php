@@ -18,6 +18,7 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use function array_filter;
 use function array_key_exists;
 use function gettype;
+use function in_array;
 use function is_array;
 
 /**
@@ -249,6 +250,11 @@ abstract class AbstractSchema implements SchemaInterface
         if ($this->schemaCache->isEnabled()) {
             $this->schemaCache->remove($this->getCacheKey($rawName));
         }
+    }
+
+    public function refreshSchemaViewNames(): void
+    {
+        $this->viewNames = [];
     }
 
     public function enableCache(bool $value): void
