@@ -14,15 +14,13 @@ use Yiisoft\Db\Expression\Value\Builder\DateTimeValueBuilder;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
 use Yiisoft\Db\Tests\Support\Stringable;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 /**
  * @group db
  */
 final class DateTimeValueBuilderTest extends TestCase
 {
-    use TestTrait;
-
     public static function dataBuild(): iterable
     {
         yield 'DateTimeTz without microseconds' => [
@@ -214,8 +212,9 @@ final class DateTimeValueBuilderTest extends TestCase
     #[DataProvider('dataBuild')]
     public function testBuild(string $expectedResult, array $expectedParams, DateTimeValue $value): void
     {
+        $db = TestHelper::createSqliteMemoryConnection();
         $builder = new DateTimeValueBuilder(
-            $this->getConnection()->getQueryBuilder(),
+            $db->getQueryBuilder(),
         );
 
         $params = [];

@@ -4,28 +4,112 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use PDO;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoConnection;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoTransaction;
+use Yiisoft\Db\Driver\Pdo\PdoDriverInterface;
+use Yiisoft\Db\Driver\Pdo\PdoServerInfo;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\ProfilerInterface;
-use Yiisoft\Db\Tests\AbstractPdoConnectionTest;
-use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\IntegrationTestCase;
+use Yiisoft\Db\Tests\Support\TestHelper;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
-abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
+abstract class CommonPdoConnectionTest extends IntegrationTestCase
 {
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
+    public function testClone(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $db2 = clone $db;
+
+        $this->assertNotSame($db, $db2);
+        $this->assertNull($db2->getTransaction());
+        $this->assertNull($db2->getPdo());
+    }
+
+    public function testGetDriver(): void
+    {
+        $db = $this->getSharedConnection();
+        $driver = $db->getDriver();
+
+        $this->assertInstanceOf(PdoDriverInterface::class, $driver);
+    }
+
+    public function testGetServerInfo(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $this->assertInstanceOf(PdoServerInfo::class, $db->getServerInfo());
+    }
+
+    public function testOpenClose(): void
+    {
+        $db = $this->createConnection();
+
+        $this->assertFalse($db->isActive());
+        $this->assertNull($db->getPdo());
+
+        $db->open();
+
+        $this->assertTrue($db->isActive());
+        $this->assertInstanceOf(PDO::class, $db->getPdo());
+
+        $db->close();
+
+        $this->assertFalse($db->isActive());
+        $this->assertNull($db->getPdo());
+    }
+
+    public function testOpenCloseWithLogger(): void
+    {
+        $db = $this->createConnection();
+
+        $this->assertFalse($db->isActive());
+        $this->assertNull($db->getPdo());
+
+        $db->open();
+
+        $this->assertTrue($db->isActive());
+        $this->assertInstanceOf(PDO::class, $db->getPdo());
+
+        $logger = $this->getLogger();
+        $logger->expects(self::once())->method('log');
+
+        $db->setLogger($logger);
+        $db->close();
+
+        $this->assertFalse($db->isActive());
+        $this->assertNull($db->getPdo());
+    }
+
+    public function testQuoteValueNotString(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $value = $db->quoteValue(1);
+
+        $this->assertSame(1, $value);
+    }
+
+    public function testSetEmulatePrepare(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $this->assertNull($db->getEmulatePrepare());
+
+        $db->setEmulatePrepare(true);
+
+        $this->assertTrue($db->getEmulatePrepare());
+    }
+
     public function testCreateCommandWithLoggerProfiler(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
 
         $db->setLogger($this->getLogger());
         $db->setProfiler($this->getProfiler());
@@ -37,15 +121,10 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws Throwable
-     */
     public function testCommitTransactionsWithSavepoints(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->createConnection();
+        $this->loadFixture(db: $db);
 
         $db->setLogger($this->getLogger());
         $command = $db->createCommand();
@@ -97,15 +176,11 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws Throwable
-     */
     public function testPartialRollbackTransactionsWithSavePoints(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->createConnection();
+        $this->loadFixture(db: $db);
+
         $db->open();
 
         $command = $db->createCommand();
@@ -158,15 +233,11 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws NotSupportedException
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testRollbackTransactionsWithSavePoints(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->createConnection();
+        $this->loadFixture(db: $db);
+
         $db->open();
 
         $command = $db->createCommand();
@@ -205,20 +276,27 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
 
     public function testTransactionCommitNotActiveTransaction(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
 
         $transaction = $db->beginTransaction();
         $db->close();
 
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Failed to commit transaction: transaction was inactive.');
+        $exception = null;
+        try {
+            $transaction->commit();
+        } catch (Throwable $exception) {
+        } finally {
+            $db->close();
+        }
 
-        $transaction->commit();
+        $this->assertInstanceOf(Exception::class, $exception);
+        $this->assertSame('Failed to commit transaction: transaction was inactive.', $exception->getMessage());
+
     }
 
     public function testTransactionCommitSavepoint(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger
@@ -244,7 +322,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
 
     public function testTransactionRollbackNotActiveTransaction(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
 
         $transaction = $db->beginTransaction();
         $db->close();
@@ -252,11 +330,13 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
         $level = $transaction->getLevel();
         $transaction->rollBack();
         $this->assertEquals($level, $transaction->getLevel());
+
+        $db->close();
     }
 
     public function testTransactionRollbackSavepoint(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger
@@ -282,7 +362,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
 
     public function testTransactionSetIsolationLevel(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
 
         $transaction = $db->beginTransaction();
         $db->close();
@@ -291,6 +371,8 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
         $this->expectExceptionMessage('Failed to set isolation level: transaction was inactive.');
 
         $transaction->setIsolationLevel(TransactionInterface::SERIALIZABLE);
+
+        $db->close();
     }
 
     public function testTransactionRollbackTransactionOnLevel(): void
@@ -304,8 +386,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
             ->willReturn(0);
         $transactionMock->expects(self::once())
             ->method('rollBack')
-            ->willThrowException(new Exception('rollbackTransactionOnLevel'))
-        ;
+            ->willThrowException(new Exception('rollbackTransactionOnLevel'));
 
         $db = $this->getMockBuilder(AbstractPdoConnection::class)->onlyMethods([
             'createTransaction',
@@ -352,8 +433,8 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
             'getSchema',
         ])
             ->setConstructorArgs([
-                $this->getConnection()->getDriver(),
-                DbHelper::getSchemaCache(),
+                $this->getSharedConnection()->getDriver(),
+                TestHelper::createMemorySchemaCache(),
             ])
             ->getMock();
         $db->expects(self::once())
@@ -364,6 +445,11 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
         $this->expectExceptionMessage('PDO cannot be initialized.');
 
         $db->getActivePdo();
+    }
+
+    protected function getLogger(): LoggerInterface|MockObject
+    {
+        return $this->createMock(LoggerInterface::class);
     }
 
     private function getProfiler(): ProfilerInterface

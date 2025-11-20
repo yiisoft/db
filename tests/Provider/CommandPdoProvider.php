@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Constant\DataType;
 
-class CommandPDOProvider
+class CommandPdoProvider
 {
     public static function bindParam(): array
     {

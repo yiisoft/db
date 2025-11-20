@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Command;
 
 use PHPUnit\Framework\Attributes\DataProviderExternal;
-use Throwable;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -13,28 +12,26 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
-use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\IntegrationTestCase;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 /**
  * @group db
  */
-final class CommandTest extends AbstractCommandTest
+final class CommandTest extends IntegrationTestCase
 {
-    use TestTrait;
-
     public function testAddCheck(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->addCheck('table', 'name', 'id > 0')->getSql();
 
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD CONSTRAINT [[name]] CHECK (id > 0)
                 SQL,
@@ -43,10 +40,10 @@ final class CommandTest extends AbstractCommandTest
         );
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::columnTypes */
+    #[DataProviderExternal(CommandProvider::class, 'columnTypes')]
     public function testAddColumn(ColumnInterface|string $type): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->addColumn('table', 'column', $type)->getSql();
@@ -54,7 +51,7 @@ final class CommandTest extends AbstractCommandTest
         $columnType = $db->getQueryBuilder()->buildColumnDefinition($type);
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]] {$columnType}
                 SQL,
@@ -65,13 +62,13 @@ final class CommandTest extends AbstractCommandTest
 
     public function testAddCommentOnColumn(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->addCommentOnColumn('customer', 'id', 'Primary key.')->getSql();
 
         $this->assertStringContainsString(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 COMMENT ON COLUMN [[customer]].[[id]] IS 'Primary key.'
                 SQL,
@@ -82,13 +79,13 @@ final class CommandTest extends AbstractCommandTest
 
     public function testAddCommentOnTable(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->addCommentOnTable('table', 'comment')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 COMMENT ON TABLE [[table]] IS 'comment'
                 SQL,
@@ -99,7 +96,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testAddDefaultValue(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
 
@@ -111,9 +108,7 @@ final class CommandTest extends AbstractCommandTest
         $command->addDefaultValue('table', 'name', 'column', 'value');
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addForeignKeySql
-     */
+    #[DataProviderExternal(CommandProvider::class, 'addForeignKeySql')]
     public function testAddForeignKeySql(
         array|string $columns,
         array|string $referenceColumns,
@@ -121,7 +116,7 @@ final class CommandTest extends AbstractCommandTest
         ?string $update,
         string $expected,
     ): void {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $command = $db->createCommand();
 
         $name = '{{fk_constraint}}';
@@ -130,45 +125,49 @@ final class CommandTest extends AbstractCommandTest
 
         $sql = $command->addForeignKey($tableName, $name, $columns, $referenceTable, $referenceColumns, $delete, $update)->getSql();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addPrimaryKeySql
-     */
+    #[DataProviderExternal(CommandProvider::class, 'addPrimaryKeySql')]
     public function testAddPrimaryKeySql(string $name, string $tableName, array|string $column, string $expected): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->addPrimaryKey($tableName, $name, $column)->getSql();
 
-
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addUniqueSql
-     */
+    #[DataProviderExternal(CommandProvider::class, 'addUniqueSql')]
     public function testAddUniqueSql(string $name, string $tableName, array|string $column, string $expected): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->addUnique($tableName, $name, $column)->getSql();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
     }
 
     public function testAlterColumn(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->alterColumn('table', 'column', ColumnType::INTEGER)->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] CHANGE [[column]] [[column]] integer
                 SQL,
@@ -179,7 +178,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testBatchInsert(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $command->insertBatch('table', [['value1', 'value2'], ['value3', 'value4']], ['column1', 'column2']);
@@ -196,9 +195,7 @@ final class CommandTest extends AbstractCommandTest
         );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::createIndexSql
-     */
+    #[DataProviderExternal(CommandProvider::class, 'createIndexSql')]
     public function testCreateIndexSql(
         string $name,
         string $table,
@@ -207,18 +204,21 @@ final class CommandTest extends AbstractCommandTest
         string $indexMethod,
         string $expected,
     ): void {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
 
         $sql = $command->createIndex($table, $name, $column, $indexType, $indexMethod)->getSql();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $sql,
+        );
     }
 
     public function testCheckIntegrity(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
 
@@ -232,7 +232,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testCreateTable(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
 
@@ -268,7 +268,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testCreateView(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
 
@@ -280,7 +280,7 @@ final class CommandTest extends AbstractCommandTest
         )->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 CREATE VIEW [[view]] AS SELECT * FROM [[table]]
                 SQL,
@@ -291,13 +291,13 @@ final class CommandTest extends AbstractCommandTest
 
     public function testDelete(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->delete('table', ['column' => 'value'])->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 DELETE FROM [[table]] WHERE [[column]] = :qp0
                 SQL,
@@ -308,13 +308,13 @@ final class CommandTest extends AbstractCommandTest
 
     public function testDropCheck(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->dropCheck('table', 'name')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
                 SQL,
@@ -325,13 +325,13 @@ final class CommandTest extends AbstractCommandTest
 
     public function testDropColumn(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->dropColumn('table', 'column')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP COLUMN [[column]]
                 SQL,
@@ -342,13 +342,13 @@ final class CommandTest extends AbstractCommandTest
 
     public function testDropCommentFromColumn(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->dropCommentFromColumn('table', 'column')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 COMMENT ON COLUMN [[table]].[[column]] IS NULL
                 SQL,
@@ -359,13 +359,13 @@ final class CommandTest extends AbstractCommandTest
 
     public function testDropCommentFromTable(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->dropCommentFromTable('table')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 COMMENT ON TABLE [[table]] IS NULL
                 SQL,
@@ -376,7 +376,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testDropDefaultValue(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
 
@@ -390,13 +390,13 @@ final class CommandTest extends AbstractCommandTest
 
     public function testDropForeingKey(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->dropForeignKey('table', 'name')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
                 SQL,
@@ -407,13 +407,13 @@ final class CommandTest extends AbstractCommandTest
 
     public function testDropIndex(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->dropIndex('table', 'name')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 DROP INDEX [[name]] ON [[table]]
                 SQL,
@@ -424,13 +424,13 @@ final class CommandTest extends AbstractCommandTest
 
     public function testDropPrimaryKey(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->dropPrimaryKey('table', 'name')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
                 SQL,
@@ -441,13 +441,13 @@ final class CommandTest extends AbstractCommandTest
 
     public function testDropView(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->dropView('view')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 DROP VIEW [[view]]
                 SQL,
@@ -459,7 +459,7 @@ final class CommandTest extends AbstractCommandTest
     #[DataProviderExternal(CommandProvider::class, 'dropTable')]
     public function testDropTable(string $expected, ?bool $ifExists, ?bool $cascade): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $command = $db->createCommand();
 
         if ($ifExists === null && $cascade === null) {
@@ -472,20 +472,20 @@ final class CommandTest extends AbstractCommandTest
             $command = $command->dropTable('table', ifExists: $ifExists, cascade: $cascade);
         }
 
-        $expectedSql = self::replaceQuotes($expected);
+        $expectedSql = $this->replaceQuotes($expected);
 
         $this->assertSame($expectedSql, $command->getSql());
     }
 
     public function testDropUnique(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->dropUnique('table', 'name')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
                 SQL,
@@ -496,7 +496,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testExecute(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
 
@@ -510,7 +510,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testInsert(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $command->insert('customer', ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address']);
@@ -529,140 +529,14 @@ final class CommandTest extends AbstractCommandTest
         );
     }
 
-    public function testQuery(): void
-    {
-        $db = $this->getConnection(true);
-
-        $command = $db->createCommand();
-        $command->setSql(
-            <<<SQL
-            SELECT * FROM [[customer]]
-            SQL,
-        );
-
-        $exception = null;
-        try {
-            $command->query();
-        } catch (Throwable $exception) {
-        }
-
-        $this->assertInstanceOf(NotSupportedException::class, $exception);
-        $this->assertSame(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
-            $exception->getMessage(),
-        );
-
-        $db->close();
-    }
-
-    public function testQueryAll(): void
-    {
-        $db = $this->getConnection(true);
-
-        $command = $db->createCommand();
-        $command->setSql(
-            <<<SQL
-            SELECT * FROM [[customer]]
-            SQL,
-        );
-
-        $exception = null;
-        try {
-            $command->queryAll();
-        } catch (Throwable $exception) {
-        }
-
-        $this->assertInstanceOf(NotSupportedException::class, $exception);
-        $this->assertSame(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
-            $exception->getMessage(),
-        );
-
-        $db->close();
-    }
-
-    public function testQueryColumn(): void
-    {
-        $db = $this->getConnection(true);
-
-        $command = $db->createCommand();
-        $command->setSql(
-            <<<SQL
-            SELECT * FROM [[customer]]
-            SQL,
-        );
-
-        $exception = null;
-        try {
-            $command->queryColumn();
-        } catch (Throwable $exception) {
-        }
-
-        $this->assertInstanceOf(NotSupportedException::class, $exception);
-        $this->assertSame(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
-            $exception->getMessage(),
-        );
-
-        $db->close();
-    }
-
-    public function testQueryOne(): void
-    {
-        $db = $this->getConnection(true);
-
-        $command = $db->createCommand();
-        $sql = <<<SQL
-        SELECT * FROM [[customer]] ORDER BY [[id]]
-        SQL;
-
-        $exception = null;
-        try {
-            $command->setSql($sql)->queryOne();
-        } catch (Throwable $exception) {
-        }
-
-        $this->assertInstanceOf(NotSupportedException::class, $exception);
-        $this->assertSame(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
-            $exception->getMessage(),
-        );
-
-        $db->close();
-    }
-
-    public function testQueryScalar(): void
-    {
-        $db = $this->getConnection(true);
-
-        $command = $db->createCommand();
-        $sql = <<<SQL
-        SELECT * FROM [[customer]] ORDER BY [[id]]
-        SQL;
-
-        $exception = null;
-        try {
-            $command->setSql($sql)->queryScalar();
-        } catch (Throwable $exception) {
-        }
-
-        $this->assertInstanceOf(NotSupportedException::class, $exception);
-        $this->assertSame(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
-            $exception->getMessage(),
-        );
-
-        $db->close();
-    }
-
     public function testRenameColumn(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $sql = $db->createCommand()->renameColumn('table', 'oldname', 'newname')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] RENAME COLUMN [[oldname]] TO [[newname]]
                 SQL,
@@ -673,12 +547,12 @@ final class CommandTest extends AbstractCommandTest
 
     public function testRenameTable(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $sql = $db->createCommand()->renameTable('table', 'newname')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 RENAME TABLE [[table]] TO [[newname]]
                 SQL,
@@ -689,7 +563,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testResetSequence(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
@@ -701,7 +575,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testSetRetryHandler(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $handler = static fn(): bool => true;
@@ -712,13 +586,13 @@ final class CommandTest extends AbstractCommandTest
 
     public function testTruncateTable(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $sql = $command->truncateTable('{{table}}')->getSql();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 TRUNCATE TABLE [[table]]
                 SQL,
@@ -729,7 +603,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testUpdate(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
         $command->update('{{table}}', ['name' => 'John'], ['id' => 1]);
@@ -740,7 +614,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testUpsert(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
 
         $command = $db->createCommand();
 
@@ -752,25 +626,9 @@ final class CommandTest extends AbstractCommandTest
         $command->upsert('{{table}}', []);
     }
 
-    public function testProfiler(?string $sql = null): void
-    {
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
-        );
-        parent::testProfiler();
-    }
-
-    public function testProfilerData(?string $sql = null): void
-    {
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
-        );
-        parent::testProfilerData();
-    }
-
     public function testWithDbTypecasting(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $command = $db->createCommand();
 
         $this->assertTrue(Assert::getPropertyValue($command, 'dbTypecasting'));
@@ -786,7 +644,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testWithPhpTypecasting(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $command = $db->createCommand();
 
         $this->assertFalse(Assert::getPropertyValue($command, 'phpTypecasting'));
@@ -802,7 +660,7 @@ final class CommandTest extends AbstractCommandTest
 
     public function testWithTypecasting(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $command = $db->createCommand();
 
         $this->assertTrue(Assert::getPropertyValue($command, 'dbTypecasting'));

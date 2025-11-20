@@ -15,15 +15,13 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 /**
  * @group db
  */
 final class ArrayValueBuilderTest extends TestCase
 {
-    use TestTrait;
-
     public static function buildProvider(): array
     {
         return [
@@ -40,7 +38,7 @@ final class ArrayValueBuilderTest extends TestCase
     #[DataProvider('buildProvider')]
     public function testBuild(iterable|LazyArrayInterface|string $value, string $expected): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $qb = $db->getQueryBuilder();
 
         $params = [];
@@ -53,7 +51,7 @@ final class ArrayValueBuilderTest extends TestCase
 
     public function testBuildNull(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $qb = $db->getQueryBuilder();
 
         $params = [];
@@ -66,7 +64,7 @@ final class ArrayValueBuilderTest extends TestCase
 
     public function testBuildQueryExpression(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $qb = $db->getQueryBuilder();
 
         $params = [];

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 
+use Closure;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
@@ -15,11 +17,10 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
-use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 use Yiisoft\Db\Tests\Support\Stub\QueryBuilder;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function fclose;
 use function fopen;
@@ -28,13 +29,11 @@ use function stream_context_create;
 /**
  * @group db
  */
-final class QueryBuilderTest extends AbstractQueryBuilderTest
+final class QueryBuilderTest extends IntegrationTestCase
 {
-    use TestTrait;
-
     public function testBase(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $sql = (new Query($db))
             ->select('id')
@@ -59,7 +58,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     public function testAddDefaultValue(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
 
@@ -79,9 +78,11 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         string $expected,
         array $expectedParams = [],
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = new QueryBuilder($db);
         $params = [];
+
+        $expected = $this->replaceQuotes($expected);
 
         try {
             $this->assertSame($expected, $qb->insertBatch($table, $rows, $columns, $params));
@@ -92,7 +93,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     public function testBuildJoinException(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
@@ -106,7 +107,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     public function testCheckIntegrity(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
@@ -119,11 +120,11 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     public function testCreateTable(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            self::replaceQuotes(
+            $this->replaceQuotes(
                 <<<SQL
                 CREATE TABLE [[test]] (
                 \t[[id]] integer PRIMARY KEY AUTOINCREMENT,
@@ -147,13 +148,11 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 ],
             ),
         );
-
-        $db->close();
     }
 
     public function testCreateView(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $subQuery = (new Query($db))->select('{{bar}}')->from('{{testCreateViewTable}}')->where(['>', 'bar', '5']);
         $qb = new QueryBuilder($db);
 
@@ -167,7 +166,8 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     public function testDropDefaultValue(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $qb = $db->getQueryBuilder();
 
@@ -181,7 +181,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     public function testGetExpressionBuilderException(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $this->expectException(NotSupportedException::class);
 
@@ -190,32 +190,45 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->getExpressionBuilder($expression);
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $columns
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'insert')]
     public function testInsert(
         string $table,
-        array|QueryInterface $columns,
+        Closure|array|QueryInterface $columns,
         array $params,
         string $expectedSQL,
         array $expectedParams,
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = new QueryBuilder($db);
 
-        $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
+        if ($columns instanceof Closure) {
+            $columns = $columns($db);
+        }
+
+        $this->assertSame(
+            $this->replaceQuotes($expectedSQL),
+            $qb->insert($table, $columns, $params),
+        );
         $this->assertEquals($expectedParams, $params);
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'insertReturningPks')]
     public function testInsertReturningPks(
         string $table,
-        array|QueryInterface $columns,
+        Closure|array|QueryInterface $columns,
         array $params,
         string $expectedSql,
         array $expectedParams,
     ): void {
-        $db = $this->getConnection();
-
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
+
+        if ($columns instanceof Closure) {
+            $columns = $columns($db);
+        }
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
@@ -227,7 +240,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     public function testResetSequence(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
 
@@ -239,37 +252,54 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->resetSequence('T_constraints_1', 'id');
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|ExpressionInterface|string|null))|array|ExpressionInterface|string|null $from
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
         array|ExpressionInterface|string $condition,
-        array|ExpressionInterface|string|null $from,
+        Closure|array|ExpressionInterface|string|null $from,
         array $params,
         string $expectedSql,
         array $expectedParams = [],
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
+
+        if ($from instanceof Closure) {
+            $from = $from($db);
+        }
 
         $sql = $qb->update($table, $columns, $condition, $from, $params);
         $sql = $db->getQuoter()->quoteSql($sql);
 
-        $this->assertSame($expectedSql, $sql);
+        $this->assertSame(
+            $this->replaceQuotes($expectedSql),
+            $sql,
+        );
         $this->assertEquals($expectedParams, $params);
 
         $db->close();
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $insertColumns
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
     public function testUpsert(
         string $table,
-        array|QueryInterface $insertColumns,
+        Closure|array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         string|array $expectedSql,
         array $expectedParams,
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
+
+        if ($insertColumns instanceof Closure) {
+            $insertColumns = $insertColumns($db);
+        }
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
@@ -279,13 +309,20 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns);
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $insertColumns
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
     public function testUpsertExecute(
         string $table,
-        array|QueryInterface $insertColumns,
+        Closure|array|QueryInterface $insertColumns,
         array|bool $updateColumns,
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
+
+        if ($insertColumns instanceof Closure) {
+            $insertColumns = $insertColumns($db);
+        }
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
@@ -295,6 +332,9 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns);
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $insertColumns
+     */
     #[DataProviderExternal(QueryBuilderProvider::class, 'upsertReturning')]
     public function testUpsertReturning(
         string $table,
@@ -304,7 +344,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         string $expectedSql,
         array $expectedParams,
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
         $this->expectException(NotSupportedException::class);
@@ -317,7 +357,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     public function testBuildValueClosedResource(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
         $resource = fopen('php://memory', 'r');
@@ -331,7 +371,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     public function testPrepareValueClosedResource(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
         $resource = fopen('php://memory', 'r');
@@ -344,7 +384,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     public function testPrepareValueNonStreamResource(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
         $this->expectExceptionObject(new InvalidArgumentException('Supported only stream resource type.'));
@@ -354,7 +394,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     public function testGetServerInfo(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
         $this->assertInstanceOf(ServerInfoInterface::class, $qb->getServerInfo());
@@ -362,29 +402,29 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     public function testJsonColumn(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
         $column = ColumnBuilder::json();
 
         $this->assertSame(
-            self::replaceQuotes("CREATE TABLE [json_table] (\n\t[json_col] json CHECK (json_valid([json_col]))\n)"),
+            $this->replaceQuotes("CREATE TABLE [json_table] (\n\t[json_col] json CHECK (json_valid([json_col]))\n)"),
             $qb->createTable('json_table', ['json_col' => $column]),
         );
 
         $this->assertSame(
-            self::replaceQuotes('ALTER TABLE [json_table] ADD [json_col] json'),
+            $this->replaceQuotes('ALTER TABLE [json_table] ADD [json_col] json'),
             $qb->addColumn('json_table', 'json_col', $column),
         );
 
         $this->assertSame(
-            self::replaceQuotes('ALTER TABLE [json_table] CHANGE [json_col] [json_col] json'),
+            $this->replaceQuotes('ALTER TABLE [json_table] CHANGE [json_col] [json_col] json'),
             $qb->alterColumn('json_table', 'json_col', $column),
         );
     }
 
     public function testWithTypecasting(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $qb = $db->getQueryBuilder();
 
         $dmlBuilder = Assert::getPropertyValue($qb, 'dmlBuilder');
@@ -413,7 +453,5 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $typecasting = Assert::getPropertyValue($dmlBuilder, 'typecasting');
 
         $this->assertTrue($typecasting);
-
-        $db->close();
     }
 }

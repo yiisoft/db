@@ -16,7 +16,7 @@ use Yiisoft\Db\QueryBuilder\Condition\GreaterThanOrEqual;
 use Yiisoft\Db\QueryBuilder\Condition\LessThan;
 use Yiisoft\Db\QueryBuilder\Condition\LessThanOrEqual;
 use Yiisoft\Db\QueryBuilder\Condition\NotEquals;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 use function PHPUnit\Framework\assertEquals;
 use function PHPUnit\Framework\assertSame;
@@ -26,8 +26,6 @@ use function PHPUnit\Framework\assertSame;
  */
 final class CompareBuilderTest extends TestCase
 {
-    use TestTrait;
-
     public static function dataBuildWithStringColumn(): iterable
     {
         yield 'equals' => [Equals::class, '='];
@@ -41,7 +39,7 @@ final class CompareBuilderTest extends TestCase
     #[DataProvider('dataBuildWithStringColumn')]
     public function testBuildWithStringColumn(string $conditionClass, string $operator): void
     {
-        $qb = $this->getConnection()->getQueryBuilder();
+        $qb = TestHelper::createSqliteMemoryConnection()->getQueryBuilder();
         $condition = new $conditionClass('id', 42);
         $params = [];
 
@@ -64,7 +62,7 @@ final class CompareBuilderTest extends TestCase
     #[DataProvider('dataBuildWithExpressionColumn')]
     public function testBuildWithExpressionColumn(string $conditionClass, string $operator): void
     {
-        $qb = $this->getConnection()->getQueryBuilder();
+        $qb = TestHelper::createSqliteMemoryConnection()->getQueryBuilder();
         $columnExpression = new Expression('UPPER(name)');
         $condition = new $conditionClass($columnExpression, 'JOHN');
         $params = [];
@@ -88,7 +86,7 @@ final class CompareBuilderTest extends TestCase
     #[DataProvider('dataBuildWithFunctionColumn')]
     public function testBuildWithFunctionColumn(string $conditionClass, string $operator): void
     {
-        $qb = $this->getConnection()->getQueryBuilder();
+        $qb = TestHelper::createSqliteMemoryConnection()->getQueryBuilder();
         $condition = new $conditionClass('COUNT(*)', 5);
         $params = [];
 
@@ -111,7 +109,7 @@ final class CompareBuilderTest extends TestCase
     #[DataProvider('dataBuildWithNullValue')]
     public function testBuildWithNullValue(string $conditionClass, string $expectedResult): void
     {
-        $qb = $this->getConnection()->getQueryBuilder();
+        $qb = TestHelper::createSqliteMemoryConnection()->getQueryBuilder();
         $condition = new $conditionClass('status', null);
         $params = [];
 
@@ -134,7 +132,7 @@ final class CompareBuilderTest extends TestCase
     #[DataProvider('dataBuildWithExpressionValue')]
     public function testBuildWithExpressionValue(string $conditionClass, string $operator): void
     {
-        $qb = $this->getConnection()->getQueryBuilder();
+        $qb = TestHelper::createSqliteMemoryConnection()->getQueryBuilder();
         $valueExpression = new Expression('NOW()');
         $condition = new $conditionClass('created_at', $valueExpression);
         $params = [];
@@ -183,7 +181,7 @@ final class CompareBuilderTest extends TestCase
         string $column,
         string $expectedColumn,
     ): void {
-        $qb = $this->getConnection()->getQueryBuilder();
+        $qb = TestHelper::createSqliteMemoryConnection()->getQueryBuilder();
         $condition = new $conditionClass($column, 5);
         $params = [];
 
@@ -233,7 +231,7 @@ final class CompareBuilderTest extends TestCase
         ?string $expectedValue,
         array $expectedParams,
     ): void {
-        $qb = $this->getConnection()->getQueryBuilder();
+        $qb = TestHelper::createSqliteMemoryConnection()->getQueryBuilder();
         $condition = new $conditionClass('column', $value);
         $params = [];
 
@@ -256,7 +254,7 @@ final class CompareBuilderTest extends TestCase
     #[DataProvider('dataBuildWithComplexExpression')]
     public function testBuildWithComplexExpression(string $conditionClass, string $operator): void
     {
-        $qb = $this->getConnection()->getQueryBuilder();
+        $qb = TestHelper::createSqliteMemoryConnection()->getQueryBuilder();
         $columnExpression = new Expression('COALESCE(name, :default)', [':default' => 'Unknown']);
         $valueExpression = new Expression('UPPER(:value)', [':value' => 'john']);
         $condition = new $conditionClass($columnExpression, $valueExpression);

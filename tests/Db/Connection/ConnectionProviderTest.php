@@ -7,12 +7,10 @@ namespace Yiisoft\Db\Tests\Db\Connection;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Connection\ConnectionProvider;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 final class ConnectionProviderTest extends TestCase
 {
-    use TestTrait;
-
     public function testConnectionProviderNonExists(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -26,14 +24,14 @@ final class ConnectionProviderTest extends TestCase
         $this->assertFalse(ConnectionProvider::has());
         $this->assertFalse(ConnectionProvider::has('db2'));
 
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         ConnectionProvider::set($db);
 
         $this->assertTrue(ConnectionProvider::has());
         $this->assertSame($db, ConnectionProvider::get());
         $this->assertSame(['default' => $db], ConnectionProvider::all());
 
-        $db2 = $this->getConnection();
+        $db2 = TestHelper::createSqliteMemoryConnection();
         ConnectionProvider::set($db2, 'db2');
 
         $this->assertTrue(ConnectionProvider::has('db2'));

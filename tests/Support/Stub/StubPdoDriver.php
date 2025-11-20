@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Support\Stub;
 
 use Yiisoft\Db\Driver\Pdo\AbstractPdoDriver;
 
-final class PdoDriver extends AbstractPdoDriver
+final class StubPdoDriver extends AbstractPdoDriver
 {
     public function getDriverName(): string
     {

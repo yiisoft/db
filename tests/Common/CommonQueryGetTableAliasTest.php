@@ -2,27 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests;
+namespace Yiisoft\Db\Tests\Common;
 
-use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
-abstract class AbstractQueryGetTableAliasTest extends TestCase
+abstract class CommonQueryGetTableAliasTest extends IntegrationTestCase
 {
-    use TestTrait;
-
     public function testAliasesFromString(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = new Query($db);
         $query->from('profile AS \'prf\', user "usr", service srv, order, [a b] [c d], {{something}} AS myalias');
         $tables = $query->getTablesUsedInFrom();
-
-        $db->close();
 
         $this->assertSame(
             [
@@ -37,12 +32,9 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         );
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function testGetTableNamesIsFromAliasedSubquery(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = new Query($db);
         $subQuery = new Query($db);
@@ -54,12 +46,9 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         $this->assertSame($expected, $tables);
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function testNamesIsFromAliasedArrayWithExpression(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = new Query($db);
         $expression = new Expression('(SELECT id FROM user)');
@@ -71,7 +60,7 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
 
     public function testNamesIsFromAliasedExpression(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = new Query($db);
         $expression = new Expression('(SELECT id FROM user)');
@@ -85,12 +74,9 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         $this->assertSame(['{{x}}' => $expression], $tables);
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function testNamesIsFromArrayWithAlias(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = new Query($db);
         $query->from(['prf' => 'profile', '{{usr}}' => '{{user}}', '{{a b}}' => '{{c d}}', 'post AS p']);
@@ -103,12 +89,9 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         );
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function testNamesIsFromArrayWithoutAlias(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = new Query($db);
         $query->from(['{{profile}}', 'user']);
@@ -118,13 +101,11 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
     }
 
     /**
-     * {@link https://github.com/yiisoft/yii2/issues/14150}
-     *
-     * @throws InvalidArgumentException
+     * @link https://github.com/yiisoft/yii2/issues/14150
      */
     public function testNamesIsFromPrefixedTableName(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = new Query($db);
         $query->from('{{%order_item}}');
@@ -133,12 +114,9 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         $this->assertSame(['{{%order_item}}' => '{{%order_item}}'], $tables);
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function testNamesIsFromString(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = new Query($db);
         $query->from('profile AS \'prf\', user "usr", `order`, "customer", "a b" as "c d"');
@@ -157,13 +135,11 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
     }
 
     /**
-     * {@link https://github.com/yiisoft/yii2/issues/14211}}
-     *
-     * @throws InvalidArgumentException
+     * @link https://github.com/yiisoft/yii2/issues/14211
      */
     public function testNamesIsFromTableNameWithDatabase(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = new Query($db);
         $query->from('tickets.workflows');

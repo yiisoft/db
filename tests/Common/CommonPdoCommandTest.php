@@ -5,22 +5,19 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use PDO;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Provider\CommandPdoProvider;
+use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
-abstract class CommonPdoCommandTest extends TestCase
+abstract class CommonPdoCommandTest extends IntegrationTestCase
 {
-    use TestTrait;
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandPDOProvider::bindParam
-     */
+    #[DataProviderExternal(CommandPdoProvider::class, 'bindParam')]
     public function testBindParam(
         string $field,
         string $name,
@@ -30,9 +27,10 @@ abstract class CommonPdoCommandTest extends TestCase
         mixed $driverOptions,
         array $expected,
     ): void {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
-        $sql = static::replaceQuotes(
+        $sql = $this->replaceQuotes(
             <<<SQL
             SELECT * FROM [[customer]] WHERE $field = $name
             SQL,
@@ -43,18 +41,16 @@ abstract class CommonPdoCommandTest extends TestCase
 
         $this->assertSame($sql, $command->getSql());
         $this->assertSame($expected, $command->queryOne());
-
-        $db->close();
     }
 
     /**
      * Test whether param binding works in other places than WHERE.
-     *
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandPDOProvider::bindParamsNonWhere
      */
+    #[DataProviderExternal(CommandPdoProvider::class, 'bindParamsNonWhere')]
     public function testBindParamsNonWhere(string $sql): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $db->createCommand()->insert(
             '{{customer}}',
@@ -68,13 +64,12 @@ abstract class CommonPdoCommandTest extends TestCase
         $command = $db->createCommand($sql, $params);
 
         $this->assertSame('Params', $command->queryScalar());
-
-        $db->close();
     }
 
     public function testBindParamValue(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
 
@@ -116,13 +111,11 @@ abstract class CommonPdoCommandTest extends TestCase
         $command->bindValue(':name', 'user5');
 
         $this->assertSame('user5@example.com', $command->queryScalar());
-
-        $db->close();
     }
 
     public function testBindValues(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
 
@@ -152,13 +145,12 @@ abstract class CommonPdoCommandTest extends TestCase
         $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
         $this->assertCount(3, $bindedValues);
         $this->assertSame($param, $bindedValues['int']);
-
-        $db->close();
     }
 
     public function testColumnCase(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->createConnection();
+        $this->loadFixture(db: $db);
 
         $this->assertSame(PDO::CASE_NATURAL, $db->getActivePdo()->getAttribute(PDO::ATTR_CASE));
 
@@ -197,7 +189,8 @@ abstract class CommonPdoCommandTest extends TestCase
 
     public function testIncorrectQueryMode(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = new class ($db) extends AbstractPdoCommand {
             public function testExecute(): void
@@ -218,8 +211,6 @@ abstract class CommonPdoCommandTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Unknown query mode '1024'");
         $command->testExecute();
-
-        $db->close();
     }
 
     protected function createQueryLogger(string $sql, array $params = []): LoggerInterface

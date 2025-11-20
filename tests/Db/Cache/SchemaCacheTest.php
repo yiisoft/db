@@ -10,19 +10,16 @@ use RuntimeException;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Exception\PsrInvalidArgumentException;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Test\Support\SimpleCache\MemorySimpleCache;
 
 /**
  * @group db
  */
 final class SchemaCacheTest extends TestCase
 {
-    use TestTrait;
-
     public function testInvalidate(): void
     {
-        $schemaCache = new SchemaCache(DbHelper::getPsrCache());
+        $schemaCache = new SchemaCache(new MemorySimpleCache());
 
         $schemaCache->set('key', 'value', 'tag');
 
@@ -35,7 +32,7 @@ final class SchemaCacheTest extends TestCase
 
     public function testInvalidateWithEmptyTag(): void
     {
-        $schemaCache = new SchemaCache(DbHelper::getPsrCache());
+        $schemaCache = new SchemaCache(new MemorySimpleCache());
 
         $schemaCache->set('key', 'value');
 
@@ -48,7 +45,7 @@ final class SchemaCacheTest extends TestCase
 
     public function testSetDuration(): void
     {
-        $schemaCache = new SchemaCache(DbHelper::getPsrCache());
+        $schemaCache = new SchemaCache(new MemorySimpleCache());
 
         $schemaCache->setDuration(3600);
 
@@ -57,7 +54,7 @@ final class SchemaCacheTest extends TestCase
 
     public function testSetEnabled(): void
     {
-        $schemaCache = new SchemaCache(DbHelper::getPsrCache());
+        $schemaCache = new SchemaCache(new MemorySimpleCache());
 
         $schemaCache->setEnabled(false);
 
@@ -70,7 +67,7 @@ final class SchemaCacheTest extends TestCase
 
     public function testSetExclude(): void
     {
-        $schemaCache = new SchemaCache(DbHelper::getPsrCache());
+        $schemaCache = new SchemaCache(new MemorySimpleCache());
 
         $schemaCache->setExclude(['table1', 'table2']);
 
@@ -93,7 +90,7 @@ final class SchemaCacheTest extends TestCase
     public function testInvalidCacheKey(): void
     {
         $resource = fopen('php://memory', 'r');
-        $schemaCache = new SchemaCache(DbHelper::getPsrCache());
+        $schemaCache = new SchemaCache(new MemorySimpleCache());
 
         $this->expectException(PsrInvalidArgumentException::class);
         $schemaCache->set($resource, 1);
