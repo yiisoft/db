@@ -8,6 +8,7 @@ use PDO;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Throwable;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoConnection;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoTransaction;
 use Yiisoft\Db\Driver\Pdo\PdoDriverInterface;
@@ -280,9 +281,17 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
         $transaction = $db->beginTransaction();
         $db->close();
 
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Failed to commit transaction: transaction was inactive.');
-        $transaction->commit();
+        $exception = null;
+        try {
+            $transaction->commit();
+        } catch (Throwable $exception) {
+        } finally {
+            $db->close();
+        }
+
+        $this->assertInstanceOf(Exception::class, $exception);
+        $this->assertSame('Failed to commit transaction: transaction was inactive.', $exception->getMessage());
+
     }
 
     public function testTransactionCommitSavepoint(): void
@@ -321,6 +330,8 @@ abstract class CommonPdoConnectionTest extends IntegrationTestCase
         $level = $transaction->getLevel();
         $transaction->rollBack();
         $this->assertEquals($level, $transaction->getLevel());
+
+        $db->close();
     }
 
     public function testTransactionRollbackSavepoint(): void

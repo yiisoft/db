@@ -24,8 +24,10 @@ final class ConnectionTest extends TestCase
     public function testGetTableSchema(): void
     {
         $db = $this->createConnection();
+        $tableSchema = $db->getTableSchema('non_existing_table');
+        $db->close();
 
-        $this->assertNull($db->getTableSchema('non_existing_table'));
+        $this->assertNull($tableSchema);
     }
 
     public function testConstructColumnFactory(): void
