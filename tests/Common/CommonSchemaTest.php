@@ -317,7 +317,7 @@ abstract class CommonSchemaTest extends IntegrationTestCase
                 [
                     'id' => ColumnBuilder::primaryKey(),
                     'name' => ColumnBuilder::string()->notNull(),
-                ]
+                ],
             )
             ->execute();
 
