@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema\Column;
 
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Expression\Value\ArrayValue;
@@ -14,13 +16,66 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\Column\StructuredColumn;
+use Yiisoft\Db\Tests\Provider\ColumnProvider;
 use Yiisoft\Db\Tests\Support\Stub\Column;
+
+use function is_object;
 
 /**
  * @group db
  */
 final class ColumnTest extends TestCase
 {
+    #[DataProviderExternal(ColumnProvider::class, 'predefinedTypes')]
+    public function testPredefinedType(string $className, string $type)
+    {
+        /** @var ColumnInterface $column */
+        $column = new $className();
+
+        $this->assertSame($type, $column->getType());
+    }
+
+    #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumns')]
+    public function testDbTypecastColumns(ColumnInterface $column, array $values)
+    {
+        // Set the timezone for testing purposes, could be any timezone except UTC
+        $oldDatetime = date_default_timezone_get();
+        date_default_timezone_set('America/New_York');
+
+        foreach ($values as [$expected, $value]) {
+            if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {
+                $this->assertEquals($expected, $column->dbTypecast($value));
+            } else {
+                $this->assertSame($expected, $column->dbTypecast($value));
+            }
+        }
+
+        date_default_timezone_set($oldDatetime);
+    }
+
+    #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumnsWithException')]
+    public function testDbTypecastColumnsWithException(ColumnInterface $column, mixed $value)
+    {
+        $type = is_object($value) ? $value::class : gettype($value);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Wrong $type value for {$column->getType()} column.");
+
+        $column->dbTypecast($value);
+    }
+
+    #[DataProviderExternal(ColumnProvider::class, 'phpTypecastColumns')]
+    public function testPhpTypecastColumns(ColumnInterface $column, array $values)
+    {
+        foreach ($values as [$expected, $value]) {
+            if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {
+                $this->assertEquals($expected, $column->phpTypecast($value));
+            } else {
+                $this->assertSame($expected, $column->phpTypecast($value));
+            }
+        }
+    }
+
     public function testAutoIncrement(): void
     {
         $column = new Column();

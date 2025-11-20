@@ -57,11 +57,23 @@ abstract class CommonSchemaTest extends IntegrationTestCase
 
     public function testRefresh(): void
     {
-        $schema = $this->getSharedConnection()->getSchema();
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+        $schema = $db->getSchema();
+
+        try {
+            $this->assertNotEmpty($schema->getTableNames());
+            $this->assertNotEmpty($schema->getViewNames());
+            $this->assertNotEmpty($schema->getSchemaNames());
+        } catch (NotSupportedException) {
+        }
+
         $schema->refresh();
 
         $this->assertSame([], Assert::getPropertyValue($schema, 'tableMetadata'));
         $this->assertSame([], Assert::getPropertyValue($schema, 'tableNames'));
+        $this->assertSame([], Assert::getPropertyValue($schema, 'schemaNames'));
+        $this->assertSame([], Assert::getPropertyValue($schema, 'viewNames'));
     }
 
     public function testColumnComment(): void
