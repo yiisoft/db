@@ -610,17 +610,15 @@ abstract class AbstractCommand implements CommandInterface
 
         $result = $this->internalGetQueryResult($queryMode);
 
-        if (!$isReadMode) {
-            $this->refreshTableSchema();
+        if ($isReadMode) {
+            return $result;
         }
 
+        if ($this->refreshTableName !== null) {
+            $this->db->getSchema()->refreshTableSchema($this->refreshTableName);
+        }
         return $result;
     }
-
-    /**
-     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
-     */
-    abstract protected function refreshTableSchema(): void;
 
     /**
      * Marks a specified table schema to be refreshed after command execution.

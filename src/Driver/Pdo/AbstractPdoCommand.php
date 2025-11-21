@@ -310,16 +310,6 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     }
 
     /**
-     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
-     */
-    protected function refreshTableSchema(): void
-    {
-        if ($this->refreshTableName !== null) {
-            $this->db->getSchema()->refreshTableSchema($this->refreshTableName);
-        }
-    }
-
-    /**
      * Returns the column instance from the query result by the index, or `null` if the column type cannot be determined.
      */
     private function getResultColumn(int $index): ?ColumnInterface

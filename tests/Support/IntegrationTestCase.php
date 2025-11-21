@@ -55,4 +55,9 @@ abstract class IntegrationTestCase extends TestCase
     {
         return str_replace(['[[', ']]'], ['[', ']'], $sql);
     }
+
+    protected function dropView(ConnectionInterface $db, string $view): void
+    {
+        $db->createCommand('DROP VIEW IF EXISTS ' . $db->getQuoter()->quoteTableName($view))->execute();
+    }
 }

@@ -283,13 +283,45 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $schema = $db->getSchema();
 
         $tempTableName = 'testTemporaryTable';
-        $db->createCommand()->createTable($tempTableName, [
-            'id' => ColumnBuilder::primaryKey(),
-            'name' => ColumnBuilder::string()->notNull(),
-        ])->execute();
+        $db->createCommand()
+            ->createTable(
+                $tempTableName,
+                [
+                    'id' => ColumnBuilder::primaryKey(),
+                    'name' => ColumnBuilder::string()->notNull(),
+                ],
+            )
+            ->execute();
 
         $this->assertTrue($schema->hasTable('order'));
-        $this->assertTrue($schema->hasTable('category'));
+        $this->assertTrue($schema->hasTable($tempTableName));
+        $this->assertFalse($schema->hasTable('no_such_table'));
+
+        $db->createCommand()->dropTable($tempTableName)->execute();
+
+        $this->assertFalse($schema->hasTable($tempTableName));
+        $this->assertTrue($schema->hasTable('order'));
+    }
+
+    public function testHasTableWithSqlRemoving(): void
+    {
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
+        $schema = $db->getSchema();
+
+        $tempTableName = 'testTemporaryTable';
+        $db->createCommand()
+            ->createTable(
+                $tempTableName,
+                [
+                    'id' => ColumnBuilder::primaryKey(),
+                    'name' => ColumnBuilder::string()->notNull(),
+                ],
+            )
+            ->execute();
+
+        $this->assertTrue($schema->hasTable('order'));
         $this->assertTrue($schema->hasTable($tempTableName));
         $this->assertFalse($schema->hasTable('no_such_table'));
 
@@ -368,15 +400,55 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $this->loadFixture();
 
+        $this->dropView($db, 'v1');
+        $this->dropView($db, 'v2');
+        $db->createCommand()->createView('v1', $db->createQuery()->from('customer'))->execute();
+        $db->createCommand()->createView('v2', $db->createQuery()->from('customer'))->execute();
+
         $schema = $db->getSchema();
 
-        $this->assertTrue($schema->hasView('animal_view'));
-        $this->assertFalse($schema->hasView('no_such_view'));
+        $this->assertTrue($schema->hasView('v1'));
+        $this->assertTrue($schema->hasView('v2'));
+        $this->assertFalse($schema->hasView('v3'));
 
-        $db->createCommand()->dropView('animal_view')->execute();
+        $db->createCommand()->dropView('v1')->execute();
 
-        $this->assertTrue($schema->hasView('animal_view'));
-        $this->assertFalse($schema->hasView('animal_view', '', true));
+        $this->assertFalse($schema->hasView('v1'));
+        $this->assertTrue($schema->hasView('v2'));
+        $this->assertFalse($schema->hasView('v3'));
+        $this->assertFalse($schema->hasView('v1', refresh: true));
+        $this->assertTrue($schema->hasView('v2', refresh: true));
+        $this->assertFalse($schema->hasView('v3', refresh: true));
+
+        $this->dropView($db, 'v2');
+    }
+
+    public function testHasViewWithSqlRemoving(): void
+    {
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
+        $this->dropView($db, 'v1');
+        $this->dropView($db, 'v2');
+        $db->createCommand()->createView('v1', $db->createQuery()->from('customer'))->execute();
+        $db->createCommand()->createView('v2', $db->createQuery()->from('customer'))->execute();
+
+        $schema = $db->getSchema();
+
+        $this->assertTrue($schema->hasView('v1'));
+        $this->assertTrue($schema->hasView('v2'));
+        $this->assertFalse($schema->hasView('v3'));
+
+        $db->createCommand('DROP VIEW ' . $db->getQuoter()->quoteTableName('v1'))->execute();
+
+        $this->assertTrue($schema->hasView('v1'));
+        $this->assertTrue($schema->hasView('v2'));
+        $this->assertFalse($schema->hasView('v3'));
+        $this->assertFalse($schema->hasView('v1', refresh: true));
+        $this->assertTrue($schema->hasView('v2', refresh: true));
+        $this->assertFalse($schema->hasView('v3', refresh: true));
+
+        $this->dropView($db, 'v2');
     }
 
     public function testNegativeDefaultValues(): void
