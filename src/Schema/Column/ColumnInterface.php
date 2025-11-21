@@ -106,17 +106,6 @@ interface ColumnInterface
     public function defaultValue(mixed $defaultValue): static;
 
     /**
-     * The list of possible values for the `ENUM` column.
-     *
-     * ```php
-     * $columns = [
-     *     'status' => ColumnBuilder::string(16)->enumValues(['active', 'inactive']),
-     * ];
-     * ```
-     */
-    public function enumValues(?array $enumValues): static;
-
-    /**
      * Extra SQL to append to the generated SQL for a column.
      *
      * This can be useful for adding custom constraints or other SQL statements that aren't supported by the column
@@ -165,14 +154,6 @@ interface ColumnInterface
      * @psalm-mutation-free
      */
     public function getDefaultValue(): mixed;
-
-    /**
-     * @return array|null The enum values of the column.
-     *
-     * @see enumValues()
-     * @psalm-mutation-free
-     */
-    public function getEnumValues(): ?array;
 
     /**
      * @return string|null The extra SQL for the column.

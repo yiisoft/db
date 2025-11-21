@@ -844,8 +844,6 @@ class ColumnProvider
             ['dbType', null, 'getDbType', null],
             ['defaultValue', 'default_value', 'getDefaultValue', 'default_value'],
             ['defaultValue', null, 'getDefaultValue', null],
-            ['enumValues', ['value1', 'value2'], 'getEnumValues', ['value1', 'value2']],
-            ['enumValues', null, 'getEnumValues', null],
             ['extra', 'CHARACTER SET utf8mb4', 'getExtra', 'CHARACTER SET utf8mb4'],
             ['extra', null, 'getExtra', null],
             ['name', 'name', 'getName', 'name'],

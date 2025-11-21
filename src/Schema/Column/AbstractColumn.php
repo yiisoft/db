@@ -61,7 +61,6 @@ abstract class AbstractColumn implements ColumnInterface
      * @param string|null $comment The column's comment.
      * @param bool $computed Whether the column is a computed column.
      * @param string|null $dbType The column's database type.
-     * @param array|null $enumValues The list of possible values for an ENUM column.
      * @param string|null $extra Any extra information that needs to be appended to the column's definition.
      * @param bool $primaryKey Whether the column is a primary key.
      * @param string|null $name The column's name.
@@ -83,7 +82,6 @@ abstract class AbstractColumn implements ColumnInterface
         private ?string $comment = null,
         private bool $computed = false,
         private ?string $dbType = null,
-        private ?array $enumValues = null,
         private ?string $extra = null,
         private bool $primaryKey = false,
         private ?string $name = null,
@@ -146,12 +144,6 @@ abstract class AbstractColumn implements ColumnInterface
         return $this;
     }
 
-    public function enumValues(?array $enumValues): static
-    {
-        $this->enumValues = $enumValues;
-        return $this;
-    }
-
     public function extra(?string $extra): static
     {
         $this->extra = $extra;
@@ -180,12 +172,6 @@ abstract class AbstractColumn implements ColumnInterface
     public function getDefaultValue(): mixed
     {
         return $this->defaultValue ?? null;
-    }
-
-    /** @psalm-mutation-free */
-    public function getEnumValues(): ?array
-    {
-        return $this->enumValues;
     }
 
     /** @psalm-mutation-free */

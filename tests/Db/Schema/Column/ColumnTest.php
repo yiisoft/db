@@ -166,19 +166,6 @@ final class ColumnTest extends TestCase
         $this->assertNull($column->getDefaultValue());
     }
 
-    public function testEnumValues(): void
-    {
-        $column = new Column();
-
-        $this->assertNull($column->getEnumValues());
-        $this->assertSame($column, $column->enumValues(['positive', 'negative']));
-        $this->assertSame(['positive', 'negative'], $column->getEnumValues());
-
-        $column->enumValues([]);
-
-        $this->assertSame([], $column->getEnumValues());
-    }
-
     public function testExtra(): void
     {
         $column = new Column();
@@ -192,7 +179,7 @@ final class ColumnTest extends TestCase
         $this->assertSame('', $column->getExtra());
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::construct */
+    #[DataProviderExternal(ColumnProvider::class, 'construct')]
     public function testConstruct(string $parameter, mixed $value, string $method, mixed $expected): void
     {
         $column = new Column(...[$parameter => $value]);

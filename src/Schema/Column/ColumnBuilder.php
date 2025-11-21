@@ -271,4 +271,12 @@ class ColumnBuilder
     {
         return new JsonColumn(ColumnType::JSON);
     }
+
+    /**
+     * @param string[]|null $enumValues The list of possible values.
+     */
+    public static function enum(?array $values): EnumColumn
+    {
+        return new EnumColumn(enumValues: $values);
+    }
 }
