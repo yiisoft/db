@@ -398,12 +398,12 @@ abstract class CommonSchemaTest extends IntegrationTestCase
     public function testHasView(): void
     {
         $db = $this->getSharedConnection();
-        $quoter = $db->getQuoter();
+        $this->loadFixture();
 
         $this->dropView($db, 'v1');
         $this->dropView($db, 'v2');
-        $db->createCommand()->createView('v1', 'SELECT 1 AS col1')->execute();
-        $db->createCommand()->createView('v2', 'SELECT 1 AS col1')->execute();
+        $db->createCommand()->createView('v1', $db->createQuery()->from('customer'))->execute();
+        $db->createCommand()->createView('v2', $db->createQuery()->from('customer'))->execute();
 
         $schema = $db->getSchema();
 
@@ -426,12 +426,12 @@ abstract class CommonSchemaTest extends IntegrationTestCase
     public function testHasViewWithSqlRemoving(): void
     {
         $db = $this->getSharedConnection();
-        $quoter = $db->getQuoter();
+        $this->loadFixture();
 
         $this->dropView($db, 'v1');
         $this->dropView($db, 'v2');
-        $db->createCommand()->createView('v1', 'SELECT 1 AS col1')->execute();
-        $db->createCommand()->createView('v2', 'SELECT 1 AS col1')->execute();
+        $db->createCommand()->createView('v1', $db->createQuery()->from('customer'))->execute();
+        $db->createCommand()->createView('v2', $db->createQuery()->from('customer'))->execute();
 
         $schema = $db->getSchema();
 
