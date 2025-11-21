@@ -25,6 +25,7 @@ use Yiisoft\Db\Schema\Column\BitColumn;
 use Yiisoft\Db\Schema\Column\BooleanColumn;
 use Yiisoft\Db\Schema\Column\DateTimeColumn;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
+use Yiisoft\Db\Schema\Column\EnumColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\JsonColumn;
 use Yiisoft\Db\Schema\Column\JsonLazyColumn;
@@ -59,6 +60,7 @@ class ColumnProvider
             'array' => [ArrayColumn::class, ColumnType::ARRAY],
             'structured' => [StructuredColumn::class, ColumnType::STRUCTURED],
             'json' => [JsonColumn::class, ColumnType::JSON],
+            'enum' => [EnumColumn::class, ColumnType::ENUM],
         ];
     }
 
@@ -471,6 +473,25 @@ class ColumnProvider
                     [$expression = new Expression('expression'), $expression],
                 ],
             ],
+            'enum' => [
+                new EnumColumn(),
+                [
+                    [null, null],
+                    ['1', 1],
+                    ['one', 'one'],
+                    ['1', 1.0],
+                    ['1.2', 1.2],
+                    ['', StringEnum::EMPTY],
+                    ['one', StringEnum::ONE],
+                    ['1', IntEnum::ONE],
+                    ['1', true],
+                    ['0', false],
+                    ['', new Stringable('')],
+                    ['string', new Stringable('string')],
+                    [$resource = fopen('php://memory', 'rb'), $resource],
+                    [$expression = new Expression('expression'), $expression],
+                ],
+            ],
         ];
     }
 
@@ -681,6 +702,14 @@ class ColumnProvider
                     [new StructuredLazyArray('{}', $structuredCol->getColumns()), '{}'],
                     [new StructuredLazyArray('[1,true]', $structuredCol->getColumns()), '[1,true]'],
                     [new StructuredLazyArray('{"key":"value"}', $structuredCol->getColumns()), '{"key":"value"}'],
+                ],
+            ],
+            'enum' => [
+                new EnumColumn(),
+                [
+                    [null, null],
+                    ['', ''],
+                    ['string', 'string'],
                 ],
             ],
         ];

@@ -20,7 +20,7 @@ final class EnumColumn extends AbstractColumn
     /**
      * @var string[]|null $enumValues The list of possible values for an ENUM column.
      */
-    private ?array $enumValues = null;
+    protected ?array $enumValues = null;
 
     /**
      * @param string[]|null $values The list of possible values for the `ENUM` column.

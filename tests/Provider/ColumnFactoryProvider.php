@@ -13,6 +13,7 @@ use Yiisoft\Db\Schema\Column\BinaryColumn;
 use Yiisoft\Db\Schema\Column\BooleanColumn;
 use Yiisoft\Db\Schema\Column\DateTimeColumn;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
+use Yiisoft\Db\Schema\Column\EnumColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\JsonColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
@@ -32,6 +33,7 @@ class ColumnFactoryProvider
             'bigint UNSIGNED' => ['bigint UNSIGNED', new BigIntColumn(dbType: 'bigint', unsigned: true)],
             'integer[]' => ['integer[]', new ArrayColumn(dbType: 'integer', column: new IntegerColumn(dbType: 'integer'))],
             'string(126)[][]' => ['string(126)[][]', new ArrayColumn(size: 126, dimension: 2, column: new StringColumn(size: 126))],
+            "enum" => ["enum('a', 'b', 'c')", new EnumColumn(ColumnType::ENUM, dbType: 'enum', enumValues: ['a', 'b', 'c'])],
         ];
     }
 
@@ -75,6 +77,7 @@ class ColumnFactoryProvider
             'array' => [ColumnType::ARRAY, ColumnType::ARRAY, ArrayColumn::class],
             'structured' => [ColumnType::STRUCTURED, ColumnType::STRUCTURED, StructuredColumn::class],
             'json' => [ColumnType::JSON, ColumnType::JSON, JsonColumn::class],
+            'enum' => [ColumnType::ENUM, ColumnType::ENUM, EnumColumn::class],
         ];
     }
 
