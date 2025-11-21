@@ -759,11 +759,13 @@ class Query implements QueryInterface
 
     public function where(array|string|ExpressionInterface|null $condition, array $params = []): static
     {
-        if ($this->where === null) {
-            $this->where = $condition;
-        } else {
-            throw new LogicException('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.');
+        if ($this->where !== null) {
+            throw new LogicException(
+                'The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.'
+            );
         }
+
+        $this->where = $condition;
         $this->addParams($params);
         return $this;
     }
