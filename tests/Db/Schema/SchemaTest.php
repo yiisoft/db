@@ -226,9 +226,12 @@ final class SchemaTest extends IntegrationTestCase
 
     public function testGetViewNames(): void
     {
-        $schema = $this->getSharedConnection()->getSchema();
+        $db = $this->createConnection();
+        $schema = $db->getSchema();
 
         $this->assertSame([], $schema->getViewNames());
+
+        $db->close();
     }
 
     public function testRefreshTableSchema(): void

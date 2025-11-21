@@ -419,6 +419,8 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $this->assertFalse($schema->hasView('v1', refresh: true));
         $this->assertTrue($schema->hasView('v2', refresh: true));
         $this->assertFalse($schema->hasView('v3', refresh: true));
+
+        $db->createCommand()->dropView('v2')->execute();
     }
 
     public function testHasViewWithSqlRemoving(): void
@@ -445,6 +447,8 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $this->assertFalse($schema->hasView('v1', refresh: true));
         $this->assertTrue($schema->hasView('v2', refresh: true));
         $this->assertFalse($schema->hasView('v3', refresh: true));
+
+        $db->createCommand()->dropView('v2')->execute();
     }
 
     public function testNegativeDefaultValues(): void
