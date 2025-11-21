@@ -398,16 +398,53 @@ abstract class CommonSchemaTest extends IntegrationTestCase
     public function testHasView(): void
     {
         $db = $this->getSharedConnection();
-        $this->loadFixture();
+        $quoter = $db->getQuoter();
+
+        $db->createCommand('DROP VIEW IF EXISTS '.$quoter->quoteTableName('v1'))->execute();
+        $db->createCommand('DROP VIEW IF EXISTS '.$quoter->quoteTableName('v2'))->execute();
+        $db->createCommand()->createView('v1', 'SELECT 1 AS col1')->execute();
+        $db->createCommand()->createView('v2', 'SELECT 1 AS col1')->execute();
 
         $schema = $db->getSchema();
 
-        $this->assertTrue($schema->hasView('animal_view'));
-        $this->assertFalse($schema->hasView('no_such_view'));
+        $this->assertTrue($schema->hasView('v1'));
+        $this->assertTrue($schema->hasView('v2'));
+        $this->assertFalse($schema->hasView('v3'));
 
-        $db->createCommand()->dropView('animal_view')->execute();
+        $db->createCommand()->dropView('v1')->execute();
 
-        $this->assertFalse($schema->hasView('animal_view'));
+        $this->assertFalse($schema->hasView('v1'));
+        $this->assertTrue($schema->hasView('v2'));
+        $this->assertFalse($schema->hasView('v3'));
+        $this->assertFalse($schema->hasView('v1', refresh: true));
+        $this->assertTrue($schema->hasView('v2', refresh: true));
+        $this->assertFalse($schema->hasView('v3', refresh: true));
+    }
+
+    public function testHasViewWithSqlRemoving(): void
+    {
+        $db = $this->getSharedConnection();
+        $quoter = $db->getQuoter();
+
+        $db->createCommand('DROP VIEW IF EXISTS '.$quoter->quoteTableName('v1'))->execute();
+        $db->createCommand('DROP VIEW IF EXISTS '.$quoter->quoteTableName('v2'))->execute();
+        $db->createCommand()->createView('v1', 'SELECT 1 AS col1')->execute();
+        $db->createCommand()->createView('v2', 'SELECT 1 AS col1')->execute();
+
+        $schema = $db->getSchema();
+
+        $this->assertTrue($schema->hasView('v1'));
+        $this->assertTrue($schema->hasView('v2'));
+        $this->assertFalse($schema->hasView('v3'));
+
+        $db->createCommand('DROP VIEW ' . $db->getQuoter()->quoteTableName('v1'))->execute();
+
+        $this->assertTrue($schema->hasView('v1'));
+        $this->assertTrue($schema->hasView('v2'));
+        $this->assertFalse($schema->hasView('v3'));
+        $this->assertFalse($schema->hasView('v1', refresh: true));
+        $this->assertTrue($schema->hasView('v2', refresh: true));
+        $this->assertFalse($schema->hasView('v3', refresh: true));
     }
 
     public function testNegativeDefaultValues(): void
