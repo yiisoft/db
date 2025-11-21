@@ -400,8 +400,8 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $quoter = $db->getQuoter();
 
-        $db->createCommand('DROP VIEW IF EXISTS ' . $quoter->quoteTableName('v1'))->execute();
-        $db->createCommand('DROP VIEW IF EXISTS ' . $quoter->quoteTableName('v2'))->execute();
+        $this->dropView($db, 'v1');
+        $this->dropView($db, 'v2');
         $db->createCommand()->createView('v1', 'SELECT 1 AS col1')->execute();
         $db->createCommand()->createView('v2', 'SELECT 1 AS col1')->execute();
 
@@ -420,7 +420,7 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $this->assertTrue($schema->hasView('v2', refresh: true));
         $this->assertFalse($schema->hasView('v3', refresh: true));
 
-        $db->createCommand()->dropView('v2')->execute();
+        $this->dropView($db, 'v2');
     }
 
     public function testHasViewWithSqlRemoving(): void
@@ -428,8 +428,8 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $quoter = $db->getQuoter();
 
-        $db->createCommand('DROP VIEW IF EXISTS ' . $quoter->quoteTableName('v1'))->execute();
-        $db->createCommand('DROP VIEW IF EXISTS ' . $quoter->quoteTableName('v2'))->execute();
+        $this->dropView($db, 'v1');
+        $this->dropView($db, 'v2');
         $db->createCommand()->createView('v1', 'SELECT 1 AS col1')->execute();
         $db->createCommand()->createView('v2', 'SELECT 1 AS col1')->execute();
 
@@ -448,7 +448,7 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $this->assertTrue($schema->hasView('v2', refresh: true));
         $this->assertFalse($schema->hasView('v3', refresh: true));
 
-        $db->createCommand()->dropView('v2')->execute();
+        $this->dropView($db, 'v2');
     }
 
     public function testNegativeDefaultValues(): void
