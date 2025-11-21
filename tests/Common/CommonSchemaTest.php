@@ -400,8 +400,8 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $quoter = $db->getQuoter();
 
-        $db->createCommand('DROP VIEW IF EXISTS '.$quoter->quoteTableName('v1'))->execute();
-        $db->createCommand('DROP VIEW IF EXISTS '.$quoter->quoteTableName('v2'))->execute();
+        $db->createCommand('DROP VIEW IF EXISTS ' . $quoter->quoteTableName('v1'))->execute();
+        $db->createCommand('DROP VIEW IF EXISTS ' . $quoter->quoteTableName('v2'))->execute();
         $db->createCommand()->createView('v1', 'SELECT 1 AS col1')->execute();
         $db->createCommand()->createView('v2', 'SELECT 1 AS col1')->execute();
 
@@ -426,8 +426,8 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $quoter = $db->getQuoter();
 
-        $db->createCommand('DROP VIEW IF EXISTS '.$quoter->quoteTableName('v1'))->execute();
-        $db->createCommand('DROP VIEW IF EXISTS '.$quoter->quoteTableName('v2'))->execute();
+        $db->createCommand('DROP VIEW IF EXISTS ' . $quoter->quoteTableName('v1'))->execute();
+        $db->createCommand('DROP VIEW IF EXISTS ' . $quoter->quoteTableName('v2'))->execute();
         $db->createCommand()->createView('v1', 'SELECT 1 AS col1')->execute();
         $db->createCommand()->createView('v2', 'SELECT 1 AS col1')->execute();
 
