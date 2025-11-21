@@ -116,7 +116,6 @@ abstract class AbstractCommand implements CommandInterface
      * @var string|null Name of the table to refresh schema for. Null means not to refresh the schema.
      */
     protected ?string $refreshTableName = null;
-    protected bool $refreshSchemaViewNames = false;
     protected ?Closure $retryHandler = null;
     protected bool $dbTypecasting = true;
     protected bool $phpTypecasting = false;
@@ -316,10 +315,7 @@ abstract class AbstractCommand implements CommandInterface
     public function dropView(string $viewName): static
     {
         $sql = $this->getQueryBuilder()->dropView($viewName);
-        return $this
-            ->setSql($sql)
-            ->requireTableSchemaRefresh($viewName)
-            ->requireSchemaViewNamesRefresh();
+        return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
     }
 
     public function getParams(bool $asValues = true): array
@@ -621,9 +617,6 @@ abstract class AbstractCommand implements CommandInterface
         if ($this->refreshTableName !== null) {
             $this->db->getSchema()->refreshTableSchema($this->refreshTableName);
         }
-        if ($this->refreshSchemaViewNames) {
-            $this->db->getSchema()->refreshSchemaViewNames();
-        }
         return $result;
     }
 
@@ -638,12 +631,6 @@ abstract class AbstractCommand implements CommandInterface
         return $this;
     }
 
-    protected function requireSchemaViewNamesRefresh(): static
-    {
-        $this->refreshSchemaViewNames = true;
-        return $this;
-    }
-
     /**
      * Resets the command object, so it can be reused to build another SQL statement.
      */
@@ -652,7 +639,6 @@ abstract class AbstractCommand implements CommandInterface
         $this->sql = '';
         $this->params = [];
         $this->refreshTableName = null;
-        $this->refreshSchemaViewNames = false;
         $this->retryHandler = null;
     }
 

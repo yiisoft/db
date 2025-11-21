@@ -175,7 +175,6 @@
 - Enh #1092: Change the exceptions thrown to be more appropriate (@Tigrov)
 - Bug #1099: Fix an issue where `AbstractSchema::refresh()` didn't completely clear cache (@vjik) 
 - Bug #1103: Fix view names' cache refreshing after "drop table" command execution (@vjik)
-- Chg #1103: Add `SchemaInterface::refreshSchemaViewNames()` method (@vjik)
 - Chg #1103: Remove `AbstractCommand::refreshTableSchema()` method (@vjik)
 
 ## 1.3.0 March 21, 2024

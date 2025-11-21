@@ -246,15 +246,11 @@ abstract class AbstractSchema implements SchemaInterface
         unset($this->tableMetadata[$rawName]);
 
         $this->tableNames = [];
+        $this->viewNames = [];
 
         if ($this->schemaCache->isEnabled()) {
             $this->schemaCache->remove($this->getCacheKey($rawName));
         }
-    }
-
-    public function refreshSchemaViewNames(): void
-    {
-        $this->viewNames = [];
     }
 
     public function enableCache(bool $value): void
