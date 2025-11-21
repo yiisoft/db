@@ -761,7 +761,7 @@ class Query implements QueryInterface
     {
         if ($this->where !== null) {
             throw new LogicException(
-                'The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.'
+                'The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.',
             );
         }
 
