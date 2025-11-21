@@ -134,7 +134,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @param string $name Table name.
      */
-
     public function refreshTableSchema(string $name): void;
 
     /**
