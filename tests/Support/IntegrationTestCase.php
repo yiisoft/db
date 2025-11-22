@@ -60,4 +60,12 @@ abstract class IntegrationTestCase extends TestCase
     {
         $db->createCommand('DROP VIEW IF EXISTS ' . $db->getQuoter()->quoteTableName($view))->execute();
     }
+
+    protected function executeStatements(string ...$statements): void
+    {
+        $db = $this->getSharedConnection();
+        foreach ($statements as $sql) {
+            $db->createCommand($sql)->execute();
+        }
+    }
 }

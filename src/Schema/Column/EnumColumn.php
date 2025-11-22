@@ -8,7 +8,6 @@ use BackedEnum;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Expression\ExpressionInterface;
-
 use Yiisoft\Db\Tests\Support\Stringable;
 
 use function gettype;

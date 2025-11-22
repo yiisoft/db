@@ -273,10 +273,10 @@ class ColumnBuilder
     }
 
     /**
-     * @param string[]|null $enumValues The list of possible values.
+     * @param string[]|null $values The list of possible values.
      */
-    public static function enum(?array $values): EnumColumn
+    public static function enum(?array $values, ?string $dbType = null): EnumColumn
     {
-        return new EnumColumn(enumValues: $values);
+        return new EnumColumn(dbType: $dbType, enumValues: $values);
     }
 }

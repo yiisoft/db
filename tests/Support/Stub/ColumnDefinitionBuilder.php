@@ -82,7 +82,6 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             ColumnType::ARRAY => 'json',
             ColumnType::STRUCTURED => 'json',
             ColumnType::JSON => 'json',
-            ColumnType::ENUM => 'enum',
             default => 'varchar',
         };
     }

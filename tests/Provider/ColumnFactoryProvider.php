@@ -33,7 +33,6 @@ class ColumnFactoryProvider
             'bigint UNSIGNED' => ['bigint UNSIGNED', new BigIntColumn(dbType: 'bigint', unsigned: true)],
             'integer[]' => ['integer[]', new ArrayColumn(dbType: 'integer', column: new IntegerColumn(dbType: 'integer'))],
             'string(126)[][]' => ['string(126)[][]', new ArrayColumn(size: 126, dimension: 2, column: new StringColumn(size: 126))],
-            "enum" => ["enum('a', 'b', 'c')", new EnumColumn(ColumnType::ENUM, dbType: 'enum', enumValues: ['a', 'b', 'c'])],
         ];
     }
 
