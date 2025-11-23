@@ -142,7 +142,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         return $this->emulatePrepare;
     }
 
-    public function getActivePdo(?string $sql = '', ?bool $forRead = null): PDO
+    public function getActivePdo(): PDO
     {
         $this->open();
         $pdo = $this->getPdo();

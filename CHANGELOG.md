@@ -176,6 +176,7 @@
 - Bug #1099: Fix an issue where `AbstractSchema::refresh()` didn't completely clear cache (@vjik) 
 - Bug #1103: Fix view names' cache refreshing after "drop table" command execution (@vjik)
 - Chg #1103: Remove `AbstractCommand::refreshTableSchema()` method (@vjik)
+- Chg #1106: Remove parameters from `PdoConnectionInterface::getActivePdo()` method (@vjik)
 
 ## 1.3.0 March 21, 2024
 

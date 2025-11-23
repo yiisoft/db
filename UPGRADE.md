@@ -234,7 +234,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change return type of `AbstractCommand::insertWithReturningPks()` method to `array|false`;
 - Rename `QueryBuilderInterface::quoter()` method to `QueryBuilderInterface::getQuoter()`;
 - Change constructor parameters in `AbstractQueryBuilder` class;
-- Remove nullable from `PdoConnectionInterface::getActivePdo()` result;
+- Remove parameters and nullable result from `PdoConnectionInterface::getActivePdo()`;
 - Move `Yiisoft\Db\Query\Data\DataReaderInterface` interface to `Yiisoft\Db\Query` namespace;
 - Move `Yiisoft\Db\Query\Data\DataReader` class to `Yiisoft\Db\Driver\Pdo` namespace and rename it to `PdoDataReader`;
 - Add `indexBy()` and `resultCallback()` methods to `DataReaderInterface` and `PdoDataReader` class;
