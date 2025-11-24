@@ -4,15 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
-use BackedEnum;
-use Stringable;
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\GettypeResult;
-use Yiisoft\Db\Expression\ExpressionInterface;
 
-use function gettype;
-
-final class EnumColumn extends AbstractColumn
+final class EnumColumn extends StringColumn
 {
     protected const DEFAULT_TYPE = ColumnType::ENUM;
 
@@ -38,30 +32,5 @@ final class EnumColumn extends AbstractColumn
     public function getValues(): ?array
     {
         return $this->values;
-    }
-
-    public function dbTypecast(mixed $value): mixed
-    {
-        return match (gettype($value)) {
-            GettypeResult::STRING => $value,
-            GettypeResult::RESOURCE => $value,
-            GettypeResult::NULL => null,
-            GettypeResult::INTEGER => (string) $value,
-            GettypeResult::DOUBLE => (string) $value,
-            GettypeResult::BOOLEAN => $value ? '1' : '0',
-            GettypeResult::OBJECT => match (true) {
-                $value instanceof ExpressionInterface => $value,
-                $value instanceof BackedEnum => (string) $value->value,
-                $value instanceof Stringable => (string) $value,
-                default => $this->throwWrongTypeException($value::class),
-            },
-            default => $this->throwWrongTypeException(gettype($value)),
-        };
-    }
-
-    public function phpTypecast(mixed $value): ?string
-    {
-        /** @var string|null $value */
-        return $value;
     }
 }
