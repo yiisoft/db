@@ -8,6 +8,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Schema\Column\CollatableColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Schema\Column\EnumColumn;
 
 use function in_array;
 use function strtolower;
@@ -121,6 +122,22 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     protected function buildCheck(ColumnInterface $column): string
     {
         $check = $column->getCheck();
+
+        if ($column instanceof EnumColumn && $column->getDbType() === null) {
+            $check = $column->getCheck();
+            $name = $column->getName();
+            $items = $column->getValues();
+            if (empty($check) && !empty($name) && !empty($items)) {
+                $itemsList = implode(
+                    ',',
+                    array_map(
+                        fn(string $item): string => $this->queryBuilder->getQuoter()->quoteValue($item),
+                        $items,
+                    ),
+                );
+                $check = "$name IN ($itemsList)";
+            }
+        }
 
         return !empty($check) ? " CHECK ($check)" : '';
     }
