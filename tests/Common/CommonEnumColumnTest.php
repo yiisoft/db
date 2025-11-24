@@ -57,7 +57,7 @@ abstract class CommonEnumColumnTest extends IntegrationTestCase
     #[TestWith([['active', 'inactive', 'pending']])]
     #[TestWith([['[one]', 'the [two]', 'the [three] to']])]
     #[TestWith([["hello''world''", "the '[feature']"]])]
-    public function testCreateTable22(array $items): void
+    public function testCreateTable(array $items): void
     {
         $this->dropTable('test_enum_table');
 
