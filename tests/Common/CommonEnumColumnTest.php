@@ -31,7 +31,7 @@ abstract class CommonEnumColumnTest extends IntegrationTestCase
         $this->assertInstanceOf(EnumColumn::class, $column, 'Column class is "' . $column::class . '"');
         $this->assertSame(
             ['active', 'unactive', 'pending'],
-            $column->getEnumValues(),
+            $column->getValues(),
         );
     }
 
@@ -82,7 +82,7 @@ abstract class CommonEnumColumnTest extends IntegrationTestCase
 
         $column = $columns['status'];
         $this->assertInstanceOf(EnumColumn::class, $column, $column::class);
-        $this->assertSame($items, $column->getEnumValues());
+        $this->assertSame($items, $column->getValues());
 
         $this->dropTable('test_enum_table');
     }

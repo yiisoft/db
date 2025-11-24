@@ -17,27 +17,27 @@ final class EnumColumn extends AbstractColumn
     protected const DEFAULT_TYPE = ColumnType::ENUM;
 
     /**
-     * @var string[]|null $enumValues The list of possible values for an ENUM column.
+     * @var string[]|null $values The list of possible values for an ENUM column.
      */
-    protected ?array $enumValues = null;
+    protected ?array $values = null;
 
     /**
      * @param string[]|null $values The list of possible values for the `ENUM` column.
      */
-    public function enumValues(?array $values): static
+    public function values(?array $values): static
     {
-        $this->enumValues = $values;
+        $this->values = $values;
         return $this;
     }
 
     /**
      * @return string[]|null The enum values of the column.
      *
-     * @see enumValues()
+     * @see values()
      */
-    public function getEnumValues(): ?array
+    public function getValues(): ?array
     {
-        return $this->enumValues;
+        return $this->values;
     }
 
     public function dbTypecast(mixed $value): mixed

@@ -277,6 +277,6 @@ class ColumnBuilder
      */
     public static function enum(?array $values, ?string $dbType = null): EnumColumn
     {
-        return new EnumColumn(dbType: $dbType, enumValues: $values);
+        return new EnumColumn(dbType: $dbType, values: $values);
     }
 }

@@ -28,8 +28,8 @@ class ColumnDefinitionParserProvider
             ['int DEFAULT (1 + 2)', ['type' => 'int', 'defaultValueRaw' => '(1 + 2)']],
             ["int COMMENT '''Quoted'' comment'", ['type' => 'int', 'comment' => "'Quoted' comment"]],
             ['int CHECK (value > (1 + 5))', ['type' => 'int', 'check' => 'value > (1 + 5)']],
-            ["enum('a','b','c')", ['type' => 'enum', 'enumValues' => ['a', 'b', 'c']]],
-            ["enum('a','b','c') NOT NULL", ['type' => 'enum', 'enumValues' => ['a', 'b', 'c'], 'notNull' => true]],
+            ["enum('a','b','c')", ['type' => 'enum', 'values' => ['a', 'b', 'c']]],
+            ["enum('a','b','c') NOT NULL", ['type' => 'enum', 'values' => ['a', 'b', 'c'], 'notNull' => true]],
             ['int[]', ['type' => 'int', 'dimension' => 1]],
             ['string(126)[][]', ['type' => 'string', 'size' => 126, 'dimension' => 2]],
         ];

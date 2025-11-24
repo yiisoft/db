@@ -14,17 +14,17 @@ use Yiisoft\Db\Tests\Support\StringEnum;
 
 final class EnumColumnTest extends TestCase
 {
-    public function testEnumValues(): void
+    public function testValues(): void
     {
         $column = new EnumColumn();
 
-        $this->assertNull($column->getEnumValues());
-        $this->assertSame($column, $column->enumValues(['positive', 'negative']));
-        $this->assertSame(['positive', 'negative'], $column->getEnumValues());
+        $this->assertNull($column->getValues());
+        $this->assertSame($column, $column->values(['positive', 'negative']));
+        $this->assertSame(['positive', 'negative'], $column->getValues());
 
-        $column->enumValues([]);
+        $column->values([]);
 
-        $this->assertSame([], $column->getEnumValues());
+        $this->assertSame([], $column->getValues());
     }
 
     public static function dataDbTypecast(): iterable
