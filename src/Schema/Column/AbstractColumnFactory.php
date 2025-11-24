@@ -278,9 +278,11 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             return ColumnType::ARRAY;
         }
 
-        return static::TYPE_MAP[$dbType]
-            ?? (isset($info['enumValues']) ? ColumnType::ENUM : null)
-            ?? ColumnType::STRING;
+        if (isset($info['enumValues'])) {
+            return ColumnType::ENUM;
+        }
+
+        return static::TYPE_MAP[$dbType] ?? ColumnType::STRING;
     }
 
     /**
