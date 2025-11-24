@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use Yiisoft\Db\Schema\Column\EnumColumn;
+use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
 abstract class CommonEnumColumnTest extends IntegrationTestCase
@@ -50,6 +51,35 @@ abstract class CommonEnumColumnTest extends IntegrationTestCase
             ['active', 'pending', 'pending', 'unactive'],
             $rows,
         );
+    }
+
+    public function testCreateTable(): void
+    {
+        $this->dropTable('test_enum_table');
+
+        $db = $this->getSharedConnection();
+        $columnBuilder = $db->getColumnBuilderClass();
+
+        $db->createCommand()
+            ->createTable(
+                'test_enum_table',
+                [
+                    'id' => $columnBuilder::integer(),
+                    'status' => $columnBuilder::enum(['active', 'inactive', 'pending']),
+                ],
+            )
+            ->execute();
+
+        $tableSchema = $db->getTableSchema('test_enum_table');
+        $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema);
+
+        $columns = $tableSchema->getColumns();
+        $this->assertSame(['id', 'status'], array_keys($columns));
+
+        $column = $columns['status'];
+        $this->assertInstanceOf(EnumColumn::class, $column, $column::class);
+
+        $this->dropTable('test_enum_table');
     }
 
     /**

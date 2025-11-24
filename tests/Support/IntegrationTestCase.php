@@ -56,6 +56,12 @@ abstract class IntegrationTestCase extends TestCase
         return str_replace(['[[', ']]'], ['[', ']'], $sql);
     }
 
+    protected function dropTable(string $table): void
+    {
+        $db = $this->getSharedConnection();
+        $this->executeStatements('DROP TABLE IF EXISTS ' . $db->getQuoter()->quoteTableName($table));
+    }
+
     protected function dropView(ConnectionInterface $db, string $view): void
     {
         $db->createCommand('DROP VIEW IF EXISTS ' . $db->getQuoter()->quoteTableName($view))->execute();
