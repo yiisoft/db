@@ -131,7 +131,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
                 $itemsList = implode(
                     ',',
                     array_map(
-                        fn(string $item): string => $this->queryBuilder->getQuoter()->quoteValue($item),
+                        $this->queryBuilder->getQuoter()->quoteValue(...),
                         $items,
                     ),
                 );
