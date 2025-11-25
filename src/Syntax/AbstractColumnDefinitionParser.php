@@ -29,7 +29,7 @@ use function trim;
  *     unsigned?: bool
  * }
  */
-class ColumnDefinitionParser
+abstract class AbstractColumnDefinitionParser implements ColumnDefinitionParserInterface
 {
     /**
      * Parses column definition string.
@@ -62,11 +62,7 @@ class ColumnDefinitionParser
         $info = ['type' => $type];
 
         if (isset($matches[2]) && $matches[2] !== '') {
-            if ($type === 'enum') {
-                $info += $this->enumInfo($matches[2]);
-            } else {
-                $info += $this->sizeInfo($matches[2]);
-            }
+            $info += $this->parseTypeParams($type, $matches[2]);
         }
 
         if (isset($matches[3])) {
@@ -80,14 +76,10 @@ class ColumnDefinitionParser
     }
 
     /**
-     * @psalm-return array{enumValues: list<string>}
+     * @psalm-param non-empty-string $params
+     * @psalm-return array{enumValues?: list<string>, size?: int, scale?: int}
      */
-    protected function enumInfo(string $values): array
-    {
-        preg_match_all("/'([^']*)'/", $values, $matches);
-
-        return ['enumValues' => $matches[1]];
-    }
+    abstract protected function parseTypeParams(string $type, string $params): array;
 
     /**
      * @psalm-return ExtraInfo
@@ -169,9 +161,9 @@ class ColumnDefinitionParser
     /**
      * @psalm-return array{size: int, scale?: int}
      */
-    protected function sizeInfo(string $size): array
+    protected function parseSizeInfo(string $params): array
     {
-        $values = explode(',', $size);
+        $values = explode(',', $params);
 
         $info = [
             'size' => (int) $values[0],

@@ -8,7 +8,7 @@ use Closure;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Syntax\ColumnDefinitionParser;
+use Yiisoft\Db\Syntax\ColumnDefinitionParserInterface;
 
 use function array_diff_key;
 use function array_key_exists;
@@ -221,10 +221,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     /**
      * Returns the column definition parser.
      */
-    protected function columnDefinitionParser(): ColumnDefinitionParser
-    {
-        return new ColumnDefinitionParser();
-    }
+    abstract protected function columnDefinitionParser(): ColumnDefinitionParserInterface;
 
     /**
      * @psalm-param ColumnInfo $info
