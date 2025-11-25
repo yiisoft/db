@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Syntax;
 
 use function explode;
 use function preg_match;
-use function preg_match_all;
 use function preg_replace;
 use function str_replace;
 use function strlen;

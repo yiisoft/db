@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Syntax\AbstractColumnDefinitionParser;
 use Yiisoft\Db\Syntax\ColumnDefinitionParserInterface;
 use Yiisoft\Db\Tests\Provider\ColumnDefinitionParserProvider;
 
