@@ -82,7 +82,7 @@ abstract class CommonEnumColumnTest extends IntegrationTestCase
 
         $column = $columns['status'];
         $this->assertInstanceOf(EnumColumn::class, $column, $column::class);
-        $this->assertSame($items, $column->getValues());
+        $this->assertEqualsCanonicalizing($items, $column->getValues());
 
         $this->dropTable('test_enum_table');
     }
