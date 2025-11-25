@@ -56,23 +56,42 @@ abstract class AbstractColumnDefinitionParser implements ColumnDefinitionParserI
      */
     public function parse(string $definition): array
     {
-        preg_match('/^(\w*)(?:\(([^)]+)\))?(\[[\d\[\]]*\])?\s*/', $definition, $matches);
+        [$type, $typeParams, $dimension, $extraInfo] = $this->parseDefinition($definition);
 
-        $type = strtolower($matches[1]);
+        $type = strtolower($type);
         $info = ['type' => $type];
 
-        if (isset($matches[2]) && $matches[2] !== '') {
-            $info += $this->parseTypeParams($type, $matches[2]);
+        if ($typeParams !== '' && $typeParams !== null) {
+            $info += $this->parseTypeParams($type, $typeParams);
         }
 
-        if (isset($matches[3])) {
+        if (isset($dimension)) {
             /** @psalm-var positive-int */
-            $info['dimension'] = substr_count($matches[3], '[');
+            $info['dimension'] = substr_count($dimension, '[');
         }
 
-        $extra = substr($definition, strlen($matches[0]));
+        return $info + $this->extraInfo($extraInfo);
+    }
 
-        return $info + $this->extraInfo($extra);
+    /**
+     * Parse the column definition into its components:
+     *  - type
+     *  - type parameters
+     *  - dimension
+     *  - extra information
+     *
+     * @psalm-return list{string, string|null, string|null, string|null}
+     */
+    protected function parseDefinition(string $definition): array
+    {
+        preg_match('/^(\w*)(?:\(([^)]+)\))?(\[[\d\[\]]*\])?\s*/', $definition, $matches);
+
+        return [
+            $matches[1],
+            $matches[2] ?? null,
+            $matches[3] ?? null,
+            substr($definition, strlen($matches[0])),
+        ];
     }
 
     /**
