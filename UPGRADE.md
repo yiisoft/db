@@ -97,6 +97,12 @@ and the following changes were made:
 - added `DEFAULT_TYPE` constant to `AbstractColumn` class;
 - added method chaining.
 
+### `ColumnDefinitionParser` changes
+
+- Rename to `AbstractColumnDefinitionParser`;
+- Make class abstract and add abstract method `parseTypeParams()`;
+- Rename method `sizeInfo()` to `parseSizeInfo()`.
+
 ### Changes in constraint classes
 
 - Remove `Constraint` class;
@@ -293,3 +299,4 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change `QueryPartsInterface::withQueries()` parameter to variadic with type `WithQuery`;
 - In `DQLQueryBuilderInterface::buildWithQueries()` method change first parameter type form `array[]` to `WithQuery[]`;
 - Remove `AbstractCommand::refreshTableSchema()` method;
+- Make method `AbstractColumnFactory::columnDefinitionParser()` abstract;
