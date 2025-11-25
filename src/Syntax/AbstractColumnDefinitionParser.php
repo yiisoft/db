@@ -70,7 +70,11 @@ abstract class AbstractColumnDefinitionParser implements ColumnDefinitionParserI
             $info['dimension'] = substr_count($dimension, '[');
         }
 
-        return $info + $this->extraInfo($extraInfo);
+        if ($extraInfo !== '' && $extraInfo !== null) {
+            $info += $this->extraInfo($extraInfo);
+        }
+
+        return $info;
     }
 
     /**
@@ -101,14 +105,11 @@ abstract class AbstractColumnDefinitionParser implements ColumnDefinitionParserI
     abstract protected function parseTypeParams(string $type, string $params): array;
 
     /**
+     * @psalm-param non-empty-string $extra
      * @psalm-return ExtraInfo
      */
     protected function extraInfo(string $extra): array
     {
-        if (empty($extra)) {
-            return [];
-        }
-
         $info = [];
         $bracketsPattern = '(\(((?>[^()]+)|(?-2))*\))';
         $defaultPattern = "/\\s*\\bDEFAULT\\s+('(?:[^']|'')*'|\"(?:[^\"]|\"\")*\"|[^(\\s]*$bracketsPattern?\\S*)/i";
