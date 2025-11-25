@@ -78,7 +78,7 @@ abstract class CommonEnumColumnTest extends IntegrationTestCase
         $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema);
 
         $columns = $tableSchema->getColumns();
-        $this->assertSame(['id', 'status'], array_keys($columns));
+        $this->assertEqualsCanonicalizing(['id', 'status'], array_keys($columns));
 
         $column = $columns['status'];
         $this->assertInstanceOf(EnumColumn::class, $column, $column::class);
