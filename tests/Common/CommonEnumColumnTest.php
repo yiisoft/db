@@ -56,6 +56,7 @@ abstract class CommonEnumColumnTest extends IntegrationTestCase
 
     #[TestWith([['active', 'inactive', 'pending']])]
     #[TestWith([['[one]', 'the [two]', 'the [three] to']])]
+    #[TestWith([['(one)', 'the (two)', 'the (three) to']])]
     #[TestWith([["hello''world''", "the '[feature']"]])]
     public function testCreateTable(array $items): void
     {
