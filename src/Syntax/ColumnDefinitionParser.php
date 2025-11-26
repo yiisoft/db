@@ -84,9 +84,14 @@ class ColumnDefinitionParser
      */
     protected function enumInfo(string $values): array
     {
-        preg_match_all("/'([^']*)'/", $values, $matches);
+        preg_match_all("/'((?:''|[^'])*)'/", $values, $matches);
 
-        return ['values' => $matches[1]];
+        $values = array_map(
+            static fn(string $value): string => str_replace("''", "'", $value),
+            $matches[1],
+        );
+
+        return ['values' => $values];
     }
 
     /**
