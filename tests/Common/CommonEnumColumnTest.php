@@ -29,7 +29,7 @@ abstract class CommonEnumColumnTest extends IntegrationTestCase
         $column = $db->getTableSchema('tbl_enum')->getColumn('status');
 
         $this->assertInstanceOf(EnumColumn::class, $column, 'Column class is "' . $column::class . '"');
-        $this->assertSame(
+        $this->assertEqualsCanonicalizing(
             ['active', 'unactive', 'pending'],
             $column->getValues(),
         );

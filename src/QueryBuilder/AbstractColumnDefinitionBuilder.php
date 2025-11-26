@@ -128,14 +128,16 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             $name = $column->getName();
             $items = $column->getValues();
             if (empty($check) && !empty($name) && !empty($items)) {
+                $quoter = $this->queryBuilder->getQuoter();
                 $itemsList = implode(
                     ',',
                     array_map(
-                        $this->queryBuilder->getQuoter()->quoteValue(...),
+                        $quoter->quoteValue(...),
                         $items,
                     ),
                 );
-                $check = "$name IN ($itemsList)";
+                $quotedName = $quoter->quoteColumnName($name);
+                $check = "$quotedName IN ($itemsList)";
             }
         }
 
