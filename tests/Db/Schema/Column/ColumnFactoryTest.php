@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema\Column;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Schema\Column\AbstractArrayColumn;
+use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\ArrayLazyColumn;
+use Yiisoft\Db\Schema\Column\BigIntColumn;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\DateTimeColumn;
+use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\JsonLazyColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
@@ -76,7 +80,22 @@ final class ColumnFactoryTest extends TestCase
         $this->assertSame($dbType, $column->getDbType());
     }
 
-    #[DataProviderExternal(ColumnFactoryProvider::class, 'definitions')]
+    public static function dataFromDefinition(): array
+    {
+        return [
+            // definition, expected type, expected instance of, expected column method results
+            '' => ['', new StringColumn(dbType: '')],
+            'text' => ['text', new StringColumn(ColumnType::TEXT, dbType: 'text')],
+            'text NOT NULL' => ['text NOT NULL', new StringColumn(ColumnType::TEXT, dbType: 'text', notNull: true)],
+            'char(1)' => ['char(1)', new StringColumn(ColumnType::CHAR, dbType: 'char')],
+            'decimal(10,2)' => ['decimal(10,2)', new DoubleColumn(ColumnType::DECIMAL, dbType: 'decimal')],
+            'bigint UNSIGNED' => ['bigint UNSIGNED', new BigIntColumn(dbType: 'bigint', unsigned: true)],
+            'integer[]' => ['integer[]', new ArrayColumn(dbType: 'integer', column: new IntegerColumn(dbType: 'integer'))],
+            'string(126)[][]' => ['string(126)[][]', new ArrayColumn(dimension: 2, column: new StringColumn())],
+        ];
+    }
+
+    #[DataProvider('dataFromDefinition')]
     public function testFromDefinition(string $definition, ColumnInterface $expected): void
     {
         $columnFactory = new StubColumnFactory();
@@ -115,7 +134,6 @@ final class ColumnFactoryTest extends TestCase
 
         $this->assertInstanceOf(StringColumn::class, $column);
         $this->assertSame('char', $column->getType());
-        $this->assertSame(1, $column->getSize());
         $this->assertSame('INVISIBLE COLLATE utf8mb4', $column->getExtra());
     }
 

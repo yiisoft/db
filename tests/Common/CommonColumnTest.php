@@ -215,7 +215,10 @@ abstract class CommonColumnTest extends IntegrationTestCase
 
         $values = array_fill_keys(array_keys($expected), $value);
 
-        $expected = array_map(static fn(string $value) => new DateTimeImmutable($value, new DateTimeZone('UTC')), $expected);
+        $expected = array_map(
+            static fn(string $value) => new DateTimeImmutable($value, new DateTimeZone('UTC')),
+            $expected,
+        );
 
         $command->insert(static::DATETIME_COLUMN_TABLE, $values)->execute();
 

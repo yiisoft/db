@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Syntax;
 
 use function explode;
 use function preg_match;
-use function preg_match_all;
 use function preg_replace;
 use function str_replace;
 use function strlen;
@@ -29,7 +28,7 @@ use function trim;
  *     unsigned?: bool
  * }
  */
-class ColumnDefinitionParser
+abstract class AbstractColumnDefinitionParser implements ColumnDefinitionParserInterface
 {
     /**
      * Parses column definition string.
@@ -56,48 +55,60 @@ class ColumnDefinitionParser
      */
     public function parse(string $definition): array
     {
-        preg_match('/^(\w*)(?:\(([^)]+)\))?(\[[\d\[\]]*\])?\s*/', $definition, $matches);
+        [$type, $typeParams, $dimension, $extraInfo] = $this->parseDefinition($definition);
 
-        $type = strtolower($matches[1]);
+        $type = strtolower($type);
         $info = ['type' => $type];
 
-        if (isset($matches[2]) && $matches[2] !== '') {
-            if ($type === 'enum') {
-                $info += $this->enumInfo($matches[2]);
-            } else {
-                $info += $this->sizeInfo($matches[2]);
-            }
+        if ($typeParams !== '' && $typeParams !== null) {
+            $info += $this->parseTypeParams($type, $typeParams);
         }
 
-        if (isset($matches[3])) {
+        if (isset($dimension)) {
             /** @psalm-var positive-int */
-            $info['dimension'] = substr_count($matches[3], '[');
+            $info['dimension'] = substr_count($dimension, '[');
         }
 
-        $extra = substr($definition, strlen($matches[0]));
+        if ($extraInfo !== '' && $extraInfo !== null) {
+            $info += $this->extraInfo($extraInfo);
+        }
 
-        return $info + $this->extraInfo($extra);
+        return $info;
     }
 
     /**
-     * @psalm-return array{enumValues: list<string>}
+     * Parse the column definition into its components:
+     *  - type
+     *  - type parameters
+     *  - dimension
+     *  - extra information
+     *
+     * @psalm-return list{string, string|null, string|null, string|null}
      */
-    protected function enumInfo(string $values): array
+    protected function parseDefinition(string $definition): array
     {
-        preg_match_all("/'([^']*)'/", $values, $matches);
+        preg_match('/^(\w*)(?:\(([^)]+)\))?(\[[\d\[\]]*\])?\s*/', $definition, $matches);
 
-        return ['enumValues' => $matches[1]];
+        return [
+            $matches[1],
+            $matches[2] ?? null,
+            $matches[3] ?? null,
+            substr($definition, strlen($matches[0])),
+        ];
     }
 
     /**
+     * @psalm-param non-empty-string $params
+     * @psalm-return array{enumValues?: list<string>, size?: int, scale?: int}
+     */
+    abstract protected function parseTypeParams(string $type, string $params): array;
+
+    /**
+     * @psalm-param non-empty-string $extra
      * @psalm-return ExtraInfo
      */
     protected function extraInfo(string $extra): array
     {
-        if (empty($extra)) {
-            return [];
-        }
-
         $info = [];
         $bracketsPattern = '(\(((?>[^()]+)|(?-2))*\))';
         $defaultPattern = "/\\s*\\bDEFAULT\\s+('(?:[^']|'')*'|\"(?:[^\"]|\"\")*\"|[^(\\s]*$bracketsPattern?\\S*)/i";
@@ -169,9 +180,9 @@ class ColumnDefinitionParser
     /**
      * @psalm-return array{size: int, scale?: int}
      */
-    protected function sizeInfo(string $size): array
+    protected function parseSizeInfo(string $params): array
     {
-        $values = explode(',', $size);
+        $values = explode(',', $params);
 
         $info = [
             'size' => (int) $values[0],
