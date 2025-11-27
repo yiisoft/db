@@ -56,7 +56,7 @@ class ColumnDefinitionParser
      */
     public function parse(string $definition): array
     {
-        preg_match('/^(\w*)(?:\(([^)]+)\))?(\[[\d\[\]]*\])?\s*/', $definition, $matches);
+        preg_match("/^(\w*)(?:\(((?:'[^']*'|[^)])+)\))?(\[[\d\[\]]*\])?\s*/", $definition, $matches);
 
         $type = strtolower($matches[1]);
         $info = ['type' => $type];
