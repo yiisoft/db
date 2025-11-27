@@ -9,9 +9,6 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Syntax\ColumnDefinitionParser;
 use Yiisoft\Db\Tests\Provider\ColumnDefinitionParserProvider;
 
-/**
- * @group db
- */
 abstract class CommonColumnDefinitionParserTest extends TestCase
 {
     #[DataProviderExternal(ColumnDefinitionParserProvider::class, 'parse')]
@@ -22,8 +19,5 @@ abstract class CommonColumnDefinitionParserTest extends TestCase
         $this->assertSame($expected, $parser->parse($definition));
     }
 
-    protected function createColumnDefinitionParser(): ColumnDefinitionParser
-    {
-        return new ColumnDefinitionParser();
-    }
+    abstract protected function createColumnDefinitionParser(): ColumnDefinitionParser;
 }
