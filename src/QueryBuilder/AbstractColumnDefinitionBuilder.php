@@ -123,21 +123,22 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     {
         $check = $column->getCheck();
 
-        if ($column instanceof EnumColumn && $column->getDbType() === null) {
-            $check = $column->getCheck();
+        if (empty($check)
+            && $column instanceof EnumColumn
+            && $column->getDbType() === null
+        ) {
             $name = $column->getName();
-            $items = $column->getValues();
-            if (empty($check) && !empty($name)) {
+            if (!empty($name)) {
                 $quoter = $this->queryBuilder->getQuoter();
-                $itemsList = implode(
+                $quotedItems = implode(
                     ',',
                     array_map(
                         $quoter->quoteValue(...),
-                        $items,
+                        $column->getValues(),
                     ),
                 );
                 $quotedName = $quoter->quoteColumnName($name);
-                $check = "$quotedName IN ($itemsList)";
+                $check = "$quotedName IN ($quotedItems)";
             }
         }
 
