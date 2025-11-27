@@ -127,7 +127,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             $check = $column->getCheck();
             $name = $column->getName();
             $items = $column->getValues();
-            if (empty($check) && !empty($name) && !empty($items)) {
+            if (empty($check) && !empty($name)) {
                 $quoter = $this->queryBuilder->getQuoter();
                 $itemsList = implode(
                     ',',
