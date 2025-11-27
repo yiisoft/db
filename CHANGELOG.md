@@ -177,6 +177,7 @@
 - Bug #1103: Fix view names' cache refreshing after "drop table" command execution (@vjik)
 - Chg #1103: Remove `AbstractCommand::refreshTableSchema()` method (@vjik)
 - Chg #1106: Remove parameters from `PdoConnectionInterface::getActivePdo()` method (@vjik)
+- Bug #1109: Fix column definition parsing in cases with brackets and escaped quotes (@vjik)
 
 ## 1.3.0 March 21, 2024
 

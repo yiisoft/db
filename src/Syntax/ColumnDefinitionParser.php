@@ -56,7 +56,7 @@ class ColumnDefinitionParser
      */
     public function parse(string $definition): array
     {
-        preg_match('/^(\w*)(?:\(([^)]+)\))?(\[[\d\[\]]*\])?\s*/', $definition, $matches);
+        preg_match("/^(\w*)(?:\(((?:'[^']*'|[^)])+)\))?(\[[\d\[\]]*\])?\s*/", $definition, $matches);
 
         $type = strtolower($matches[1]);
         $info = ['type' => $type];
@@ -84,9 +84,14 @@ class ColumnDefinitionParser
      */
     protected function enumInfo(string $values): array
     {
-        preg_match_all("/'([^']*)'/", $values, $matches);
+        preg_match_all("/'((?:''|[^'])*)'/", $values, $matches);
 
-        return ['enumValues' => $matches[1]];
+        $values = array_map(
+            static fn(string $value): string => str_replace("''", "'", $value),
+            $matches[1],
+        );
+
+        return ['enumValues' => $values];
     }
 
     /**
