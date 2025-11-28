@@ -36,6 +36,14 @@ class ColumnDefinitionParserProvider
                 "enum('a','b','c') NOT NULL",
                 ['type' => 'enum', 'values' => ['a', 'b', 'c'], 'notNull' => true],
             ],
+            'enum-upper-case' => [
+                "ENUM('a','b','c') NOT NULL",
+                ['type' => 'enum', 'values' => ['a', 'b', 'c'], 'notNull' => true],
+            ],
+            'enum-custom-case' => [
+                "eNUm('a','b','c') NOT NULL",
+                ['type' => 'enum', 'values' => ['a', 'b', 'c'], 'notNull' => true],
+            ],
             'enum-with-square-brackets' => [
                 "enum('[one]', 'the [two]', 'the [three] to') NOT NULL",
                 ['type' => 'enum', 'values' => ['[one]', 'the [two]', 'the [three] to'], 'notNull' => true],
