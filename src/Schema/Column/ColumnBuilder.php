@@ -278,7 +278,7 @@ class ColumnBuilder
      * @param string[]|null $values The list of possible values for the enum column.
      * @param string|null $dbType The database type of the column. When null, the column will use a CHECK constraint.
      */
-    public static function enum(?array $values, ?string $dbType = null): EnumColumn
+    public static function enum(?array $values = null, ?string $dbType = null): EnumColumn
     {
         return new EnumColumn(dbType: $dbType, values: $values);
     }
