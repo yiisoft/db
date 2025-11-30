@@ -256,6 +256,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::ARRAY => ArrayColumn::class,
             ColumnType::STRUCTURED => StructuredColumn::class,
             ColumnType::JSON => JsonColumn::class,
+            ColumnType::ENUM => EnumColumn::class,
             default => StringColumn::class,
         };
     }
@@ -275,6 +276,10 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     {
         if (!empty($info['dimension'])) {
             return ColumnType::ARRAY;
+        }
+
+        if (isset($info['values'])) {
+            return ColumnType::ENUM;
         }
 
         return static::TYPE_MAP[$dbType] ?? ColumnType::STRING;
@@ -333,7 +338,8 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::DATE,
             ColumnType::ARRAY,
             ColumnType::STRUCTURED,
-            ColumnType::JSON => true,
+            ColumnType::JSON,
+            ColumnType::ENUM => true,
             default => isset($this->classMap[$type]),
         };
     }

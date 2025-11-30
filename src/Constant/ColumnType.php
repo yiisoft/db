@@ -105,4 +105,8 @@ final class ColumnType
      * Define the abstract column type as `json`.
      */
     public const JSON = 'json';
+    /**
+     * Define the abstract column type as `enum`.
+     */
+    public const ENUM = 'enum';
 }

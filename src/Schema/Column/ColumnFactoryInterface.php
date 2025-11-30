@@ -25,7 +25,6 @@ use Yiisoft\Db\Constraint\ForeignKey;
  *     defaultValue?: mixed,
  *     defaultValueRaw?: string|null,
  *     dimension?: positive-int,
- *     enumValues?: array|null,
  *     extra?: string|null,
  *     fromResult?: bool,
  *     primaryKey?: bool,
@@ -39,6 +38,7 @@ use Yiisoft\Db\Constraint\ForeignKey;
  *     type?: ColumnType::*,
  *     unique?: bool,
  *     unsigned?: bool,
+ *     values?: array|null,
  * }
  */
 interface ColumnFactoryInterface

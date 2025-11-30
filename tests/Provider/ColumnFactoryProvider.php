@@ -13,6 +13,7 @@ use Yiisoft\Db\Schema\Column\BinaryColumn;
 use Yiisoft\Db\Schema\Column\BooleanColumn;
 use Yiisoft\Db\Schema\Column\DateTimeColumn;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
+use Yiisoft\Db\Schema\Column\EnumColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\JsonColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
@@ -75,6 +76,7 @@ class ColumnFactoryProvider
             'array' => [ColumnType::ARRAY, ColumnType::ARRAY, ArrayColumn::class],
             'structured' => [ColumnType::STRUCTURED, ColumnType::STRUCTURED, StructuredColumn::class],
             'json' => [ColumnType::JSON, ColumnType::JSON, JsonColumn::class],
+            'enum' => [ColumnType::ENUM, ColumnType::ENUM, EnumColumn::class],
         ];
     }
 

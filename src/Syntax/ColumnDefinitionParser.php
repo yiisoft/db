@@ -44,7 +44,6 @@ class ColumnDefinitionParser
      *     comment?: string,
      *     defaultValueRaw?: string,
      *     dimension?: positive-int,
-     *     enumValues?: list<string>,
      *     extra?: string,
      *     notNull?: bool,
      *     scale?: int,
@@ -52,6 +51,7 @@ class ColumnDefinitionParser
      *     type: lowercase-string,
      *     unique?: bool,
      *     unsigned?: bool,
+     *     values?: list<string>,
      * }
      */
     public function parse(string $definition): array
@@ -80,7 +80,7 @@ class ColumnDefinitionParser
     }
 
     /**
-     * @psalm-return array{enumValues: list<string>}
+     * @psalm-return array{values: list<string>}
      */
     protected function enumInfo(string $values): array
     {
@@ -91,7 +91,7 @@ class ColumnDefinitionParser
             $matches[1],
         );
 
-        return ['enumValues' => $values];
+        return ['values' => $values];
     }
 
     /**
