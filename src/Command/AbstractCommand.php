@@ -639,7 +639,6 @@ abstract class AbstractCommand implements CommandInterface
         $this->sql = '';
         $this->params = [];
         $this->refreshTableName = null;
-        $this->retryHandler = null;
     }
 
     /**
