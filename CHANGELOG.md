@@ -179,7 +179,6 @@
 - Chg #1106: Remove parameters from `PdoConnectionInterface::getActivePdo()` method (@vjik)
 - Bug #1109: Fix column definition parsing in cases with brackets and escaped quotes (@vjik)
 - New #1107: Add abstract enumeration column type (@vjik)
-- New #1113: Trim dot in `IntegerColumn::phpTypecast()` to prevent PHP 8.5+ warnings on large values (@vjik)
 
 ## 1.3.0 March 21, 2024
 

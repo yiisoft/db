@@ -12,7 +12,6 @@ use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 use function gettype;
-use function is_string;
 
 /**
  * Represents the schema for an integer column.
@@ -45,10 +44,6 @@ class IntegerColumn extends AbstractColumn
     {
         if ($value === null) {
             return null;
-        }
-
-        if (is_string($value)) {
-            $value = rtrim($value, '.');
         }
 
         return (int) $value;
