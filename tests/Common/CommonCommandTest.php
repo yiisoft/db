@@ -519,7 +519,7 @@ abstract class CommonCommandTest extends IntegrationTestCase
      */
     public function testBatchInsertDataTypesLocale(): void
     {
-        $locale = setlocale(LC_NUMERIC, 0);
+        $locale = setlocale(LC_NUMERIC, '');
 
         if ($locale === false) {
             $this->markTestSkipped('Your platform does not support locales.');
