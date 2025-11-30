@@ -582,6 +582,12 @@ final class CommandTest extends IntegrationTestCase
         $command->setRetryHandler($handler);
 
         $this->assertSame($handler, Assert::getPropertyValue($command, 'retryHandler'));
+
+        // Test that setting SQL and raw SQL does not change the retry handler.
+        $command->setSql('');
+        $command->setRawSql('');
+
+        $this->assertSame($handler, Assert::getPropertyValue($command, 'retryHandler'));
     }
 
     public function testTruncateTable(): void
