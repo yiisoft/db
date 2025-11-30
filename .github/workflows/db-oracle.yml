@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - 8.4
+          - 8.5
 
         oracle:
           - 18
@@ -47,6 +47,8 @@ jobs:
           - php: 8.2
             oracle: 21
           - php: 8.3
+            oracle: 21
+          - php: 8.4
             oracle: 21
 
     services:
