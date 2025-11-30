@@ -293,3 +293,4 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change `QueryPartsInterface::withQueries()` parameter to variadic with type `WithQuery`;
 - In `DQLQueryBuilderInterface::buildWithQueries()` method change first parameter type form `array[]` to `WithQuery[]`;
 - Remove `AbstractCommand::refreshTableSchema()` method;
+- Property `$retryHandler` is not reset on `AbstractCommand::reset()` method call;
