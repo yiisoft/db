@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - 8.4
+          - 8.5
 
         pgsql:
           - 9
@@ -55,6 +55,8 @@ jobs:
           - php: 8.2
             pgsql: 18
           - php: 8.3
+            pgsql: 18
+          - php: 8.4
             pgsql: 18
 
     services:

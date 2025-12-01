@@ -69,7 +69,7 @@
 - Enh #929: Refactor array, structured and JSON column type expressions and expression builders (@Tigrov)
 - Enh #929: Implement lazy arrays for array, structured and JSON column types (@Tigrov)
 - Bug #933: Explicitly mark nullable parameters (@vjik)
-- Chg #911: Change supported PHP versions to `8.1 - 8.4` (@Tigrov)
+- Chg #911, #1113: Change supported PHP versions to `8.1 - 8.5` (@Tigrov, @vjik)
 - Enh #911, #940: Minor refactoring (@Tigrov)
 - Chg #938, #936, #937: Remove `ext-json`, `ext-ctype`, `ext-mbstring` from `require` section of `composer.json` (@Tigrov) 
 - Chg #936: Remove `hasLimit()` and `hasOffset()` methods from `AbstractDQLQueryBuilder` class (@Tigrov)

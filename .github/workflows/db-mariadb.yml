@@ -36,7 +36,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - 8.4
+          - 8.5
 
         mariadb:
           - mariadb:10.4
@@ -53,6 +53,8 @@ jobs:
           - php: 8.2
             mariadb: mariadb:latest
           - php: 8.3
+            mariadb: mariadb:latest
+          - php: 8.4
             mariadb: mariadb:latest
 
     services:
