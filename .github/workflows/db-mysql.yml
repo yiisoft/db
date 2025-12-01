@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - 8.4
+          - 8.5
 
         mysql:
           - mysql:5.7
@@ -47,6 +47,8 @@ jobs:
           - php: 8.2
             mysql: mysql:latest
           - php: 8.3
+            mysql: mysql:latest
+          - php: 8.4
             mysql: mysql:latest
 
     services:
