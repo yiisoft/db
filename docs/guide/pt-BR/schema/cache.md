@@ -19,6 +19,28 @@ Você pode configurar [SchemaCache](https://github.com/yiisoft/db/blob/master/sr
 Os exemplos abaixo usam [yiisoft/cache](https://github.com/yiisoft/cache). Certifique-se de tê-lo instalado via [Composer](https://getcomposer.org)
 usando `composer require yiisoft/cache`.
 
+## Desabilitando o cache de esquema em desenvolvimento
+
+Em ambientes de desenvolvimento, você pode querer desabilitar o cache de esquema para sempre obter as informações
+mais recentes do banco de dados. Isso é útil quando você está alterando frequentemente a estrutura do banco de dados.
+
+Você pode conseguir isso usando `NullCache` do [yiisoft/cache](https://github.com/yiisoft/cache).
+`NullCache` não armazena nada em cache enquanto ainda implementa a `CacheInterface` PSR-16.
+
+Crie um arquivo `config/dev/di/cache.php`:
+
+```php
+use Psr\SimpleCache\CacheInterface;
+use Yiisoft\Cache\NullCache;
+
+return [
+    CacheInterface::class => NullCache::class,
+];
+```
+
+> Nota: Lembre-se de mudar para uma implementação de cache real (como `FileCache`, `ArrayCache`, etc.)
+> em produção para melhor desempenho.
+
 ## Cache PSR-16 com conexão automática
 
 Esta configuração é adequada se você quiser usar o mesmo driver de cache para todo o aplicativo.

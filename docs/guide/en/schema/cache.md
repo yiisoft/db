@@ -19,6 +19,28 @@ You can configure [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Ca
 Examples below use [yiisoft/cache](https://github.com/yiisoft/cache). Make sure you have installed it via [Composer](https://getcomposer.org)
 using `composer require yiisoft/cache`.
 
+## Disabling schema cache in development
+
+In development environments, you may want to disable schema caching to always get the latest schema information
+from the database. This is useful when you're frequently changing the database structure.
+
+You can achieve this by using `NullCache` from [yiisoft/cache](https://github.com/yiisoft/cache).
+`NullCache` doesn't cache anything while still implementing the PSR-16 `CacheInterface`.
+
+Create a file `config/dev/di/cache.php`:
+
+```php
+use Psr\SimpleCache\CacheInterface;
+use Yiisoft\Cache\NullCache;
+
+return [
+    CacheInterface::class => NullCache::class,
+];
+```
+
+> Note: Remember to switch to a real cache implementation (such as `FileCache`, `ArrayCache`, etc.)
+> in production for better performance.
+
 ## Autowired PSR-16 cache
 
 This configuration is suitable if you want to use the same cache driver for the whole application.
