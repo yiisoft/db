@@ -163,7 +163,7 @@ class Query implements QueryInterface
             return $this;
         }
 
-        $this->params = array_merge($this->params, $params);
+        $this->params = [...$this->params, $params];
 
         return $this;
     }
