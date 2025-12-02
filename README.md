@@ -27,7 +27,9 @@ Available database drivers:
 
 Optional packages that provide additional functionality:
 
-- [Yii Active Record](https://github.com/yiisoft/active-record) provides an object-oriented interface for working with database tables, similar to ORM frameworks such as Doctrine or Hibernate.
+- [Yii Active Record](https://github.com/yiisoft/active-record) provides an object-oriented interface for working with database tables, similar to ORM 
+  frameworks such as Doctrine or Hibernate.
+- [Yii DB Migration](https://github.com/yiisoft/db-migration) allows you to manage database schema using migrations.
 
 ## Requirements
 
