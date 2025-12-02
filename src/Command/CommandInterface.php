@@ -770,18 +770,24 @@ interface CommandInterface
     public function setRawSql(string $sql): static;
 
     /**
-     * Sets a Closure (anonymous function) that's called when {@see Exception} is thrown when executing the
-     * command. The signature of the Closure should be:.
+     * Sets a closure (anonymous function) which called when a database exception is thrown when executing the command.
+     *
+     * The signature of the closure should be:
      *
      * ```php
-     * function (Exceptions $e, $attempt)
+     * use Yiisoft\Db\Exception\Exception;
+     *
+     * function (Exception $e, int $attempt): bool
      * {
-     *     // return true or false (whether to retry the command or rethrow $e)
+     *     // return true or false (whether to retry the command or throw $e)
      * }
      * ```
      *
-     * The Closure will receive a database exception thrown and a current try (to execute the command) number
-     * starting from 1.
+     * The closure will receive an {@see Exception} converted from the thrown database exception and the current attempt
+     * to execute the command, starting from `1`.
+     *
+     * If the closure returns `true`, the command will be retried. If the closure returns `false`, the {@see Exception}
+     * will be thrown.
      *
      * @param Closure|null $handler A PHP callback to handle database exceptions.
      */
