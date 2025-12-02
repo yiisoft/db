@@ -1,0 +1,70 @@
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - '.github/workflows/mutation.yml'
+      - 'composer.json'
+
+  push:
+    branches: ['master']
+    paths:
+      - 'src/**'
+      - '.github/workflows/mutation.yml'
+      - 'composer.json'
+
+name: Mutation
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mutation:
+    name: PHP 8.5
+
+    env:
+      COMPOSER_ROOT_VERSION: dev-master
+      EXTENSIONS: pdo, pdo_pgsql
+
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: ar-test
+          POSTGRES_USER: yii
+          POSTGRES_PASSWORD: q1w2e3r4
+        ports:
+          - 5432:5432
+        options: --name=postgres --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout.
+        uses: actions/checkout@v4
+
+      - name: Install PHP with extensions.
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.5
+          extensions: ${{ env.extensions }}
+          ini-values: memory_limit=-1
+          coverage: pcov
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@v3
+
+      - name: Remove unused dependencies of DB drivers
+        run: composer remove --dev yiisoft/db-sqlite yiisoft/db-mysql yiisoft/db-mssql yiisoft/db-oracle
+
+      - name: Install PostgreSQL driver
+        uses: yiisoft/actions/install-packages@master
+        with:
+          packages: >-
+            ['db-pgsql']
+
+      - name: Run infection
+        run: |
+          vendor/bin/infection --threads=2 --ignore-msi-with-no-mutations --test-framework-options="--testsuite=Pgsql"
+        env:
+          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
