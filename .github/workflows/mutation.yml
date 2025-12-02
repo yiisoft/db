@@ -32,9 +32,9 @@ jobs:
       postgres:
         image: postgres:18
         env:
-          POSTGRES_DB: ar-test
-          POSTGRES_USER: yii
-          POSTGRES_PASSWORD: q1w2e3r4
+          POSTGRES_DB: yiitest
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
         ports:
           - 5432:5432
         options: --name=postgres --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
