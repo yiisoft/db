@@ -78,17 +78,4 @@ return [
 ];
 ```
 
-Em seguida, use esse parâmetro na configuração do seu contêiner DI:
-
-```php
-use Yiisoft\Db\Cache\SchemaCache;
-
-/** @var array $params */
-
-return [
-    SchemaCache::class => [
-        'class' => SchemaCache::class,
-        'setEnabled()' => [$params['yiisoft/db']['schema-cache']['enabled']],
-    ],
-];
-```
+Este parâmetro é automaticamente conectado ao serviço `SchemaCache` através da configuração de DI do pacote.

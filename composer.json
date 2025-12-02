@@ -95,7 +95,8 @@
             "source-directory": "config"
         },
         "config-plugin": {
-            "params": "params.php"
+            "params": "params.php",
+            "di": "di.php"
         }
     },
     "config": {
