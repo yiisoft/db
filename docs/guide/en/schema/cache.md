@@ -62,3 +62,33 @@ return [
     ],
 ];
 ```
+
+## Disabling schema cache
+
+You can disable schema caching by setting the `enabled` parameter to `false` in your application's `config/params.php`:
+
+```php
+return [
+    // ...
+    'yiisoft/db' => [
+        'schema-cache' => [
+            'enabled' => false,
+        ],
+    ],
+];
+```
+
+Then use this parameter in your DI container configuration:
+
+```php
+use Yiisoft\Db\Cache\SchemaCache;
+
+/** @var array $params */
+
+return [
+    SchemaCache::class => [
+        'class' => SchemaCache::class,
+        'setEnabled()' => [$params['yiisoft/db']['schema-cache']['enabled']],
+    ],
+];
+```
