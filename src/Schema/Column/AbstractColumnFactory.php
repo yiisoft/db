@@ -243,7 +243,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::BIGINT => PHP_INT_SIZE !== 8 || !empty($info['unsigned'])
                 ? BigIntColumn::class
                 : IntegerColumn::class,
-            ColumnType::DECIMAL => DoubleColumn::class,
+            ColumnType::DECIMAL => StringColumn::class,
             ColumnType::FLOAT => DoubleColumn::class,
             ColumnType::DOUBLE => DoubleColumn::class,
             ColumnType::BINARY => BinaryColumn::class,
