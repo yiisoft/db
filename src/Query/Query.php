@@ -22,6 +22,7 @@ use function array_combine;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
+use function array_push;
 use function array_shift;
 use function array_unshift;
 use function count;
@@ -152,15 +153,17 @@ class Query implements QueryInterface
 
         if (empty($this->params)) {
             $this->params = $params;
-        } else {
-            foreach ($params as $name => $value) {
-                if (is_int($name)) {
-                    $this->params[] = $value;
-                } else {
-                    $this->params[$name] = $value;
-                }
-            }
+
+            return $this;
         }
+
+        if (is_int(key($params))) {
+            array_push($this->params, ...$params);
+
+            return $this;
+        }
+
+        $this->params = [...$this->params, ...$params];
 
         return $this;
     }
@@ -1026,7 +1029,7 @@ class Query implements QueryInterface
 
             if (is_string($columnDefinition)) {
                 if (
-                    preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $columnDefinition, $matches)
+                    preg_match('/^(.*?)\s+(?i:as\s+)?([\w\-_.]+)$/', $columnDefinition, $matches) === 1
                     && !preg_match('/^\d+$/', $matches[2])
                     && !str_contains($matches[2], '.')
                 ) {
