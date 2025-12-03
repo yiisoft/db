@@ -2103,27 +2103,27 @@ abstract class CommonCommandTest extends IntegrationTestCase
 
     public function testDecimalValue(): void
     {
-        $decimalValue = 10.0;
         $db = $this->getSharedConnection();
         $this->loadFixture();
 
-        $inserted = $db->createCommand()
+        $inserted = $db
+            ->createCommand()
             ->insertReturningPks(
                 '{{%order}}',
-                ['customer_id' => 1, 'created_at' => 0, 'total' => $decimalValue],
+                ['customer_id' => 1, 'created_at' => 0, 'total' => 10.0],
             );
 
-        $result = $db->createCommand(
-            'select * from {{%order}} where [[id]]=:id',
-            ['id' => $inserted['id']],
-        )->queryOne();
+        $result = $db
+            ->createCommand(
+                'select * from {{%order}} where [[id]]=:id',
+                ['id' => $inserted['id']],
+            )
+            ->queryOne();
 
         $column = $db->getTableSchema('{{%order}}')->getColumn('total');
         $phpTypecastValue = $column->phpTypecast($result['total']);
 
-        $this->assertSame($decimalValue, $phpTypecastValue);
-
-        $db->close();
+        $this->assertSame('10', $phpTypecastValue);
     }
 
     public function testInsertReturningPksEmptyValues()
@@ -2179,9 +2179,9 @@ abstract class CommonCommandTest extends IntegrationTestCase
 
         $result = $db->createCommand()
             ->withPhpTypecasting()
-            ->insertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
+            ->insertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => '2.5', 'type' => 'test1']);
 
-        $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
+        $this->assertSame(['id_1' => 1, 'id_2' => '2.5'], $result);
 
         $db->close();
     }
@@ -2333,21 +2333,21 @@ abstract class CommonCommandTest extends IntegrationTestCase
 
         $result = $db->createCommand()
             ->withPhpTypecasting()
-            ->upsertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
+            ->upsertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => '2.5', 'type' => 'test1']);
 
-        $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
-
-        $result = $db->createCommand()
-            ->withPhpTypecasting()
-            ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test2']);
-
-        $this->assertSame(['id_1' => 2, 'id_2' => 2.5], $result);
+        $this->assertSame(['id_1' => 1, 'id_2' => '2.5'], $result);
 
         $result = $db->createCommand()
             ->withPhpTypecasting()
-            ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test3']);
+            ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => '2.5', 'type' => 'test2']);
 
-        $this->assertSame(['id_1' => 2, 'id_2' => 2.5], $result);
+        $this->assertSame(['id_1' => 2, 'id_2' => '2.5'], $result);
+
+        $result = $db->createCommand()
+            ->withPhpTypecasting()
+            ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => '2.5', 'type' => 'test3']);
+
+        $this->assertSame(['id_1' => 2, 'id_2' => '2.5'], $result);
 
         $db->close();
     }
