@@ -180,7 +180,7 @@
 - Bug #1109: Fix column definition parsing in cases with brackets and escaped quotes (@vjik)
 - New #1107: Add abstract enumeration column type (@vjik)
 - Bug #1115: Do not reset `$retryHandler` property on `AbstractCommand::reset()` method call (@Tigrov)
-- Enh #1124: Add source of column information (@Tigrov)
+- New #1124: Add source of column information (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
