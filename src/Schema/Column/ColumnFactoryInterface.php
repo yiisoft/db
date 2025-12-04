@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use Yiisoft\Db\Constant\ColumnInfoSource;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constraint\ForeignKey;
@@ -26,7 +27,6 @@ use Yiisoft\Db\Constraint\ForeignKey;
  *     defaultValueRaw?: string|null,
  *     dimension?: positive-int,
  *     extra?: string|null,
- *     fromResult?: bool,
  *     primaryKey?: bool,
  *     name?: string|null,
  *     notNull?: bool,
@@ -34,6 +34,7 @@ use Yiisoft\Db\Constraint\ForeignKey;
  *     scale?: int|null,
  *     schema?: string|null,
  *     size?: int|null,
+ *     source?: ColumnInfoSource::*,
  *     table?: string|null,
  *     type?: ColumnType::*,
  *     unique?: bool,
