@@ -25,7 +25,7 @@ abstract class CommonConnectionTest extends IntegrationTestCase
     {
         $db = $this->getSharedConnection();
 
-        $query = (new Query($db))->from('customer');
+        $query = $db->createQuery()->from('customer');
 
         $this->assertInstanceOf(BatchQueryResult::class, $db->createBatchQueryResult($query));
     }
