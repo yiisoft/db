@@ -13,11 +13,9 @@ namespace Yiisoft\Db\Expression\Function;
  * Example usage:
  *
  * ```php
- * $longest = new Longest('short', 'longer', 'longest');
+ * $longest = new Longest(new Value('short'), 'column_name');
  * ```
  *
  * @see LongestBuilder for building SQL representations of this function expression.
  */
-final class Longest extends MultiOperandFunction
-{
-}
+final class Longest extends MultiOperandFunction {}

@@ -7,6 +7,4 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 /**
  * Condition that represents `NOT IN` operator.
  */
-final class NotIn extends AbstractIn
-{
-}
+final class NotIn extends AbstractIn {}

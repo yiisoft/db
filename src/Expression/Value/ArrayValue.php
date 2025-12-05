@@ -50,6 +50,5 @@ final class ArrayValue implements ExpressionInterface
     public function __construct(
         public readonly iterable|LazyArrayInterface|QueryInterface|string|null $value,
         public readonly ColumnInterface|string|null $type = null,
-    ) {
-    }
+    ) {}
 }

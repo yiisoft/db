@@ -7,12 +7,9 @@ namespace Yiisoft\Db\Tests\Db\Expression\Function;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 final class ArrayMergeTest extends TestCase
 {
-    use TestTrait;
-
     public function testType(): void
     {
         $expression = new ArrayMerge();

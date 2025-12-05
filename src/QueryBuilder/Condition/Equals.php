@@ -7,6 +7,4 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 /**
  * Represents an equality condition like `"column" = value`.
  */
-final class Equals extends AbstractCompare
-{
-}
+final class Equals extends AbstractCompare {}

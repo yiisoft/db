@@ -6,15 +6,13 @@ namespace Yiisoft\Db\Tests\Db\Driver\Pdo;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 class PdoServerInfoTest extends TestCase
 {
-    use TestTrait;
-
     public function testGetTimezone(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $serverInfo = $db->getServerInfo();
 
         $this->expectException(NotSupportedException::class);
@@ -25,11 +23,9 @@ class PdoServerInfoTest extends TestCase
 
     public function testGetVersion(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $serverInfo = $db->getServerInfo();
 
         $this->assertIsString($serverInfo->getVersion());
-
-        $db->close();
     }
 }

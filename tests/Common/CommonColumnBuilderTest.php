@@ -2,19 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests;
+namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\Attributes\DataProviderExternal;
-use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Tests\Provider\ColumnBuilderProvider;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
 use function array_merge;
 
-abstract class AbstractColumnBuilderTest extends TestCase
+abstract class CommonColumnBuilderTest extends IntegrationTestCase
 {
-    use TestTrait;
-
     #[DataProviderExternal(ColumnBuilderProvider::class, 'buildingMethods')]
     public function testBuildingMethods(
         string $buildingMethod,
@@ -23,7 +20,8 @@ abstract class AbstractColumnBuilderTest extends TestCase
         string $expectedType,
         array $expectedMethodResults = [],
     ): void {
-        $columnBuilderClass = $this->getConnection()->getColumnBuilderClass();
+        $db = $this->getSharedConnection();
+        $columnBuilderClass = $db->getColumnBuilderClass();
 
         $column = $columnBuilderClass::$buildingMethod(...$args);
 

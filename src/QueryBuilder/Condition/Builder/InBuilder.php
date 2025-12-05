@@ -7,9 +7,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 use ArrayAccess;
 use Iterator;
 use Traversable;
-use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -35,18 +33,14 @@ use function str_contains;
  */
 class InBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(protected QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(protected QueryBuilderInterface $queryBuilder) {}
 
     /**
      * Build SQL for {@see In} or {@see NotIn}.
      *
      * @param In|NotIn $expression
      *
-     * @throws Exception
      * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
@@ -117,10 +111,7 @@ class InBuilder implements ExpressionBuilderInterface
     /**
      * Builds `$values` to use in condition.
      *
-     * @throws Exception
      * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
      *
      * @psalm-return string[]
      */
@@ -146,9 +137,6 @@ class InBuilder implements ExpressionBuilderInterface
     /**
      * Build SQL for composite `IN` condition.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      *
      * @psalm-param array<string|ExpressionInterface>|string $columns
@@ -157,7 +145,7 @@ class InBuilder implements ExpressionBuilderInterface
         string $operator,
         array|string $columns,
         ExpressionInterface $values,
-        array &$params = []
+        array &$params = [],
     ): string {
         $query = '';
         $sql = $this->queryBuilder->buildExpression($values, $params);
@@ -185,22 +173,20 @@ class InBuilder implements ExpressionBuilderInterface
     /**
      * Builds an SQL statement for checking the existence of rows with the specified composite column values.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
      * @throws InvalidArgumentException
      * @throws NotSupportedException
      *
      * @psalm-param array<string|ExpressionInterface> $columns
      */
     protected function buildCompositeInCondition(
-        string|null $operator,
+        ?string $operator,
         array $columns,
         iterable|Iterator $values,
-        array &$params = []
+        array &$params = [],
     ): string {
         $vss = [];
 
-        /** @psalm-var string[][] $values */
+        /** @var string[][] $values */
         foreach ($values as $value) {
             $vs = [];
             foreach ($columns as $column) {
@@ -252,13 +238,11 @@ class InBuilder implements ExpressionBuilderInterface
     {
         $rawValues = [];
 
-        /** @psalm-var mixed $value */
         foreach ($traversableObject as $value) {
             if (is_array($value)) {
                 $values = array_values($value);
                 $rawValues = array_merge($rawValues, $values);
             } else {
-                /** @psalm-var mixed */
                 $rawValues[] = $value;
             }
         }

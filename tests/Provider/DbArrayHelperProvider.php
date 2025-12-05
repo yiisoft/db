@@ -31,8 +31,8 @@ class DbArrayHelperProvider
 
     public static function indexWithIndexBy(): array
     {
-        $resultCallback = fn (array $rows) => array_map(
-            fn (array|object $row) => ['key' => strtoupper(is_object($row) ? $row->key : $row['key'])],
+        $resultCallback = fn(array $rows) => array_map(
+            fn(array|object $row) => ['key' => strtoupper(is_object($row) ? $row->key : $row['key'])],
             $rows,
         );
 
@@ -103,7 +103,7 @@ class DbArrayHelperProvider
                     ['key' => 'value1'],
                     ['key' => 'value2'],
                 ],
-                static fn ($row) => is_object($row) ? $row->key : $row['key'],
+                static fn($row) => is_object($row) ? $row->key : $row['key'],
             ],
             'not existed key' => [
                 [
@@ -149,7 +149,7 @@ class DbArrayHelperProvider
             ['key' => 'value1'],
             ['key' => 'value2'],
         ];
-        $resultCallback = fn (array $rows) => array_map(fn (array $row) => ['key' => strtoupper($row['key'])], $rows);
+        $resultCallback = fn(array $rows) => array_map(fn(array $row) => ['key' => strtoupper($row['key'])], $rows);
 
         return [
             [
@@ -184,7 +184,7 @@ class DbArrayHelperProvider
                 ],
                 $rows,
                 [],
-                static fn ($row) => $row['key'],
+                static fn($row) => $row['key'],
             ],
             [
                 [
@@ -212,7 +212,7 @@ class DbArrayHelperProvider
                 ],
                 $rows,
                 ['key'],
-                static fn ($row) => $row['key'],
+                static fn($row) => $row['key'],
             ],
             [
                 [
@@ -241,7 +241,7 @@ class DbArrayHelperProvider
                 ],
                 $rows,
                 ['key'],
-                static fn ($row) => $row['key'],
+                static fn($row) => $row['key'],
                 $resultCallback,
             ],
             [

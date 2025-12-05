@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 interface ColumnDefinitionBuilderInterface
@@ -14,6 +15,8 @@ interface ColumnDefinitionBuilderInterface
      * @param ColumnInterface $column the column instance which should be converted into a string representation.
      *
      * @return string the column SQL definition.
+     *
+     * @throws NotSupportedException If the column definition cannot be built for the specific DBMS.
      */
     public function build(ColumnInterface $column): string;
 

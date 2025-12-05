@@ -18,9 +18,7 @@ use function is_string;
  */
 final class LengthBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder) {}
 
     /**
      * Builds a SQL `LENGTH()` function expression from the given {@see Length} object.
@@ -32,12 +30,18 @@ final class LengthBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operand = $expression->operand;
+        return 'LENGTH(' . $this->buildOperand($expression->operand, $params) . ')';
+    }
 
+    /**
+     * Builds an operand expression.
+     */
+    private function buildOperand(mixed $operand, array &$params): string
+    {
         if (is_string($operand)) {
-            return "LENGTH($operand)";
+            return $this->queryBuilder->getQuoter()->quoteColumnName($operand);
         }
 
-        return 'LENGTH(' . $this->queryBuilder->buildExpression($operand, $params) . ')';
+        return $this->queryBuilder->buildValue($operand, $params);
     }
 }

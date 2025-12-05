@@ -44,7 +44,6 @@ class ColumnDefinitionParser
      *     comment?: string,
      *     defaultValueRaw?: string,
      *     dimension?: positive-int,
-     *     enumValues?: list<string>,
      *     extra?: string,
      *     notNull?: bool,
      *     scale?: int,
@@ -52,11 +51,12 @@ class ColumnDefinitionParser
      *     type: lowercase-string,
      *     unique?: bool,
      *     unsigned?: bool,
+     *     values?: list<string>,
      * }
      */
     public function parse(string $definition): array
     {
-        preg_match('/^(\w*)(?:\(([^)]+)\))?(\[[\d\[\]]*\])?\s*/', $definition, $matches);
+        preg_match("/^(\w*)(?:\(((?:'[^']*'|[^)])+)\))?(\[[\d\[\]]*\])?\s*/", $definition, $matches);
 
         $type = strtolower($matches[1]);
         $info = ['type' => $type];
@@ -80,13 +80,18 @@ class ColumnDefinitionParser
     }
 
     /**
-     * @psalm-return array{enumValues: list<string>}
+     * @psalm-return array{values: list<string>}
      */
     protected function enumInfo(string $values): array
     {
-        preg_match_all("/'([^']*)'/", $values, $matches);
+        preg_match_all("/'((?:''|[^'])*)'/", $values, $matches);
 
-        return ['enumValues' => $matches[1]];
+        $values = array_map(
+            static fn(string $value): string => str_replace("''", "'", $value),
+            $matches[1],
+        );
+
+        return ['values' => $values];
     }
 
     /**

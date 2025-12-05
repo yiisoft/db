@@ -8,6 +8,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Schema\Column\CollatableColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Schema\Column\EnumColumn;
 
 use function in_array;
 use function strtolower;
@@ -33,19 +34,9 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      */
     protected const TYPES_WITH_SCALE = [];
 
-    /**
-     * Get the database column type for the given column.
-     *
-     * @param ColumnInterface $column The column object.
-     *
-     * @return string The database column type.
-     */
-    abstract protected function getDbType(ColumnInterface $column): string;
-
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
-    ) {
-    }
+    ) {}
 
     public function build(ColumnInterface $column): string
     {
@@ -95,6 +86,15 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     }
 
     /**
+     * Get the database column type for the given column.
+     *
+     * @param ColumnInterface $column The column object.
+     *
+     * @return string The database column type.
+     */
+    abstract protected function getDbType(ColumnInterface $column): string;
+
+    /**
      * Builds the auto increment clause for the column.
      *
      * @return string A string containing the {@see AUTO_INCREMENT_KEYWORD} keyword.
@@ -122,6 +122,25 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     protected function buildCheck(ColumnInterface $column): string
     {
         $check = $column->getCheck();
+
+        if (empty($check)
+            && $column instanceof EnumColumn
+            && $column->getDbType() === null
+        ) {
+            $name = $column->getName();
+            if (!empty($name)) {
+                $quoter = $this->queryBuilder->getQuoter();
+                $quotedItems = implode(
+                    ',',
+                    array_map(
+                        $quoter->quoteValue(...),
+                        $column->getValues(),
+                    ),
+                );
+                $quotedName = $quoter->quoteColumnName($name);
+                $check = "$quotedName IN ($quotedItems)";
+            }
+        }
 
         return !empty($check) ? " CHECK ($check)" : '';
     }

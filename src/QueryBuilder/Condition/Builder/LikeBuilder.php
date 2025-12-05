@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
+use Stringable;
 use Traversable;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Exception\Exception;
-use InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -21,7 +19,6 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function implode;
 use function is_string;
-use function str_contains;
 use function strtr;
 
 /**
@@ -48,17 +45,13 @@ class LikeBuilder implements ExpressionBuilderInterface
 
     public function __construct(
         private readonly QueryBuilderInterface $queryBuilder,
-    ) {
-    }
+    ) {}
 
     /**
      * Build SQL for {@see Like} or {@see NotLike}.
      *
      * @param Like|NotLike $expression
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
@@ -86,7 +79,7 @@ class LikeBuilder implements ExpressionBuilderInterface
 
         $parts = [];
         foreach ($values as $value) {
-            /** @var ExpressionInterface|int|string $value */
+            /** @var ExpressionInterface|int|string|Stringable $value */
             $placeholderName = $this->preparePlaceholderName($value, $expression, $params);
             $parts[] = "$column $operator $placeholderName" . static::ESCAPE_SQL;
         }
@@ -102,9 +95,6 @@ class LikeBuilder implements ExpressionBuilderInterface
     /**
      * Prepare column to use in SQL.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     protected function prepareColumn(Like|NotLike $condition, array &$params): string
@@ -115,29 +105,25 @@ class LikeBuilder implements ExpressionBuilderInterface
             return $this->queryBuilder->buildExpression($column, $params);
         }
 
-        if (!str_contains($column, '(')) {
-            return $this->queryBuilder->getQuoter()->quoteColumnName($column);
-        }
-
-        return $column;
+        return $this->queryBuilder->getQuoter()->quoteColumnName($column);
     }
 
     /**
      * Prepare value to use in SQL.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
-     * @return string
      */
     protected function preparePlaceholderName(
-        string|int|ExpressionInterface $value,
+        string|Stringable|int|ExpressionInterface $value,
         Like|NotLike $condition,
         array &$params,
     ): string {
         if ($value instanceof ExpressionInterface) {
             return $this->queryBuilder->buildExpression($value, $params);
+        }
+
+        if ($value instanceof Stringable) {
+            $value = (string) $value;
         }
 
         if (is_string($value) && $condition->escape) {

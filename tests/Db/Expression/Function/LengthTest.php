@@ -10,19 +10,17 @@ use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Length;
 use Yiisoft\Db\Expression\Value\Param;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 final class LengthTest extends TestCase
 {
-    use TestTrait;
-
-    public static function dataOperands(): array
+    public static function dataOperands(): iterable
     {
-        return [
-            'expression' => ['expression'],
-            'string' => [new Param('string', DataType::STRING)],
-            'query' => [self::getDb()->select('column')->from('table')->where(['id' => 1])],
-        ];
+        yield 'expression' => ['expression'];
+        yield 'string' => [new Param('string', DataType::STRING)];
+
+        $query = TestHelper::createSqliteMemoryConnection()->select('column')->from('table')->where(['id' => 1]);
+        yield 'query' => [$query];
     }
 
     #[DataProvider('dataOperands')]

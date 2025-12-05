@@ -16,9 +16,7 @@ use function in_array;
 final class IsOneOfAssert extends Constraint
 {
     /** @psalm-param string[] $allowedValues */
-    public function __construct(private array $allowedValues)
-    {
-    }
+    public function __construct(private array $allowedValues) {}
 
     /**
      * Returns a string representation of the object.

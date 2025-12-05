@@ -10,6 +10,7 @@ use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**
@@ -18,6 +19,7 @@ use Yiisoft\Db\Query\QueryInterface;
  * @link https://en.wikipedia.org/wiki/Data_manipulation_language
  *
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type RawFrom from QueryInterface
  * @psalm-type BatchValues = iterable<iterable<array-key, mixed>>
  */
 interface DMLQueryBuilderInterface
@@ -177,8 +179,10 @@ interface DMLQueryBuilderInterface
      *
      * @param string $table The table to update.
      * @param array $columns The column data (name => value) to update the table.
-     * @param array|string $condition The condition to put in the `WHERE` part. Please refer to
-     * {@see Query::where()} On how to specify condition.
+     * @param array|ExpressionInterface|string $condition The condition to put in the `WHERE` part. Please refer to
+     * {@see QueryPartsInterface::where()} On how to specify condition.
+     * @param array|ExpressionInterface|string|null $from The FROM part. Please refer to
+     * {@see QueryPartsInterface::from()} On how to specify FROM part.
      * @param array $params The binding parameters that will be modified by this method so that they can be bound to
      * DB command later.
      *
@@ -187,11 +191,18 @@ interface DMLQueryBuilderInterface
      *
      * @return string The UPDATE SQL.
      *
+     * @psalm-param RawFrom|null $from
      * @psalm-param ParamsType $params
      *
      * Note: The method will escape the table and column names.
      */
-    public function update(string $table, array $columns, array|string $condition, array &$params = []): string;
+    public function update(
+        string $table,
+        array $columns,
+        array|ExpressionInterface|string $condition,
+        array|ExpressionInterface|string|null $from = null,
+        array &$params = [],
+    ): string;
 
     /**
      * Creates an SQL statement to insert rows into a database table if they don't already exist (matching unique
@@ -263,7 +274,7 @@ interface DMLQueryBuilderInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-        array|null $returnColumns = null,
+        ?array $returnColumns = null,
         array &$params = [],
     ): string;
 

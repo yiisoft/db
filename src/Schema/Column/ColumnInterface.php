@@ -6,27 +6,13 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\ForeignKey;
+use Yiisoft\Db\Exception\NotSupportedException;
 
 /**
  * This interface defines a set of methods that must be implemented by a class that represents a database table column.
  */
 interface ColumnInterface
 {
-    /**
-     * Whether to allow `null` values.
-     *
-     * If not set explicitly with this method call, `null` values aren't allowed.
-     *
-     * ```php
-     * $columns = [
-     *     'description' => ColumnBuilder::text()->allowNull(),
-     * ];
-     * ```
-     *
-     * @deprecated Use {@see notNull()} instead. Will be removed in version 2.0.
-     */
-    public function allowNull(bool $allowNull = true): static;
-
     /**
      * The database assigns auto incremented column a unique value automatically whenever you insert a new row into
      * the table. This is useful for getting unique IDs for data such as customer or employee numbers.
@@ -51,7 +37,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function check(string|null $check): static;
+    public function check(?string $check): static;
 
     /**
      * The comment for a column in a database table.
@@ -64,7 +50,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function comment(string|null $comment): static;
+    public function comment(?string $comment): static;
 
     /**
      * A computed column is a virtual column that computes its values from an expression.
@@ -92,7 +78,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function dbType(string|null $dbType): static;
+    public function dbType(?string $dbType): static;
 
     /**
      * Convert a value from its PHP representation to a database-specific representation.
@@ -101,6 +87,8 @@ interface ColumnInterface
      * directly in your code.
      *
      * If the value is `null` or an {@see Expression}, there will be no conversion.
+     *
+     * @throws NotSupportedException
      */
     public function dbTypecast(mixed $value): mixed;
 
@@ -118,17 +106,6 @@ interface ColumnInterface
     public function defaultValue(mixed $defaultValue): static;
 
     /**
-     * The list of possible values for the `ENUM` column.
-     *
-     * ```php
-     * $columns = [
-     *     'status' => ColumnBuilder::string(16)->enumValues(['active', 'inactive']),
-     * ];
-     * ```
-     */
-    public function enumValues(array|null $enumValues): static;
-
-    /**
      * Extra SQL to append to the generated SQL for a column.
      *
      * This can be useful for adding custom constraints or other SQL statements that aren't supported by the column
@@ -140,7 +117,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function extra(string|null $extra): static;
+    public function extra(?string $extra): static;
 
     /**
      * Returns the check constraint for the column.
@@ -148,7 +125,7 @@ interface ColumnInterface
      * @see check()
      * @psalm-mutation-free
     */
-    public function getCheck(): string|null;
+    public function getCheck(): ?string;
 
     /**
      * @return string|null The comment of the column.
@@ -156,7 +133,7 @@ interface ColumnInterface
      * @see comment()
      * @psalm-mutation-free
      */
-    public function getComment(): string|null;
+    public function getComment(): ?string;
 
     /**
      * @return string|null The database data type of the column.
@@ -168,7 +145,7 @@ interface ColumnInterface
      * @see dbType()
      * @psalm-mutation-free
      */
-    public function getDbType(): string|null;
+    public function getDbType(): ?string;
 
     /**
      * @return mixed The default value of the column.
@@ -179,27 +156,19 @@ interface ColumnInterface
     public function getDefaultValue(): mixed;
 
     /**
-     * @return array|null The enum values of the column.
-     *
-     * @see enumValues()
-     * @psalm-mutation-free
-     */
-    public function getEnumValues(): array|null;
-
-    /**
      * @return string|null The extra SQL for the column.
      *
      * @see extra()
      * @psalm-mutation-free
      */
-    public function getExtra(): string|null;
+    public function getExtra(): ?string;
 
     /**
      * @return string|null The name of the column.
      *
      * @psalm-mutation-free
      */
-    public function getName(): string|null;
+    public function getName(): ?string;
 
     /**
      * Returns the reference to the foreign key constraint.
@@ -207,7 +176,7 @@ interface ColumnInterface
      * @see reference()
      * @psalm-mutation-free
      */
-    public function getReference(): ForeignKey|null;
+    public function getReference(): ?ForeignKey;
 
     /**
      * @return int|null The scale of the column.
@@ -215,7 +184,7 @@ interface ColumnInterface
      * @see scale()
      * @psalm-mutation-free
      */
-    public function getScale(): int|null;
+    public function getScale(): ?int;
 
     /**
      * @return int|null The size of the column.
@@ -223,7 +192,7 @@ interface ColumnInterface
      * @see size()
      * @psalm-mutation-free
      */
-    public function getSize(): int|null;
+    public function getSize(): ?int;
 
     /**
      * @return string The type of the column.
@@ -236,16 +205,6 @@ interface ColumnInterface
 
     /** @psalm-mutation-free */
     public function hasDefaultValue(): bool;
-
-    /**
-     * Whether this column is nullable.
-     *
-     * @see allowNull()
-     *
-     * @deprecated Use {@see isNotNull()} instead. Will be removed in version 2.0.
-     * @psalm-mutation-free
-     */
-    public function isAllowNull(): bool;
 
     /**
      * Whether this column is auto incremental.
@@ -271,7 +230,7 @@ interface ColumnInterface
      * @see notNull()
      * @psalm-mutation-free
      */
-    public function isNotNull(): bool|null;
+    public function isNotNull(): ?bool;
 
     /**
      * Whether this column is a part of primary key.
@@ -316,6 +275,8 @@ interface ColumnInterface
 
     /**
      * Converts the input value after retrieval from the database.
+     *
+     * @throws NotSupportedException
      */
     public function phpTypecast(mixed $value): mixed;
 
@@ -343,7 +304,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function reference(ForeignKey|null $reference): static;
+    public function reference(?ForeignKey $reference): static;
 
     /**
      * The scale is the number of digits to the right of the decimal point and is only meaningful when {@see type} is
@@ -355,7 +316,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function scale(int|null $scale): static;
+    public function scale(?int $scale): static;
 
     /**
      * The size refers to the number of characters or digits allowed in a column of a database table. The size is
@@ -368,7 +329,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function size(int|null $size): static;
+    public function size(?int $size): static;
 
     /**
      * The database type of the column.
@@ -414,5 +375,5 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function withName(string|null $name): static;
+    public function withName(?string $name): static;
 }

@@ -35,7 +35,6 @@ phpunit.phar
 # local phpunit config and cache
 /phpunit.xml
 /.phpunit.result.cache
-/tests/Support/runtime/
 
 # NPM packages
 /node_modules
@@ -47,3 +46,6 @@ c3.php
 
 # Docker
 docker/docker-compose.override.yml
+
+# PHP CS Fixer
+/.php-cs-fixer.cache

@@ -27,7 +27,7 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
  * Note: That since DataReader is a forward-only stream, you can only traverse it once. Doing it the second time will
  * throw an exception.
  *
- * @extends Iterator<int|string|null, array|false>
+ * @extends Iterator<int|string|null, array<string,mixed>|false>
  *
  * @psalm-import-type IndexBy from QueryInterface
  * @psalm-import-type ResultCallbackOne from QueryInterface
@@ -85,13 +85,14 @@ interface DataReaderInterface extends Iterator, Countable
      *
      * @psalm-param ResultCallbackOne|null $resultCallback
      */
-    public function resultCallback(Closure|null $resultCallback): static;
+    public function resultCallback(?Closure $resultCallback): static;
 
     /**
      * Sets the columns for type casting the query results.
      * Do not use this method if you want to get the raw data from the query.
      *
      * @param ColumnInterface[] $typecastColumns
+     * @psalm-param array<string,ColumnInterface> $typecastColumns
      */
     public function typecastColumns(array $typecastColumns): static;
 }

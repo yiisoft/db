@@ -2,6 +2,8 @@
 
 ## 2.0.0 under development
 
+- Chg #1091: Remove `SchemaInterface::findUniqueIndexes()` method (@vjik) 
+- Chg #1091: Remove `SchemaInterface::INDEX_*` and `SchemaInterface::TYPE_*` constants (@vjik)
 - Enh #996: Adapt summary data in debug collector (@rustamwin)
 - Chg #990: Delete `Yiisoft\Db\Exception\InvalidArgumentException` and `Yiisoft\Db\Exception\InvalidParamException` and
   use `\InvalidArgumentException` instead (@DikoIbragimov)
@@ -39,10 +41,10 @@
 - Enh #865: Raise minimum PHP version to `^8.1` with minor refactoring (@Tigrov, @vjik)
 - Enh #798: Allow `QueryInterface::one()` and `QueryInterface::all()` to return objects (@darkdef, @Tigrov)
 - Enh #872: Use `#[\SensitiveParameter]` attribute to mark sensitive parameters (@heap-s)
-- New #864, #897, #898, #950, #1009: Realize column factory (@Tigrov, @vjik)
+- New #864, #897, #898, #950, #1009, #1125: Realize column factory (@Tigrov, @vjik)
 - Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #877: Separate column type constants (@Tigrov)
-- New #878: Realize `ColumnBuilder` class (@Tigrov)
+- New #878, #1095: Realize `ColumnBuilder` class (@Tigrov, @vjik)
 - New #773: Add parameters `$ifExists` and `$cascade` to `CommandInterface::dropTable()` and
  `DDLQueryBuilderInterface::dropTable()` methods (@vjik)
 - New #878, #900, #914, #922: Implement `ColumnDefinitionParser` class (@Tigrov)
@@ -67,8 +69,8 @@
 - Enh #929: Refactor array, structured and JSON column type expressions and expression builders (@Tigrov)
 - Enh #929: Implement lazy arrays for array, structured and JSON column types (@Tigrov)
 - Bug #933: Explicitly mark nullable parameters (@vjik)
-- Chg #911: Change supported PHP versions to `8.1 - 8.4` (@Tigrov)
-- Enh #911, #940: Minor refactoring (@Tigrov)
+- Chg #911, #1113: Change supported PHP versions to `8.1 - 8.5` (@Tigrov, @vjik)
+- Enh #911, #940, #1116: Minor refactoring (@Tigrov)
 - Chg #938, #936, #937: Remove `ext-json`, `ext-ctype`, `ext-mbstring` from `require` section of `composer.json` (@Tigrov) 
 - Chg #936: Remove `hasLimit()` and `hasOffset()` methods from `AbstractDQLQueryBuilder` class (@Tigrov)
 - Chg #937: Remove `baseName()` and `pascalCaseToId()` methods from `DbStringHelper` (@Tigrov)
@@ -92,8 +94,8 @@
 - Enh #879: Rename `getLastInsertID()` method in `ConnectionInterface` to `getLastInsertId()` (@vjik)
 - New #967, #1059: Add `FOR` clause to query (@vjik)
 - Chg #972: Change in query "distinct" flag type from `bool|null` to `bool` (@vjik)
-- New #973, #976: Add `CommandInterface::upsertReturningPks()` method (@Tigrov)
-- New #973, #976: Add `upsertReturning()` method to `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
+- New #973, #976, #1081: Add `CommandInterface::upsertReturningPks()` method (@Tigrov, @vjik)
+- New #973, #976, #1081: Add `upsertReturning()` method to `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov, @vjik)
 - New #968: Add `DateTimeColumn` column class (@Tigrov)
 - Bug #978: Fix memory leaking in `Command::exists()` method (@Tigrov)
 - Chg #980: Add constructor with DB connection to `AbstractCommand` (@vjik)
@@ -103,7 +105,7 @@
 - New #984: Add `createQuery()` and `select()` methods to `ConnectionInterface` (@Tigrov)
 - Chg #985: Rename `insertWithReturningPks()` to `insertReturningPks()` in `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
 - Enh #992: Add optional type casting to `DataReaderInterface` using columns (@Tigrov)
-- New #988, #1053: Add `CaseExpression` and `CaseExpressionBuilder` to build `CASE-WHEN-THEN-ELSE` SQL expressions (@Tigrov)
+- New #988, #1053, #1067: Add `CaseX` and `CaseXBuilder` to build `CASE-WHEN-THEN-ELSE` SQL expressions (@Tigrov)
 - Enh #991: Improve types in `ConnectionInterface::transaction()` (@kikara)
 - Chg #998: Add `yiisoft/db-implementation` virtual package as dependency (@vjik)
 - Chg #999: Remove `requireTransaction()` method and `$isolationLevel` property from `AbstractCommand` (@vjik)
@@ -136,8 +138,10 @@
 - Enh #1031: Optimize SQL generation for `Not` condition (@vjik)
 - Chg #1037: Change result type of `QueryBuilderInterface::getExpressionBuilder()` and
   `DQLQueryBuilderInterface::getExpressionBuilder()` methods to `ExpressionBuilderInterface` (@vjik)
-- New #1029, #1048: Add functions as expressions (@Tigrov)
-- Enh #1042: Refactor `AbstractDMLQueryBuilder` class to `upsert()` method (@Tigrov)
+- New #1029, #1048, #1069: Add functions as expressions (@Tigrov)
+- Enh #1038: Add ability to pass `FROM` clause to `CommandInterface::update()` and `DMLQueryBuilderInterface::update()` methods (@rustamwin)
+- Enh #1038: Allow passing `ExpressionInterface` as condition in `CommandInterface::update()` and `DMLQueryBuilderInterface::update()` methods (@rustamwin)
+- Enh #1042, #1084: Refactor `AbstractDMLQueryBuilder` class to `upsert()` method (@Tigrov)
 - New #1040, #1043: Add `DateTimeValue` class (@vjik, @Tigrov)
 - Enh #1045: Support multi-operand functions in `CommandInterface::upsert()` and `DMLQueryBuilderInterface::upsert()` 
   methods (@Tigrov)
@@ -150,6 +154,33 @@
 - New #1057: Add `CompositeExpression` class (@vjik)
 - Chg #1058: Refactor `Expression` class: declare `$expression` and `$params` as public readonly properties, remove 
   `getParams()` method (@vjik)
+- New #1062: `Stringable` value support in `Like` and `NotLike` conditions (@vjik)
+- New #1063: Add `indexBy()` method to `BatchQueryResultInterface` and `BatchQueryResult` class (@vjik)
+- Chg #1063: `AbstractConnection::createBatchQueryResult()` passes parameters `indexBy` and `resultCallback` to
+  `BatchQueryResult` being created (@vjik)
+- Enh #1064: Remove duplicate code in favor of the `DbArrayHelper::normalizeExpressions()` method (@rustamwin)
+- Enh #1065: Allow to use table name as a column prefix in update queries (@Tigrov)
+- Enh #1068: Quote string values as column names when join condition is an associative array (@Tigrov)
+- Chg #1070: Change "IndexBy" closure signature to `Closure(array|object):int|string` (@vjik)
+- Enh #1072, #1077, #1078, #1079, #1080, #1085, #1087, #1096: Improve psalm types (@vjik)
+- New #1074: Add `ConnectionProvider` class (@Tigrov)
+- Chg #1075: Rename `Query::$join` property to `$joins` (@vjik)
+- New #1076: Allow to use expressions as table name or condition in "join" query methods (@vjik)
+- Chg #1078: Change type of `$tables` to `array` in `DQLQueryBuilderInterface::buildFrom()` (@vjik)
+- Chg #1083: Add `pdoStatementExecute()` protected method to `AbstractPdoCommand` class and cleanup `internalExecute()`
+  method (@vjik)
+- New #1082: Add `WithQuery` class that holds the information for a single "WITH" query clause (@vjik)
+- New #1082: Add `QueryPartsInterface::addWithQuery()` method (@vjik)
+- Chg #1082: `QueryPartsInterface::withQuery()` method replace "WITH" clause instead of adding before (@vjik)
+- Enh #1092: Change the exceptions thrown to be more appropriate (@Tigrov)
+- Bug #1099: Fix an issue where `AbstractSchema::refresh()` didn't completely clear cache (@vjik) 
+- Bug #1103: Fix view names' cache refreshing after "drop table" command execution (@vjik)
+- Chg #1103: Remove `AbstractCommand::refreshTableSchema()` method (@vjik)
+- Chg #1106: Remove parameters from `PdoConnectionInterface::getActivePdo()` method (@vjik)
+- Bug #1109: Fix column definition parsing in cases with brackets and escaped quotes (@vjik)
+- New #1107: Add abstract enumeration column type (@vjik)
+- Bug #1115: Do not reset `$retryHandler` property on `AbstractCommand::reset()` method call (@Tigrov)
+- New #1124: Add source of column information (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

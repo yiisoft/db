@@ -43,7 +43,7 @@ class DoubleColumn extends AbstractColumn
         };
     }
 
-    public function phpTypecast(mixed $value): float|null
+    public function phpTypecast(mixed $value): ?float
     {
         if ($value === null) {
             return null;

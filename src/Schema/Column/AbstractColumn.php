@@ -61,7 +61,6 @@ abstract class AbstractColumn implements ColumnInterface
      * @param string|null $comment The column's comment.
      * @param bool $computed Whether the column is a computed column.
      * @param string|null $dbType The column's database type.
-     * @param array|null $enumValues The list of possible values for an ENUM column.
      * @param string|null $extra Any extra information that needs to be appended to the column's definition.
      * @param bool $primaryKey Whether the column is a primary key.
      * @param string|null $name The column's name.
@@ -77,20 +76,19 @@ abstract class AbstractColumn implements ColumnInterface
      * @psalm-param array<string, mixed> $args
      */
     public function __construct(
-        string|null $type = null,
+        ?string $type = null,
         private bool $autoIncrement = false,
-        private string|null $check = null,
-        private string|null $comment = null,
+        private ?string $check = null,
+        private ?string $comment = null,
         private bool $computed = false,
-        private string|null $dbType = null,
-        private array|null $enumValues = null,
-        private string|null $extra = null,
+        private ?string $dbType = null,
+        private ?string $extra = null,
         private bool $primaryKey = false,
-        private string|null $name = null,
-        private bool|null $notNull = null,
-        private ForeignKey|null $reference = null,
-        private int|null $scale = null,
-        private int|null $size = null,
+        private ?string $name = null,
+        private ?bool $notNull = null,
+        private ?ForeignKey $reference = null,
+        private ?int $scale = null,
+        private ?int $size = null,
         private bool $unique = false,
         private bool $unsigned = false,
         mixed ...$args,
@@ -102,21 +100,12 @@ abstract class AbstractColumn implements ColumnInterface
             unset($args['defaultValue']);
         }
 
-        /** @var array<string, mixed> $args */
+        /** @psalm-var array<string, mixed> $args */
         foreach ($args as $property => $value) {
             if (property_exists($this, $property)) {
                 $this->$property = $value;
             }
         }
-    }
-
-    /**
-     * @deprecated Use {@see notNull()} instead. Will be removed in version 2.0.
-     */
-    public function allowNull(bool $allowNull = true): static
-    {
-        $this->notNull(!$allowNull);
-        return $this;
     }
 
     public function autoIncrement(bool $autoIncrement = true): static
@@ -125,13 +114,13 @@ abstract class AbstractColumn implements ColumnInterface
         return $this;
     }
 
-    public function check(string|null $check): static
+    public function check(?string $check): static
     {
         $this->check = $check;
         return $this;
     }
 
-    public function comment(string|null $comment): static
+    public function comment(?string $comment): static
     {
         $this->comment = $comment;
         return $this;
@@ -143,7 +132,7 @@ abstract class AbstractColumn implements ColumnInterface
         return $this;
     }
 
-    public function dbType(string|null $dbType): static
+    public function dbType(?string $dbType): static
     {
         $this->dbType = $dbType;
         return $this;
@@ -155,32 +144,26 @@ abstract class AbstractColumn implements ColumnInterface
         return $this;
     }
 
-    public function enumValues(array|null $enumValues): static
-    {
-        $this->enumValues = $enumValues;
-        return $this;
-    }
-
-    public function extra(string|null $extra): static
+    public function extra(?string $extra): static
     {
         $this->extra = $extra;
         return $this;
     }
 
     /** @psalm-mutation-free */
-    public function getCheck(): string|null
+    public function getCheck(): ?string
     {
         return $this->check;
     }
 
     /** @psalm-mutation-free */
-    public function getComment(): string|null
+    public function getComment(): ?string
     {
         return $this->comment;
     }
 
     /** @psalm-mutation-free */
-    public function getDbType(): string|null
+    public function getDbType(): ?string
     {
         return $this->dbType;
     }
@@ -192,37 +175,31 @@ abstract class AbstractColumn implements ColumnInterface
     }
 
     /** @psalm-mutation-free */
-    public function getEnumValues(): array|null
-    {
-        return $this->enumValues;
-    }
-
-    /** @psalm-mutation-free */
-    public function getExtra(): string|null
+    public function getExtra(): ?string
     {
         return $this->extra;
     }
 
     /** @psalm-mutation-free */
-    public function getName(): string|null
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /** @psalm-mutation-free */
-    public function getReference(): ForeignKey|null
+    public function getReference(): ?ForeignKey
     {
         return $this->reference;
     }
 
     /** @psalm-mutation-free */
-    public function getScale(): int|null
+    public function getScale(): ?int
     {
         return $this->scale;
     }
 
     /** @psalm-mutation-free */
-    public function getSize(): int|null
+    public function getSize(): ?int
     {
         return $this->size;
     }
@@ -239,15 +216,6 @@ abstract class AbstractColumn implements ColumnInterface
         return property_exists($this, 'defaultValue');
     }
 
-    /**
-     * @deprecated Use {@see isNotNull()} instead. Will be removed in version 2.0.
-     * @psalm-mutation-free
-     */
-    public function isAllowNull(): bool
-    {
-        return !$this->isNotNull();
-    }
-
     /** @psalm-mutation-free */
     public function isAutoIncrement(): bool
     {
@@ -261,7 +229,7 @@ abstract class AbstractColumn implements ColumnInterface
     }
 
     /** @psalm-mutation-free */
-    public function isNotNull(): bool|null
+    public function isNotNull(): ?bool
     {
         return $this->notNull;
     }
@@ -284,16 +252,7 @@ abstract class AbstractColumn implements ColumnInterface
         return $this->unsigned;
     }
 
-    /**
-     * @deprecated Will be removed in version 2.0.
-     */
-    public function name(string|null $name): static
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    public function notNull(bool|null $notNull = true): static
+    public function notNull(?bool $notNull = true): static
     {
         $this->notNull = $notNull;
         return $this;
@@ -311,19 +270,19 @@ abstract class AbstractColumn implements ColumnInterface
         return $this;
     }
 
-    public function reference(ForeignKey|null $reference): static
+    public function reference(?ForeignKey $reference): static
     {
         $this->reference = $reference;
         return $this;
     }
 
-    public function scale(int|null $scale): static
+    public function scale(?int $scale): static
     {
         $this->scale = $scale;
         return $this;
     }
 
-    public function size(int|null $size): static
+    public function size(?int $size): static
     {
         $this->size = $size;
         return $this;
@@ -347,7 +306,7 @@ abstract class AbstractColumn implements ColumnInterface
         return $this;
     }
 
-    public function withName(string|null $name): static
+    public function withName(?string $name): static
     {
         $new = clone $this;
         $new->name = $name;

@@ -11,8 +11,6 @@ use function array_key_exists;
 use function is_string;
 
 /**
- * @internal
- *
  * Abstract condition that represents comparison operators.
  */
 abstract class AbstractCompare implements ConditionInterface
@@ -23,9 +21,8 @@ abstract class AbstractCompare implements ConditionInterface
      */
     final public function __construct(
         public readonly string|ExpressionInterface $column,
-        public readonly mixed $value
-    ) {
-    }
+        public readonly mixed $value,
+    ) {}
 
     /**
      * Creates a condition based on the given operator and operands.

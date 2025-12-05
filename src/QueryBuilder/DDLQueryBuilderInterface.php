@@ -122,6 +122,8 @@ interface DDLQueryBuilderInterface
      *
      * @return string The SQL statement for adding a foreign key constraint to an existing table.
      *
+     * @psalm-param array<ExpressionInterface|string>|string $columns
+     * @psalm-param array<ExpressionInterface|string>|string $referenceColumns
      * @psalm-param ReferentialAction::*|null $delete
      * @psalm-param ReferentialAction::*|null $update
      */
@@ -131,8 +133,8 @@ interface DDLQueryBuilderInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string|null $delete = null,
-        string|null $update = null
+        ?string $delete = null,
+        ?string $update = null,
     ): string;
 
     /**
@@ -140,7 +142,7 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table to add the primary key constraint will to.
      * @param string $name The name of the primary key constraint.
-     * @param array|string $columns Comma separated string or array of columns that the primary key will consist of.
+     * @param string|string[] $columns Comma separated string or array of columns that the primary key will consist of.
      *
      * @return string The SQL statement for adding a primary key constraint to an existing table.
      *
@@ -153,7 +155,7 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table to add the unique constraint to.
      * @param string $name The name of the unique constraint.
-     * @param array|string $columns The name of the column to add the constraint on. If there are many
+     * @param string|string[] $columns The name of the column to add the constraint on. If there are many
      * columns, separate them with commas.
      *
      * @return string The SQL statement for adding a unique constraint to an existing table.
@@ -217,6 +219,7 @@ interface DDLQueryBuilderInterface
      *
      * @return string The SQL statement for creating a new index.
      *
+     * @psalm-param array<ExpressionInterface|string>|string $columns
      * @psalm-param IndexType::*|null $indexType
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
@@ -226,7 +229,7 @@ interface DDLQueryBuilderInterface
         string $name,
         array|string $columns,
         ?string $indexType = null,
-        ?string $indexMethod = null
+        ?string $indexMethod = null,
     ): string;
 
     /**

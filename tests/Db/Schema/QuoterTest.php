@@ -5,20 +5,15 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Schema;
 
 use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Quoter;
-use Yiisoft\Db\Tests\AbstractQuoterTest;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
-final class QuoterTest extends AbstractQuoterTest
+final class QuoterTest extends TestCase
 {
-    use TestTrait;
-
     public function testQuoteSimpleColumnNameWithStartingCharacterEndingCharacterEquals(): void
     {
         $quoter = new Quoter('`', '`');
@@ -56,7 +51,7 @@ final class QuoterTest extends AbstractQuoterTest
     {
         $this->assertEquals(
             $expected,
-            (new Quoter('"', '"'))->cleanUpTableNames($tables)
+            (new Quoter('"', '"'))->cleanUpTableNames($tables),
         );
     }
 

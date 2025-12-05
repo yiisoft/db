@@ -7,8 +7,9 @@ namespace Yiisoft\Db\Tests\Provider;
 use ArrayIterator;
 use DateTimeImmutable;
 use DateTimeZone;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Expression\Statement\When;
+use Yiisoft\Db\Expression\Statement\WhenThen;
 use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\Function\ArrayMerge;
 use Yiisoft\Db\Expression\Value\Param;
@@ -27,9 +28,9 @@ use Yiisoft\Db\Expression\Function\Shortest;
 use Yiisoft\Db\Expression\Value\JsonValue;
 use Yiisoft\Db\Expression\Value\Value;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\All;
 use Yiisoft\Db\QueryBuilder\Condition\Between;
+use Yiisoft\Db\QueryBuilder\Condition\Equals;
 use Yiisoft\Db\QueryBuilder\Condition\In;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
@@ -47,16 +48,12 @@ use Yiisoft\Db\Tests\Support\IntEnum;
 use Yiisoft\Db\Tests\Support\JsonSerializableObject;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\StringEnum;
-use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
 use function fopen;
 
 class QueryBuilderProvider
 {
-    use TestTrait;
-
-    protected static string $driverName = 'db';
     protected static string $likeEscapeCharSql = '';
     protected static array $likeParameterReplacements = [];
 
@@ -75,11 +72,7 @@ class QueryBuilderProvider
                 'C_id_1',
                 ReferentialAction::CASCADE,
                 ReferentialAction::CASCADE,
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]]) REFERENCES [[$pkTableName]] ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE
-                    SQL
-                ),
+                "ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]]) REFERENCES [[$pkTableName]] ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE",
             ],
             'add (2 columns)' => [
                 $name,
@@ -89,11 +82,7 @@ class QueryBuilderProvider
                 'C_id_1, C_id_2',
                 ReferentialAction::CASCADE,
                 ReferentialAction::CASCADE,
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]]) REFERENCES [[$pkTableName]] ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE
-                    SQL
-                ),
+                "ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]]) REFERENCES [[$pkTableName]] ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE",
             ],
         ];
     }
@@ -108,21 +97,13 @@ class QueryBuilderProvider
                 $name,
                 $tableName,
                 'C_id_1',
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]])
-                    SQL
-                ),
+                "ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]])",
             ],
             'add (2 columns)' => [
                 $name,
                 $tableName,
                 'C_id_1, C_id_2',
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]], [[C_id_2]])
-                    SQL
-                ),
+                "ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]], [[C_id_2]])",
             ],
         ];
     }
@@ -139,21 +120,13 @@ class QueryBuilderProvider
                 $name1,
                 $tableName1,
                 'C_unique_1',
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[$tableName1]] ADD CONSTRAINT [[$name1]] UNIQUE ([[C_unique_1]])
-                    SQL
-                ),
+                "ALTER TABLE [[$tableName1]] ADD CONSTRAINT [[$name1]] UNIQUE ([[C_unique_1]])",
             ],
             'add (2 columns)' => [
                 $name2,
                 $tableName2,
                 'C_unique_1, C_unique_2',
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[$tableName2]] ADD CONSTRAINT [[$name2]] UNIQUE ([[C_unique_1]], [[C_unique_2]])
-                    SQL
-                ),
+                "ALTER TABLE [[$tableName2]] ADD CONSTRAINT [[$name2]] UNIQUE ([[C_unique_1]], [[C_unique_2]])",
             ],
         ];
     }
@@ -172,11 +145,7 @@ class QueryBuilderProvider
                 'customer',
                 [['test@example.com', 'silverfire', 'Kyiv {{city}}, Ukraine']],
                 ['email', 'name', 'address'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES (:qp0, :qp1, :qp2)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES (:qp0, :qp1, :qp2)',
                 'expectedParams' => [
                     ':qp0' => new Param('test@example.com', DataType::STRING),
                     ':qp1' => new Param('silverfire', DataType::STRING),
@@ -187,11 +156,7 @@ class QueryBuilderProvider
                 'customer',
                 [["SQL-danger chars are escaped: '); --"]],
                 ['address'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[customer]] ([[address]]) VALUES (:qp0)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[customer]] ([[address]]) VALUES (:qp0)',
                 'expectedParams' => [':qp0' => new Param("SQL-danger chars are escaped: '); --", DataType::STRING)],
             ],
             'customer2' => [
@@ -204,55 +169,35 @@ class QueryBuilderProvider
                 'customer',
                 [['no columns passed']],
                 [],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[customer]] VALUES (:qp0)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[customer]] VALUES (:qp0)',
                 'expectedParams' => [':qp0' => new Param('no columns passed', DataType::STRING)],
             ],
             'bool-false, bool2-null' => [
                 'type',
                 [[false, null]],
                 ['bool_col', 'bool_col2'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (FALSE, NULL)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (FALSE, NULL)',
                 'expectedParams' => [],
             ],
             'wrong' => [
                 '{{%type}}',
                 [[null, new Expression('now()')], [null, new Expression('now()')]],
                 ['{{%type}}.[[float_col]]', '[[time]]'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO {{%type}} ([[float_col]], [[time]]) VALUES (NULL, now()), (NULL, now())
-                    SQL
-                ),
+                'expected' => 'INSERT INTO {{%type}} ([[float_col]], [[time]]) VALUES (NULL, now()), (NULL, now())',
                 'expectedParams' => [],
             ],
             'bool-false, time-now()' => [
                 '{{%type}}',
                 [[false, new Expression('now()')]],
                 ['{{%type}}.[[bool_col]]', '[[time]]'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO {{%type}} ([[bool_col]], [[time]]) VALUES (FALSE, now())
-                    SQL
-                ),
+                'expected' => 'INSERT INTO {{%type}} ([[bool_col]], [[time]]) VALUES (FALSE, now())',
                 'expectedParams' => [],
             ],
             'column table names are not checked' => [
                 '{{%type}}',
                 [[true, false]],
                 ['{{%type}}.[[bool_col]]', '{{%another_table}}.[[bool_col2]]'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO {{%type}} ([[bool_col]], [[bool_col2]]) VALUES (TRUE, FALSE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO {{%type}} ([[bool_col]], [[bool_col2]]) VALUES (TRUE, FALSE)',
                 'expectedParams' => [],
             ],
             'empty-sql' => [
@@ -269,11 +214,7 @@ class QueryBuilderProvider
                 'non_exists_table',
                 [['1.0', '2', 10, 1]],
                 [],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[non_exists_table]] VALUES (:qp0, :qp1, 10, 1)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[non_exists_table]] VALUES (:qp0, :qp1, 10, 1)',
                 'expectedParams' => [
                     ':qp0' => new Param('1.0', DataType::STRING),
                     ':qp1' => new Param('2', DataType::STRING),
@@ -284,7 +225,7 @@ class QueryBuilderProvider
 
     public static function buildCondition(): array
     {
-        $conditions = [
+        return [
             /* empty values */
             [['like', 'name', []], '0=1', []],
             [['not like', 'name', []], '', []],
@@ -302,9 +243,9 @@ class QueryBuilderProvider
             [['not', '0'], 'NOT (0)', []],
             [['not', 'name'], 'NOT (name)', []],
             [
-                [
+                static fn(ConnectionInterface $db) => [
                     'not',
-                    (new Query(static::getDb()))->select('exists')->from('some_table'),
+                    $db->select('exists')->from('some_table'),
                 ],
                 'NOT ((SELECT [[exists]] FROM [[some_table]]))',
                 [],
@@ -334,12 +275,12 @@ class QueryBuilderProvider
             [new Not(['>', 'score', 50]), '[[score]] <= 50', []],
             [new Not(['>=', 'score', 50]), '[[score]] < 50', []],
             [
-                new Not(['exists', (new Query(static::getDb()))->select('id')->from('users')]),
+                static fn(ConnectionInterface $db) => new Not(['exists', $db->select('id')->from('users')]),
                 'NOT EXISTS (SELECT [[id]] FROM [[users]])',
                 [],
             ],
             [
-                new Not(['not exists', (new Query(static::getDb()))->select('id')->from('users')]),
+                static fn(ConnectionInterface $db) => new Not(['not exists', $db->select('id')->from('users')]),
                 'EXISTS (SELECT [[id]] FROM [[users]])',
                 [],
             ],
@@ -354,10 +295,10 @@ class QueryBuilderProvider
             [['and', 'type=1', ['or', 'id=1', 'id=2']], '(type=1) AND ((id=1) OR (id=2))', []],
             [['and', 'id=1', new Expression('id=:qp0', [':qp0' => 2])], '(id=1) AND (id=:qp0)', [':qp0' => 2]],
             'and-subquery' => [
-                [
+                static fn(ConnectionInterface $db) => [
                     'and',
                     ['expired' => false],
-                    (new Query(static::getDb()))->select('count(*) > 1')->from('queue'),
+                    $db->select('count(*) > 1')->from('queue'),
                 ],
                 '([[expired]] = FALSE) AND ((SELECT count(*) > 1 FROM [[queue]]))',
                 [],
@@ -414,19 +355,19 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                new NotBetween(
+                static fn(ConnectionInterface $db) => new NotBetween(
                     new Expression('NOW()'),
-                    (new Query(static::getDb()))->select('min_date')->from('some_table'),
+                    $db->select('min_date')->from('some_table'),
                     new ColumnName('max_date'),
                 ),
                 'NOW() NOT BETWEEN (SELECT [[min_date]] FROM [[some_table]]) AND [[max_date]]',
                 [],
             ],
             [
-                new NotBetween(
+                static fn(ConnectionInterface $db) => new NotBetween(
                     new Expression('NOW()'),
                     new Expression('min_date'),
-                    (new Query(static::getDb()))->select('max_date')->from('some_table'),
+                    $db->select('max_date')->from('some_table'),
                 ),
                 'NOW() NOT BETWEEN min_date AND (SELECT [[max_date]] FROM [[some_table]])',
                 [],
@@ -434,7 +375,7 @@ class QueryBuilderProvider
 
             /* in */
             [
-                ['in', 'id', [1, 2, (new Query(static::getDb()))->select('three')->from('digits')]],
+                static fn(ConnectionInterface $db) => ['in', 'id', [1, 2, $db->select('three')->from('digits')]],
                 '[[id]] IN (1, 2, (SELECT [[three]] FROM [[digits]]))',
                 [],
             ],
@@ -444,19 +385,19 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                [
+                static fn(ConnectionInterface $db) => [
                     'in',
                     'id',
-                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    $db->select('id')->from('users')->where(['active' => 1]),
                 ],
                 '[[id]] IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
             ],
             [
-                [
+                static fn(ConnectionInterface $db) => [
                     'not in',
                     'id',
-                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    $db->select('id')->from('users')->where(['active' => 1]),
                 ],
                 '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
@@ -542,9 +483,9 @@ class QueryBuilderProvider
             [new In([], [1]), '0=1', []],
             'inCondition-custom-1' => [new In(['id', 'name'], []), '0=1', []],
             'inCondition-custom-2' => [
-                new In(
+                static fn(ConnectionInterface $db) => new In(
                     ['id'],
-                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    $db->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '([[id]]) IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
@@ -565,9 +506,9 @@ class QueryBuilderProvider
                 [':qp0' => new Param('John Doe', DataType::STRING)],
             ],
             'inCondition-custom-6' => [
-                new In(
+                static fn(ConnectionInterface $db) => new In(
                     [new Expression('id')],
-                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    $db->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '(id) IN (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
@@ -575,17 +516,17 @@ class QueryBuilderProvider
 
             /* exists */
             [
-                [
+                static fn(ConnectionInterface $db) => [
                     'exists',
-                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    $db->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
             ],
             [
-                [
+                static fn(ConnectionInterface $db) => [
                     'not exists',
-                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    $db->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'NOT EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]] = 1)',
                 [],
@@ -610,10 +551,10 @@ class QueryBuilderProvider
                 [':month' => 2],
             ],
             [
-                [
+                static fn(ConnectionInterface $db) => [
                     '=',
                     'date',
-                    (new Query(static::getDb()))->select('max(date)')->from('test')->where(['id' => 5]),
+                    $db->select('max(date)')->from('test')->where(['id' => 5]),
                 ],
                 '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]] = 5)',
                 [],
@@ -627,7 +568,7 @@ class QueryBuilderProvider
                 [':qp0' => new Param('2019-08-01', DataType::STRING)],
             ],
             [
-                ['=', (new Query(static::getDb()))->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
+                static fn(ConnectionInterface $db) => ['=', $db->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
                 '(SELECT COUNT(*) FROM [[test]] WHERE [[id]] = 6) = 0',
                 [],
             ],
@@ -677,18 +618,11 @@ class QueryBuilderProvider
                 [],
             ],
         ];
-
-        /* adjust dbms specific escaping */
-        foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = static::replaceQuotes($condition[1]);
-        }
-
-        return $conditions;
     }
 
     public static function buildFilterCondition(): array
     {
-        $conditions = [
+        return [
             /* like */
             [['like', 'name', []], '', []],
             [['not like', 'name', []], '', []],
@@ -725,13 +659,6 @@ class QueryBuilderProvider
             [['<>', 'a', ''], '', []],
             [['!=', 'a', ''], '', []],
         ];
-
-        /* adjust dbms specific escaping */
-        foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = static::replaceQuotes($condition[1]);
-        }
-
-        return $conditions;
     }
 
     public static function buildFrom(): array
@@ -739,19 +666,11 @@ class QueryBuilderProvider
         return [
             [
                 'table1',
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[table1]]
-                    SQL
-                ),
+                'SELECT * FROM [[table1]]',
             ],
             [
                 ['table1'],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[table1]]
-                    SQL
-                ),
+                'SELECT * FROM [[table1]]',
             ],
             [
                 new Expression('table2'),
@@ -767,27 +686,15 @@ class QueryBuilderProvider
             ],
             [
                 ['alias' => 'table3'],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[table3]] [[alias]]
-                    SQL
-                ),
+                'SELECT * FROM [[table3]] [[alias]]',
             ],
             [
                 ['alias' => new Expression('table4')],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM table4 [[alias]]
-                    SQL
-                ),
+                'SELECT * FROM table4 [[alias]]',
             ],
             [
                 ['alias' => new Expression('func(:param1, :param2)', ['param1' => 'A', 'param2' => 'B'])],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM func(:param1, :param2) [[alias]]
-                    SQL
-                ),
+                'SELECT * FROM func(:param1, :param2) [[alias]]',
                 ['param1' => 'A', 'param2' => 'B'],
             ],
         ];
@@ -867,7 +774,7 @@ class QueryBuilderProvider
             ],
 
             /**
-             * {@see https://github.com/yiisoft/yii2/issues/15630}
+             * @see https://github.com/yiisoft/yii2/issues/15630
              */
             [
                 ['like', 'location.title_ru', 'vi%', 'escape' => false, 'mode' => LikeMode::Custom],
@@ -934,8 +841,6 @@ class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = static::replaceQuotes($condition[1]);
-
             if (static::$likeEscapeCharSql !== '') {
                 preg_match_all('/(?P<condition>LIKE.+?)( AND| OR|$)/', $conditions[$i][1], $matches, PREG_SET_ORDER);
 
@@ -943,7 +848,7 @@ class QueryBuilderProvider
                     $conditions[$i][1] = str_replace(
                         $match['condition'],
                         $match['condition'] . static::$likeEscapeCharSql,
-                        $conditions[$i][1]
+                        $conditions[$i][1],
                     );
                 }
             }
@@ -952,7 +857,7 @@ class QueryBuilderProvider
                 $conditions[$i][2][$name] = $conditions[$i][2][$name] instanceof Param
                     ? new Param(
                         strtr($conditions[$i][2][$name]->value, static::$likeParameterReplacements),
-                        DataType::STRING
+                        DataType::STRING,
                     )
                     : strtr($conditions[$i][2][$name], static::$likeParameterReplacements);
             }
@@ -966,11 +871,11 @@ class QueryBuilderProvider
         return [
             [
                 'exists',
-                static::replaceQuotes('SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])'),
+                'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
             ],
             [
                 'not exists',
-                static::replaceQuotes('SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])'),
+                'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
             ],
         ];
     }
@@ -1030,11 +935,7 @@ class QueryBuilderProvider
             'base' => [
                 'user',
                 ['is_enabled' => false, 'power' => new Expression('WRONG_POWER()')],
-                static::replaceQuotes(
-                    <<<SQL
-                    DELETE FROM [[user]] WHERE ([[is_enabled]] = FALSE) AND ([[power]] = WRONG_POWER())
-                    SQL
-                ),
+                'DELETE FROM [[user]] WHERE ([[is_enabled]] = FALSE) AND ([[power]] = WRONG_POWER())',
                 [],
             ],
         ];
@@ -1053,11 +954,7 @@ class QueryBuilderProvider
                     'related_id' => null,
                 ],
                 [],
-                static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) VALUES (:qp0, :qp1, :qp2, FALSE, NULL)
-                    SQL
-                ),
+                'INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) VALUES (:qp0, :qp1, :qp2, FALSE, NULL)',
                 [
                     ':qp0' => new Param('test@example.com', DataType::STRING),
                     ':qp1' => new Param('silverfire', DataType::STRING),
@@ -1068,11 +965,7 @@ class QueryBuilderProvider
                 '{{%type}}',
                 ['{{%type}}.[[related_id]]' => null, 'time' => new Expression('now()')],
                 [],
-                static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO {{%type}} ([[related_id]], [[time]]) VALUES (NULL, now())
-                    SQL
-                ),
+                'INSERT INTO {{%type}} ([[related_id]], [[time]]) VALUES (NULL, now())',
                 [],
             ],
             'carry passed params' => [
@@ -1086,11 +979,7 @@ class QueryBuilderProvider
                     'col' => new Expression('CONCAT(:phFoo, :phBar)', [':phFoo' => 'foo']),
                 ],
                 [':phBar' => 'bar'],
-                static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]], [[col]]) VALUES (:qp1, :qp2, :qp3, FALSE, NULL, CONCAT(:phFoo, :phBar))
-                    SQL
-                ),
+                'INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]], [[col]]) VALUES (:qp1, :qp2, :qp3, FALSE, NULL, CONCAT(:phFoo, :phBar))',
                 [
                     ':phBar' => 'bar',
                     ':qp1' => new Param('test@example.com', DataType::STRING),
@@ -1101,8 +990,8 @@ class QueryBuilderProvider
             ],
             'carry passed params (query)' => [
                 'customer',
-                (new Query(static::getDb()))
-                    ->select(['email', 'name', 'address', 'is_active', 'related_id'])
+                static fn(ConnectionInterface $db) => $db
+                    ->select(['email', 'customer.name', 'address', 'is_active', 'related_id'])
                     ->from('customer')
                     ->where(
                         [
@@ -1115,11 +1004,7 @@ class QueryBuilderProvider
                         ],
                     ),
                 [':phBar' => 'bar'],
-                static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) SELECT [[email]], [[name]], [[address]], [[is_active]], [[related_id]] FROM [[customer]] WHERE ([[email]] = :qp1) AND ([[name]] = :qp2) AND ([[address]] = :qp3) AND ([[is_active]] = FALSE) AND ([[related_id]] IS NULL) AND ([[col]] = CONCAT(:phFoo, :phBar))
-                    SQL
-                ),
+                'INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) SELECT [[email]], [[customer]].[[name]], [[address]], [[is_active]], [[related_id]] FROM [[customer]] WHERE ([[email]] = :qp1) AND ([[name]] = :qp2) AND ([[address]] = :qp3) AND ([[is_active]] = FALSE) AND ([[related_id]] IS NULL) AND ([[col]] = CONCAT(:phFoo, :phBar))',
                 [
                     ':phBar' => 'bar',
                     ':qp1' => new Param('test@example.com', DataType::STRING),
@@ -1132,16 +1017,12 @@ class QueryBuilderProvider
                 'customer',
                 [],
                 [],
-                static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[customer]] DEFAULT VALUES
-                    SQL
-                ),
+                'INSERT INTO [[customer]] DEFAULT VALUES',
                 [],
             ],
             'query' => [
                 'customer',
-                (new Query(static::getDb()))
+                static fn(ConnectionInterface $db) => $db
                     ->select([new Expression('email as email'), new Expression('name')])
                     ->from('customer')
                     ->where(
@@ -1150,11 +1031,7 @@ class QueryBuilderProvider
                         ],
                     ),
                 [],
-                static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[customer]] ([[email]], [[name]]) SELECT email as email, name FROM [[customer]] WHERE [[email]] = :qp0
-                    SQL
-                ),
+                'INSERT INTO [[customer]] ([[email]], [[name]]) SELECT email as email, name FROM [[customer]] WHERE [[email]] = :qp0',
                 [
                     ':qp0' => new Param('test@example.com', DataType::STRING),
                 ],
@@ -1165,11 +1042,7 @@ class QueryBuilderProvider
                     'json_col' => new JsonValue(['c' => 1, 'd' => 2]),
                 ],
                 [],
-                static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[json_type]] ([[json_col]]) VALUES (:qp0)
-                    SQL
-                ),
+                'INSERT INTO [[json_type]] ([[json_col]]) VALUES (:qp0)',
                 [
                     ':qp0' => new Param('{"c":1,"d":2}', DataType::STRING),
                 ],
@@ -1188,14 +1061,14 @@ class QueryBuilderProvider
     {
         return [
             'int' => [1, 'SELECT 1'],
-            'string' => ['custom_string', static::replaceQuotes('SELECT [[custom_string]]')],
+            'string' => ['custom_string', 'SELECT [[custom_string]]'],
             'true' => [true, 'SELECT TRUE'],
             'false' => [false, 'SELECT FALSE'],
             'float' => [12.34, 'SELECT 12.34'],
             'array' => [[1, true, 12.34], 'SELECT 1, TRUE, 12.34'],
             'string keys' => [
                 ['a' => 1, 'b' => true, 12.34],
-                static::replaceQuotes('SELECT 1 AS [[a]], TRUE AS [[b]], 12.34'),
+                'SELECT 1 AS [[a]], TRUE AS [[b]], 12.34',
             ],
         ];
     }
@@ -1207,12 +1080,9 @@ class QueryBuilderProvider
                 '{{table}}',
                 ['name' => '{{test}}'],
                 [],
+                null,
                 [],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp0
-                    SQL
-                ),
+                'UPDATE [[table]] SET [[name]]=:qp0',
                 [
                     ':qp0' => new Param('{{test}}', DataType::STRING),
                 ],
@@ -1221,26 +1091,86 @@ class QueryBuilderProvider
                 '{{table}}',
                 ['name' => '{{test}}'],
                 ['id' => 1],
+                null,
                 [],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]] = 1
-                    SQL
-                ),
+                'UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]] = 1',
                 [
                     ':qp0' => new Param('{{test}}', DataType::STRING),
+                ],
+            ],
+            'from table' => [
+                '{{table}}',
+                ['name' => '{{tmp}}.{{name}}'],
+                [],
+                'tmp',
+                [],
+                'UPDATE [[table]] SET [[name]]=:qp0 FROM [[tmp]]',
+                [
+                    ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
+                ],
+            ],
+            'from array' => [
+                '{{table}}',
+                ['name' => '{{tmp}}.{{name}}'],
+                [],
+                ['tmp'],
+                [],
+                'UPDATE [[table]] SET [[name]]=:qp0 FROM [[tmp]]',
+                [
+                    ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
+                ],
+            ],
+            'from table w/ condition' => [
+                '{{table}}',
+                ['name' => '{{tmp}}.{{name}}'],
+                ['id' => 1],
+                'tmp',
+                [],
+                'UPDATE [[table]] SET [[name]]=:qp0 FROM [[tmp]] WHERE [[id]] = 1',
+                [
+                    ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
+                ],
+            ],
+            'from expression' => [
+                '{{table}}',
+                ['name' => '{{tmp}}.{{name}}'],
+                [],
+                new Expression('(SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1)'),
+                [],
+                'UPDATE [[table]] SET [[name]]=:qp0 FROM (SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1)',
+                [
+                    ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
+                ],
+            ],
+            'from query' => [
+                '{{table}}',
+                ['name' => '{{tmp}}.{{name}}'],
+                [],
+                static fn(ConnectionInterface $db) => [$db->select('name')->from('tmp')->where(['id' => 1])],
+                [],
+                'UPDATE [[table]] SET [[name]]=:qp0 FROM (SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1) [[0]]',
+                [
+                    ':qp0' => new Param('{{tmp}}.{{name}}', DataType::STRING),
+                ],
+            ],
+            'from query w/ alias' => [
+                '{{table}}',
+                ['name' => '{{tmp}}'],
+                [],
+                static fn(ConnectionInterface $db) => ['tmp' => $db->select('name')->from('tmp')->where(['id' => 1])],
+                [],
+                'UPDATE [[table]] SET [[name]]=:qp0 FROM (SELECT [[name]] FROM [[tmp]] WHERE [[id]] = 1) [[tmp]]',
+                [
+                    ':qp0' => new Param('{{tmp}}', DataType::STRING),
                 ],
             ],
             [
                 '{{table}}',
                 ['{{table}}.name' => '{{test}}'],
                 ['id' => 1],
+                null,
                 ['id' => 'boolean'],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]] = 1
-                    SQL
-                ),
+                'UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]] = 1',
                 [
                     'id' => 'boolean',
                     ':qp1' => new Param('{{test}}', DataType::STRING),
@@ -1250,58 +1180,43 @@ class QueryBuilderProvider
                 'customer',
                 ['status' => 1, 'updated_at' => new Expression('now()')],
                 ['id' => 100],
+                null,
                 [],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[customer]] SET [[status]]=1, [[updated_at]]=now() WHERE [[id]] = 100
-                    SQL
-                ),
+                'UPDATE [[customer]] SET [[status]]=1, [[updated_at]]=now() WHERE [[id]] = 100',
             ],
             'Expressions without params' => [
                 '{{product}}',
                 ['name' => new Expression('UPPER([[name]])')],
                 '[[name]] = :name',
+                null,
                 ['name' => new Expression('LOWER([[name]])')],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER([[name]])
-                    SQL
-                ),
+                'UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER([[name]])',
             ],
             'Expression with params and without params' => [
                 '{{product}}',
                 ['price' => new Expression('[[price]] + :val', [':val' => 1])],
                 '[[start_at]] < :date',
+                null,
                 ['date' => new Expression('NOW()')],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[product]] SET [[price]]=[[price]] + :val WHERE [[start_at]] < NOW()
-                    SQL
-                ),
+                'UPDATE [[product]] SET [[price]]=[[price]] + :val WHERE [[start_at]] < NOW()',
                 [':val' => 1],
             ],
             'Expression without params and with params' => [
                 '{{product}}',
                 ['name' => new Expression('UPPER([[name]])')],
                 '[[name]] = :name',
+                null,
                 ['name' => new Expression('LOWER(:val)', [':val' => 'Apple'])],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER(:val)
-                    SQL
-                ),
+                'UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER(:val)',
                 [':val' => 'Apple'],
             ],
             'Expressions with the same params' => [
                 '{{product}}',
                 ['name' => new Expression('LOWER(:val)', ['val' => 'Apple'])],
                 '[[name]] != :name',
+                null,
                 ['name' => new Expression('UPPER(:val)', ['val' => 'Banana'])],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val_0)
-                    SQL
-                ),
+                'UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val_0)',
                 [
                     'val' => 'Apple',
                     'val_0' => 'Banana',
@@ -1311,12 +1226,9 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['name' => new Expression('LOWER(:val)', [':val' => 'Apple'])],
                 '[[name]] != :name',
+                null,
                 ['name' => new Expression('UPPER(:val)', ['val' => 'Banana'])],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val_0)
-                    SQL
-                ),
+                'UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val_0)',
                 [
                     ':val' => 'Apple',
                     'val_0' => 'Banana',
@@ -1326,12 +1238,9 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['price' => new Expression('[[price]] * :val + :val1', ['val' => 1.2, 'val1' => 2])],
                 '[[name]] IN :values',
+                null,
                 ['values' => new Expression('(:val, :val2)', ['val' => 'Banana', 'val2' => 'Cherry'])],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[product]] SET [[price]]=[[price]] * :val + :val1 WHERE [[name]] IN (:val_0, :val2)
-                    SQL
-                ),
+                'UPDATE [[product]] SET [[price]]=[[price]] * :val + :val1 WHERE [[name]] IN (:val_0, :val2)',
                 [
                     'val' => 1.2,
                     'val1' => 2,
@@ -1343,12 +1252,9 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['name' => new Expression('LOWER(:val)', ['val' => 'Apple'])],
                 '[[name]] != :name',
+                null,
                 ['name' => new Expression('UPPER(:val1)', ['val1' => 'Banana'])],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val1)
-                    SQL
-                ),
+                'UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val1)',
                 [
                     'val' => 'Apple',
                     'val1' => 'Banana',
@@ -1366,15 +1272,12 @@ class QueryBuilderProvider
                     ),
                 ],
                 '[[name]] != :val || :val_0',
+                null,
                 [
                     'val_0' => new Param('F', DataType::STRING),
                     'val' => new Expression('UPPER(:val || :val_0)', ['val' => 'D', 'val_0' => 'E']),
                 ],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=LOWER(:val_2 || :val_0_1) || :val_0_0 WHERE [[name]] != UPPER(:val_1 || :val_0_2) || :val_0
-                    SQL
-                ),
+                'UPDATE [[table]] SET [[name]]=LOWER(:val_2 || :val_0_1) || :val_0_0 WHERE [[name]] != UPPER(:val_1 || :val_0_2) || :val_0',
                 [
                     'val_2' => 'A',
                     'val_0_1' => 'B',
@@ -1388,12 +1291,9 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['name' => new Expression('LOWER(?)', ['Apple'])],
                 '[[name]] != ?',
+                null,
                 ['Banana'],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[product]] SET [[name]]=LOWER(?) WHERE [[name]] != ?
-                    SQL
-                ),
+                'UPDATE [[product]] SET [[name]]=LOWER(?) WHERE [[name]] != ?',
                 // Wrong order of params
                 ['Banana', 'Apple'],
             ],
@@ -1401,12 +1301,9 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['price' => 10],
                 ':val',
+                null,
                 [':val' => new Expression("label=':val' AND name=:val", [':val' => 'Apple'])],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[product]] SET [[price]]=10 WHERE label=':val' AND name=:val_0
-                    SQL
-                ),
+                'UPDATE [[product]] SET [[price]]=10 WHERE label=\':val\' AND name=:val_0',
                 [
                     ':val_0' => 'Apple',
                 ],
@@ -1415,12 +1312,9 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['price' => 10],
                 ':val',
+                null,
                 [':val' => new Expression("label=':val'", [':val' => 'Apple'])],
-                static::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[product]] SET [[price]]=10 WHERE label=':val'
-                    SQL
-                ),
+                'UPDATE [[product]] SET [[price]]=10 WHERE label=\':val\'',
                 [
                     ':val_0' => 'Apple',
                 ],
@@ -1474,7 +1368,7 @@ class QueryBuilderProvider
             ],
             'query' => [
                 'T_upsert',
-                (new Query(static::getDb()))
+                static fn(ConnectionInterface $db) => $db
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1485,7 +1379,7 @@ class QueryBuilderProvider
             ],
             'query with update part' => [
                 'T_upsert',
-                (new Query(static::getDb()))
+                static fn(ConnectionInterface $db) => $db
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1499,7 +1393,7 @@ class QueryBuilderProvider
             ],
             'query without update part' => [
                 'T_upsert',
-                (new Query(static::getDb()))
+                static fn(ConnectionInterface $db) => $db
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1531,7 +1425,7 @@ class QueryBuilderProvider
             ],
             'query, values and expressions with update part' => [
                 '{{%T_upsert}}',
-                (new Query(static::getDb()))
+                static fn(ConnectionInterface $db) => $db
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
@@ -1544,7 +1438,7 @@ class QueryBuilderProvider
             ],
             'query, values and expressions without update part' => [
                 'T_upsert',
-                (new Query(static::getDb()))
+                static fn(ConnectionInterface $db) => $db
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
@@ -1622,7 +1516,10 @@ class QueryBuilderProvider
             'null' => [[null], 1],
             'expression' => [new Expression("'[0,1,2,7]'"), 1],
             'json expression' => [new JsonValue([0, 1, 2, 7]), 1],
-            'query expression' => [(new Query(static::getDb()))->select(new JsonValue([0, 1, 2, 7])), 1],
+            'query expression' => [
+                static fn(ConnectionInterface $db) => $db->select(new JsonValue([0, 1, 2, 7])),
+                1,
+            ],
         ];
     }
 
@@ -1670,6 +1567,7 @@ class QueryBuilderProvider
             'integer(8)' => ['integer(8)', ColumnBuilder::integer(8)],
             'bigint()' => ['bigint', ColumnBuilder::bigint()],
             'bigint(15)' => ['bigint(15)', ColumnBuilder::bigint(15)],
+            'bigint(15) unsigned' => ['bigint(15) UNSIGNED', ColumnBuilder::bigint(15, true)],
             'float()' => ['float', ColumnBuilder::float()],
             'float(10)' => ['float(10)', ColumnBuilder::float(10)],
             'float(10,2)' => ['float(10,2)', ColumnBuilder::float(10, 2)],
@@ -1721,10 +1619,10 @@ class QueryBuilderProvider
             "extra('NOT NULL')" => ['varchar(255) NOT NULL', ColumnBuilder::string()->extra('NOT NULL')],
             "extra('')" => ['varchar(255)', ColumnBuilder::string()->extra('')],
             "check('value > 5')" => [
-                static::replaceQuotes('integer CHECK ([[check_col]] > 5)'),
-                ColumnBuilder::integer()
+                'integer CHECK ([[check_col]] > 5)',
+                static fn(ConnectionInterface $db) => ColumnBuilder::integer()
                     ->withName('check_col')
-                    ->check(static::replaceQuotes('[[check_col]] > 5')),
+                    ->check($db->getQuoter()->quoteColumnName('check_col') . ' > 5'),
             ],
             "check('')" => ['integer', ColumnBuilder::integer()->check('')],
             'check(null)' => ['integer', ColumnBuilder::integer()->check(null)],
@@ -1753,19 +1651,11 @@ class QueryBuilderProvider
             'scale(2)' => ['decimal(10,2)', ColumnBuilder::decimal()->scale(2)],
             'integer(8)->scale(2)' => ['integer(8)', ColumnBuilder::integer(8)->scale(2)],
             'reference($reference)' => [
-                static::replaceQuotes(
-                    <<<SQL
-                    integer REFERENCES [[ref_table]] ([[id]]) ON DELETE SET NULL ON UPDATE CASCADE
-                    SQL
-                ),
+                'integer REFERENCES [[ref_table]] ([[id]]) ON DELETE SET NULL ON UPDATE CASCADE',
                 ColumnBuilder::integer()->reference($reference),
             ],
             'reference($referenceWithSchema)' => [
-                static::replaceQuotes(
-                    <<<SQL
-                    integer REFERENCES [[ref_schema]].[[ref_table]] ([[id]]) ON DELETE SET NULL ON UPDATE CASCADE
-                    SQL
-                ),
+                'integer REFERENCES [[ref_schema]].[[ref_table]] ([[id]]) ON DELETE SET NULL ON UPDATE CASCADE',
                 ColumnBuilder::integer()->reference($referenceWithSchema),
             ],
         ];
@@ -1905,40 +1795,49 @@ class QueryBuilderProvider
         ];
     }
 
-    public static function caseXBuilder(): array
+    public static function caseXBuilder(): iterable
     {
-        return [
-            'with case expression' => [
-                new CaseX(
-                    '(1 + 2)',
-                    when1: new When(1, 1),
-                    when2: new When(2, new Expression('2')),
-                    when3: new When(3, '(2 + 1)'),
-                    else: $param = new Param(4, DataType::INTEGER),
-                ),
-                'CASE (1 + 2) WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN (2 + 1) ELSE :qp0 END',
-                [':qp0' => $param],
-                3,
+        yield 'with case expression' => [
+            new CaseX(
+                'column_name',
+                when1: new WhenThen(1, 1),
+                when2: new WhenThen(2, new Expression('(1 + 1)')),
+                when3: new WhenThen(3, '3'),
+                else: $param = new Param(4, DataType::INTEGER),
+            ),
+            'CASE [[column_name]] WHEN 1 THEN 1 WHEN 2 THEN (1 + 1) WHEN 3 THEN :qp0 ELSE :qp1 END',
+            [
+                ':qp0' => new Param('3', DataType::STRING),
+                ':qp1' => $param,
             ],
-            'without case expression' => [
-                new CaseX(
-                    when1: new When(['=', 'column_name', 1], new Value('a')),
-                    when2: new When(
-                        static::replaceQuotes('[[column_name]] = 2'),
-                        (new Query(self::getDb()))->select($param = new Param('b', DataType::STRING))
-                    ),
+            2,
+        ];
+        yield 'with case condition' => [
+            new CaseX(
+                ['=', 'column_name', 1],
+                when1: new WhenThen(true, 1),
+                else: 2,
+            ),
+            'CASE [[column_name]] = 1 WHEN TRUE THEN 1 ELSE 2 END',
+            [],
+            2,
+        ];
+
+        $param = new Param('b', DataType::STRING);
+        yield 'without case expression' => [
+            static fn(ConnectionInterface $db) => new CaseX(
+                when1: new WhenThen(['=', 'column_name', 1], 'a'),
+                when2: new WhenThen(
+                    new Equals('column_name', 2),
+                    $db->select($param),
                 ),
-                static::replaceQuotes(
-                    <<<SQL
-                    CASE WHEN [[column_name]] = 1 THEN :qp0 WHEN [[column_name]] = 2 THEN (SELECT :qp1) END
-                    SQL
-                ),
-                [
-                    ':qp0' => new Param('a', DataType::STRING),
-                    ':qp1' => $param,
-                ],
-                'b',
+            ),
+            'CASE WHEN [[column_name]] = 1 THEN :qp0 WHEN [[column_name]] = 2 THEN (SELECT :qp1) END',
+            [
+                ':qp0' => new Param('a', DataType::STRING),
+                ':qp1' => $param,
             ],
+            'b',
         ];
     }
 
@@ -1946,19 +1845,20 @@ class QueryBuilderProvider
     {
         return [
             'string' => [
-                "'string'",
-                "LENGTH('string')",
+                new Value('string'),
+                'LENGTH(:qp0)',
                 6,
+                [':qp0' => new Param('string', DataType::STRING)],
             ],
             'param' => [
                 $param = new Param('string', DataType::STRING),
-                'LENGTH(:pv0)',
+                'LENGTH(:qp0)',
                 6,
-                [':pv0' => $param],
+                [':qp0' => $param],
             ],
             'query' => [
-                static::getDb()->select(new Expression("'four'")),
-                static::replaceQuotes("LENGTH((SELECT 'four'))"),
+                static fn(ConnectionInterface $db) => $db->select(new Expression("'four'")),
+                "LENGTH((SELECT 'four'))",
                 4,
             ],
         ];
@@ -1974,149 +1874,150 @@ class QueryBuilderProvider
         ];
     }
 
-    public static function multiOperandFunctionBuilder(): array
+    public static function multiOperandFunctionBuilder(): iterable
     {
-        $stringQuery = static::getDb()->select(new Expression("'longest'"));
-        $stringQuerySql = "(SELECT 'longest')";
-        $intQuery = static::getDb()->select(10);
-        $intQuerySql = '(SELECT 10)';
-        $stringParam = new Param('string', DataType::STRING);
-
-        return [
-            'Greatest with 1 operand' => [
-                Greatest::class,
-                ['1 + 2'],
-                '(1 + 2)',
-                3,
+        yield 'Greatest with 1 operand' => [
+            Greatest::class,
+            ['(1 + 2)'],
+            '((1 + 2))',
+            3,
+        ];
+        yield 'Greatest with 2 operands' => [
+            Greatest::class,
+            [1, '(1 + 2)'],
+            'GREATEST(1, (1 + 2))',
+            3,
+        ];
+        yield 'Greatest with 4 operands' => [
+            Greatest::class,
+            static fn(Connectioninterface $db) => [1, 1.5, '(1 + 2)', $db->select(10)],
+            "GREATEST(1, 1.5, (1 + 2), (SELECT 10))",
+            10,
+        ];
+        yield 'Least with 1 operand' => [
+            Least::class,
+            ['(1 + 2)'],
+            '((1 + 2))',
+            3,
+        ];
+        yield 'Least with 2 operands' => [
+            Least::class,
+            [1, '(1 + 2)'],
+            'LEAST(1, (1 + 2))',
+            1,
+        ];
+        yield 'Least with 4 operands' => [
+            Least::class,
+            static fn(Connectioninterface $db) => [1, 1.5, '(1 + 2)', $db->select(10)],
+            "LEAST(1, 1.5, (1 + 2), (SELECT 10))",
+            1,
+        ];
+        yield 'Longest with 1 operand' => [
+            Longest::class,
+            [new Value('string')],
+            '(:qp0)',
+            'string',
+            [':qp0' => new Param('string', DataType::STRING)],
+        ];
+        yield 'Longest with 2 operands' => [
+            Longest::class,
+            [new Value('short'), new Param('string', DataType::STRING)],
+            '(SELECT value FROM (SELECT :qp0 AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) DESC LIMIT 1)',
+            'string',
+            [
+                ':qp0' => new Param('short', DataType::STRING),
+                ':qp1' => new Param('string', DataType::STRING),
             ],
-            'Greatest with 2 operands' => [
-                Greatest::class,
-                [1, '1 + 2'],
-                'GREATEST(1, 1 + 2)',
-                3,
+        ];
+        yield 'Longest with 3 operands' => [
+            Longest::class,
+            static fn(Connectioninterface $db) => [
+                new Value('short'),
+                $db->select(new Expression("'longest'")),
+                new Param('string', DataType::STRING),
             ],
-            'Greatest with 4 operands' => [
-                Greatest::class,
-                [1, 1.5, '1 + 2', $intQuery],
-                "GREATEST(1, 1.5, 1 + 2, $intQuerySql)",
-                10,
+            "(SELECT value FROM (SELECT :qp0 AS value UNION SELECT (SELECT 'longest') AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) DESC LIMIT 1)",
+            'longest',
+            [
+                ':qp0' => new Param('short', DataType::STRING),
+                ':qp1' => new Param('string', DataType::STRING),
             ],
-
-            'Least with 1 operand' => [
-                Least::class,
-                ['1 + 2'],
-                '(1 + 2)',
-                3,
+        ];
+        yield 'Shortest with 1 operand' => [
+            Shortest::class,
+            [new Value('short')],
+            '(:qp0)',
+            'short',
+            [':qp0' => new Param('short', DataType::STRING)],
+        ];
+        yield 'Shortest with 2 operands' => [
+            Shortest::class,
+            [new Value('short'), new Param('string', DataType::STRING)],
+            '(SELECT value FROM (SELECT :qp0 AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) ASC LIMIT 1)',
+            'short',
+            [
+                ':qp0' => new Param('short', DataType::STRING),
+                ':qp1' => new Param('string', DataType::STRING),
             ],
-            'Least with 2 operands' => [
-                Least::class,
-                [1, '1 + 2'],
-                'LEAST(1, 1 + 2)',
-                1,
+        ];
+        yield 'Shortest with 3 operands' => [
+            Shortest::class,
+            static fn(Connectioninterface $db) => [
+                new Value('short'),
+                $db->select(new Expression("'longest'")),
+                new Param('string', DataType::STRING),
             ],
-            'Least with 4 operands' => [
-                Least::class,
-                [1, 1.5, '1 + 2', $intQuery],
-                "LEAST(1, 1.5, 1 + 2, $intQuerySql)",
-                1,
-            ],
-
-            'Longest with 1 operand' => [
-                Longest::class,
-                ["'string'"],
-                "('string')",
-                'string',
-            ],
-            'Longest with 2 operands' => [
-                Longest::class,
-                ["'short'", $stringParam],
-                static::replaceQuotes(
-                    "(SELECT value FROM (SELECT 'short' AS value UNION SELECT :qp0 AS value) AS t ORDER BY LENGTH(value) DESC LIMIT 1)",
-                ),
-                'string',
-                [':qp0' => $stringParam],
-            ],
-            'Longest with 3 operands' => [
-                Longest::class,
-                ["'short'", $stringQuery, $stringParam],
-                static::replaceQuotes(
-                    "(SELECT value FROM (SELECT 'short' AS value UNION SELECT $stringQuerySql AS value UNION SELECT :qp0 AS value) AS t ORDER BY LENGTH(value) DESC LIMIT 1)",
-                ),
-                'longest',
-                [
-                    ':qp0' => $stringParam,
-                ],
-            ],
-
-            'Shortest with 1 operand' => [
-                Shortest::class,
-                ["'short'"],
-                "('short')",
-                'short',
-            ],
-            'Shortest with 2 operands' => [
-                Shortest::class,
-                ["'short'", $stringParam],
-                static::replaceQuotes(
-                    "(SELECT value FROM (SELECT 'short' AS value UNION SELECT :qp0 AS value) AS t ORDER BY LENGTH(value) ASC LIMIT 1)",
-                ),
-                'short',
-                [':qp0' => $stringParam],
-            ],
-            'Shortest with 3 operands' => [
-                Shortest::class,
-                ["'short'", $stringQuery, $stringParam],
-                static::replaceQuotes(
-                    "(SELECT value FROM (SELECT 'short' AS value UNION SELECT $stringQuerySql AS value UNION SELECT :qp0 AS value) AS t ORDER BY LENGTH(value) ASC LIMIT 1)",
-                ),
-                'short',
-                [
-                    ':qp0' => $stringParam,
-                ],
+            "(SELECT value FROM (SELECT :qp0 AS value UNION SELECT (SELECT 'longest') AS value UNION SELECT :qp1 AS value) AS t ORDER BY LENGTH(value) ASC LIMIT 1)",
+            'short',
+            [
+                ':qp0' => new Param('short', DataType::STRING),
+                ':qp1' => new Param('string', DataType::STRING),
             ],
         ];
     }
 
     public static function upsertWithMultiOperandFunctions(): array
     {
-        return [[
+        return [
             [
-                'id' => 1,
-                'array_col' => new ArrayValue([1, 2, 3]),
-                'greatest_col' => 10,
-                'least_col' => 10,
-                'longest_col' => 'longest',
-                'shortest_col' => 'longest',
+                [
+                    'id' => 1,
+                    'array_col' => new ArrayValue([1, 2, 3]),
+                    'greatest_col' => 10,
+                    'least_col' => 10,
+                    'longest_col' => 'longest',
+                    'shortest_col' => 'longest',
+                ],
+                [
+                    'id' => 1,
+                    'array_col' => new ArrayValue([3, 4, 5]),
+                    'greatest_col' => 5,
+                    'least_col' => 5,
+                    'longest_col' => 'short',
+                    'shortest_col' => 'short',
+                ],
+                [
+                    'array_col' => (new ArrayMerge())->ordered(),
+                    'greatest_col' => new Greatest(),
+                    'least_col' => new Least(),
+                    'longest_col' => new Longest(),
+                    'shortest_col' => new Shortest(),
+                ],
+                '',
+                [
+                    'array_col' => '[1,2,3,4,5]',
+                    'greatest_col' => 10,
+                    'least_col' => 5,
+                    'longest_col' => 'longest',
+                    'shortest_col' => 'short',
+                ],
+                [
+                    ':qp0' => new Param('[3,4,5]', DataType::STRING),
+                    ':qp1' => new Param('short', DataType::STRING),
+                    ':qp2' => new Param('short', DataType::STRING),
+                ],
             ],
-            [
-                'id' => 1,
-                'array_col' => new ArrayValue([3, 4, 5]),
-                'greatest_col' => 5,
-                'least_col' => 5,
-                'longest_col' => 'short',
-                'shortest_col' => 'short',
-            ],
-            [
-                'array_col' => (new ArrayMerge())->ordered(),
-                'greatest_col' => new Greatest(),
-                'least_col' => new Least(),
-                'longest_col' => new Longest(),
-                'shortest_col' => new Shortest(),
-            ],
-            '',
-            [
-                'array_col' => '[1,2,3,4,5]',
-                'greatest_col' => 10,
-                'least_col' => 5,
-                'longest_col' => 'longest',
-                'shortest_col' => 'short',
-            ],
-            [
-                ':qp0' => new Param('[3,4,5]', DataType::STRING),
-                ':qp1' => new Param('short', DataType::STRING),
-                ':qp2' => new Param('short', DataType::STRING),
-            ],
-        ]];
+        ];
     }
 
     public static function dateTimeValue(): iterable

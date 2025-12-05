@@ -8,18 +8,17 @@ use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\NotExists;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 /**
  * @group db
  */
 final class NotExistsTest extends TestCase
 {
-    use TestTrait;
-
     public function testConstructor(): void
     {
-        $query = new Query($this->getConnection());
+        $db = TestHelper::createSqliteMemoryConnection();
+        $query = new Query($db);
 
         $condition = new NotExists($query);
 
@@ -28,7 +27,8 @@ final class NotExistsTest extends TestCase
 
     public function testFromArrayDefinition(): void
     {
-        $query = new Query($this->getConnection());
+        $db = TestHelper::createSqliteMemoryConnection();
+        $query = new Query($db);
 
         $condition = NotExists::fromArrayDefinition('NOT EXISTS', [$query]);
 

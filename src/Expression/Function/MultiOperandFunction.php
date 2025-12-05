@@ -22,7 +22,8 @@ abstract class MultiOperandFunction implements ExpressionInterface
     protected array $operands = [];
 
     /**
-     * @param mixed ...$operands The values or expressions to operate on.
+     * @param mixed ...$operands The values or expressions to operate on. String values will be treated as column names,
+     * except when they contain a parentheses `(`, in which case they will be treated as raw SQL expressions.
      */
     public function __construct(mixed ...$operands)
     {
