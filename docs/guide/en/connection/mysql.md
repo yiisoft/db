@@ -31,7 +31,7 @@ use Yiisoft\Db\Mysql\Dsn;
 
 return [
     'yiisoft/db-mysql' => [
-        'dsn' => (new Dsn('mysql', '127.0.0.1', 'yiitest', '3306', ['charset' => 'utf8mb4']))->asString(),
+        'dsn' => new Dsn('mysql', '127.0.0.1', 'yiitest', '3306', ['charset' => 'utf8mb4']),
         'username' => 'user',
         'password' => 'password',
     ],
@@ -45,7 +45,7 @@ use Yiisoft\Db\Mysql\DsnSocket;
 
 return [
     'yiisoft/db-mysql' => [
-        'dsn' => (new DsnSocket('mysql', '/var/run/mysqld/mysqld.sock', 'yiitest'))->asString(),
+        'dsn' => new DsnSocket('mysql', '/var/run/mysqld/mysqld.sock', 'yiitest'),
         'username' => 'user',
         'password' => 'password',
     ],
@@ -65,7 +65,7 @@ use Yiisoft\Db\Mysql\Driver;
 use Yiisoft\Db\Mysql\Dsn;
 
 // Dsn.
-$dsn = (new Dsn('mysql', '127.0.0.1', 'yiitest', '3306', ['charset' => 'utf8mb4']))->asString();
+$dsn = new Dsn('mysql', '127.0.0.1', 'yiitest', '3306', ['charset' => 'utf8mb4']);
 
 // PSR-16 cache implementation.
 $arrayCache = new ArrayCache();
