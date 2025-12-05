@@ -62,3 +62,20 @@ return [
     ],
 ];
 ```
+
+## Disabling schema cache
+
+You can disable schema caching by setting the `enabled` parameter to `false` in your application's `config/params.php`:
+
+```php
+return [
+    // ...
+    'yiisoft/db' => [
+        'schema-cache' => [
+            'enabled' => false,
+        ],
+    ],
+];
+```
+
+This parameter is automatically wired to the `SchemaCache` service via the package's DI configuration.

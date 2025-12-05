@@ -7,6 +7,11 @@ use Yiisoft\Db\Debug\ConnectionInterfaceProxy;
 use Yiisoft\Db\Debug\DatabaseCollector;
 
 return [
+    'yiisoft/db' => [
+        'schema-cache' => [
+            'enabled' => true,
+        ],
+    ],
     'yiisoft/yii-debug' => [
         'collectors' => [
             DatabaseCollector::class,

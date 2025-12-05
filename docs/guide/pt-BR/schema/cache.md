@@ -62,3 +62,20 @@ return [
     ],
 ];
 ```
+
+## Desabilitando o cache de esquema
+
+Você pode desabilitar o cache de esquema definindo o parâmetro `enabled` como `false` no arquivo `config/params.php` da sua aplicação:
+
+```php
+return [
+    // ...
+    'yiisoft/db' => [
+        'schema-cache' => [
+            'enabled' => false,
+        ],
+    ],
+];
+```
+
+Este parâmetro é automaticamente conectado ao serviço `SchemaCache` através da configuração de DI do pacote.

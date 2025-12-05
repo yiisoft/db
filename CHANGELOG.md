@@ -181,6 +181,7 @@
 - New #1107: Add abstract enumeration column type (@vjik)
 - Bug #1115: Do not reset `$retryHandler` property on `AbstractCommand::reset()` method call (@Tigrov)
 - New #1124: Add source of column information (@Tigrov)
+- New #1121: Add `yiisoft/db.schema-cache.enabled` parameter to disable schema caching via configuration (@samdark)
 
 ## 1.3.0 March 21, 2024
 
