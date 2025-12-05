@@ -1,5 +1,9 @@
 # Yii Database Change Log
 
+## 2.0.1 under development
+
+- no changes in this release.
+
 ## 2.0.0 December 05, 2025
 
 - New #1013: Add `StringableStream` class to cast binary column values to `string` using `(string) $value` (@Tigrov)
