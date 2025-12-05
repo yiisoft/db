@@ -31,6 +31,7 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
  * A command instance is usually created by calling {@see ConnectionInterface::createCommand}.
  *
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type RawFrom from QueryInterface
  * @psalm-import-type BatchValues from DMLQueryBuilderInterface
  */
 interface CommandInterface
@@ -117,6 +118,8 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
+     * @psalm-param array<ExpressionInterface|string>|string $columns
+     * @psalm-param array<ExpressionInterface|string>|string $referenceColumns
      * @psalm-param ReferentialAction::*|null $delete
      * @psalm-param ReferentialAction::*|null $update
      */
@@ -126,8 +129,8 @@ interface CommandInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string|null $delete = null,
-        string|null $update = null
+        ?string $delete = null,
+        ?string $update = null,
     ): static;
 
     /**
@@ -137,7 +140,7 @@ interface CommandInterface
      *
      * @param string $table The name of the table to add primary key constraint to.
      * @param string $name The name of the primary key constraint.
-     * @param array|string $columns The comma separated string or array of columns that the primary key consists of.
+     * @param string|string[] $columns The comma separated string or array of columns that the primary key consists of.
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
@@ -226,7 +229,7 @@ interface CommandInterface
         mixed &$value,
         ?int $dataType = null,
         ?int $length = null,
-        mixed $driverOptions = null
+        mixed $driverOptions = null,
     ): static;
 
     /**
@@ -234,7 +237,7 @@ interface CommandInterface
      *
      * @param string $table The name of the table to add unique constraint to.
      * @param string $name The name of the unique constraint.
-     * @param array|string $columns The name of the column to add unique constraint to. If there are
+     * @param string|string[] $columns The name of the column to add unique constraint to. If there are
      * many columns, use an array or separate them with commas.
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
@@ -305,6 +308,7 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
+     * @psalm-param array<ExpressionInterface|string>|string $columns
      * @psalm-param IndexType::*|null $indexType
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
@@ -314,7 +318,7 @@ interface CommandInterface
         string $name,
         array|string $columns,
         ?string $indexType = null,
-        ?string $indexMethod = null
+        ?string $indexMethod = null,
     ): static;
 
     /**
@@ -614,11 +618,13 @@ interface CommandInterface
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array|false The primary key values or false if the command fails.
+     * @return array The primary key values.
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
+     *
+     * @psalm-return array<string, mixed>
      */
-    public function insertReturningPks(string $table, array|QueryInterface $columns): array|false;
+    public function insertReturningPks(string $table, array|QueryInterface $columns): array;
 
     /**
      * Prepares the SQL statement to be executed.
@@ -682,8 +688,10 @@ interface CommandInterface
      * @throws Throwable If execution failed.
      *
      * @return array|null The first row as an `array` of the query result. `null` if the query results in nothing.
+     *
+     * @psalm-return array<string,mixed>|null
      */
-    public function queryOne(): array|null;
+    public function queryOne(): ?array;
 
     /**
      * Execute the SQL statement and returns the value of the first column in the first row of data.
@@ -698,7 +706,7 @@ interface CommandInterface
      *
      * @psalm-return null|scalar
      */
-    public function queryScalar(): bool|string|null|int|float;
+    public function queryScalar(): bool|string|int|float|null;
 
     /**
      * Creates an SQL command for renaming a column.
@@ -762,22 +770,28 @@ interface CommandInterface
     public function setRawSql(string $sql): static;
 
     /**
-     * Sets a Closure (anonymous function) that's called when {@see Exception} is thrown when executing the
-     * command. The signature of the Closure should be:.
+     * Sets a closure (anonymous function) which called when a database exception is thrown when executing the command.
+     *
+     * The signature of the closure should be:
      *
      * ```php
-     * function (Exceptions $e, $attempt)
+     * use Yiisoft\Db\Exception\Exception;
+     *
+     * function (Exception $e, int $attempt): bool
      * {
-     *     // return true or false (whether to retry the command or rethrow $e)
+     *     // return true or false (whether to retry the command or throw $e)
      * }
      * ```
      *
-     * The Closure will receive a database exception thrown and a current try (to execute the command) number
-     * starting from 1.
+     * The closure will receive an {@see Exception} converted from the thrown database exception and the current attempt
+     * to execute the command, starting from `1`.
+     *
+     * If the closure returns `true`, the command will be retried. If the closure returns `false`, the {@see Exception}
+     * will be thrown.
      *
      * @param Closure|null $handler A PHP callback to handle database exceptions.
      */
-    public function setRetryHandler(Closure|null $handler): static;
+    public function setRetryHandler(?Closure $handler): static;
 
     /**
      * Specifies the SQL statement to execute. The SQL statement will be quoted using
@@ -835,6 +849,7 @@ interface CommandInterface
      * on how to specify FROM part.
      * @param array $params The parameters to bind to the command.
      *
+     * @psalm-param RawFrom|null $from
      * @psalm-param ParamsType $params
      *
      * @throws Exception
@@ -847,7 +862,7 @@ interface CommandInterface
         array $columns,
         array|ExpressionInterface|string $condition = '',
         array|ExpressionInterface|string|null $from = null,
-        array $params = []
+        array $params = [],
     ): static;
 
     /**
@@ -918,6 +933,7 @@ interface CommandInterface
      *
      * @psalm-param array<string, mixed>|QueryInterface $insertColumns
      * @psalm-param ParamsType $params
+     * @psalm-return array<string, mixed>
      *
      * @see upsertReturningPks()
      */
@@ -925,8 +941,8 @@ interface CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-        array|null $returnColumns = null,
-    ): array|false;
+        ?array $returnColumns = null,
+    ): array;
 
     /**
      * Creates a command to insert rows into a database table if they don't already exist (matching unique constraints)
@@ -955,7 +971,7 @@ interface CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-    ): array|false;
+    ): array;
 
     /**
      * Returns copy of the instance with enabled or disabled typecasting of values when inserting or updating records.

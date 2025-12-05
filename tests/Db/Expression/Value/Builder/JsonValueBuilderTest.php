@@ -16,15 +16,13 @@ use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Schema\Data\StructuredLazyArray;
 use Yiisoft\Db\Tests\Support\JsonSerializableObject;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 /**
  * @group db
  */
 final class JsonValueBuilderTest extends TestCase
 {
-    use TestTrait;
-
     public static function buildProvider(): array
     {
         return [
@@ -51,7 +49,7 @@ final class JsonValueBuilderTest extends TestCase
     #[DataProvider('buildProvider')]
     public function testBuild(mixed $value, string $expected): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $qb = $db->getQueryBuilder();
 
         $params = [];
@@ -64,7 +62,7 @@ final class JsonValueBuilderTest extends TestCase
 
     public function testBuildNull(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $qb = $db->getQueryBuilder();
 
         $params = [];
@@ -77,7 +75,7 @@ final class JsonValueBuilderTest extends TestCase
 
     public function testBuildQueryExpression(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $qb = $db->getQueryBuilder();
 
         $params = [];

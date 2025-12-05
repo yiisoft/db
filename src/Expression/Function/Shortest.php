@@ -20,6 +20,4 @@ use Yiisoft\Db\Expression\Function\Builder\ShortestBuilder;
  *
  * @see ShortestBuilder for building SQL representations of this function expression.
  */
-final class Shortest extends MultiOperandFunction
-{
-}
+final class Shortest extends MultiOperandFunction {}

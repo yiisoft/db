@@ -28,7 +28,5 @@ final class JsonValue implements ExpressionInterface
      * casting will be performed. This property is used only for DBMSs that support different types of JSON.
      * For example, PostgresSQL has `json` and `jsonb` types.
      */
-    public function __construct(public readonly mixed $value, public readonly string|null $type = null)
-    {
-    }
+    public function __construct(public readonly mixed $value, public readonly ?string $type = null) {}
 }

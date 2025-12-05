@@ -39,9 +39,8 @@ class Quoter implements QuoterInterface
         private array|string $columnQuoteCharacter,
         /** @psalm-var string[]|string */
         private array|string $tableQuoteCharacter,
-        private string $tablePrefix = ''
-    ) {
-    }
+        private string $tablePrefix = '',
+    ) {}
 
     public function cleanUpTableNames(array $tableNames): array
     {
@@ -64,7 +63,7 @@ class Quoter implements QuoterInterface
 
             if (!is_string($alias)) {
                 throw new InvalidArgumentException(
-                    'To use Expression in from() method, pass it in array format with alias.'
+                    'To use Expression in from() method, pass it in array format with alias.',
                 );
             }
 
@@ -74,7 +73,7 @@ class Quoter implements QuoterInterface
                 $cleanedUpTableNames[$this->ensureNameQuoted($alias)] = $tableName;
             } else {
                 throw new InvalidArgumentException(
-                    'Use ExpressionInterface without cast to string as object of tableName'
+                    'Use ExpressionInterface without cast to string as object of tableName',
                 );
             }
         }
@@ -194,7 +193,7 @@ class Quoter implements QuoterInterface
 
                 return str_replace('%', $this->tablePrefix, $this->quoteSimpleTableName($matches[1]));
             },
-            $sql
+            $sql,
         );
     }
 

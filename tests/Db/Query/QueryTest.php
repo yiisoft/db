@@ -9,26 +9,24 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Tests\AbstractQueryTest;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
 use function PHPUnit\Framework\assertSame;
 
 /**
  * @group db
  */
-final class QueryTest extends AbstractQueryTest
+final class QueryTest extends IntegrationTestCase
 {
-    use TestTrait;
-
     public function testColumn(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         (new Query($db))->select('name')->from('customer')->orderBy(['id' => SORT_DESC])->column();
@@ -36,11 +34,12 @@ final class QueryTest extends AbstractQueryTest
 
     public function testCount(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         (new Query($db))->from('customer')->count();
@@ -48,11 +47,12 @@ final class QueryTest extends AbstractQueryTest
 
     public function testExists(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         (new Query($db))->from('customer')->where(['status' => 2])->exists();
@@ -60,14 +60,15 @@ final class QueryTest extends AbstractQueryTest
 
     public function testLimitOffsetWithExpression(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $query = (new Query($db))->from('customer')->select('id')->orderBy('id');
         $query->limit(new Expression('1 + 1'))->offset(new Expression('1 + 0'));
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         $query->column();
@@ -75,11 +76,12 @@ final class QueryTest extends AbstractQueryTest
 
     public function testOne(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
         (new Query($db))->from('customer')->where(['status' => 2])->one();
@@ -87,17 +89,24 @@ final class QueryTest extends AbstractQueryTest
 
     public function testColumnWithIndexBy(): void
     {
+        $db = $this->getSharedConnection();
+
+        $query = $db
+            ->select('customer.name')
+            ->from('customer')
+            ->indexBy('customer.id');
+
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
         );
 
-        parent::testColumnWithIndexBy();
+        $query->all();
     }
 
     public function testWithTypecasting(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = (new Query($db));
 
@@ -114,7 +123,7 @@ final class QueryTest extends AbstractQueryTest
 
     public function testCreateCommandWithTypecasting(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = (new Query($db));
         $command = $query->createCommand();
@@ -138,7 +147,7 @@ final class QueryTest extends AbstractQueryTest
     #[DataProvider('dataFor')]
     public function testFor(array $expected, array|string|null $value): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = (new Query($db))->for($value);
 
@@ -147,7 +156,7 @@ final class QueryTest extends AbstractQueryTest
 
     public function testForTwice(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = (new Query($db))->for('UPDATE');
 
@@ -168,7 +177,7 @@ final class QueryTest extends AbstractQueryTest
     #[DataProvider('dataAddFor')]
     public function testAddFor(array $expected, array|string|null $value): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = (new Query($db))->for('NO KEY UPDATE')->addFor($value);
 
@@ -187,7 +196,7 @@ final class QueryTest extends AbstractQueryTest
     #[DataProvider('dataAddForOnly')]
     public function testAddForOnly(array $expected, array|string|null $value): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = (new Query($db))->addFor($value);
 
@@ -206,7 +215,7 @@ final class QueryTest extends AbstractQueryTest
     #[DataProvider('dataSetFor')]
     public function testSetFor(array $expected, array|string|null $value): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = (new Query($db))->for('NO KEY UPDATE')->setFor($value);
 
@@ -225,7 +234,7 @@ final class QueryTest extends AbstractQueryTest
     #[DataProvider('dataSetForOnly')]
     public function testSetForOnly(array $expected, array|string|null $value): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = (new Query($db))->setFor($value);
 

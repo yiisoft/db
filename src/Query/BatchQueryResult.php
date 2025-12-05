@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
-use Throwable;
 
 /**
  * Represents the result of a batch query execution.
@@ -26,7 +25,7 @@ final class BatchQueryResult implements BatchQueryResultInterface
     /**
      * @var DataReaderInterface|null The data reader associated with this batch query.
      */
-    private DataReaderInterface|null $dataReader = null;
+    private ?DataReaderInterface $dataReader = null;
 
     /**
      * @psalm-var IndexBy|null $indexBy
@@ -37,11 +36,9 @@ final class BatchQueryResult implements BatchQueryResultInterface
      * @var Closure|null A callback function to process the result rows.
      * @psalm-var ResultCallback|null
      */
-    private Closure|null $resultCallback = null;
+    private ?Closure $resultCallback = null;
 
-    public function __construct(private readonly QueryInterface $query)
-    {
-    }
+    public function __construct(private readonly QueryInterface $query) {}
 
     public function rewind(): void
     {
@@ -58,52 +55,6 @@ final class BatchQueryResult implements BatchQueryResultInterface
     {
         $this->batch = $this->fetchData();
         ++$this->index;
-    }
-
-    /**
-     * Fetches the next batch of data.
-     *
-     * @throws Throwable
-     *
-     * @return array The data fetched.
-     */
-    private function fetchData(): array
-    {
-        $rows = $this->getRows();
-
-        if ($this->resultCallback === null || empty($rows)) {
-            return $rows;
-        }
-
-        return ($this->resultCallback)($rows);
-    }
-
-    /**
-     * Reads and collects rows for batch.
-     *
-     * @psalm-return array<array>
-     */
-    private function getRows(): array
-    {
-        $rows = [];
-
-        $this->dataReader ??= $this->query->createCommand()->query()->indexBy($this->indexBy);
-
-        $isContinuousIndex = $this->indexBy === null;
-        $startIndex = $isContinuousIndex ? ($this->index + 2) * $this->batchSize : 0;
-
-        for (
-            $leftCount = $this->batchSize;
-            $leftCount > 0 && $this->dataReader->valid();
-            --$leftCount, $this->dataReader->next()
-        ) {
-            /** @var int|string $key */
-            $key = $isContinuousIndex ? $startIndex - $leftCount : $this->dataReader->key();
-            /** @var array */
-            $rows[$key] = $this->dataReader->current();
-        }
-
-        return $rows;
     }
 
     public function key(): int
@@ -156,10 +107,56 @@ final class BatchQueryResult implements BatchQueryResultInterface
         return $this;
     }
 
-    public function resultCallback(Closure|null $callback): static
+    public function resultCallback(?Closure $callback): static
     {
         $this->resultCallback = $callback;
 
         return $this;
+    }
+
+    /**
+     * Fetches the next batch of data.
+     *
+     * @return array The data fetched.
+     *
+     * @psalm-return array<array<string,mixed>|object>
+     */
+    private function fetchData(): array
+    {
+        $rows = $this->getRows();
+
+        if ($this->resultCallback === null || empty($rows)) {
+            return $rows;
+        }
+
+        return ($this->resultCallback)($rows);
+    }
+
+    /**
+     * Reads and collects rows for batch.
+     *
+     * @psalm-return array<array<string,mixed>>
+     */
+    private function getRows(): array
+    {
+        $rows = [];
+
+        $this->dataReader ??= $this->query->createCommand()->query()->indexBy($this->indexBy);
+
+        $isContinuousIndex = $this->indexBy === null;
+        $startIndex = $isContinuousIndex ? ($this->index + 2) * $this->batchSize : 0;
+
+        for (
+            $leftCount = $this->batchSize;
+            $leftCount > 0 && $this->dataReader->valid();
+            --$leftCount, $this->dataReader->next()
+        ) {
+            /** @var int|string $key */
+            $key = $isContinuousIndex ? $startIndex - $leftCount : $this->dataReader->key();
+            /** @psalm-var array<string, mixed> */
+            $rows[$key] = $this->dataReader->current();
+        }
+
+        return $rows;
     }
 }

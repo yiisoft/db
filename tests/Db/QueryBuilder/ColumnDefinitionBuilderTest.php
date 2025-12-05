@@ -9,18 +9,16 @@ use Yiisoft\Db\QueryBuilder\AbstractColumnDefinitionBuilder;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\Support\Stub\ColumnDefinitionBuilder;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 /**
  * @group db
  */
 final class ColumnDefinitionBuilderTest extends TestCase
 {
-    use TestTrait;
-
     public function testBuildAlter(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $qb = $db->getQueryBuilder();
 
         $cdb = new ColumnDefinitionBuilder($qb);
@@ -32,7 +30,7 @@ final class ColumnDefinitionBuilderTest extends TestCase
 
     public function testBuildEmptyDefaultForUuid(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $qb = $db->getQueryBuilder();
 
         $cdb = new class ($qb) extends AbstractColumnDefinitionBuilder {

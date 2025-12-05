@@ -7,6 +7,4 @@ namespace Yiisoft\Db\Exception;
 /**
  * Represents an exception caused by the wrong object configuration.
  */
-final class InvalidConfigException extends Exception
-{
-}
+final class InvalidConfigException extends Exception {}

@@ -7,6 +7,4 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 /**
  * Represents a less than condition like `"column" < value`.
  */
-final class LessThan extends AbstractCompare
-{
-}
+final class LessThan extends AbstractCompare {}

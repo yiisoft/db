@@ -78,8 +78,11 @@ You can create a database connection instance using a [DI container](https://git
 - [PostgreSQL Server](connection/pgsql.md)
 - [SQLite Server](connection/sqlite.md)
 
-> Note: When you create a DB connection instance, the actual connection to the database isn't established until
+> [!NOTE]
+> When you create a DB connection instance, the actual connection to the database isn't established until
 > you execute the first SQL or call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.
+
+[Initialize ConnectionProvider](connection/connection-provider.md) if needed.
 
 ### Logger and profiler
 

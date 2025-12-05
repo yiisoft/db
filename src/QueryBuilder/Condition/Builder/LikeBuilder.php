@@ -8,9 +8,6 @@ use Stringable;
 use Traversable;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Exception\Exception;
-use InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -22,7 +19,6 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function implode;
 use function is_string;
-use function str_contains;
 use function strtr;
 
 /**
@@ -49,17 +45,13 @@ class LikeBuilder implements ExpressionBuilderInterface
 
     public function __construct(
         private readonly QueryBuilderInterface $queryBuilder,
-    ) {
-    }
+    ) {}
 
     /**
      * Build SQL for {@see Like} or {@see NotLike}.
      *
      * @param Like|NotLike $expression
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
@@ -103,9 +95,6 @@ class LikeBuilder implements ExpressionBuilderInterface
     /**
      * Prepare column to use in SQL.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      */
     protected function prepareColumn(Like|NotLike $condition, array &$params): string
@@ -116,21 +105,13 @@ class LikeBuilder implements ExpressionBuilderInterface
             return $this->queryBuilder->buildExpression($column, $params);
         }
 
-        if (!str_contains($column, '(')) {
-            return $this->queryBuilder->getQuoter()->quoteColumnName($column);
-        }
-
-        return $column;
+        return $this->queryBuilder->getQuoter()->quoteColumnName($column);
     }
 
     /**
      * Prepare value to use in SQL.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      * @throws NotSupportedException
-     * @return string
      */
     protected function preparePlaceholderName(
         string|Stringable|int|ExpressionInterface $value,

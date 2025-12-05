@@ -31,9 +31,7 @@ use const JSON_THROW_ON_ERROR;
  */
 final class JsonValueBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder) {}
 
     /**
      * The method builds the raw SQL from the `$expression` that won't be additionally escaped or quoted.

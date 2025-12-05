@@ -25,8 +25,8 @@ class TableSchema implements TableSchemaInterface
      * @psalm-var array<string, ColumnInterface>
      */
     private array $columns = [];
-    private string|null $comment = null;
-    private string|null $createSql = null;
+    private ?string $comment = null;
+    private ?string $createSql = null;
     /** @var DefaultValue[] */
     private array $defaultValues = [];
     /** @var ForeignKey[] */
@@ -35,13 +35,12 @@ class TableSchema implements TableSchemaInterface
     private array $indexes = [];
     /** @var string[] */
     private array $options = [];
-    private string|null $sequenceName = null;
+    private ?string $sequenceName = null;
 
     public function __construct(
         private string $name = '',
         private string $schemaName = '',
-    ) {
-    }
+    ) {}
 
     public function checks(Check ...$checks): static
     {
@@ -61,13 +60,13 @@ class TableSchema implements TableSchemaInterface
         return $this;
     }
 
-    public function comment(string|null $comment): static
+    public function comment(?string $comment): static
     {
         $this->comment = $comment;
         return $this;
     }
 
-    public function createSql(string|null $sql): static
+    public function createSql(?string $sql): static
     {
         $this->createSql = $sql;
         return $this;
@@ -90,7 +89,7 @@ class TableSchema implements TableSchemaInterface
         return $this->checks;
     }
 
-    public function getColumn(string $name): ColumnInterface|null
+    public function getColumn(string $name): ?ColumnInterface
     {
         return $this->columns[$name] ?? null;
     }
@@ -105,12 +104,12 @@ class TableSchema implements TableSchemaInterface
         return $this->columns;
     }
 
-    public function getComment(): string|null
+    public function getComment(): ?string
     {
         return $this->comment;
     }
 
-    public function getCreateSql(): string|null
+    public function getCreateSql(): ?string
     {
         return $this->createSql;
     }
@@ -160,8 +159,8 @@ class TableSchema implements TableSchemaInterface
         return array_keys(
             array_filter(
                 $this->columns,
-                static fn (ColumnInterface $column) => $column->isPrimaryKey()
-            )
+                static fn(ColumnInterface $column) => $column->isPrimaryKey(),
+            ),
         );
     }
 
@@ -170,14 +169,14 @@ class TableSchema implements TableSchemaInterface
         return $this->schemaName;
     }
 
-    public function getSequenceName(): string|null
+    public function getSequenceName(): ?string
     {
         return $this->sequenceName;
     }
 
     public function getUniques(): array
     {
-        return array_filter($this->indexes, static fn (Index $index): bool => $index->isUnique);
+        return array_filter($this->indexes, static fn(Index $index): bool => $index->isUnique);
     }
 
     public function indexes(Index ...$indexes): static
@@ -204,7 +203,7 @@ class TableSchema implements TableSchemaInterface
         return $this;
     }
 
-    public function sequenceName(string|null $sequenceName): static
+    public function sequenceName(?string $sequenceName): static
     {
         $this->sequenceName = $sequenceName;
         return $this;

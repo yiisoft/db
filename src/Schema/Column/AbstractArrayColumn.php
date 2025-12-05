@@ -23,7 +23,7 @@ abstract class AbstractArrayColumn extends AbstractColumn
     /**
      * @var ColumnInterface|null The column of an array item.
      */
-    protected ColumnInterface|null $column = null;
+    protected ?ColumnInterface $column = null;
 
     /**
      * @var int The dimension of array, must be greater than 0.
@@ -34,7 +34,7 @@ abstract class AbstractArrayColumn extends AbstractColumn
     /**
      * Set column of an array item.
      */
-    public function column(ColumnInterface|null $column): static
+    public function column(?ColumnInterface $column): static
     {
         $this->column = $column;
         return $this;
@@ -44,7 +44,7 @@ abstract class AbstractArrayColumn extends AbstractColumn
      * @return ColumnInterface|null The column of an array item.
      * @psalm-mutation-free
      */
-    public function getColumn(): ColumnInterface|null
+    public function getColumn(): ?ColumnInterface
     {
         return $this->column;
     }
@@ -74,7 +74,7 @@ abstract class AbstractArrayColumn extends AbstractColumn
     /**
      * @param iterable|LazyArrayInterface|QueryInterface|string|null $value
      */
-    public function dbTypecast(mixed $value): ExpressionInterface|null
+    public function dbTypecast(mixed $value): ?ExpressionInterface
     {
         if ($value === null || $value instanceof ExpressionInterface) {
             return $value;

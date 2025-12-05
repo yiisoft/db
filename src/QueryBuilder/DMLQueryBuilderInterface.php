@@ -19,6 +19,7 @@ use Yiisoft\Db\Query\QueryInterface;
  * @link https://en.wikipedia.org/wiki/Data_manipulation_language
  *
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type RawFrom from QueryInterface
  * @psalm-type BatchValues = iterable<iterable<array-key, mixed>>
  */
 interface DMLQueryBuilderInterface
@@ -190,6 +191,7 @@ interface DMLQueryBuilderInterface
      *
      * @return string The UPDATE SQL.
      *
+     * @psalm-param RawFrom|null $from
      * @psalm-param ParamsType $params
      *
      * Note: The method will escape the table and column names.
@@ -199,7 +201,7 @@ interface DMLQueryBuilderInterface
         array $columns,
         array|ExpressionInterface|string $condition,
         array|ExpressionInterface|string|null $from = null,
-        array &$params = []
+        array &$params = [],
     ): string;
 
     /**
@@ -272,7 +274,7 @@ interface DMLQueryBuilderInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-        array|null $returnColumns = null,
+        ?array $returnColumns = null,
         array &$params = [],
     ): string;
 

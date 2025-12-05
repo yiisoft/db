@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Closure;
+use Yiisoft\Db\Constant\ColumnInfoSource;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
@@ -142,6 +143,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
         unset($definitionInfo['type']);
 
         $info = array_merge($info, $definitionInfo);
+        $info['source'] ??= ColumnInfoSource::DEFINITION;
 
         if ($this->isDbType($type)) {
             return $this->fromDbType($type, $info);
@@ -190,13 +192,13 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
                     /** @psalm-suppress ArgumentTypeCoercion */
                     $info['column'] = $this->fromDbType(
                         $info['dbType'],
-                        array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1])
+                        array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1]),
                     );
                 } elseif ($type !== ColumnType::ARRAY) {
                     /** @psalm-suppress ArgumentTypeCoercion */
                     $info['column'] = $this->fromType(
                         $type,
-                        array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1])
+                        array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1]),
                     );
                 }
             }
@@ -227,7 +229,6 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     }
 
     /**
-     * @psalm-param ColumnType::* $type
      * @psalm-param ColumnInfo $info
      * @psalm-return class-string<ColumnInterface>
      */
@@ -244,7 +245,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::BIGINT => PHP_INT_SIZE !== 8 || !empty($info['unsigned'])
                 ? BigIntColumn::class
                 : IntegerColumn::class,
-            ColumnType::DECIMAL => DoubleColumn::class,
+            ColumnType::DECIMAL => StringColumn::class,
             ColumnType::FLOAT => DoubleColumn::class,
             ColumnType::DOUBLE => DoubleColumn::class,
             ColumnType::BINARY => BinaryColumn::class,
@@ -257,6 +258,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::ARRAY => ArrayColumn::class,
             ColumnType::STRUCTURED => StructuredColumn::class,
             ColumnType::JSON => JsonColumn::class,
+            ColumnType::ENUM => EnumColumn::class,
             default => StringColumn::class,
         };
     }
@@ -278,6 +280,10 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             return ColumnType::ARRAY;
         }
 
+        if (isset($info['values'])) {
+            return ColumnType::ENUM;
+        }
+
         return static::TYPE_MAP[$dbType] ?? ColumnType::STRING;
     }
 
@@ -291,8 +297,6 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
 
     /**
      * Checks if the column type is a pseudo-type.
-     *
-     * @psalm-assert-if-true PseudoType::* $pseudoType
      */
     protected function isPseudoType(string $pseudoType): bool
     {
@@ -309,8 +313,6 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
 
     /**
      * Checks if the column type is an abstract type.
-     *
-     * @psalm-assert-if-true ColumnType::* $type
      */
     protected function isType(string $type): bool
     {
@@ -338,7 +340,8 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::DATE,
             ColumnType::ARRAY,
             ColumnType::STRUCTURED,
-            ColumnType::JSON => true,
+            ColumnType::JSON,
+            ColumnType::ENUM => true,
             default => isset($this->classMap[$type]),
         };
     }
@@ -355,7 +358,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      * @psalm-param ColumnInfo $info
      * @psalm-assert ColumnInfo $info
      */
-    protected function mapType(array $map, string $type, array &$info = []): string|null
+    protected function mapType(array $map, string $type, array &$info = []): ?string
     {
         if (!isset($map[$type])) {
             return null;
@@ -378,7 +381,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      *
      * @return mixed The normalized default value.
      */
-    protected function normalizeDefaultValue(string|null $defaultValue, ColumnInterface $column): mixed
+    protected function normalizeDefaultValue(?string $defaultValue, ColumnInterface $column): mixed
     {
         if (
             $defaultValue === null

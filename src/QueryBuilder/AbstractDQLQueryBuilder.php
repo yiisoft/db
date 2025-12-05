@@ -8,9 +8,7 @@ use Yiisoft\Db\Expression\CompositeExpression;
 use Yiisoft\Db\Expression\CompositeExpressionBuilder;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Expression\Value\Builder\ParamBuilder;
-use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\Value\Builder\ArrayValueBuilder;
@@ -112,7 +110,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
-        private QuoterInterface $quoter
+        private QuoterInterface $quoter,
     ) {
         $this->expressionBuilders = $this->defaultExpressionBuilders();
         $this->conditionClasses = $this->defaultConditionClasses();
@@ -160,19 +158,17 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                 return $columns;
             }
 
+            /** @var list<string> We use valid regular expressions, so the result is always a list of strings */
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
 
-        /** @psalm-var array<array-key, ExpressionInterface|string> $columns */
-        foreach ($columns as $i => $column) {
-            if ($column instanceof ExpressionInterface) {
-                $columns[$i] = $this->buildExpression($column);
-            } elseif (!str_contains($column, '(')) {
-                $columns[$i] = $this->quoter->quoteColumnName($column);
-            }
-        }
+        $columns = array_map(
+            fn(string|ExpressionInterface $column): string => $column instanceof ExpressionInterface
+                ? $this->buildExpression($column)
+                : $this->quoter->quoteColumnName($column),
+            $columns,
+        );
 
-        /** @psalm-var string[] $columns */
         return implode(', ', $columns);
     }
 
@@ -212,13 +208,13 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return 'FOR ' . implode($this->separator . 'FOR ', $values);
     }
 
-    public function buildFrom(array|null $tables, array &$params): string
+    public function buildFrom(array $tables, array &$params): string
     {
         if (empty($tables)) {
             return '';
         }
 
-        /** @psalm-var string[] $tables */
+        /** @var string[] $tables */
         $tables = $this->quoteTableNames($tables, $params);
 
         return 'FROM ' . implode(', ', $tables);
@@ -256,30 +252,18 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             return '';
         }
 
-        /**
-         * @psalm-var array<
-         *   array-key,
-         *   array{
-         *     0?:string,
-         *     1?:array<array-key, Query|string>|string,
-         *     2?:array|ExpressionInterface|string|null
-         *   }|null
-         * > $joins
-         */
         foreach ($joins as $i => $join) {
+            /** @psalm-suppress DocblockTypeContradiction */
             if (!is_array($join) || !isset($join[0], $join[1])) {
-                throw new Exception(
-                    'A join clause must be specified as an array of join type, join table, and optionally join '
-                    . 'condition.'
+                throw new InvalidArgumentException(
+                    'A join clause must be specified as an array of join type, join table, and optionally join condition.',
                 );
             }
 
-            /* 0:join type, 1:join table, 2:on-condition (optional) */
             [$joinType, $table] = $join;
 
-            $tables = $this->quoteTableNames((array) $table, $params);
+            $tables = $this->quoteTableNames(is_array($table) ? $table : [$table], $params);
 
-            /** @var string $table */
             $table = reset($tables);
             $joins[$i] = "$joinType $table";
 
@@ -346,7 +330,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         array $orderBy,
         ExpressionInterface|int|null $limit,
         ExpressionInterface|int|null $offset,
-        array &$params = []
+        array &$params = [],
     ): string {
         $orderBy = $this->buildOrderBy($orderBy, $params);
         if ($orderBy !== '') {
@@ -364,7 +348,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         array $columns,
         array &$params,
         bool $distinct = false,
-        ?string $selectOption = null
+        ?string $selectOption = null,
     ): string {
         $select = $distinct ? 'SELECT DISTINCT' : 'SELECT';
 
@@ -430,34 +414,35 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function buildWhere(
         array|string|ConditionInterface|ExpressionInterface|null $condition,
-        array &$params = []
+        array &$params = [],
     ): string {
         $where = $this->buildCondition($condition, $params);
         return ($where === '') ? '' : ('WHERE ' . $where);
     }
 
-    public function buildWithQueries(array $withs, array &$params): string
+    public function buildWithQueries(array $withQueries, array &$params): string
     {
-        if (empty($withs)) {
+        if (empty($withQueries)) {
             return '';
         }
 
         $recursive = false;
         $result = [];
 
-        /** @psalm-var array{query:string|Query, alias:ExpressionInterface|string, recursive:bool}[] $withs */
-        foreach ($withs as $with) {
-            if ($with['recursive']) {
+        foreach ($withQueries as $withQuery) {
+            if ($withQuery->recursive) {
                 $recursive = true;
             }
 
-            if ($with['query'] instanceof QueryInterface) {
-                [$with['query'], $params] = $this->build($with['query'], $params);
+            if ($withQuery->query instanceof QueryInterface) {
+                [$querySql, $params] = $this->build($withQuery->query, $params);
+            } else {
+                $querySql = $withQuery->query;
             }
 
-            $quotedAlias = $this->quoteCteAlias($with['alias']);
+            $quotedAlias = $this->quoteCteAlias($withQuery->alias);
 
-            $result[] = $quotedAlias . ' AS (' . $with['query'] . ')';
+            $result[] = $quotedAlias . ' AS (' . $querySql . ')';
         }
 
         return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);
@@ -492,8 +477,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         $className = $expression::class;
 
         if (!isset($this->expressionBuilders[$className])) {
-            throw new InvalidArgumentException(
-                'Expression of class ' . $className . ' can not be built in ' . static::class
+            throw new NotSupportedException(
+                'Expression of class ' . $className . ' can not be built in ' . static::class,
             );
         }
 
@@ -626,8 +611,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     }
 
     /**
-     * @throws Exception
-     * @throws InvalidConfigException
      * @throws NotSupportedException
      *
      * @return array The list of table names with quote.
@@ -644,9 +627,11 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                     $table = $this->quoter->quoteTableName($table);
                 }
                 $tables[$i] = "$table " . $this->quoter->quoteTableName($i);
-            } elseif ($table instanceof ExpressionInterface && is_string($i)) {
+            } elseif ($table instanceof ExpressionInterface) {
                 $table = $this->buildExpression($table, $params);
-                $tables[$i] = "$table " . $this->quoter->quoteTableName($i);
+                $tables[$i] = is_string($i)
+                    ? "$table " . $this->quoter->quoteTableName($i)
+                    : $table;
             } elseif (is_string($table) && !str_contains($table, '(')) {
                 $tableWithAlias = $this->extractAlias($table);
                 if (is_array($tableWithAlias)) { // with alias

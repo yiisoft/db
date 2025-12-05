@@ -171,14 +171,14 @@ interface ConnectionInterface
      * @return TableSchemaInterface|null The schema information for the named table. Null if the named table doesn't
      * exist.
      */
-    public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null;
+    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface;
 
     /**
      * Returns the currently active transaction.
      *
      * @return TransactionInterface|null The currently active transaction. Null if no active transaction.
      */
-    public function getTransaction(): TransactionInterface|null;
+    public function getTransaction(): ?TransactionInterface;
 
     /**
      * Returns a value indicating whether the DB connection is active.

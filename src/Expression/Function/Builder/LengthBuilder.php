@@ -18,9 +18,7 @@ use function is_string;
  */
 final class LengthBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder) {}
 
     /**
      * Builds a SQL `LENGTH()` function expression from the given {@see Length} object.

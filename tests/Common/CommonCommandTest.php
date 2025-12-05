@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use Closure;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
+use PHPUnit\Framework\TestCase;
 use Throwable;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\ColumnType;
@@ -19,25 +22,247 @@ use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbUuidHelper;
+use Yiisoft\Db\Profiler\Context\CommandContext;
+use Yiisoft\Db\Profiler\ContextInterface;
+use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
 use function array_filter;
+use function is_callable;
 use function is_string;
 use function setlocale;
 use function str_starts_with;
 
-abstract class CommonCommandTest extends AbstractCommandTest
+abstract class CommonCommandTest extends IntegrationTestCase
 {
+    public function testAutoQuoting(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $sql = <<<SQL
+        SELECT [[id]], [[t.name]] FROM {{customer}} t
+        SQL;
+        $command = $db->createCommand($sql);
+
+        $this->assertSame(
+            $this->replaceQuotes(
+                <<<SQL
+                SELECT [[id]], [[t.name]] FROM [[customer]] t
+                SQL,
+            ),
+            $command->getSql(),
+        );
+    }
+
+    public function testConstruct(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $command = $db->createCommand();
+
+        $this->assertEmpty($command->getSql());
+
+        $sql = <<<SQL
+        SELECT * FROM customer WHERE name=:name
+        SQL;
+        $command = $db->createCommand($sql, [':name' => 'John Doe']);
+
+        $this->assertSame($sql, $command->getSql());
+        $this->assertSame([':name' => 'John Doe'], $command->getParams());
+    }
+
+    public function testGetParams(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $command = $db->createCommand();
+        $values = ['int' => 1, 'string' => 'str'];
+        $command->bindValues($values);
+        $bindedValues = $command->getParams(false);
+
+        $this->assertIsArray($bindedValues);
+        $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
+        $this->assertCount(2, $bindedValues);
+
+        $param = new Param('str', 99);
+        $command->bindValues(['param' => $param]);
+        $bindedValues = $command->getParams(false);
+
+        $this->assertIsArray($bindedValues);
+        $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
+        $this->assertCount(3, $bindedValues);
+        $this->assertEquals($param, $bindedValues['param']);
+        $this->assertNotEquals($param, $bindedValues['int']);
+
+        /* Replace test */
+        $command->bindValues(['int' => $param]);
+        $bindedValues = $command->getParams(false);
+
+        $this->assertIsArray($bindedValues);
+        $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
+        $this->assertCount(3, $bindedValues);
+        $this->assertEquals($param, $bindedValues['int']);
+
+        $db->close();
+    }
+
+    /**
+     * @see https://github.com/yiisoft/yii2/issues/8592
+     */
+    #[DataProviderExternal(CommandProvider::class, 'rawSql')]
+    public function testGetRawSql(string $sql, array $params, string $expectedRawSql): void
+    {
+        $db = $this->getSharedConnection();
+
+        $command = $db->createCommand($sql, $params);
+
+        $this->assertSame(
+            $this->replaceQuotes($expectedRawSql),
+            $command->getRawSql(),
+        );
+    }
+
+    public function testGetSetSql(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $sql = <<<SQL
+        SELECT * FROM customer
+        SQL;
+        $command = $db->createCommand($sql);
+        $this->assertSame($sql, $command->getSql());
+
+        $sql2 = <<<SQL
+        SELECT * FROM order
+        SQL;
+        $command->setSql($sql2);
+        $this->assertSame($sql2, $command->getSql());
+
+        $db->close();
+    }
+
+    public function testPrepareCancel(): void
+    {
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
+        $command = $db->createCommand();
+        $command->setSql(
+            <<<SQL
+            SELECT * FROM [[customer]]
+            SQL,
+        );
+
+        $this->assertNull($command->getPdoStatement());
+
+        $command->prepare();
+
+        $this->assertNotNull($command->getPdoStatement());
+
+        $command->cancel();
+
+        $this->assertNull($command->getPdoStatement());
+
+        $db->close();
+    }
+
+    public function testSetRawSql(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $command = $db->createCommand();
+        $command->setRawSql(
+            <<<SQL
+            SELECT 123
+            SQL,
+        );
+
+        $this->assertSame('SELECT 123', $command->getRawSql());
+
+        $db->close();
+    }
+
+    public function testSetSql(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $command = $db->createCommand();
+        $command->setSql(
+            <<<SQL
+            SELECT 123
+            SQL,
+        );
+
+        $this->assertSame('SELECT 123', $command->getSql());
+
+        $db->close();
+    }
+
+    public function testProfiler(?string $sql = null): void
+    {
+        $sql ??= 'SELECT 123';
+
+        $db = $this->getSharedConnection();
+        $db->open();
+
+        $profiler = $this->createMock(ProfilerInterface::class);
+        $profiler->expects(self::once())
+            ->method('begin')
+            ->with($sql);
+        $profiler->expects(self::once())
+            ->method('end')
+            ->with($sql);
+        $db->setProfiler($profiler);
+
+        $db->createCommand($sql)->execute();
+
+        $db->close();
+    }
+
+    public function testProfilerData(?string $sql = null): void
+    {
+        $sql ??= 'SELECT 123';
+
+        $db = $this->createConnection();
+        $db->open();
+
+        $profiler = new class ($this, $sql) implements ProfilerInterface {
+            public function __construct(private TestCase $test, private string $sql) {}
+
+            public function begin(string $token, ContextInterface|array $context = []): void
+            {
+                $this->test->assertSame($this->sql, $token);
+                $this->test->assertInstanceOf(CommandContext::class, $context);
+                $this->test->assertSame('command', $context->getType());
+                $this->test->assertIsArray($context->asArray());
+            }
+
+            public function end(string $token, ContextInterface|array $context = []): void
+            {
+                $this->test->assertSame($this->sql, $token);
+                $this->test->assertInstanceOf(CommandContext::class, $context);
+                $this->test->assertSame('command', $context->getType());
+                $this->test->assertIsArray($context->asArray());
+            }
+        };
+
+        $db->setProfiler($profiler);
+
+        $db->createCommand($sql)->execute();
+
+        $db->close();
+    }
+
     public function testAddCheck(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -54,7 +279,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertMatchesRegularExpression(
             '/^.*int1.*>.*1.*$/',
-            $schema->getTableChecks('{{test_ck}}')['test_ck_constraint']->expression
+            $schema->getTableChecks('{{test_ck}}')['test_ck_constraint']->expression,
         );
 
         $db->close();
@@ -62,7 +287,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testAddColumn(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->addColumn('{{customer}}', '{{city}}', ColumnType::STRING)->execute();
@@ -78,7 +304,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testAddCommentOnColumn(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $tableName = '{{customer}}';
         $tableComment = 'Primary key.';
@@ -95,7 +322,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testAddCommentOnTable(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $tableName = '{{customer}}';
         $commentText = 'Customer table.';
@@ -111,7 +339,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testResetSequenceSql(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
 
@@ -124,7 +353,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testAddDefaultValue(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -155,7 +384,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         array|string $column2,
         string $expectedName,
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -201,7 +430,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     #[DataProviderExternal(CommandProvider::class, 'addPrimaryKey')]
     public function testAddPrimaryKey(string $name, string $tableName, array|string $column): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -228,7 +457,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     #[DataProviderExternal(CommandProvider::class, 'addUnique')]
     public function testAddUnique(string $name, string $tableName, array|string $column): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -261,22 +490,24 @@ abstract class CommonCommandTest extends AbstractCommandTest
         array $columns,
         string $expected,
         array $expectedParams = [],
-        int $insertedRow = 1
+        int $insertedRow = 1,
     ): void {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->insertBatch($table, $values, $columns);
 
-        $this->assertSame($expected, $command->getSql());
+        $this->assertSame(
+            $this->replaceQuotes($expected),
+            $command->getSql(),
+        );
         $this->assertSame($expectedParams, $command->getParams());
 
         $command->prepare(false);
         $command->execute();
 
         $this->assertEquals($insertedRow, (new Query($db))->from($table)->count());
-
-        $db->close();
     }
 
     /**
@@ -288,13 +519,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
      */
     public function testBatchInsertDataTypesLocale(): void
     {
-        $locale = setlocale(LC_NUMERIC, 0);
+        $locale = setlocale(LC_NUMERIC, '');
 
         if ($locale === false) {
             $this->markTestSkipped('Your platform does not support locales.');
         }
 
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
 
@@ -313,7 +545,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 $command->setSql(
                     <<<SQL
                     ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,'
-                    SQL
+                    SQL,
                 )->execute();
             }
 
@@ -322,7 +554,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $data = $command->setSql(
                 <<<SQL
                 SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]
-                SQL
+                SQL,
             )->queryAll();
 
             $this->assertCount(3, $data);
@@ -353,7 +585,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testBatchInsertWithDuplicates(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->insertBatch(
@@ -378,7 +611,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testBatchInsertWithManyData(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $values = [];
         $attemptsInsertRows = 200;
@@ -401,7 +635,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testBatchInsertWithYield(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $rows = (
             static function () {
@@ -417,9 +652,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     #[DataProviderExternal(CommandProvider::class, 'createIndex')]
-    public function testCreateIndex(array $columns, array $indexColumns, string|null $indexType, string|null $indexMethod): void
+    public function testCreateIndex(array $columns, array $indexColumns, ?string $indexType, ?string $indexMethod): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -438,7 +673,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertCount($count + 1, $schema->getTableIndexes($tableName));
 
-        $index = array_filter($schema->getTableIndexes($tableName), static fn ($index) => !$index->isPrimaryKey)[$indexName];
+        $index = array_filter($schema->getTableIndexes($tableName), static fn($index) => !$index->isPrimaryKey)[$indexName];
 
         $this->assertSame($indexColumns, $index->columnNames);
 
@@ -453,7 +688,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testCreateTable(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -474,7 +709,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $records = $command->setSql(
             <<<SQL
             SELECT [[id]], [[bar]], [[name]] FROM [[testCreateTable]];
-            SQL
+            SQL,
         )->queryAll();
 
         $nameCol = $schema->getTableSchema('{{testCreateTable}}', true)->getColumn('name');
@@ -487,7 +722,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testCreateView(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -511,7 +746,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $records = $command->setSql(
             <<<SQL
             SELECT [[bar]] FROM {{testCreateView}};
-            SQL
+            SQL,
         )->queryAll();
 
         $this->assertEquals([['bar' => 6]], $records);
@@ -523,7 +758,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDataReaderRewindException(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $reader = $command->setSql('SELECT * FROM {{customer}}')->query();
@@ -551,13 +787,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDataReaderIndexByAndResultCallback(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $reader = $db->createCommand()
             ->setSql('SELECT * FROM {{customer}} WHERE [[id]]=1')
             ->query()
-            ->indexBy(static fn (array $row): int => (int) $row['id'])
-            ->resultCallback(static fn (array $row): object => (object) $row);
+            ->indexBy(static fn(array $row): int => (int) $row['id'])
+            ->resultCallback(static fn(array $row): object => (object) $row);
 
         $this->assertTrue($reader->valid());
         $this->assertSame(1, $reader->key());
@@ -574,7 +811,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDelete(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->delete('{{customer}}', ['id' => 2])->execute();
@@ -595,7 +833,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropCheck(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -624,7 +862,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropColumn(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -651,7 +889,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropCommentFromColumn(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $tableName = '{{customer}}';
         $tableComment = 'Primary key.';
@@ -673,7 +912,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropCommentFromTable(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $tableName = '{{customer}}';
         $commentText = 'Customer table.';
@@ -694,7 +934,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropDefaultValue(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -723,7 +963,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropForeignKey(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -749,7 +989,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropIndex(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -777,7 +1017,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropPrimaryKey(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -803,7 +1043,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropTable(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -825,7 +1065,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropTableIfExistsWithExistTable(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $command = $db->createCommand();
         $schema = $db->getSchema();
 
@@ -844,7 +1084,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropTableIfExistsWithNonExistTable(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $command = $db->createCommand();
         $schema = $db->getSchema();
 
@@ -860,7 +1100,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropTableCascade(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $command = $db->createCommand();
         $schema = $db->getSchema();
 
@@ -897,7 +1137,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropUnique(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -923,7 +1163,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropView(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         /* since it already exists in the fixtures */
         $viewName = '{{animal_view}}';
@@ -941,13 +1182,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testExecute(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
             INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES ('user4@example.com', 'user4', 'address4')
-            SQL
+            SQL,
         );
 
         $this->assertSame(1, $command->execute());
@@ -955,7 +1197,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $command->setSql(
             <<<SQL
             SELECT COUNT(*) FROM [[customer]] WHERE [[name]] = 'user4'
-            SQL
+            SQL,
         );
 
         $this->assertEquals(1, $command->queryScalar());
@@ -967,15 +1209,21 @@ abstract class CommonCommandTest extends AbstractCommandTest
             default => 'SQLSTATE[42000]',
         };
 
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage($message);
+        $exception = null;
+        try {
+            $command->execute();
+        } catch (Throwable $exception) {
+        }
 
-        $command->execute();
+        $this->assertInstanceOf(Exception::class, $exception);
+        $this->assertStringStartsWith($message, $exception->getMessage());
+
+        $db->close();
     }
 
     public function testExecuteWithoutSql(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $command = $db->createCommand();
         $result = $command->setSql('')->execute();
@@ -987,13 +1235,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testInsert(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->delete('{{customer}}')->execute();
         $command->insert(
             '{{customer}}',
-            ['[[email]]' => 't1@example.com', '[[name]]' => 'test', '[[address]]' => 'test address']
+            ['[[email]]' => 't1@example.com', '[[name]]' => 'test', '[[address]]' => 'test address'],
         )->execute();
 
         $this->assertEquals(
@@ -1001,14 +1250,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->setSql(
                 <<<SQL
                 SELECT COUNT(*) FROM {{customer}}
-                SQL
+                SQL,
             )->queryScalar(),
         );
 
         $record = $command->setSql(
             <<<SQL
             SELECT [[email]], [[name]], [[address]] FROM {{customer}}
-            SQL
+            SQL,
         )->queryOne();
 
         $this->assertSame(['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'], $record);
@@ -1018,7 +1267,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testInsertReturningPks(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
 
@@ -1037,7 +1287,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testInsertReturningPksWithCompositePK(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
 
@@ -1052,7 +1303,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testInsertExpression(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->delete('{{order_with_null_fk}}')->execute();
@@ -1073,14 +1325,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->setSql(
                 <<<SQL
                 SELECT COUNT(*) FROM {{order_with_null_fk}}
-                SQL
+                SQL,
             )->queryScalar(),
         );
 
         $record = $command->setSql(
             <<<SQL
             SELECT [[created_at]] FROM {{order_with_null_fk}}
-            SQL
+            SQL,
         )->queryOne();
 
         $this->assertEquals(['created_at' => date('Y')], $record);
@@ -1090,14 +1342,15 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testsInsertQueryAsColumnValue(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $time = time();
         $command->setSql(
             <<<SQL
             DELETE FROM [[order_with_null_fk]]
-            SQL
+            SQL,
         )->execute();
         $command->insert('{{order}}', ['customer_id' => 1, 'created_at' => $time, 'total' => 42])->execute();
 
@@ -1118,19 +1371,19 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->setSql(
                 <<<SQL
                 SELECT [[created_at]] FROM [[order_with_null_fk]] WHERE [[customer_id]] = :id
-                SQL
+                SQL,
             )->bindValues([':id' => $orderId])->queryScalar(),
         );
 
         $command->setSql(
             <<<SQL
             DELETE FROM [[order_with_null_fk]]
-            SQL
+            SQL,
         )->execute();
         $command->setSql(
             <<<SQL
             DELETE FROM [[order]]
-            SQL
+            SQL,
         )->execute();
 
         $db->close();
@@ -1138,17 +1391,18 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testInsertSelect(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
             DELETE FROM {{customer}}
-            SQL
+            SQL,
         )->execute();
         $command->insert(
             '{{customer}}',
-            ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address']
+            ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'],
         )->execute();
         $query = (new Query($db))
             ->select(['{{customer}}.{{email}} as name', '{{name}} as email', '{{address}}'])
@@ -1161,14 +1415,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->setSql(
                 <<<SQL
                 SELECT COUNT(*) FROM {{customer}}
-                SQL
+                SQL,
             )->queryScalar(),
         );
 
         $record = $command->setSql(
             <<<SQL
             SELECT [[email]], [[name]], [[address]] FROM {{customer}}
-            SQL
+            SQL,
         )->queryAll();
 
         $this->assertSame(
@@ -1184,7 +1438,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testInsertSelectAlias(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->delete('{{customer}}')->execute();
@@ -1194,7 +1449,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 'email' => 't1@example.com',
                 'name' => 'test',
                 'address' => 'test address',
-            ]
+            ],
         )->execute();
         $query = (new Query($db))
             ->select(['email' => '{{customer}}.{{email}}', 'address' => 'name', 'name' => 'address'])
@@ -1207,14 +1462,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->setSql(
                 <<<SQL
                 SELECT COUNT(*) FROM [[customer]]
-                SQL
+                SQL,
             )->queryScalar(),
         );
 
         $record = $command->setSql(
             <<<SQL
             SELECT [[email]], [[name]], [[address]] FROM [[customer]]
-            SQL
+            SQL,
         )->queryAll();
 
         $this->assertSame(
@@ -1234,7 +1489,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     #[DataProviderExternal(CommandProvider::class, 'invalidSelectColumns')]
     public function testInsertSelectFailed(array|ExpressionInterface|string $invalidSelectColumns): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
 
         $query = new Query($db);
         $query->select($invalidSelectColumns)->from('{{customer}}');
@@ -1244,11 +1499,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->expectExceptionMessage('Expected select query object with enumerated (named) parameters');
 
         $command->insert('{{customer}}', $query)->execute();
+
+        $db->close();
     }
 
     public function testInsertToBlob(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->delete('{{type}}')->execute();
@@ -1263,7 +1521,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $result = $command->setSql(
             <<<SQL
             SELECT [[blob_col]] FROM {{type}}
-            SQL
+            SQL,
         )->queryOne();
 
         $this->assertIsArray($result);
@@ -1277,7 +1535,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testInsertWithoutTypecasting(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
         $command = $db->createCommand();
 
         $values = [
@@ -1311,7 +1570,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testInsertBatchWithoutTypecasting(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
         $command = $db->createCommand();
 
         $values = [
@@ -1346,27 +1606,31 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testIntegrityViolation(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $this->expectException(IntegrityException::class);
 
         $command = $db->createCommand(
             <<<SQL
             INSERT INTO [[profile]] ([[id]], [[description]]) VALUES (123, 'duplicate')
-            SQL
+            SQL,
         );
         $command->execute();
         $command->execute();
+
+        $db->close();
     }
 
     public function testNoTablenameReplacement(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->insert(
             '{{customer}}',
-            ['name' => 'Some {{weird}} name', 'email' => 'test@example.com', 'address' => 'Some {{%weird}} address']
+            ['name' => 'Some {{weird}} name', 'email' => 'test@example.com', 'address' => 'Some {{%weird}} address'],
         )->execute();
 
         if ($db->getDriverName() === 'pgsql') {
@@ -1388,12 +1652,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->update(
             '{{customer}}',
             ['name' => 'Some {{updated}} name', 'address' => 'Some {{%updated}} address'],
-            ['id' => $customerId]
+            ['id' => $customerId],
         )->execute();
         $customer = $command->setSql(
             <<<SQL
             SELECT [[name]], [[email]], [[address]] FROM {{customer}} WHERE [[id]] = :id
-            SQL
+            SQL,
         )->bindValues([':id' => $customerId])->queryOne();
 
         $this->assertIsArray($customer);
@@ -1405,13 +1669,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testQuery(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
             SELECT * FROM [[customer]]
-            SQL
+            SQL,
         );
 
         $this->assertNull($command->getPdoStatement());
@@ -1429,20 +1694,27 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $db->createCommand('bad SQL');
 
-        $this->expectException(Exception::class);
+        $exception = null;
+        try {
+            $command->query();
+        } catch (Exception $exception) {
+        }
 
-        $command->query();
+        $this->assertInstanceOf(Exception::class, $exception);
+
+        $db->close();
     }
 
     public function testQueryAll(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
             SELECT * FROM {{customer}}
-            SQL
+            SQL,
         );
         $rows = $command->queryAll();
 
@@ -1459,7 +1731,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             SELECT * FROM {{customer}} where id = 100
-            SQL
+            SQL,
         );
         $rows = $command->queryAll();
 
@@ -1472,13 +1744,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testQueryColumn(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
             SELECT * FROM [[customer]]
-            SQL
+            SQL,
         );
         $rows = $command->queryColumn();
 
@@ -1494,7 +1767,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             SELECT * FROM [[customer]] where id = 100
-            SQL
+            SQL,
         );
         $rows = $command->queryColumn();
 
@@ -1507,7 +1780,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testQueryOne(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $sql = <<<SQL
@@ -1538,7 +1812,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testQueryScalar(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $sql = <<<SQL
@@ -1557,7 +1832,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $command->setSql(
             <<<SQL
             SELECT [[id]] FROM [[customer]] WHERE [[id]] = 10
-            SQL
+            SQL,
         );
 
         $this->assertFalse($command->queryScalar());
@@ -1567,7 +1842,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testRenameColumn(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -1582,7 +1858,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testRenameTable(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -1604,7 +1881,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testSetRetryHandler(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
 
@@ -1613,7 +1891,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             INSERT INTO [[profile]] ([[description]]) VALUES('command retry')
-            SQL
+            SQL,
         )->execute();
 
         $this->assertNull($db->getTransaction());
@@ -1622,8 +1900,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->setSql(
                 <<<SQL
                 SELECT COUNT(*) FROM [[profile]] WHERE [[description]] = 'command retry'
-                SQL
-            )->queryScalar()
+                SQL,
+            )->queryScalar(),
         );
 
         $attempts = null;
@@ -1632,7 +1910,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql(
             <<<SQL
             INSERT INTO [[profile]] ([[id]], [[description]]) VALUES(1, 'command retry')
-            SQL
+            SQL,
         );
 
         $command->setRetryHandler(
@@ -1641,7 +1919,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 $hitHandler = true;
 
                 return $attempt <= 2;
-            }
+            },
         );
 
         try {
@@ -1662,13 +1940,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testTruncateTable(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $rows = $command->setSql(
             <<<SQL
             SELECT * FROM [[animal]]
-            SQL
+            SQL,
         )->queryAll();
 
         $this->assertCount(2, $rows);
@@ -1677,7 +1956,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $rows = $command->setSql(
             <<<SQL
             SELECT * FROM {{animal}}
-            SQL
+            SQL,
         )->queryAll();
 
         $this->assertCount(0, $rows);
@@ -1685,17 +1964,25 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
+    /**
+     * @param Closure(ConnectionInterface):(array|ExpressionInterface|string|null)|array|ExpressionInterface|string|null $from
+     */
     #[DataProviderExternal(CommandProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
         array|ExpressionInterface|string $conditions,
-        array|ExpressionInterface|string|null $from,
+        Closure|array|ExpressionInterface|string|null $from,
         array $params,
         array $expectedValues,
         int $expectedCount,
     ): void {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
+        if ($from instanceof Closure) {
+            $from = $from($db);
+        }
 
         $command = $db->createCommand();
         $count = $command->update($table, $columns, $conditions, $from, $params)->execute();
@@ -1717,7 +2004,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testUpdateWithoutTypecasting(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
         $command = $db->createCommand();
 
         $values = [
@@ -1746,12 +2034,26 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ':qp2' => '3.14',
             ':qp3' => '1',
         ], $command->getParams());
+
+        $db->close();
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):array)|array $firstData
+     * @param (Closure(ConnectionInterface):array)|array $secondData
+     */
     #[DataProviderExternal(CommandProvider::class, 'upsert')]
-    public function testUpsert(array $firstData, array $secondData): void
+    public function testUpsert(Closure|array $firstData, Closure|array $secondData): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
+        if ($firstData instanceof Closure) {
+            $firstData = $firstData($db);
+        }
+        if ($secondData instanceof Closure) {
+            $secondData = $secondData($db);
+        }
 
         $command = $db->createCommand();
 
@@ -1761,7 +2063,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 <<<SQL
                 SELECT COUNT(*) FROM [[T_upsert]]
                 SQL,
-            )->queryScalar()
+            )->queryScalar(),
         );
 
         $this->performAndCompareUpsertResult($db, $firstData);
@@ -1772,12 +2074,10 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 <<<SQL
                 SELECT COUNT(*) FROM [[T_upsert]]
                 SQL,
-            )->queryScalar()
+            )->queryScalar(),
         );
 
         $this->performAndCompareUpsertResult($db, $secondData);
-
-        $db->close();
     }
 
     public function testPrepareWithEmptySql()
@@ -1791,70 +2091,45 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 return $this->showDatabases();
             }
 
-            protected function getQueryBuilder(): QueryBuilderInterface
-            {
-            }
+            protected function getQueryBuilder(): QueryBuilderInterface {}
 
-            protected function internalExecute(): void
-            {
-            }
+            protected function internalExecute(): void {}
         };
 
         $command->prepare();
-    }
 
-    protected function performAndCompareUpsertResult(PdoConnectionInterface $db, array $data): void
-    {
-        $params = [];
-
-        foreach ($data['params'] as $param) {
-            if (is_callable($param)) {
-                $params[] = $param($db);
-            } else {
-                $params[] = $param;
-            }
-        }
-
-        $expected = $data['expected'] ?? $params[1];
-
-        $command = $db->createCommand();
-
-        ($command->upsert(...))(...$params);
-
-        $command->execute();
-
-        $actual = (new Query($db))
-            ->select(['email', 'address' => new Expression($this->upsertTestCharCast), 'status'])
-            ->from('{{T_upsert}}')
-            ->one();
-        $this->assertEquals($expected, $actual, $this->upsertTestCharCast);
+        $db->close();
     }
 
     public function testDecimalValue(): void
     {
-        $decimalValue = 10.0;
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
-        $inserted = $db->createCommand()
+        $inserted = $db
+            ->createCommand()
             ->insertReturningPks(
                 '{{%order}}',
-                ['customer_id' => 1, 'created_at' => 0, 'total' => $decimalValue]
+                ['customer_id' => 1, 'created_at' => 0, 'total' => 10.0],
             );
 
-        $result = $db->createCommand(
-            'select * from {{%order}} where [[id]]=:id',
-            ['id' => $inserted['id']]
-        )->queryOne();
+        $result = $db
+            ->createCommand(
+                'select * from {{%order}} where [[id]]=:id',
+                ['id' => $inserted['id']],
+            )
+            ->queryOne();
 
         $column = $db->getTableSchema('{{%order}}')->getColumn('total');
         $phpTypecastValue = $column->phpTypecast($result['total']);
 
-        $this->assertSame($decimalValue, $phpTypecastValue);
+        $this->assertSame('10', $phpTypecastValue);
     }
 
     public function testInsertReturningPksEmptyValues()
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $pkValues = $db->createCommand()->insertReturningPks('null_values', []);
 
@@ -1864,11 +2139,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
         };
 
         $this->assertSame($expected, $pkValues);
+
+        $db->close();
     }
 
     public function testInsertReturningPksWithQuery(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $query = (new Query($db))->select([
             'name' => new Expression("'test_1'"),
@@ -1878,38 +2156,55 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $pkValues = $db->createCommand()->insertReturningPks('customer', $query);
 
         $this->assertEquals(['id' => 4], $pkValues);
+
+        $db->close();
     }
 
     public function testInsertReturningPksEmptyValuesAndNoPk()
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $pkValues = $db->createCommand()->insertReturningPks('negative_default_values', []);
 
         $this->assertSame([], $pkValues);
+
+        $db->close();
     }
 
     public function testInsertReturningPksWithPhpTypecasting(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $result = $db->createCommand()
             ->withPhpTypecasting()
-            ->insertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
+            ->insertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => '2.5', 'type' => 'test1']);
 
-        $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
+        $this->assertSame(['id_1' => 1, 'id_2' => '2.5'], $result);
+
+        $db->close();
     }
 
+    /**
+     * @param (Closure(ConnectionInterface):(array|QueryInterface))|array|QueryInterface $insertColumns
+     */
     #[DataProviderExternal(CommandProvider::class, 'upsertReturning')]
     public function testUpsertReturning(
         string $table,
-        array|QueryInterface $insertColumns,
+        Closure|array|QueryInterface $insertColumns,
         array|bool $updateColumns,
-        array|null $returnColumns,
+        ?array $returnColumns,
         array $selectCondition,
         array $expectedValues,
     ): void {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
+        if ($insertColumns instanceof Closure) {
+            $insertColumns = $insertColumns($db);
+        }
+
         $command = $db->createCommand();
 
         $returnedValues = $command->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns);
@@ -1931,7 +2226,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testUpsertReturningWithUnique(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
         $command = $db->createCommand();
 
         $tableName = 'T_upsert';
@@ -1975,7 +2271,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testUpsertReturningPks(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         // insert case
         $primaryKeys = $db->createCommand()
@@ -2006,49 +2303,58 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testUpsertReturningPksEmptyValues()
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $pkValues = $db->createCommand()->upsertReturningPks('null_values', []);
 
         $this->assertEquals(['id' => 1], $pkValues);
+
+        $db->close();
     }
 
     public function testUpsertReturningPksEmptyValuesAndNoPk()
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $command = $db->createCommand();
         $pkValues = $command->upsertReturningPks('negative_default_values', []);
 
         $this->assertSame([], $pkValues);
+
+        $db->close();
     }
 
     public function testUpsertReturningPksWithPhpTypecasting(): void
     {
-        $db = $this->getConnection(true);
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
 
         $result = $db->createCommand()
             ->withPhpTypecasting()
-            ->upsertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
+            ->upsertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => '2.5', 'type' => 'test1']);
 
-        $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
-
-        $result = $db->createCommand()
-            ->withPhpTypecasting()
-            ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test2']);
-
-        $this->assertSame(['id_1' => 2, 'id_2' => 2.5], $result);
+        $this->assertSame(['id_1' => 1, 'id_2' => '2.5'], $result);
 
         $result = $db->createCommand()
             ->withPhpTypecasting()
-            ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test3']);
+            ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => '2.5', 'type' => 'test2']);
 
-        $this->assertSame(['id_1' => 2, 'id_2' => 2.5], $result);
+        $this->assertSame(['id_1' => 2, 'id_2' => '2.5'], $result);
+
+        $result = $db->createCommand()
+            ->withPhpTypecasting()
+            ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => '2.5', 'type' => 'test3']);
+
+        $this->assertSame(['id_1' => 2, 'id_2' => '2.5'], $result);
+
+        $db->close();
     }
 
     public function testUuid(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $command = $db->createCommand();
 
         $tableName = '{{%test_uuid}}';
@@ -2093,7 +2399,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testJsonTable(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $command = $db->createCommand();
 
         if ($db->getTableSchema('json_table', true) !== null) {
@@ -2111,13 +2417,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $expectedValue = $db->getQuoter()->quoteValue('{"a":1,"b":2}') . $typeHint;
 
         $this->assertSame(
-            static::replaceQuotes("INSERT INTO [[json_table]] ([[json_col]]) VALUES (:qp0$typeHint)"),
-            $command->getSql()
+            $this->replaceQuotes("INSERT INTO [[json_table]] ([[json_col]]) VALUES (:qp0$typeHint)"),
+            $command->getSql(),
         );
         $this->assertEquals([':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)], $command->getParams(false));
         $this->assertSame(
-            static::replaceQuotes("INSERT INTO [[json_table]] ([[json_col]]) VALUES ($expectedValue)"),
-            $command->getRawSql()
+            $this->replaceQuotes("INSERT INTO [[json_table]] ([[json_col]]) VALUES ($expectedValue)"),
+            $command->getRawSql(),
         );
         $this->assertSame(1, $command->execute());
 
@@ -2128,5 +2434,37 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $value = (new Query($db))->select('json_col')->from('json_table')->where(['id' => 1])->scalar();
         $this->assertSame('{"a":1,"b":2}', str_replace(' ', '', $value));
+
+        $db->close();
     }
+
+    protected function performAndCompareUpsertResult(ConnectionInterface $db, array $data): void
+    {
+        $params = [];
+
+        foreach ($data['params'] as $param) {
+            if (is_callable($param)) {
+                $params[] = $param($db);
+            } else {
+                $params[] = $param;
+            }
+        }
+
+        $expected = $data['expected'] ?? $params[1];
+
+        $command = $db->createCommand();
+
+        ($command->upsert(...))(...$params);
+
+        $command->execute();
+
+        $upsertTestCharCast = $this->getUpsertTestCharCast();
+        $actual = (new Query($db))
+            ->select(['email', 'address' => new Expression($upsertTestCharCast), 'status'])
+            ->from('{{T_upsert}}')
+            ->one();
+        $this->assertEquals($expected, $actual, $upsertTestCharCast);
+    }
+
+    abstract protected function getUpsertTestCharCast(): string;
 }

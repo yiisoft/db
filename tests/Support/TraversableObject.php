@@ -18,9 +18,7 @@ final class TraversableObject implements Iterator, Countable
 {
     private int $position = 0;
 
-    public function __construct(protected array $data)
-    {
-    }
+    public function __construct(protected array $data) {}
 
     /**
      * @throws Exception

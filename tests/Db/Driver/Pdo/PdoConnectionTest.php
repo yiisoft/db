@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Driver\Pdo;
 
+use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Tests\AbstractPdoConnectionTest;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\Stub\StubConnection;
+use Yiisoft\Db\Tests\Support\Stub\StubPdoDriver;
+use Yiisoft\Test\Support\SimpleCache\MemorySimpleCache;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
-final class PdoConnectionTest extends AbstractPdoConnectionTest
+final class PdoConnectionTest extends TestCase
 {
-    use TestTrait;
-
     public function testOpenWithEmptyDsn(): void
     {
-        $this->setDsn('');
-        $db = $this->getConnection();
+        $db = $this->createConnection(dsn: '');
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage('Connection::dsn cannot be empty.');
@@ -31,7 +29,7 @@ final class PdoConnectionTest extends AbstractPdoConnectionTest
 
     public function testGetLastInsertID(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
 
         $this->expectException(InvalidCallException::class);
         $this->expectExceptionMessage('DB Connection is not active.');
@@ -41,10 +39,20 @@ final class PdoConnectionTest extends AbstractPdoConnectionTest
 
     public function testQuoteValueString(): void
     {
-        $db = $this->getConnection();
+        $db = $this->createConnection();
 
         $string = 'test string';
 
         $this->assertStringContainsString($string, $db->quoteValue($string));
+    }
+
+    private function createConnection(string $dsn = 'sqlite::memory:'): StubConnection
+    {
+        return new StubConnection(
+            new StubPdoDriver($dsn),
+            new SchemaCache(
+                new MemorySimpleCache(),
+            ),
+        );
     }
 }

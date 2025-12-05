@@ -20,9 +20,7 @@ use function is_array;
  */
 class CaseXBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(protected readonly QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(protected readonly QueryBuilderInterface $queryBuilder) {}
 
     /**
      * Builds an SQL `CASE` expression from the given {@see CaseX} object.

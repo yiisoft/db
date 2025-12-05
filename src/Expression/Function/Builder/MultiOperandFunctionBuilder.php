@@ -21,21 +21,7 @@ use function is_string;
  */
 abstract class MultiOperandFunctionBuilder implements ExpressionBuilderInterface
 {
-    /**
-     * Builds a SQL multi-operand function expression from the given {@see MultiOperandFunction} instance.
-     *
-     * @param MultiOperandFunction $expression The expression to build from.
-     * @param array $params The parameters to be bound to the query.
-     *
-     * @psalm-param T $expression
-     *
-     * @return string SQL multi-operand function expression.
-     */
-    abstract protected function buildFromExpression(MultiOperandFunction $expression, array &$params): string;
-
-    public function __construct(protected readonly QueryBuilderInterface $queryBuilder)
-    {
-    }
+    public function __construct(protected readonly QueryBuilderInterface $queryBuilder) {}
 
     /**
      * Builds a SQL multi-operand function expression from the given {@see MultiOperandFunction} instance.
@@ -53,7 +39,7 @@ abstract class MultiOperandFunctionBuilder implements ExpressionBuilderInterface
 
         if (empty($operands)) {
             throw new InvalidArgumentException(
-                'The ' . $expression::class . ' expression must have at least one operand.'
+                'The ' . $expression::class . ' expression must have at least one operand.',
             );
         }
 
@@ -63,6 +49,18 @@ abstract class MultiOperandFunctionBuilder implements ExpressionBuilderInterface
 
         return $this->buildFromExpression($expression, $params);
     }
+
+    /**
+     * Builds a SQL multi-operand function expression from the given {@see MultiOperandFunction} instance.
+     *
+     * @param MultiOperandFunction $expression The expression to build from.
+     * @param array $params The parameters to be bound to the query.
+     *
+     * @psalm-param T $expression
+     *
+     * @return string SQL multi-operand function expression.
+     */
+    abstract protected function buildFromExpression(MultiOperandFunction $expression, array &$params): string;
 
     /**
      * Builds an operand expression of the multi-operand function.

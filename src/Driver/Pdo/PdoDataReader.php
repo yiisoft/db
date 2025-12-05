@@ -35,9 +35,10 @@ final class PdoDataReader implements DataReaderInterface
     private Closure|string|null $indexBy = null;
     private int $index = 0;
     /** @psalm-var ResultCallbackOne|null $resultCallback */
-    private Closure|null $resultCallback = null;
+    private ?Closure $resultCallback = null;
+    /** @psalm-var array<string,mixed>|false  */
     private array|false $row;
-    /** @var ColumnInterface[] */
+    /** @psalm-var array<string,ColumnInterface> */
     private array $typecastColumns = [];
 
     /**
@@ -45,7 +46,7 @@ final class PdoDataReader implements DataReaderInterface
      */
     public function __construct(private readonly PDOStatement $statement)
     {
-        /** @var array|false */
+        /** @var array<string,mixed>|false */
         $this->row = $statement->fetch(PDO::FETCH_ASSOC);
     }
 
@@ -128,7 +129,7 @@ final class PdoDataReader implements DataReaderInterface
      */
     public function next(): void
     {
-        /** @var array|false */
+        /** @var array<string,mixed>|false */
         $this->row = $this->statement->fetch(PDO::FETCH_ASSOC);
         $this->index++;
     }
@@ -149,7 +150,7 @@ final class PdoDataReader implements DataReaderInterface
         return $this;
     }
 
-    public function resultCallback(Closure|null $resultCallback): static
+    public function resultCallback(?Closure $resultCallback): static
     {
         $this->resultCallback = $resultCallback;
         return $this;

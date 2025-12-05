@@ -38,8 +38,7 @@ final class Expression implements ExpressionInterface, Stringable
     public function __construct(
         public readonly string $expression,
         public readonly array $params = [],
-    ) {
-    }
+    ) {}
 
     /**
      * @return string The expression.

@@ -14,7 +14,7 @@ use const JSON_THROW_ON_ERROR;
  */
 final class LazyArray extends AbstractLazyArray
 {
-    protected function parse(string $value): array|null
+    protected function parse(string $value): ?array
     {
         /** @var array|null */
         return json_decode($value, true, 512, JSON_THROW_ON_ERROR);

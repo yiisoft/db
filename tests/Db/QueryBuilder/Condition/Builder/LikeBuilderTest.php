@@ -12,23 +12,22 @@ use Yiisoft\Db\QueryBuilder\Condition\Builder\LikeBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\Like;
 use Yiisoft\Db\QueryBuilder\Condition\LikeMode;
 use Yiisoft\Db\Tests\Support\Stringable;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 /**
  * @group db
  */
 final class LikeBuilderTest extends TestCase
 {
-    use TestTrait;
-
     #[TestWith(['%test%', LikeMode::Contains])]
     #[TestWith(['test%', LikeMode::StartsWith])]
     #[TestWith(['%test', LikeMode::EndsWith])]
     #[TestWith(['test', LikeMode::Custom])]
     public function testBuildWithContainsMode(string $expected, LikeMode $mode): void
     {
+        $db = TestHelper::createSqliteMemoryConnection();
         $likeCondition = new Like('column', 'test', mode: $mode);
-        $likeBuilder = new LikeBuilder($this->getConnection()->getQueryBuilder());
+        $likeBuilder = new LikeBuilder($db->getQueryBuilder());
 
         $params = [];
         $likeBuilder->build($likeCondition, $params);
@@ -46,8 +45,9 @@ final class LikeBuilderTest extends TestCase
     #[TestWith(['%te_st%', 'te_st', false])]
     public function testStringableValue(string $expected, string $value, bool $escape): void
     {
+        $db = TestHelper::createSqliteMemoryConnection();
         $condition = new Like('column', new Stringable($value), escape: $escape);
-        $builder = new LikeBuilder($this->getConnection()->getQueryBuilder());
+        $builder = new LikeBuilder($db->getQueryBuilder());
 
         $params = [];
         $builder->build($condition, $params);

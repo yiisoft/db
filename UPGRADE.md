@@ -142,6 +142,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryPartsInterface::setFor()` - overwrites the `FOR` part of the query;
 - `QueryPartsInterface::setWhere()` - overwrites the `WHERE` part of the query;
 - `QueryPartsInterface::setHaving()` - overwrites the `HAVING` part of the query;
+- `QueryPartsInterface::addWithQuery()` - prepends an SQL statement using `WITH` syntax;
 - `ConnectionInterface::getColumnBuilderClass()` - returns the column builder class name for concrete DBMS;
 - `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
@@ -184,8 +185,9 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `TableSchemaInterface::compositeForeignKey()`;
 - `SchemaInterface::createColumn()` - use `ColumnBuilder` instead;
 - `SchemaInterface::isReadQuery()` - use `DbStringHelper::isReadQuery()` instead;
-- `AbstractSchema::resolveTableName()` - use `QuoterInterface::getTableNameParts()` instead;
+- `SchemaInterface::findUniqueIndexes()` - use `SchemaInterface::getTableUniques()` instead;
 - `SchemaInterface::getRawTableName()` - use `QuoterInterface::getRawTableName()` instead;
+- `AbstractSchema::resolveTableName()` - use `QuoterInterface::getTableNameParts()` instead;
 - `AbstractSchema::isReadQuery()` - use `DbStringHelper::isReadQuery()` instead;
 - `AbstractSchema::getRawTableName()` - use `QuoterInterface::getRawTableName()` instead;
 - `AbstractSchema::normalizeRowKeyCase()` - use `array_change_key_case()` instead;
@@ -214,14 +216,9 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 
 ### Remove constants
 
-- `SchemaInterface::TYPE_JSONB`
-- `SchemaInterface::PHP_TYPE_INTEGER`
-- `SchemaInterface::PHP_TYPE_STRING`
-- `SchemaInterface::PHP_TYPE_BOOLEAN`
-- `SchemaInterface::PHP_TYPE_DOUBLE`
-- `SchemaInterface::PHP_TYPE_RESOURCE`
-- `SchemaInterface::PHP_TYPE_ARRAY`
-- `SchemaInterface::PHP_TYPE_NULL`
+- `SchemaInterface::INDEX_*`
+- `SchemaInterface::PHP_TYPE_*`
+- `SchemaInterface::TYPE_*`
 
 ### Other changes
 
@@ -237,7 +234,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change return type of `AbstractCommand::insertWithReturningPks()` method to `array|false`;
 - Rename `QueryBuilderInterface::quoter()` method to `QueryBuilderInterface::getQuoter()`;
 - Change constructor parameters in `AbstractQueryBuilder` class;
-- Remove nullable from `PdoConnectionInterface::getActivePdo()` result;
+- Remove parameters and nullable result from `PdoConnectionInterface::getActivePdo()`;
 - Move `Yiisoft\Db\Query\Data\DataReaderInterface` interface to `Yiisoft\Db\Query` namespace;
 - Move `Yiisoft\Db\Query\Data\DataReader` class to `Yiisoft\Db\Driver\Pdo` namespace and rename it to `PdoDataReader`;
 - Add `indexBy()` and `resultCallback()` methods to `DataReaderInterface` and `PdoDataReader` class;
@@ -279,6 +276,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Remove `BetweenColumns` condition;
 - Change `QueryBuilderInterface::getExpressionBuilder()` result type to `ExpressionBuilderInterface`;
 - Change `DQLQueryBuilderInterface::getExpressionBuilder()` result type to `ExpressionBuilderInterface`;
+- Change type of `$tables` to `array` in `DQLQueryBuilderInterface::buildFrom()`;
 - Rename `ArrayExpression` to `ArrayValue` and move it to `Yiisoft\Db\Expression\Value` namespace;
 - Rename `ArrayExpressionBuilder` to `ArrayValueBuilder` and move it to `Yiisoft\Db\Expression\Value\Builder` namespace;
 - Rename `JsonExpression` to `JsonValue` and move it to `Yiisoft\Db\Expression\Value` namespace;
@@ -288,4 +286,11 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
   namespace;
 - Remove `StaleObjectException`, `UnknownMethodException`, `UnknownPropertyException` classes;
 - Remove `Expression::getParams()` method, use `$params` property instead;
-
+- Allow `ExpressionInterface` for `$table` and `$on` parameters of `QueryPartsInterface` methods: `join()`,
+  `innerJoin()`, `leftJoin()`, `rightJoin()`;
+- `QueryInterface::getWithQueries()` method returns array of `WithQuery` instances;
+- `QueryPartsInterface::withQuery()` method replace "WITH" clause instead of adding before;
+- Change `QueryPartsInterface::withQueries()` parameter to variadic with type `WithQuery`;
+- In `DQLQueryBuilderInterface::buildWithQueries()` method change first parameter type form `array[]` to `WithQuery[]`;
+- Remove `AbstractCommand::refreshTableSchema()` method;
+- Property `$retryHandler` is not reset on `AbstractCommand::reset()` method call;

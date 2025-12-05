@@ -27,6 +27,5 @@ final class DefaultValue
         public readonly string $name = '',
         public readonly array $columnNames = [],
         public readonly mixed $value = null,
-    ) {
-    }
+    ) {}
 }

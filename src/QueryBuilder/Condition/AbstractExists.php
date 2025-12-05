@@ -19,8 +19,7 @@ abstract class AbstractExists implements ConditionInterface
      */
     final public function __construct(
         public readonly QueryInterface $query,
-    ) {
-    }
+    ) {}
 
     /**
      * Creates a condition based on the given operator and operands.
@@ -36,8 +35,8 @@ abstract class AbstractExists implements ConditionInterface
         throw new InvalidArgumentException(
             sprintf(
                 'Sub-query for %s operator must be a Query object.',
-                $operator
-            )
+                $operator,
+            ),
         );
     }
 }

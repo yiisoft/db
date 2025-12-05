@@ -17,6 +17,7 @@ use function array_map;
 use function array_multisort;
 use function count;
 use function get_object_vars;
+use function gettype;
 use function is_array;
 use function is_string;
 use function iterator_to_array;
@@ -94,7 +95,7 @@ final class DbArrayHelper
      *
      * @return array[]|object[] The arranged array.
      *
-     * @psalm-param list<array> $rows
+     * @psalm-param list<array<string,mixed>> $rows
      * @psalm-param IndexBy|null $indexBy
      * @psalm-param ResultCallback|null $resultCallback
      */
@@ -102,7 +103,7 @@ final class DbArrayHelper
         array $rows,
         array $arrangeBy = [],
         Closure|string|null $indexBy = null,
-        Closure|null $resultCallback = null,
+        ?Closure $resultCallback = null,
     ): array {
         if (empty($rows)) {
             return [];
@@ -173,14 +174,15 @@ final class DbArrayHelper
      *
      * @return array[]|object[] The indexed array.
      *
-     * @psalm-param array<array> $rows
+     * @psalm-param array<array<string,mixed>> $rows
      * @psalm-param IndexBy|null $indexBy
      * @psalm-param ResultCallback|null $resultCallback
+     * @psalm-return array<array<string,mixed>|object>
      */
     public static function index(
         array $rows,
         Closure|string|null $indexBy = null,
-        Closure|null $resultCallback = null,
+        ?Closure $resultCallback = null,
     ): array {
         if (empty($rows)) {
             return [];
@@ -240,7 +242,7 @@ final class DbArrayHelper
      */
     public static function multisort(
         array &$array,
-        string $key
+        string $key,
     ): void {
         if (empty($array)) {
             return;
@@ -260,7 +262,7 @@ final class DbArrayHelper
             range(1, count($array)),
             SORT_ASC,
             SORT_NUMERIC,
-            $array
+            $array,
         );
     }
 
@@ -298,12 +300,18 @@ final class DbArrayHelper
      *  - a string with comma-separated expression values.
      *
      * @return array An array of normalized expressions.
+     *
+     * @psalm-template TArray as array
+     * @psalm-template TExpression as ExpressionInterface
+     * @psalm-param TArray|TExpression|string $raw
+     * @psalm-return ($raw is string ? list<string> : ($raw is ExpressionInterface ? list{TExpression} : TArray))
+     *
+     * @psalm-suppress InvalidFalsableReturnType Psalm cannot correct parse method code.
      */
     public static function normalizeExpressions(array|ExpressionInterface|string $raw): array
     {
         /**
-         * @var array
-         * @psalm-suppress PossiblyInvalidArgument
+         * @psalm-suppress PossiblyInvalidArgument,FalsableReturnStatement
          */
         return match (gettype($raw)) {
             GettypeResult::ARRAY => $raw,
@@ -322,10 +330,10 @@ final class DbArrayHelper
     private static function indexArranged(
         array &$arranged,
         Closure|string|null $indexBy,
-        Closure|null $resultCallback,
+        ?Closure $resultCallback,
         int $depth,
     ): void {
-        /** @var list<array> $rows */
+        /** @psalm-var list<array<string,mixed>> $rows */
         foreach ($arranged as &$rows) {
             if ($depth > 1) {
                 self::indexArranged($rows, $indexBy, $resultCallback, $depth - 1);

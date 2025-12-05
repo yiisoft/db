@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
@@ -64,6 +65,8 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * @param mixed $value The PHP value to be converted to SQL.
      * @param array $params The parameters array to which the bound parameters will be added.
      *
+     * @throws InvalidArgumentException
+     *
      * @return string The SQL representation of the value.
      */
     public function buildValue(mixed $value, array &$params): string;
@@ -85,7 +88,7 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      *
      * @param ExpressionInterface $expression The expression to build.
      *
-     * @throws InvalidArgumentException When expression building isn't supported by this QueryBuilder.
+     * @throws NotSupportedException When expression building isn't supported by this QueryBuilder.
      */
     public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface;
 

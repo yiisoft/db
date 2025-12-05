@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Support;
 
 final class AnyValue extends CompareValue
 {
-    private static self|null $instance = null;
+    private static ?self $instance = null;
 
     public static function getInstance(): self
     {

@@ -38,8 +38,7 @@ abstract class AbstractLike implements ConditionInterface
         public readonly bool $escape = self::DEFAULT_ESCAPE,
         public readonly LikeMode $mode = self::DEFAULT_MODE,
         public readonly LikeConjunction $conjunction = self::DEFAULT_CONJUNCTION,
-    ) {
-    }
+    ) {}
 
     /**
      * Creates a condition based on the given operator and operands.
@@ -115,20 +114,20 @@ abstract class AbstractLike implements ConditionInterface
      */
     private static function validateValue(
         string $operator,
-        mixed $value
+        mixed $value,
     ): iterable|int|string|ExpressionInterface|null {
         if (
-            is_string($value) ||
-            is_iterable($value) ||
-            is_int($value) ||
-            $value instanceof ExpressionInterface ||
-            $value === null
+            is_string($value)
+            || is_iterable($value)
+            || is_int($value)
+            || $value instanceof ExpressionInterface
+            || $value === null
         ) {
             return $value;
         }
 
         throw new InvalidArgumentException(
-            "Operator '$operator' requires value to be string, int, iterable or ExpressionInterface."
+            "Operator '$operator' requires value to be string, int, iterable or ExpressionInterface.",
         );
     }
 }

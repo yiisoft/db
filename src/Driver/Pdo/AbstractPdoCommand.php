@@ -25,9 +25,6 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function array_keys;
 use function array_map;
-use function restore_error_handler;
-use function set_error_handler;
-use function str_starts_with;
 
 /**
  * Represents a database command that can be executed using a PDO (PHP Data Object) database connection.
@@ -54,7 +51,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      *
      * @link https://www.php.net/manual/en/class.pdostatement.php
      */
-    protected PDOStatement|null $pdoStatement = null;
+    protected ?PDOStatement $pdoStatement = null;
 
     /**
      * @param PdoConnectionInterface $db The PDO database connection to use.
@@ -72,7 +69,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         $this->pdoStatement = null;
     }
 
-    public function getPdoStatement(): PDOStatement|null
+    public function getPdoStatement(): ?PDOStatement
     {
         return $this->pdoStatement;
     }
@@ -80,9 +77,9 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     public function bindParam(
         int|string $name,
         mixed &$value,
-        int|null $dataType = null,
-        int|null $length = null,
-        mixed $driverOptions = null
+        ?int $dataType = null,
+        ?int $length = null,
+        mixed $driverOptions = null,
     ): static {
         $this->prepare();
 
@@ -101,7 +98,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         return $this;
     }
 
-    public function bindValue(int|string $name, mixed $value, int|null $dataType = null): static
+    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static
     {
         if ($dataType === null) {
             $dataType = $this->db->getSchema()->getDataType($value);
@@ -133,7 +130,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         return $this;
     }
 
-    public function prepare(bool|null $forRead = null): void
+    public function prepare(?bool $forRead = null): void
     {
         if (isset($this->pdoStatement)) {
             $this->bindPendingParams();
@@ -152,7 +149,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
             return;
         }
 
-        $pdo = $this->db->getActivePdo($sql, $forRead);
+        $pdo = $this->db->getActivePdo();
 
         try {
             $this->pdoStatement = $pdo->prepare($sql);
@@ -191,33 +188,20 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
             self::QUERY_MODE_COLUMN => 'queryColumn',
             self::QUERY_MODE_CURSOR => 'query',
             self::QUERY_MODE_SCALAR => 'queryScalar',
-            self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE => 'insertReturningPks'
+            self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE => 'insertReturningPks',
         };
     }
 
     /**
-     * Executes a prepared statement.
-     *
-     * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
+     * A wrapper around {@see pdoStatementExecute()} to support transactions and retry handlers.
      *
      * @throws Exception
-     * @throws Throwable
      */
     protected function internalExecute(): void
     {
         for ($attempt = 0; ; ++$attempt) {
             try {
-                set_error_handler(
-                    static fn(int $errorNumber, string $errorString): bool =>
-                        str_starts_with($errorString, 'Packets out of order. Expected '),
-                    E_WARNING,
-                );
-
-                try {
-                    $this->pdoStatement?->execute();
-                } finally {
-                    restore_error_handler();
-                }
+                $this->pdoStatementExecute();
                 break;
             } catch (PDOException $e) {
                 $rawSql ??= $this->getRawSql();
@@ -231,6 +215,16 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     }
 
     /**
+     * Executes a prepared statement.
+     *
+     * @throws PDOException
+     */
+    protected function pdoStatementExecute(): void
+    {
+        $this->pdoStatement?->execute();
+    }
+
+    /**
      * @throws InvalidArgumentException
      */
     protected function internalGetQueryResult(int $queryMode): mixed
@@ -240,7 +234,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
             $dataReader = new PdoDataReader($this->pdoStatement);
 
             if ($this->phpTypecasting && ($row = $dataReader->current()) !== false) {
-                /** @var array $row */
+                /** @psalm-var array<string,mixed> $row */
                 $dataReader->typecastColumns($this->getResultColumns(array_keys($row)));
             }
 
@@ -252,14 +246,13 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         }
 
         if ($this->is($queryMode, self::QUERY_MODE_ROW)) {
-            /** @psalm-var array|false $result */
+            /** @psalm-var array<string,mixed>|false $result */
             $result = $this->pdoStatement?->fetch(PDO::FETCH_ASSOC);
 
             if ($this->phpTypecasting && $result !== false) {
                 $result = $this->phpTypecastRows([$result])[0];
             }
         } elseif ($this->is($queryMode, self::QUERY_MODE_SCALAR)) {
-            /** @psalm-var mixed $result */
             $result = $this->pdoStatement?->fetchColumn();
 
             if (
@@ -302,11 +295,10 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
 
         $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
 
-        /** @psalm-var string|null $rawSql */
+        /** @var string|null $rawSql */
         $this->profiler?->begin($rawSql ??= $this->getRawSql(), $queryContext);
-        /** @psalm-var string $rawSql */
+        /** @var string $rawSql */
         try {
-            /** @psalm-var mixed $result */
             $result = parent::queryInternal($queryMode);
         } catch (Throwable $e) {
             $this->profiler?->end($rawSql, $queryContext->setException($e));
@@ -318,19 +310,9 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     }
 
     /**
-     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
-     */
-    protected function refreshTableSchema(): void
-    {
-        if ($this->refreshTableName !== null) {
-            $this->db->getSchema()->refreshTableSchema($this->refreshTableName);
-        }
-    }
-
-    /**
      * Returns the column instance from the query result by the index, or `null` if the column type cannot be determined.
      */
-    private function getResultColumn(int $index): ColumnInterface|null
+    private function getResultColumn(int $index): ?ColumnInterface
     {
         $metadata = $this->pdoStatement?->getColumnMeta($index);
 
@@ -346,7 +328,8 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      *
      * @return ColumnInterface[]
      *
-     * @psalm-param array<int, string|int> $keys
+     * @psalm-param list<string> $keys
+     * @psalm-return array<string, ColumnInterface>
      */
     private function getResultColumns(array $keys): array
     {
@@ -367,6 +350,8 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      * Typecasts rows from the query result to PHP types according to the column types.
      *
      * @param array[] $rows
+     *
+     * @psalm-param array<array<string,mixed>> $rows
      */
     private function phpTypecastRows(array $rows): array
     {

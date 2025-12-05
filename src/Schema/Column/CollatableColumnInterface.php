@@ -14,12 +14,12 @@ interface CollatableColumnInterface
     /**
      * Sets the collation for the column.
      */
-    public function collation(string|null $collation): static;
+    public function collation(?string $collation): static;
 
     /**
      * Returns the collation of the column.
      *
      * @psalm-mutation-free
      */
-    public function getCollation(): string|null;
+    public function getCollation(): ?string;
 }

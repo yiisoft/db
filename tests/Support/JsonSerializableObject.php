@@ -11,9 +11,7 @@ use JsonSerializable;
  */
 final class JsonSerializableObject implements JsonSerializable
 {
-    public function __construct(private readonly array $data)
-    {
-    }
+    public function __construct(private readonly array $data) {}
 
     public function jsonSerialize(): mixed
     {

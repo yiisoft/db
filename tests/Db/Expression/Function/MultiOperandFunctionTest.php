@@ -15,16 +15,14 @@ use Yiisoft\Db\Expression\Function\Longest;
 use Yiisoft\Db\Expression\Function\MultiOperandFunction;
 use Yiisoft\Db\Expression\Function\Shortest;
 use Yiisoft\Db\Expression\Value\Param;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 final class MultiOperandFunctionTest extends TestCase
 {
-    use TestTrait;
-
     public static function dataOperands(): array
     {
         $stringValue = new Param('string', DataType::STRING);
-        $query = self::getDb()->select('column')->from('table')->where(['id' => 1]);
+        $query = TestHelper::createSqliteMemoryConnection()->select('column')->from('table')->where(['id' => 1]);
 
         return [
             ArrayMerge::class => [ArrayMerge::class, [

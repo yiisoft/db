@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema\Column;
 
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
+use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
@@ -13,31 +16,65 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\Column\StructuredColumn;
-use Yiisoft\Db\Tests\AbstractColumnTest;
+use Yiisoft\Db\Tests\Provider\ColumnProvider;
 use Yiisoft\Db\Tests\Support\Stub\Column;
+
+use function gettype;
+use function is_object;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
-final class ColumnTest extends AbstractColumnTest
+final class ColumnTest extends TestCase
 {
-    public function testAllowNull(): void
+    #[DataProviderExternal(ColumnProvider::class, 'predefinedTypes')]
+    public function testPredefinedType(string $className, string $type)
     {
-        $column = new Column();
+        /** @var ColumnInterface $column */
+        $column = new $className();
 
-        $this->assertTrue($column->isAllowNull());
-        $this->assertSame($column, $column->allowNull());
-        $this->assertTrue($column->isAllowNull());
+        $this->assertSame($type, $column->getType());
+    }
 
-        $column->allowNull(false);
+    #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumns')]
+    public function testDbTypecastColumns(ColumnInterface $column, array $values)
+    {
+        // Set the timezone for testing purposes, could be any timezone except UTC
+        $oldDatetime = date_default_timezone_get();
+        date_default_timezone_set('America/New_York');
 
-        $this->assertFalse($column->isAllowNull());
+        foreach ($values as [$expected, $value]) {
+            if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {
+                $this->assertEquals($expected, $column->dbTypecast($value));
+            } else {
+                $this->assertSame($expected, $column->dbTypecast($value));
+            }
+        }
 
-        $column->allowNull(true);
+        date_default_timezone_set($oldDatetime);
+    }
 
-        $this->assertTrue($column->isAllowNull());
+    #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumnsWithException')]
+    public function testDbTypecastColumnsWithException(ColumnInterface $column, mixed $value)
+    {
+        $type = is_object($value) ? $value::class : gettype($value);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Wrong $type value for {$column->getType()} column.");
+
+        $column->dbTypecast($value);
+    }
+
+    #[DataProviderExternal(ColumnProvider::class, 'phpTypecastColumns')]
+    public function testPhpTypecastColumns(ColumnInterface $column, array $values)
+    {
+        foreach ($values as [$expected, $value]) {
+            if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {
+                $this->assertEquals($expected, $column->phpTypecast($value));
+            } else {
+                $this->assertSame($expected, $column->phpTypecast($value));
+            }
+        }
     }
 
     public function testAutoIncrement(): void
@@ -129,19 +166,6 @@ final class ColumnTest extends AbstractColumnTest
         $this->assertNull($column->getDefaultValue());
     }
 
-    public function testEnumValues(): void
-    {
-        $column = new Column();
-
-        $this->assertNull($column->getEnumValues());
-        $this->assertSame($column, $column->enumValues(['positive', 'negative']));
-        $this->assertSame(['positive', 'negative'], $column->getEnumValues());
-
-        $column->enumValues([]);
-
-        $this->assertSame([], $column->getEnumValues());
-    }
-
     public function testExtra(): void
     {
         $column = new Column();
@@ -155,7 +179,7 @@ final class ColumnTest extends AbstractColumnTest
         $this->assertSame('', $column->getExtra());
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::construct */
+    #[DataProviderExternal(ColumnProvider::class, 'construct')]
     public function testConstruct(string $parameter, mixed $value, string $method, mixed $expected): void
     {
         $column = new Column(...[$parameter => $value]);

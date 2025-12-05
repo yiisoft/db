@@ -24,6 +24,5 @@ final class WhenThen
     public function __construct(
         public readonly mixed $when,
         public readonly mixed $then,
-    ) {
-    }
+    ) {}
 }

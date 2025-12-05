@@ -28,10 +28,14 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * Sorting is supported via {@see orderBy()} and items can be limited to match some conditions using {@see where()}.
  *
  * @psalm-type IndexBy = Closure(array|object):int|string
+ * @psalm-type ResultCallback = Closure(non-empty-array<array<string,mixed>>):non-empty-array<array<string,mixed>|object>
+ * @psalm-type ResultCallbackOne = Closure(array<string,mixed>):(array<string,mixed>|object)
+ * @psalm-type JoinTable = array<ExpressionInterface|string>|ExpressionInterface|string
+ * @psalm-type Join = list{string, JoinTable, array|ExpressionInterface|string}
+ * @psalm-type From = array<string|ExpressionInterface>
+ * @psalm-type RawFrom = array<string|ExpressionInterface>|ExpressionInterface|string
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface
- * @psalm-type ResultCallback = Closure(non-empty-array<array>):non-empty-array<array|object>
- * @psalm-type ResultCallbackOne = Closure(array):(array|object)
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
@@ -160,6 +164,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     /**
      * @return array The "from" value.
+     * @psalm-return From
      */
     public function getFrom(): array;
 
@@ -191,6 +196,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *     ['LEFT JOIN', 'table3', 'table1.id = table3.id'],
      * ]
      * ```
+     *
+     * @psalm-return list<Join>
      */
     public function getJoins(): array;
 
@@ -220,7 +227,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @psalm-return ResultCallback|null
      */
-    public function getResultCallback(): Closure|null;
+    public function getResultCallback(): ?Closure;
 
     /**
      * @return array The "select" value.
@@ -231,7 +238,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     /**
      * @return string|null The "select option" value.
      */
-    public function getSelectOption(): string|null;
+    public function getSelectOption(): ?string;
 
     /**
      * Returns table names used in {@see from()} indexed by aliases.
@@ -262,7 +269,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function getWhere(): array|string|ExpressionInterface|null;
 
     /**
-     * @return array The withQueries value.
+     * @return WithQuery[] The "withQueries" value.
      */
     public function getWithQueries(): array;
 
@@ -319,7 +326,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @psalm-param ResultCallback|null $resultCallback
      */
-    public function resultCallback(Closure|null $resultCallback): static;
+    public function resultCallback(?Closure $resultCallback): static;
 
     /**
      * Returns the query results as a scalar value.
@@ -333,7 +340,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @return bool|float|int|string|null The value of the first column in the first row of the query result. False is
      * returned if the query result is empty.
      */
-    public function scalar(): bool|int|null|string|float;
+    public function scalar(): bool|int|string|float|null;
 
     /**
      * @return bool Whether to emulate query execution.

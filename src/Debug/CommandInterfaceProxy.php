@@ -16,9 +16,8 @@ final class CommandInterfaceProxy implements CommandInterface
 {
     public function __construct(
         private CommandInterface $decorated,
-        private DatabaseCollector $collector
-    ) {
-    }
+        private DatabaseCollector $collector,
+    ) {}
 
     /**
      * @psalm-suppress MixedArgument
@@ -70,7 +69,7 @@ final class CommandInterfaceProxy implements CommandInterface
         string $referenceTable,
         array|string $referenceColumns,
         ?string $delete = null,
-        ?string $update = null
+        ?string $update = null,
     ): static {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
@@ -115,7 +114,7 @@ final class CommandInterfaceProxy implements CommandInterface
         mixed &$value,
         ?int $dataType = null,
         ?int $length = null,
-        mixed $driverOptions = null
+        mixed $driverOptions = null,
     ): static {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
@@ -157,7 +156,7 @@ final class CommandInterfaceProxy implements CommandInterface
         string $name,
         array|string $columns,
         ?string $indexType = null,
-        ?string $indexMethod = null
+        ?string $indexMethod = null,
     ): static {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
@@ -316,9 +315,9 @@ final class CommandInterfaceProxy implements CommandInterface
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function insertReturningPks(string $table, array|QueryInterface $columns): array|false
+    public function insertReturningPks(string $table, array|QueryInterface $columns): array
     {
-        /** @var array|false */
+        /** @psalm-var array<string, mixed> */
         return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
@@ -388,7 +387,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress PossiblyUndefinedArrayOffset
      */
-    public function queryOne(): array|null
+    public function queryOne(): ?array
     {
         [$callStack] = debug_backtrace();
 
@@ -407,7 +406,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress PossiblyUndefinedArrayOffset
      */
-    public function queryScalar(): bool|string|null|int|float
+    public function queryScalar(): bool|string|int|float|null
     {
         [$callStack] = debug_backtrace();
 
@@ -487,7 +486,7 @@ final class CommandInterfaceProxy implements CommandInterface
         array $columns,
         array|ExpressionInterface|string $condition = '',
         array|ExpressionInterface|string|null $from = null,
-        array $params = []
+        array $params = [],
     ): static {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
@@ -507,9 +506,9 @@ final class CommandInterfaceProxy implements CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-        array|null $returnColumns = null,
-    ): array|false {
-        /** @var array|false */
+        ?array $returnColumns = null,
+    ): array {
+        /** @psalm-var array<string, mixed> */
         return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
@@ -517,8 +516,8 @@ final class CommandInterfaceProxy implements CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-    ): array|false {
-        /** @var array|false */
+    ): array {
+        /** @var array */
         return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
@@ -546,6 +545,11 @@ final class CommandInterfaceProxy implements CommandInterface
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    public function showDatabases(): array
+    {
+        return $this->decorated->showDatabases();
+    }
+
     private function collectQueryStart(string $id, string $line): void
     {
         $this->collector->collectQueryStart(
@@ -565,10 +569,5 @@ final class CommandInterfaceProxy implements CommandInterface
     private function collectQueryEnd(string $id, int $rowsNumber): void
     {
         $this->collector->collectQueryEnd($id, $rowsNumber);
-    }
-
-    public function showDatabases(): array
-    {
-        return $this->decorated->showDatabases();
     }
 }
