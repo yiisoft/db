@@ -4,7 +4,15 @@ declare(strict_types=1);
 
 use Yiisoft\Db\Cache\SchemaCache;
 
-/** @var array $params */
+/**
+ * @psalm-var array{
+ *     yiisoft/db: array{
+ *         schema-cache: array{
+ *             enabled?: bool
+ *         }
+ *     }
+ * } $params
+ */
 
 return [
     SchemaCache::class => [
