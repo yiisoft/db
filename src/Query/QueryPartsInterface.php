@@ -434,15 +434,8 @@ interface QueryPartsInterface
      * The value must be a {@see Query} object representing the sub-query while the corresponding key represents the
      * alias for the sub-query.
      * @param array|ExpressionInterface|string $on The join condition that should appear in the ON part. Please refer to
-     * {@see where()} on how to specify this parameter.
-     * Note that the array format of {@see where()} is designed to match columns to values instead of columns to
-     * columns, so the following would **not** work as expected: `['post.author_id' => 'user.id']`, it would match the
-     * `post.author_id` column value against the string `'user.id'`.
-     * It's recommended to use the string syntax here which is more suited for a join:
-     *
-     * ```php
-     * 'post.author_id = user.id'
-     * ```
+     * {@see where()} on how to specify this parameter. Keys and values of an associative array are treated as column names
+     * and will be quoted before being used in an SQL query.
      * @param array $params The parameters (name => value) to bind to the query.
      *
      * @psalm-param JoinTable $table

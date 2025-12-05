@@ -20,7 +20,7 @@ $initialQuery = (new Query($db))
 $recursiveQuery = (new Query($db))
     ->select(['aic.parent', 'aic.child'])
     ->from(['aic' => '{{%auth_item_child}}'])
-    ->innerJoin('t1', 't1.child = aic.parent');
+    ->innerJoin('t1', ['t1.child' => 'aic.parent']);
 
 $mainQuery = (new Query($db))
     ->select(['parent', 'child'])
