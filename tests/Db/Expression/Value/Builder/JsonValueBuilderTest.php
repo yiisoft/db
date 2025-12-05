@@ -11,7 +11,6 @@ use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\Value\JsonValue;
 use Yiisoft\Db\Expression\Value\Builder\JsonValueBuilder;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Schema\Data\StructuredLazyArray;
@@ -80,7 +79,7 @@ final class JsonValueBuilderTest extends TestCase
 
         $params = [];
         $builder = new JsonValueBuilder($qb);
-        $expression = new JsonValue((new Query($db))->select('json_field')->from('json_table'));
+        $expression = new JsonValue($db->select('json_field')->from('json_table'));
 
         $this->assertSame('(SELECT [json_field] FROM [json_table])', $builder->build($expression, $params));
         $this->assertSame([], $params);

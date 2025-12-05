@@ -68,7 +68,7 @@ use Yiisoft\Db\Query\Query;
 
 /** @var ConnectionInterface $db */
 
-$userQuery = (new Query($db))->select('id')->from('user');
+$userQuery = $db->select('id')->from('user');
 $query->where(['id' => $userQuery]);
 ```
 

@@ -20,8 +20,7 @@ use Yiisoft\Db\Query\Query;
 
 /** @var ConnectionInterface $db */
 
-$rows = (new Query($db))
-    ->select(['id', 'email'])
+$rows = $db->select(['id', 'email'])
     ->from('{{%user}}')
     ->where(['last_name' => 'Smith'])
     ->limit(10)

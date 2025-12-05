@@ -11,7 +11,6 @@ use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\Value\StructuredValue;
 use Yiisoft\Db\Expression\Value\Builder\StructuredValueBuilder;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\AbstractStructuredColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
@@ -79,7 +78,7 @@ final class StructuredValueBuilderTest extends TestCase
 
         $params = [];
         $builder = new StructuredValueBuilder($qb);
-        $expression = new StructuredValue((new Query($db))->select('json_field')->from('json_table'));
+        $expression = new StructuredValue($db->select('json_field')->from('json_table'));
 
         $this->assertSame('(SELECT [json_field] FROM [json_table])', $builder->build($expression, $params));
         $this->assertSame([], $params);

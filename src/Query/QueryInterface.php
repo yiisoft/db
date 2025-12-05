@@ -313,7 +313,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * For example:
      *
      * ```php
-     * $users = (new Query($db))
+     * $users = $db->createQuery()
      *     ->from('user')
      *     ->resultCallback(function (array $rows): array {
      *         foreach ($rows as &$row) {
