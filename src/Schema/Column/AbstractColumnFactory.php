@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Closure;
+use Yiisoft\Db\Constant\ColumnInfoSource;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
@@ -142,6 +143,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
         unset($definitionInfo['type']);
 
         $info = array_merge($info, $definitionInfo);
+        $info['source'] ??= ColumnInfoSource::DEFINITION;
 
         if ($this->isDbType($type)) {
             return $this->fromDbType($type, $info);
@@ -243,7 +245,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::BIGINT => PHP_INT_SIZE !== 8 || !empty($info['unsigned'])
                 ? BigIntColumn::class
                 : IntegerColumn::class,
-            ColumnType::DECIMAL => DoubleColumn::class,
+            ColumnType::DECIMAL => StringColumn::class,
             ColumnType::FLOAT => DoubleColumn::class,
             ColumnType::DOUBLE => DoubleColumn::class,
             ColumnType::BINARY => BinaryColumn::class,

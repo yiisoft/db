@@ -41,7 +41,7 @@
 - Enh #865: Raise minimum PHP version to `^8.1` with minor refactoring (@Tigrov, @vjik)
 - Enh #798: Allow `QueryInterface::one()` and `QueryInterface::all()` to return objects (@darkdef, @Tigrov)
 - Enh #872: Use `#[\SensitiveParameter]` attribute to mark sensitive parameters (@heap-s)
-- New #864, #897, #898, #950, #1009: Realize column factory (@Tigrov, @vjik)
+- New #864, #897, #898, #950, #1009, #1125: Realize column factory (@Tigrov, @vjik)
 - Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #877: Separate column type constants (@Tigrov)
 - New #878, #1095: Realize `ColumnBuilder` class (@Tigrov, @vjik)
@@ -70,7 +70,7 @@
 - Enh #929: Implement lazy arrays for array, structured and JSON column types (@Tigrov)
 - Bug #933: Explicitly mark nullable parameters (@vjik)
 - Chg #911, #1113: Change supported PHP versions to `8.1 - 8.5` (@Tigrov, @vjik)
-- Enh #911, #940: Minor refactoring (@Tigrov)
+- Enh #911, #940, #1116: Minor refactoring (@Tigrov)
 - Chg #938, #936, #937: Remove `ext-json`, `ext-ctype`, `ext-mbstring` from `require` section of `composer.json` (@Tigrov) 
 - Chg #936: Remove `hasLimit()` and `hasOffset()` methods from `AbstractDQLQueryBuilder` class (@Tigrov)
 - Chg #937: Remove `baseName()` and `pascalCaseToId()` methods from `DbStringHelper` (@Tigrov)
@@ -180,6 +180,7 @@
 - Bug #1109: Fix column definition parsing in cases with brackets and escaped quotes (@vjik)
 - New #1107: Add abstract enumeration column type (@vjik)
 - Bug #1115: Do not reset `$retryHandler` property on `AbstractCommand::reset()` method call (@Tigrov)
+- New #1124: Add source of column information (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
