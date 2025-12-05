@@ -3,7 +3,7 @@
 O método `Yiisoft\Db\Query\Query::join()` especifica o fragmento `JOIN` de uma consulta SQL.
 
 ```php
-$query->join('LEFT JOIN', 'post', 'post.user_id = user.id');
+$query->join('LEFT JOIN', 'post', ['post.user_id' => 'user.id']);
 ```
 
 A parte relevante do SQL é:
@@ -18,10 +18,8 @@ O método `Yiisoft\Db\Query\Query::join()` usa quatro parâmetros:
 - `table`: o nome da tabela a ser unida.
 - `on`: condição de junção opcional, esse é o fragmento `ON`.
    Consulte `Yiisoft\Db\Query\Query::where()` para obter detalhes sobre como especificar uma condição.
-   > Nota: A sintaxe de array não funciona para especificar uma condição baseada em coluna.
-   > `['user.id' => 'comment.userId']` resultará em uma condição
-   > onde o ID do usuário deve ser igual à string `comment.userId`.
-   > Você deve usar a sintaxe de string e especificar a condição como `user.id = comment.userId`.
+  > [!IMPORTANT]
+  > Chaves e valores de uma matriz associativa são tratados como nomes de colunas e serão citados antes de serem usados em uma consulta SQL.
 - `params`: parâmetros opcionais para vincular à condição de junção.
 
 Você pode usar os seguintes métodos de atalho para especificar `INNER JOIN`, `LEFT JOIN` e `RIGHT JOIN`, respectivamente.
@@ -33,7 +31,7 @@ Você pode usar os seguintes métodos de atalho para especificar `INNER JOIN`, `
 Por exemplo:
 
 ```php
-$query->leftJoin('post', 'post.user_id = user.id');
+$query->leftJoin('post', ['post.user_id' => 'user.id']);
 ```
 
 Para unir muitas tabelas, chame os métodos de junção várias vezes, uma vez para cada tabela.
@@ -44,10 +42,10 @@ Para fazer isso, especifique as subconsultas a serem unidas como objetos `Yiisof
 Por exemplo:
 
 ```php
-use Yiisoft\Db\Query\Query;
+/** @var Yiisoft\Db\Connection\ConnectionInterface $db */
 
-$subQuery = (new Query())->from('post');
-$query->leftJoin(['u' => $subQuery], 'u.id = author_id');
+$subQuery = $db->select()->from('post');
+$query->leftJoin(['u' => $subQuery], ['u.id' => 'author_id']);
 ```
 
 Nesse caso, você deve colocar a subconsulta no array e usar a chave do array para especificar o alias.

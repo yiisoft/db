@@ -22,9 +22,9 @@ class StringColumn extends AbstractColumn implements CollatableColumnInterface
     /**
      * @var string|null The column collation.
      */
-    protected string|null $collation = null;
+    protected ?string $collation = null;
 
-    public function collation(string|null $collation): static
+    public function collation(?string $collation): static
     {
         $this->collation = $collation;
         return $this;
@@ -50,12 +50,12 @@ class StringColumn extends AbstractColumn implements CollatableColumnInterface
     }
 
     /** @psalm-mutation-free */
-    public function getCollation(): string|null
+    public function getCollation(): ?string
     {
         return $this->collation;
     }
 
-    public function phpTypecast(mixed $value): string|null
+    public function phpTypecast(mixed $value): ?string
     {
         /** @var string|null $value */
         return $value;

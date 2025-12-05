@@ -51,7 +51,7 @@ final class SimpleTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            "Operator '=' requires column to be string or ExpressionInterface."
+            "Operator '=' requires column to be string or ExpressionInterface.",
         );
 
         Simple::fromArrayDefinition('=', [1, 1]);

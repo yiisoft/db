@@ -22,9 +22,8 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
 {
     public function __construct(
         private ConnectionInterface $connection,
-        private DatabaseCollector $collector
-    ) {
-    }
+        private DatabaseCollector $collector,
+    ) {}
 
     /**
      * @psalm-suppress PossiblyUndefinedArrayOffset
@@ -110,12 +109,12 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
         return $this->connection->getTablePrefix();
     }
 
-    public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null
+    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface
     {
         return $this->connection->getTableSchema($name, $refresh);
     }
 
-    public function getTransaction(): TransactionInterface|null
+    public function getTransaction(): ?TransactionInterface
     {
         $result = $this->connection->getTransaction();
 
@@ -174,7 +173,7 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
 
         $this->collector->collectTransactionStart($isolationLevel, $callStack['file'] . ':' . $callStack['line']);
 
-        return $this->connection->transaction(fn (): mixed => $closure($this), $isolationLevel);
+        return $this->connection->transaction(fn(): mixed => $closure($this), $isolationLevel);
     }
 
     public function getDriverName(): string

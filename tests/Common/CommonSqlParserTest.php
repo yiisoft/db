@@ -2,20 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests;
+namespace Yiisoft\Db\Tests\Common;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Syntax\AbstractSqlParser;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Provider\SqlParserProvider;
 
-abstract class AbstractSqlParserTest extends TestCase
+abstract class CommonSqlParserTest extends TestCase
 {
-    use TestTrait;
-
-    abstract protected function createSqlParser(string $sql): AbstractSqlParser;
-
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\SqlParserProvider::getNextPlaceholder */
-    public function testGetNextPlaceholder(string $sql, string|null $expectedPlaceholder, int|null $expectedPosition): void
+    #[DataProviderExternal(SqlParserProvider::class, 'getNextPlaceholder')]
+    public function testGetNextPlaceholder(string $sql, ?string $expectedPlaceholder, ?int $expectedPosition): void
     {
         $parser = $this->createSqlParser($sql);
 
@@ -23,7 +20,7 @@ abstract class AbstractSqlParserTest extends TestCase
         $this->assertSame($expectedPosition, $position);
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\SqlParserProvider::getAllPlaceholders */
+    #[DataProviderExternal(SqlParserProvider::class, 'getAllPlaceholders')]
     public function testGetAllPlaceholders(string $sql, array $expectedPlaceholders, array $expectedPositions): void
     {
         $parser = $this->createSqlParser($sql);
@@ -39,4 +36,6 @@ abstract class AbstractSqlParserTest extends TestCase
         $this->assertSame($expectedPlaceholders, $placeholders);
         $this->assertSame($expectedPositions, $positions);
     }
+
+    abstract protected function createSqlParser(string $sql): AbstractSqlParser;
 }

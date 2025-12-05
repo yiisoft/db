@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use Yiisoft\Db\Constant\ColumnInfoSource;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constraint\ForeignKey;
@@ -25,9 +26,7 @@ use Yiisoft\Db\Constraint\ForeignKey;
  *     defaultValue?: mixed,
  *     defaultValueRaw?: string|null,
  *     dimension?: positive-int,
- *     enumValues?: array|null,
  *     extra?: string|null,
- *     fromResult?: bool,
  *     primaryKey?: bool,
  *     name?: string|null,
  *     notNull?: bool,
@@ -35,10 +34,12 @@ use Yiisoft\Db\Constraint\ForeignKey;
  *     scale?: int|null,
  *     schema?: string|null,
  *     size?: int|null,
+ *     source?: ColumnInfoSource::*,
  *     table?: string|null,
  *     type?: ColumnType::*,
  *     unique?: bool,
  *     unsigned?: bool,
+ *     values?: array|null,
  * }
  */
 interface ColumnFactoryInterface
@@ -73,7 +74,6 @@ interface ColumnFactoryInterface
      * @param string $pseudoType The pseudo-type.
      * @param array $info The column information. The set of parameters may be different for a specific DBMS.
      *
-     * @psalm-param PseudoType::* $pseudoType
      * @psalm-param ColumnInfo $info
      */
     public function fromPseudoType(string $pseudoType, array $info = []): ColumnInterface;
@@ -84,7 +84,6 @@ interface ColumnFactoryInterface
      * @param string $type The abstract database type.
      * @param array $info The column information. The set of parameters may be different for a specific DBMS.
      *
-     * @psalm-param ColumnType::* $type
      * @psalm-param ColumnInfo $info
      */
     public function fromType(string $type, array $info = []): ColumnInterface;

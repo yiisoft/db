@@ -8,6 +8,7 @@ use Closure;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -69,14 +70,6 @@ use function stream_get_contents;
 abstract class AbstractCommand implements CommandInterface
 {
     /**
-     * @param ConnectionInterface $db The database connection to use.
-     */
-    public function __construct(
-        protected readonly ConnectionInterface $db,
-    ) {
-    }
-
-    /**
      * Command in this query mode returns count of affected rows.
      *
      * @see execute()
@@ -122,14 +115,21 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * @var string|null Name of the table to refresh schema for. Null means not to refresh the schema.
      */
-    protected string|null $refreshTableName = null;
-    protected Closure|null $retryHandler = null;
+    protected ?string $refreshTableName = null;
+    protected ?Closure $retryHandler = null;
     protected bool $dbTypecasting = true;
     protected bool $phpTypecasting = false;
     /**
      * @var string The SQL statement to execute.
      */
     private string $sql = '';
+
+    /**
+     * @param ConnectionInterface $db The database connection to use.
+     */
+    public function __construct(
+        protected readonly ConnectionInterface $db,
+    ) {}
 
     public function addCheck(string $table, string $name, string $expression): static
     {
@@ -168,7 +168,7 @@ abstract class AbstractCommand implements CommandInterface
         string $referenceTable,
         array|string $referenceColumns,
         ?string $delete = null,
-        ?string $update = null
+        ?string $update = null,
     ): static {
         $sql = $this->getQueryBuilder()->addForeignKey(
             $table,
@@ -177,7 +177,7 @@ abstract class AbstractCommand implements CommandInterface
             $referenceTable,
             $referenceColumns,
             $delete,
-            $update
+            $update,
         );
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
@@ -198,18 +198,6 @@ abstract class AbstractCommand implements CommandInterface
     {
         $sql = $this->getQueryBuilder()->alterColumn($table, $column, $type);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
-    }
-
-    /**
-     * @param string[] $columns
-     *
-     * @psalm-param BatchValues $rows
-     *
-     * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
-     */
-    public function batchInsert(string $table, array $columns, iterable $rows): static
-    {
-        return $this->insertBatch($table, $rows, $columns);
     }
 
     public function insertBatch(string $table, iterable $rows, array $columns = []): static
@@ -240,7 +228,7 @@ abstract class AbstractCommand implements CommandInterface
         string $name,
         array|string $columns,
         ?string $indexType = null,
-        ?string $indexMethod = null
+        ?string $indexMethod = null,
     ): static {
         $sql = $this->getQueryBuilder()->createIndex($table, $name, $columns, $indexType, $indexMethod);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -380,12 +368,10 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function insertReturningPks(string $table, array|QueryInterface $columns): array|false
+    public function insertReturningPks(string $table, array|QueryInterface $columns): array
     {
         if (empty($this->db->getSchema()->getTableSchema($table)?->getPrimaryKey())) {
-            if ($this->insert($table, $columns)->execute() === 0) {
-                return false;
-            }
+            $this->insert($table, $columns)->execute();
             return [];
         }
 
@@ -394,18 +380,8 @@ abstract class AbstractCommand implements CommandInterface
 
         $this->setSql($sql)->bindValues($params);
 
-        /** @psalm-var array|bool $result */
-        $result = $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
-
-        return is_array($result) ? $result : false;
-    }
-
-    /**
-     * @deprecated Use {@see insertReturningPks()} instead. It will be removed in version 3.0.0.
-     */
-    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false
-    {
-        return $this->insertReturningPks($table, $columns);
+        /** @psalm-var array<string, mixed> */
+        return $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
     }
 
     public function execute(): int
@@ -416,7 +392,7 @@ abstract class AbstractCommand implements CommandInterface
             return 0;
         }
 
-        /** @psalm-var int|bool $execute */
+        /** @var bool|int $execute */
         $execute = $this->queryInternal(self::QUERY_MODE_EXECUTE);
 
         return is_int($execute) ? $execute : 0;
@@ -424,7 +400,7 @@ abstract class AbstractCommand implements CommandInterface
 
     public function query(): DataReaderInterface
     {
-        /** @psalm-var DataReaderInterface */
+        /** @var DataReaderInterface */
         return $this->queryInternal(self::QUERY_MODE_CURSOR);
     }
 
@@ -437,21 +413,19 @@ abstract class AbstractCommand implements CommandInterface
 
     public function queryColumn(): array
     {
-        /** @psalm-var mixed $results */
         $results = $this->queryInternal(self::QUERY_MODE_COLUMN);
         return is_array($results) ? $results : [];
     }
 
-    public function queryOne(): array|null
+    public function queryOne(): ?array
     {
-        /** @psalm-var mixed $results */
+        /** @psalm-var array<string,mixed>|false $results */
         $results = $this->queryInternal(self::QUERY_MODE_ROW);
         return is_array($results) ? $results : null;
     }
 
-    public function queryScalar(): bool|string|null|int|float
+    public function queryScalar(): bool|string|int|float|null
     {
-        /** @psalm-var mixed $result */
         $result = $this->queryInternal(self::QUERY_MODE_SCALAR);
 
         if (is_resource($result) && get_resource_type($result) === 'stream') {
@@ -498,7 +472,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this;
     }
 
-    public function setRetryHandler(Closure|null $handler): static
+    public function setRetryHandler(?Closure $handler): static
     {
         $this->retryHandler = $handler;
         return $this;
@@ -510,9 +484,14 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql);
     }
 
-    public function update(string $table, array $columns, array|string $condition = '', array $params = []): static
-    {
-        $sql = $this->getQueryBuilder()->update($table, $columns, $condition, $params);
+    public function update(
+        string $table,
+        array $columns,
+        array|ExpressionInterface|string $condition = '',
+        array|ExpressionInterface|string|null $from = null,
+        array $params = [],
+    ): static {
+        $sql = $this->getQueryBuilder()->update($table, $columns, $condition, $from, $params);
         return $this->setSql($sql)->bindValues($params);
     }
 
@@ -530,8 +509,8 @@ abstract class AbstractCommand implements CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-        array|null $returnColumns = null,
-    ): array|false {
+        ?array $returnColumns = null,
+    ): array {
         if ($returnColumns === []) {
             $this->upsert($table, $insertColumns, $updateColumns)->execute();
             return [];
@@ -543,19 +522,16 @@ abstract class AbstractCommand implements CommandInterface
 
         $this->setSql($sql)->bindValues($params);
 
-        /** @psalm-var array|bool $result */
-        $result = $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
-
-        return is_array($result) ? $result : false;
+        /** @psalm-var array<string, mixed> */
+        return $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
     }
 
     public function upsertReturningPks(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
-    ): array|false {
+    ): array {
         $primaryKeys = $this->db->getSchema()->getTableSchema($table)?->getPrimaryKey() ?? [];
-
         return $this->upsertReturning($table, $insertColumns, $updateColumns, $primaryKeys);
     }
 
@@ -632,20 +608,17 @@ abstract class AbstractCommand implements CommandInterface
 
         $this->internalExecute();
 
-        /** @psalm-var mixed $result */
         $result = $this->internalGetQueryResult($queryMode);
 
-        if (!$isReadMode) {
-            $this->refreshTableSchema();
+        if ($isReadMode) {
+            return $result;
         }
 
+        if ($this->refreshTableName !== null) {
+            $this->db->getSchema()->refreshTableSchema($this->refreshTableName);
+        }
         return $result;
     }
-
-    /**
-     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
-     */
-    abstract protected function refreshTableSchema(): void;
 
     /**
      * Marks a specified table schema to be refreshed after command execution.
@@ -666,7 +639,6 @@ abstract class AbstractCommand implements CommandInterface
         $this->sql = '';
         $this->params = [];
         $this->refreshTableName = null;
-        $this->retryHandler = null;
     }
 
     /**

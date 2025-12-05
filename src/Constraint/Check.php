@@ -24,6 +24,5 @@ final class Check
         public readonly string $name = '',
         public readonly array $columnNames = [],
         public readonly string $expression = '',
-    ) {
-    }
+    ) {}
 }

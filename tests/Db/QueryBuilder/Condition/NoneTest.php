@@ -6,17 +6,15 @@ namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\QueryBuilder\Condition\None;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 use function PHPUnit\Framework\assertSame;
 
 final class NoneTest extends TestCase
 {
-    use TestTrait;
-
     public function testQuery(): void
     {
-        $query = $this->getConnection()
+        $query = TestHelper::createSqliteMemoryConnection()
             ->createQuery()
             ->from('test_table')
             ->where(new None());

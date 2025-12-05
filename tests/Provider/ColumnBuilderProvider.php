@@ -23,7 +23,6 @@ class ColumnBuilderProvider
         'getComment' => null,
         'getDbType' => null,
         'getDefaultValue' => null,
-        'getEnumValues' => null,
         'getExtra' => null,
         'getScale' => null,
         'getSize' => null,

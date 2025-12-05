@@ -18,7 +18,7 @@ abstract class AbstractJsonColumn extends AbstractColumn
 {
     protected const DEFAULT_TYPE = ColumnType::JSON;
 
-    public function dbTypecast(mixed $value): ExpressionInterface|null
+    public function dbTypecast(mixed $value): ?ExpressionInterface
     {
         if ($value === null || $value instanceof ExpressionInterface) {
             return $value;

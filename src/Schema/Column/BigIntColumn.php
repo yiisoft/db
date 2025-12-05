@@ -49,7 +49,7 @@ class BigIntColumn extends AbstractColumn
         };
     }
 
-    public function phpTypecast(mixed $value): string|null
+    public function phpTypecast(mixed $value): ?string
     {
         if ($value === null) {
             return null;

@@ -18,7 +18,7 @@ final class ArrayLazyColumn extends AbstractArrayColumn
     /**
      * @param string|null $value The string retrieved value from the database that can be parsed into an array.
      */
-    public function phpTypecast(mixed $value): LazyArray|null
+    public function phpTypecast(mixed $value): ?LazyArray
     {
         if (is_string($value)) {
             return new LazyArray($value, $this->getColumn(), $this->getDimension());

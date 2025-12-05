@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Tests\Provider;
 use ArrayIterator;
 use IteratorAggregate;
 use Traversable;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Constant\ColumnType;
@@ -14,19 +15,13 @@ use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\Value\JsonValue;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Support\Stringable;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function str_repeat;
 
 class CommandProvider
 {
-    use TestTrait;
-
-    protected static string $driverName = 'db';
-
     public static function addForeignKey(): array
     {
         return [
@@ -45,110 +40,70 @@ class CommandProvider
                 'int3',
                 null,
                 null,
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])
-                    SQL
-                ),
+                'ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])',
             ],
             [
                 ['int1'],
                 'int3',
                 null,
                 null,
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])
-                    SQL
-                ),
+                'ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])',
             ],
             [
                 ['int1'],
                 ['int3'],
                 null,
                 null,
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])
-                    SQL
-                ),
+                'ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])',
             ],
             [
                 ['int1'],
                 ['int3'],
                 ReferentialAction::CASCADE,
                 null,
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE CASCADE
-                    SQL
-                ),
+                'ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE CASCADE',
             ],
             [
                 ['int1'],
                 ['int3'],
                 ReferentialAction::CASCADE,
                 ReferentialAction::CASCADE,
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE CASCADE ON UPDATE CASCADE
-                    SQL
-                ),
+                'ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE CASCADE ON UPDATE CASCADE',
             ],
             [
                 ['int1', 'int2'],
                 ['int3', 'int4'],
                 null,
                 null,
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]])
-                    SQL
-                ),
+                'ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]])',
             ],
             [
                 ['int1', 'int2'],
                 ['int3', 'int4'],
                 ReferentialAction::CASCADE,
                 null,
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]]) ON DELETE CASCADE
-                    SQL
-                ),
+                'ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]]) ON DELETE CASCADE',
             ],
             [
                 ['int1', 'int2'],
                 ['int3', 'int4'],
                 ReferentialAction::CASCADE,
                 ReferentialAction::CASCADE,
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]]) ON DELETE CASCADE ON UPDATE CASCADE
-                    SQL
-                ),
+                'ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]]) ON DELETE CASCADE ON UPDATE CASCADE',
             ],
             [
                 ['int1'],
                 ['int3'],
                 ReferentialAction::NO_ACTION,
                 ReferentialAction::RESTRICT,
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE NO ACTION ON UPDATE RESTRICT
-                    SQL
-                ),
+                'ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE NO ACTION ON UPDATE RESTRICT',
             ],
             [
                 ['int1'],
                 ['int3'],
                 ReferentialAction::SET_DEFAULT,
                 ReferentialAction::SET_NULL,
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE SET DEFAULT ON UPDATE SET NULL
-                    SQL
-                ),
+                'ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE SET DEFAULT ON UPDATE SET NULL',
             ],
         ];
     }
@@ -169,31 +124,19 @@ class CommandProvider
                 '{{test_fk_constraint_1}}',
                 '{{test_fk}}',
                 'int1',
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] PRIMARY KEY ([[int1]])
-                    SQL
-                ),
+                'ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] PRIMARY KEY ([[int1]])',
             ],
             [
                 '{{test_fk_constraint_2}}',
                 '{{test_fk}}',
                 ['int1'],
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] PRIMARY KEY ([[int1]])
-                    SQL
-                ),
+                'ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] PRIMARY KEY ([[int1]])',
             ],
             [
                 '{{test_fk_constraint_3}}',
                 '{{test_fk}}',
                 ['int3', 'int4'],
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] PRIMARY KEY ([[int3]], [[int4]])
-                    SQL
-                ),
+                'ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] PRIMARY KEY ([[int3]], [[int4]])',
             ],
         ];
     }
@@ -214,41 +157,25 @@ class CommandProvider
                 '{{test_fk_constraint_1}}',
                 '{{test_fk}}',
                 'int1',
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] UNIQUE ([[int1]])
-                    SQL
-                ),
+                'ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] UNIQUE ([[int1]])',
             ],
             [
                 '{{test_fk_constraint_2}}',
                 '{{test_fk}}',
                 ['int1'],
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] UNIQUE ([[int1]])
-                    SQL
-                ),
+                'ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] UNIQUE ([[int1]])',
             ],
             [
                 '{{test_fk_constraint_3}}',
                 '{{test_fk}}',
                 ['int3', 'int4'],
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int3]], [[int4]])
-                    SQL
-                ),
+                'ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int3]], [[int4]])',
             ],
             [
                 '{{test_fk_constraint_3}}',
                 '{{test_fk}}',
                 ['int1', 'int2'],
-                static::replaceQuotes(
-                    <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int1]], [[int2]])
-                    SQL
-                ),
+                'ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int1]], [[int2]])',
             ],
         ];
     }
@@ -263,11 +190,7 @@ class CommandProvider
                     [false, 0, 'test string2', false],
                 ],
                 ['int_col', 'float_col', 'char_col', 'bool_col'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (0, 0, :qp0, TRUE), (0, 0, :qp1, FALSE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (0, 0, :qp0, TRUE), (0, 0, :qp1, FALSE)',
                 'expectedParams' => [
                     ':qp0' => 'test string',
                     ':qp1' => 'test string2',
@@ -283,11 +206,7 @@ class CommandProvider
                  *
                  * Make sure curly bracelets (`{{..}}`) in values will not be escaped
                  */
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 1.1, :qp0, TRUE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 1.1, :qp0, TRUE)',
                 'expectedParams' => [
                     ':qp0' => 'Kyiv {{city}}, Ukraine',
                 ],
@@ -296,11 +215,7 @@ class CommandProvider
                 '{{%type}}',
                 'values' => [['0', '0.0', 'Kyiv {{city}}, Ukraine', false]],
                 ['{{%type}}.[[int_col]]', '[[float_col]]', 'char_col', 'bool_col'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (0, 0, :qp0, FALSE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (0, 0, :qp0, FALSE)',
                 'expectedParams' => [
                     ':qp0' => 'Kyiv {{city}}, Ukraine',
                 ],
@@ -313,11 +228,7 @@ class CommandProvider
                  */
                 'values' => [[new Expression(':exp1', [':exp1' => 42]), 1, 'test', false]],
                 ['int_col', 'float_col', 'char_col', 'bool_col'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:exp1, 1, :qp1, FALSE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:exp1, 1, :qp1, FALSE)',
                 'expectedParams' => [
                     ':exp1' => 42,
                     ':qp1' => 'test',
@@ -327,11 +238,7 @@ class CommandProvider
                 'type',
                 'values' => [['int' => '1.0', 'float' => '2', 'char' => 10, 'bool' => 1]],
                 ['int_col', 'float_col', 'char_col', 'bool_col'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)',
                 'expectedParams' => [
                     ':qp0' => '10',
                 ],
@@ -340,11 +247,7 @@ class CommandProvider
                 'type',
                 'values' => [['int' => '1.0', 'float' => '2', 'char' => 10, 'bool' => 1]],
                 ['a' => 'int_col', 'b' => 'float_col', 'c' => 'char_col', 'd' => 'bool_col'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)',
                 'expectedParams' => [
                     ':qp0' => '10',
                 ],
@@ -353,11 +256,7 @@ class CommandProvider
                 'type',
                 'values' => [['bool_col' => 1, 'char_col' => 10, 'int_col' => '1.0', 'float_col' => '2']],
                 ['int_col', 'float_col', 'char_col', 'bool_col'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)',
                 'expectedParams' => [
                     ':qp0' => '10',
                 ],
@@ -366,11 +265,7 @@ class CommandProvider
                 'type',
                 'values' => [['bool' => 1, 'char' => 10, 'int' => '1.0', 'float' => '2']],
                 ['int' => 'int_col', 'float' => 'float_col', 'char' => 'char_col', 'bool' => 'bool_col'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)',
                 'expectedParams' => [
                     ':qp0' => '10',
                 ],
@@ -379,11 +274,7 @@ class CommandProvider
                 'type',
                 'values' => [[3 => 1, 2 => 10, 0 => '1.0', 1 => '2']],
                 ['int_col', 'float_col', 'char_col', 'bool_col'],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)',
                 'expectedParams' => [
                     ':qp0' => '10',
                 ],
@@ -392,24 +283,16 @@ class CommandProvider
                 'type',
                 'values' => [['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
                 [],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)',
                 'expectedParams' => [
                     ':qp0' => '10',
                 ],
             ],
             'empty columns and objects' => [
                 'type',
-                'values' => [(object)['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
+                'values' => [(object) ['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
                 [],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)',
                 'expectedParams' => [
                     ':qp0' => '10',
                 ],
@@ -418,29 +301,21 @@ class CommandProvider
                 'type',
                 'values' => [new ArrayIterator(['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1])],
                 [],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)',
                 'expectedParams' => [
                     ':qp0' => '10',
                 ],
             ],
             'empty columns and Traversable values' => [
                 'type',
-                'values' => new class () implements IteratorAggregate {
+                'values' => new class implements IteratorAggregate {
                     public function getIterator(): Traversable
                     {
                         yield ['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1];
                     }
                 },
                 [],
-                'expected' => static::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)
-                    SQL
-                ),
+                'expected' => 'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (1, 2, :qp0, TRUE)',
                 'expectedParams' => [
                     ':qp0' => '10',
                 ],
@@ -452,10 +327,9 @@ class CommandProvider
                     [2, 'b', -1.0, false, new JsonValue(['d' => 'e', 'f' => false, 'g' => [4, 5, null]])],
                 ],
                 ['int_col', 'char_col', 'float_col', 'bool_col', 'json_col'],
-                'expected' => static::replaceQuotes(
-                    'INSERT INTO [[type]] ([[int_col]], [[char_col]], [[float_col]], [[bool_col]], [[json_col]])'
-                        . ' VALUES (1, :qp0, 0, TRUE, :qp1), (2, :qp2, -1, FALSE, :qp3)'
-                ),
+                'expected'
+                    => 'INSERT INTO [[type]] ([[int_col]], [[char_col]], [[float_col]], [[bool_col]], [[json_col]])'
+                        . ' VALUES (1, :qp0, 0, TRUE, :qp1), (2, :qp2, -1, FALSE, :qp3)',
                 'expectedParams' => [
                     ':qp0' => 'a',
                     ':qp1' => '{"a":1,"b":true,"c":[1,2,3]}',
@@ -486,11 +360,7 @@ class CommandProvider
                 'column',
                 '',
                 '',
-                static::replaceQuotes(
-                    <<<SQL
-                    CREATE INDEX [[name]] ON [[table]] ([[column]])
-                    SQL
-                ),
+                'CREATE INDEX [[name]] ON [[table]] ([[column]])',
             ],
             [
                 '{{name}}',
@@ -498,11 +368,7 @@ class CommandProvider
                 ['column1', 'column2'],
                 '',
                 '',
-                static::replaceQuotes(
-                    <<<SQL
-                    CREATE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL
-                ),
+                'CREATE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])',
             ],
             [
                 '{{name}}',
@@ -510,11 +376,7 @@ class CommandProvider
                 ['column1', 'column2'],
                 IndexType::UNIQUE,
                 '',
-                static::replaceQuotes(
-                    <<<SQL
-                    CREATE UNIQUE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL
-                ),
+                'CREATE UNIQUE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])',
             ],
             [
                 '{{name}}',
@@ -522,11 +384,7 @@ class CommandProvider
                 ['column1', 'column2'],
                 'FULLTEXT',
                 '',
-                static::replaceQuotes(
-                    <<<SQL
-                    CREATE FULLTEXT INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL
-                ),
+                'CREATE FULLTEXT INDEX [[name]] ON [[table]] ([[column1]], [[column2]])',
             ],
             [
                 '{{name}}',
@@ -534,11 +392,7 @@ class CommandProvider
                 ['column1', 'column2'],
                 'SPATIAL',
                 '',
-                static::replaceQuotes(
-                    <<<SQL
-                    CREATE SPATIAL INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL
-                ),
+                'CREATE SPATIAL INDEX [[name]] ON [[table]] ([[column1]], [[column2]])',
             ],
             [
                 '{{name}}',
@@ -546,11 +400,7 @@ class CommandProvider
                 ['column1', 'column2'],
                 'BITMAP',
                 '',
-                static::replaceQuotes(
-                    <<<SQL
-                    CREATE BITMAP INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
-                    SQL
-                ),
+                'CREATE BITMAP INDEX [[name]] ON [[table]] ([[column1]], [[column2]])',
             ],
         ];
     }
@@ -568,55 +418,35 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 [':id' => 1],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[id]] = 1
-                    SQL
-                ),
+                'SELECT * FROM [[customer]] WHERE [[id]] = 1',
             ],
             [
                 <<<SQL
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 ['id' => 1],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[id]] = 1
-                    SQL
-                ),
+                'SELECT * FROM [[customer]] WHERE [[id]] = 1',
             ],
             [
                 <<<SQL
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 ['id' => new Param('1 OR 1=1', DataType::INTEGER)],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[id]] = 1
-                    SQL
-                ),
+                'SELECT * FROM [[customer]] WHERE [[id]] = 1',
             ],
             [
                 <<<SQL
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 ['id' => null],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[id]] = NULL
-                    SQL
-                ),
+                'SELECT * FROM [[customer]] WHERE [[id]] = NULL',
             ],
             [
                 <<<SQL
                 SELECT * FROM [[customer]] WHERE [[id]] = :base OR [[id]] = :basePrefix
                 SQL,
                 ['base' => 1, 'basePrefix' => 2],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2
-                    SQL
-                ),
+                'SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2',
             ],
             /**
              * {@see https://github.com/yiisoft/yii2/issues/9268}
@@ -626,11 +456,7 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[active]] = :active
                 SQL,
                 [':active' => false],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[active]] = FALSE
-                    SQL
-                ),
+                'SELECT * FROM [[customer]] WHERE [[active]] = FALSE',
             ],
             /**
              * {@see https://github.com/yiisoft/yii2/issues/15122}
@@ -640,11 +466,7 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] IN (:ids)
                 SQL,
                 [':ids' => new Expression(implode(', ', [1, 2]))],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[id]] IN (1, 2)
-                    SQL
-                ),
+                'SELECT * FROM [[customer]] WHERE [[id]] IN (1, 2)',
             ],
             [
                 'SELECT * FROM customer WHERE id  = ? AND active = ?',
@@ -658,44 +480,28 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = ?
                 SQL,
                 [1],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[id]] = 1
-                    SQL
-                ),
+                'SELECT * FROM [[customer]] WHERE [[id]] = 1',
             ],
             [
                 <<<SQL
                 SELECT * FROM [[customer]] WHERE [[id]] = ? OR [[id]] = ?
                 SQL,
                 [1, 2],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2
-                    SQL
-                ),
+                'SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2',
             ],
             [
                 <<<SQL
                 SELECT * FROM [[customer]] WHERE [[name]] = :name
                 SQL,
                 ['name' => new Stringable('Alfa')],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[name]] = 'Alfa'
-                    SQL
-                ),
+                'SELECT * FROM [[customer]] WHERE [[name]] = \'Alfa\'',
             ],
             [
                 <<<SQL
                 SELECT * FROM [[product]] WHERE [[price]] = :price
                 SQL,
                 ['price' => 123.45],
-                static::replaceQuotes(
-                    <<<SQL
-                    SELECT * FROM [[product]] WHERE [[price]] = 123.45
-                    SQL
-                ),
+                'SELECT * FROM [[product]] WHERE [[price]] = 123.45',
             ],
         ];
     }
@@ -707,6 +513,16 @@ class CommandProvider
                 '{{customer}}',
                 ['name' => '{{test}}'],
                 [],
+                null,
+                [],
+                ['name' => '{{test}}'],
+                3,
+            ],
+            [
+                '{{customer}}',
+                ['name' => '{{test}}'],
+                [],
+                '{{customer}} c',
                 [],
                 ['name' => '{{test}}'],
                 3,
@@ -715,6 +531,7 @@ class CommandProvider
                 '{{customer}}',
                 ['name' => '{{test}}'],
                 ['id' => 1],
+                null,
                 [],
                 ['name' => '{{test}}'],
                 1,
@@ -723,6 +540,7 @@ class CommandProvider
                 '{{customer}}',
                 ['{{customer}}.name' => '{{test}}'],
                 ['id' => 1],
+                null,
                 [],
                 ['name' => '{{test}}'],
                 1,
@@ -731,6 +549,25 @@ class CommandProvider
                 'customer',
                 ['status' => new Expression('1 + 2')],
                 ['id' => 2],
+                null,
+                [],
+                ['status' => 3],
+                1,
+            ],
+            [
+                'customer',
+                ['status' => new Expression('1 + 2')],
+                ['{{customer}}.id' => 2],
+                ['c' => 'customer'],
+                [],
+                ['status' => 3],
+                1,
+            ],
+            [
+                'customer',
+                ['status' => new Expression('1 + 2')],
+                ['{{customer}}.id' => 2],
+                static fn(ConnectionInterface $db) => ['c' => $db->createQuery()->from('customer')],
                 [],
                 ['status' => 3],
                 1,
@@ -739,9 +576,10 @@ class CommandProvider
                 '{{customer}}',
                 ['status' => new Expression(
                     '1 + :val',
-                    ['val' => new Expression('2 + :val', ['val' => 3])]
+                    ['val' => new Expression('2 + :val', ['val' => 3])],
                 )],
                 '[[name]] != :val',
+                null,
                 ['val' => new Expression('LOWER(:val)', ['val' => 'USER1'])],
                 ['name' => 'user2', 'status' => 6],
                 2,
@@ -784,10 +622,10 @@ class CommandProvider
                 ],
             ],
             'query' => [
-                [
+                static fn(ConnectionInterface $db) => [
                     'params' => [
                         'T_upsert',
-                        (new Query(static::getDb()))
+                        $db
                             ->select(['email', 'address', 'status' => new Expression('1')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -795,10 +633,10 @@ class CommandProvider
                     ],
                     'expected' => ['email' => 'user1@example.com', 'address' => 'address1', 'status' => 1],
                 ],
-                [
+                static fn(ConnectionInterface $db) => [
                     'params' => [
                         'T_upsert',
-                        (new Query(static::getDb()))
+                        $db
                             ->select(['email', 'address', 'status' => new Expression('2')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -808,10 +646,10 @@ class CommandProvider
                 ],
             ],
             'query with update part' => [
-                [
+                static fn(ConnectionInterface $db) => [
                     'params' => [
                         'T_upsert',
-                        (new Query(static::getDb()))
+                        $db
                             ->select(['email', 'address', 'status' => new Expression('1')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -820,10 +658,10 @@ class CommandProvider
                     ],
                     'expected' => ['email' => 'user1@example.com', 'address' => 'address1', 'status' => 1],
                 ],
-                [
+                static fn(ConnectionInterface $db) => [
                     'params' => [
                         'T_upsert',
-                        (new Query(static::getDb()))
+                        $db
                             ->select(['email', 'address', 'status' => new Expression('3')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -834,10 +672,10 @@ class CommandProvider
                 ],
             ],
             'query without update part' => [
-                [
+                static fn(ConnectionInterface $db) => [
                     'params' => [
                         'T_upsert',
-                        (new Query(static::getDb()))
+                        $db
                             ->select(['email', 'address', 'status' => new Expression('1')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -846,10 +684,10 @@ class CommandProvider
                     ],
                     'expected' => ['email' => 'user1@example.com', 'address' => 'address1', 'status' => 1],
                 ],
-                [
+                static fn(ConnectionInterface $db) => [
                     'params' => [
                         'T_upsert',
-                        (new Query(static::getDb()))
+                        $db
                             ->select(['email', 'address', 'status' => new Expression('2')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -882,10 +720,11 @@ class CommandProvider
             ],
             'insert from sub-query' => [
                 'table' => 'customer',
-                'insertColumns' => (new Query(static::getDb()))->select([
-                    'name' => new Expression("'test_1'"),
-                    'email' => new Expression("'test_1@example.com'"),
-                ]),
+                'insertColumns' => static fn(ConnectionInterface $db) => $db
+                    ->select([
+                        'name' => new Expression("'test_1'"),
+                        'email' => new Expression("'test_1@example.com'"),
+                    ]),
                 'updateColumns' => true,
                 'returnColumns' => null,
                 'selectCondition' => ['id' => 4],

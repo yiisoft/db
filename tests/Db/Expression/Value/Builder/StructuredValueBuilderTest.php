@@ -15,15 +15,13 @@ use Yiisoft\Db\Schema\Column\AbstractStructuredColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Schema\Data\StructuredLazyArray;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 /**
  * @group db
  */
 final class StructuredValueBuilderTest extends TestCase
 {
-    use TestTrait;
-
     public static function buildProvider(): array
     {
         $column = ColumnBuilder::structured(columns: [
@@ -49,7 +47,7 @@ final class StructuredValueBuilderTest extends TestCase
     #[DataProvider('buildProvider')]
     public function testBuild(array|object|string $value, AbstractStructuredColumn|string|null $type, string $expected): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $qb = $db->getQueryBuilder();
 
         $params = [];
@@ -62,7 +60,7 @@ final class StructuredValueBuilderTest extends TestCase
 
     public function testBuildNull(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $qb = $db->getQueryBuilder();
 
         $params = [];
@@ -75,7 +73,7 @@ final class StructuredValueBuilderTest extends TestCase
 
     public function testBuildQueryExpression(): void
     {
-        $db = $this->getConnection();
+        $db = TestHelper::createSqliteMemoryConnection();
         $qb = $db->getQueryBuilder();
 
         $params = [];

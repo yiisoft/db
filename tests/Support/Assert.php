@@ -90,7 +90,7 @@ final class Assert extends TestCase
         $class = new ReflectionClass($object);
         $new = $class->newInstanceWithoutConstructor();
 
-        $setProperty = fn (string $name, mixed $value) => $this->$name = $value;
+        $setProperty = fn(string $name, mixed $value) => $this->$name = $value;
 
         foreach ($class->getProperties() as $property) {
             if (array_key_exists($property->name, $values)) {
@@ -186,25 +186,6 @@ final class Assert extends TestCase
         }
     }
 
-    /**
-     * Returns all properties of the object, including inherited ones.
-     *
-     * @return ReflectionProperty[]
-     */
-    private static function getProperties(object $object): array
-    {
-        $properties = [];
-        $reflectionClass = new ReflectionClass($object);
-
-        do {
-            foreach ($reflectionClass->getProperties() as $property) {
-                $properties[$property->getName()] ??= $property;
-            }
-        } while ($reflectionClass = $reflectionClass->getParentClass());
-
-        return $properties;
-    }
-
     public static function constraintsEquals(
         array|Check|DefaultValue|ForeignKey|Index|null $expected,
         array|Check|DefaultValue|ForeignKey|Index|null $actual,
@@ -228,6 +209,25 @@ final class Assert extends TestCase
         }
 
         self::assertEquals($expected, $actual);
+    }
+
+    /**
+     * Returns all properties of the object, including inherited ones.
+     *
+     * @return ReflectionProperty[]
+     */
+    private static function getProperties(object $object): array
+    {
+        $properties = [];
+        $reflectionClass = new ReflectionClass($object);
+
+        do {
+            foreach ($reflectionClass->getProperties() as $property) {
+                $properties[$property->getName()] ??= $property;
+            }
+        } while ($reflectionClass = $reflectionClass->getParentClass());
+
+        return $properties;
     }
 
     private static function sortConstrains(array &$array): void

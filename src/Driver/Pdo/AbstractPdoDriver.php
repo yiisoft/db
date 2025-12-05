@@ -19,13 +19,14 @@ use Stringable;
 abstract class AbstractPdoDriver implements PdoDriverInterface
 {
     protected string $dsn;
-    protected string|null $charset = null;
+    protected ?string $charset = null;
 
     public function __construct(
         string|Stringable $dsn,
         protected string $username = '',
-        #[SensitiveParameter] protected string $password = '',
-        protected array $attributes = []
+        #[SensitiveParameter]
+        protected string $password = '',
+        protected array $attributes = [],
     ) {
         $this->dsn = (string) $dsn;
     }
@@ -40,12 +41,12 @@ abstract class AbstractPdoDriver implements PdoDriverInterface
         return new PDO($this->dsn, $this->username, $this->password, $this->attributes);
     }
 
-    public function charset(string|null $charset): void
+    public function charset(?string $charset): void
     {
         $this->charset = $charset;
     }
 
-    public function getCharset(): string|null
+    public function getCharset(): ?string
     {
         return $this->charset;
     }

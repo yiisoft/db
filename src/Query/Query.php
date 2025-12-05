@@ -9,7 +9,6 @@ use LogicException;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -23,14 +22,15 @@ use function array_combine;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
+use function array_push;
 use function array_shift;
 use function array_unshift;
 use function count;
 use function current;
-use function gettype;
 use function is_array;
 use function is_int;
 use function is_numeric;
+use function is_scalar;
 use function is_string;
 use function key;
 use function preg_match;
@@ -76,29 +76,33 @@ use function trim;
  * @psalm-import-type SelectValue from QueryPartsInterface
  * @psalm-import-type IndexBy from QueryInterface
  * @psalm-import-type ResultCallback from QueryInterface
+ * @psalm-import-type Join from QueryInterface
+ * @psalm-import-type From from QueryInterface
  */
 class Query implements QueryInterface
 {
     /** @psalm-var SelectValue $select */
     protected array $select = [];
-    protected string|null $selectOption = null;
+    protected ?string $selectOption = null;
     protected bool $distinct = false;
+    /** @psalm-var From */
     protected array $from = [];
     protected array $groupBy = [];
     protected array|ExpressionInterface|string|null $having = null;
-    protected array $join = [];
+    /** @psalm-var list<Join> */
+    protected array $joins = [];
     protected array $orderBy = [];
     protected array $params = [];
     /** @psalm-var ResultCallback|null $resultCallback */
-    protected Closure|null $resultCallback = null;
+    protected ?Closure $resultCallback = null;
     protected array $union = [];
+    /** @var WithQuery[] */
     protected array $withQueries = [];
     /** @psalm-var IndexBy|null $indexBy */
     protected Closure|string|null $indexBy = null;
     protected ExpressionInterface|int|null $limit = null;
     protected ExpressionInterface|int|null $offset = null;
     protected array|string|ExpressionInterface|null $where = null;
-    protected array $with = [];
 
     /**
      * @psalm-var list<string>
@@ -108,9 +112,7 @@ class Query implements QueryInterface
     private bool $emulateExecution = false;
     private bool $typecasting = false;
 
-    public function __construct(protected ConnectionInterface $db)
-    {
-    }
+    public function __construct(protected ConnectionInterface $db) {}
 
     public function addGroupBy(array|string|ExpressionInterface $columns): static
     {
@@ -151,15 +153,17 @@ class Query implements QueryInterface
 
         if (empty($this->params)) {
             $this->params = $params;
-        } else {
-            foreach ($params as $name => $value) {
-                if (is_int($name)) {
-                    $this->params[] = $value;
-                } else {
-                    $this->params[$name] = $value;
-                }
-            }
+
+            return $this;
         }
+
+        if (is_int(key($params))) {
+            array_push($this->params, ...$params);
+
+            return $this;
+        }
+
+        $this->params = [...$this->params, ...$params];
 
         return $this;
     }
@@ -216,7 +220,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function andFilterCompare(string $column, string|null $value, string $defaultOperator = '='): static
+    public function andFilterCompare(string $column, ?string $value, string $defaultOperator = '='): static
     {
         $operator = $defaultOperator;
 
@@ -256,7 +260,7 @@ class Query implements QueryInterface
         return $this->index($this->createCommand()->queryAll());
     }
 
-    public function average(string $sql): int|float|null|string
+    public function average(string $sql): int|float|string|null
     {
         return match ($this->emulateExecution) {
             true => null,
@@ -268,8 +272,7 @@ class Query implements QueryInterface
     {
         return $this->db
             ->createBatchQueryResult($this)
-            ->batchSize($batchSize)
-            ->resultCallback($this->index(...));
+            ->batchSize($batchSize);
     }
 
     public function column(): array
@@ -426,15 +429,7 @@ class Query implements QueryInterface
 
     public function from(array|ExpressionInterface|string $tables): static
     {
-        /**
-         * @var array
-         * @psalm-suppress PossiblyInvalidArgument
-         */
-        $this->from = match (gettype($tables)) {
-            GettypeResult::ARRAY => $tables,
-            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($tables), -1, PREG_SPLIT_NO_EMPTY),
-            default => [$tables],
-        };
+        $this->from = DbArrayHelper::normalizeExpressions($tables);
 
         return $this;
     }
@@ -471,7 +466,7 @@ class Query implements QueryInterface
 
     public function getJoins(): array
     {
-        return $this->join;
+        return $this->joins;
     }
 
     public function getLimit(): ExpressionInterface|int|null
@@ -494,7 +489,7 @@ class Query implements QueryInterface
         return $this->params;
     }
 
-    public function getResultCallback(): Closure|null
+    public function getResultCallback(): ?Closure
     {
         return $this->resultCallback;
     }
@@ -504,7 +499,7 @@ class Query implements QueryInterface
         return $this->select;
     }
 
-    public function getSelectOption(): string|null
+    public function getSelectOption(): ?string
     {
         return $this->selectOption;
     }
@@ -531,16 +526,7 @@ class Query implements QueryInterface
 
     public function groupBy(array|string|ExpressionInterface $columns): static
     {
-        /**
-         * @var array
-         * @psalm-suppress PossiblyInvalidArgument
-         */
-        $this->groupBy = match (gettype($columns)) {
-            GettypeResult::ARRAY => $columns,
-            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
-            default => [$columns],
-        };
-
+        $this->groupBy = DbArrayHelper::normalizeExpressions($columns);
         return $this;
     }
 
@@ -568,21 +554,31 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function innerJoin(array|string $table, array|string $on = '', array $params = []): static
-    {
-        $this->join[] = ['INNER JOIN', $table, $on];
+    public function innerJoin(
+        array|ExpressionInterface|string $table,
+        array|ExpressionInterface|string $on = '',
+        array $params = [],
+    ): static {
+        $this->joins[] = ['INNER JOIN', $table, $on];
         return $this->addParams($params);
     }
 
-    public function join(string $type, array|string $table, array|string $on = '', array $params = []): static
-    {
-        $this->join[] = [$type, $table, $on];
+    public function join(
+        string $type,
+        array|ExpressionInterface|string $table,
+        array|ExpressionInterface|string $on = '',
+        array $params = [],
+    ): static {
+        $this->joins[] = [$type, $table, $on];
         return $this->addParams($params);
     }
 
-    public function leftJoin(array|string $table, array|string $on = '', array $params = []): static
-    {
-        $this->join[] = ['LEFT JOIN', $table, $on];
+    public function leftJoin(
+        array|ExpressionInterface|string $table,
+        array|ExpressionInterface|string $on = '',
+        array $params = [],
+    ): static {
+        $this->joins[] = ['LEFT JOIN', $table, $on];
         return $this->addParams($params);
     }
 
@@ -592,13 +588,13 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function max(string $sql): int|float|null|string
+    public function max(string $sql): int|float|string|null
     {
         $max = $this->queryScalar("MAX($sql)");
         return is_numeric($max) ? $max : null;
     }
 
-    public function min(string $sql): int|float|null|string
+    public function min(string $sql): int|float|string|null
     {
         $min = $this->queryScalar("MIN($sql)");
         return is_numeric($min) ? $min : null;
@@ -690,19 +686,22 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function resultCallback(Closure|null $resultCallback): static
+    public function resultCallback(?Closure $resultCallback): static
     {
         $this->resultCallback = $resultCallback;
         return $this;
     }
 
-    public function rightJoin(array|string $table, array|string $on = '', array $params = []): static
-    {
-        $this->join[] = ['RIGHT JOIN', $table, $on];
+    public function rightJoin(
+        array|ExpressionInterface|string $table,
+        array|ExpressionInterface|string $on = '',
+        array $params = [],
+    ): static {
+        $this->joins[] = ['RIGHT JOIN', $table, $on];
         return $this->addParams($params);
     }
 
-    public function scalar(): bool|int|null|string|float
+    public function scalar(): bool|int|string|float|null
     {
         return match ($this->emulateExecution) {
             true => null,
@@ -717,7 +716,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function selectOption(string|null $value): static
+    public function selectOption(?string $value): static
     {
         $this->selectOption = $value;
         return $this;
@@ -725,7 +724,7 @@ class Query implements QueryInterface
 
     public function setJoins(array $value): static
     {
-        $this->join = $value;
+        $this->joins = $value;
         return $this;
     }
 
@@ -740,7 +739,7 @@ class Query implements QueryInterface
         return $this->emulateExecution;
     }
 
-    public function sum(string $sql): int|float|null|string
+    public function sum(string $sql): int|float|string|null
     {
         return match ($this->emulateExecution) {
             true => null,
@@ -763,11 +762,13 @@ class Query implements QueryInterface
 
     public function where(array|string|ExpressionInterface|null $condition, array $params = []): static
     {
-        if ($this->where === null) {
-            $this->where = $condition;
-        } else {
-            throw new LogicException('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.');
+        if ($this->where !== null) {
+            throw new LogicException(
+                'The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.',
+            );
         }
+
+        $this->where = $condition;
         $this->addParams($params);
         return $this;
     }
@@ -782,15 +783,24 @@ class Query implements QueryInterface
     public function withQuery(
         QueryInterface|string $query,
         ExpressionInterface|string $alias,
-        bool $recursive = false
+        bool $recursive = false,
     ): static {
-        $this->withQueries[] = ['query' => $query, 'alias' => $alias, 'recursive' => $recursive];
+        $this->withQueries = [new WithQuery($query, $alias, $recursive)];
         return $this;
     }
 
-    public function withQueries(array $withQueries): static
+    public function addWithQuery(
+        QueryInterface|string $query,
+        ExpressionInterface|string $alias,
+        bool $recursive = false,
+    ): static {
+        $this->withQueries[] = new WithQuery($query, $alias, $recursive);
+        return $this;
+    }
+
+    public function withQueries(WithQuery ...$queries): static
     {
-        $this->withQueries = $withQueries;
+        $this->withQueries = $queries;
         return $this;
     }
 
@@ -805,7 +815,7 @@ class Query implements QueryInterface
      * @throws NotSupportedException
      * @throws Throwable
      */
-    protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|null|string|float
+    protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|string|float|null
     {
         if ($this->emulateExecution) {
             return null;
@@ -816,7 +826,6 @@ class Query implements QueryInterface
             && empty($this->groupBy)
             && empty($this->having)
             && empty($this->union)
-            && empty($this->with)
         ) {
             $select = $this->select;
             $order = $this->orderBy;
@@ -846,14 +855,13 @@ class Query implements QueryInterface
     }
 
     /**
-     * @psalm-param list<array> $rows
-     *
      * @return array[]|object[]
      *
+     * @psalm-param list<array<string,mixed>> $rows
      * @psalm-return (
-     *     $rows is non-empty-list<array>
-     *         ? non-empty-array<array|object>
-     *         : array[]|object[]
+     *     $rows is non-empty-list<array<string,mixed>>
+     *         ? non-empty-array<array<string,mixed>|object>
+     *         : array<array<string,mixed>|object>
      * )
      */
     protected function index(array $rows): array
@@ -861,6 +869,10 @@ class Query implements QueryInterface
         return DbArrayHelper::index($rows, $this->indexBy, $this->resultCallback);
     }
 
+    /**
+     * @psalm-param array<string, mixed> $row
+     * @return array<string, mixed>|object
+     */
     private function callResultCallbackOnOne(array $row): array|object
     {
         /** @psalm-var ResultCallback $this->resultCallback */
@@ -1000,15 +1012,11 @@ class Query implements QueryInterface
      */
     private function normalizeSelect(array|bool|float|int|string|ExpressionInterface $columns): array
     {
-        /**
-         * @var SelectValue
-         * @psalm-suppress InvalidArgument
-         */
-        $columns = match (gettype($columns)) {
-            GettypeResult::ARRAY => $columns,
-            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
-            default => [$columns],
-        };
+        if (is_scalar($columns) && !is_string($columns)) {
+            $columns = [$columns];
+        }
+
+        $columns = DbArrayHelper::normalizeExpressions($columns);
 
         $select = [];
 
@@ -1021,9 +1029,9 @@ class Query implements QueryInterface
 
             if (is_string($columnDefinition)) {
                 if (
-                    preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $columnDefinition, $matches) &&
-                    !preg_match('/^\d+$/', $matches[2]) &&
-                    !str_contains($matches[2], '.')
+                    preg_match('/^(.*?)\s+(?i:as\s+)?([\w\-_.]+)$/', $columnDefinition, $matches) === 1
+                    && !preg_match('/^\d+$/', $matches[2])
+                    && !str_contains($matches[2], '.')
                 ) {
                     /** Using "columnName as alias" or "columnName alias" syntax */
                     $select[$matches[2]] = $matches[1];

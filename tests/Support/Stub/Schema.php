@@ -4,24 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support\Stub;
 
-use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\AbstractSchema;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
-/**
- * @psalm-suppress InvalidReturnType
- * @psalm-suppress InvalidNullableReturnType
- * @psalm-suppress NullableReturnStatement
- */
 class Schema extends AbstractSchema
 {
-    public function findUniqueIndexes(TableSchemaInterface $table): array
-    {
-        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
-    }
-
     protected function getCacheKey(string $name): array
     {
         return [];
@@ -37,7 +26,7 @@ class Schema extends AbstractSchema
         return md5(serialize([self::class, ...$metadata]));
     }
 
-    protected function loadResultColumn(array $metadata): ColumnInterface|null
+    protected function loadResultColumn(array $metadata): ?ColumnInterface
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
@@ -74,23 +63,7 @@ class Schema extends AbstractSchema
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
-    /**
-     * @throws NotSupportedException
-     */
-    protected function loadTablePrimaryKey(string $tableName): Index|null
-    {
-        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
-    }
-
-    /**
-     * @throws NotSupportedException
-     */
-    protected function loadTableUniques(string $tableName): array
-    {
-        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
-    }
-
-    protected function loadTableSchema(string $name): TableSchemaInterface|null
+    protected function loadTableSchema(string $name): ?TableSchemaInterface
     {
         return null;
     }

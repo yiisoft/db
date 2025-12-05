@@ -15,21 +15,20 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\Support\TestHelper;
 
 /**
  * @group db
  */
 final class ArrayValueTest extends TestCase
 {
-    use TestTrait;
-
     public static function constructProvider(): array
     {
+        $db = TestHelper::createSqliteMemoryConnection();
         return [
             [['a', 'b', 'c'], null],
             [new ArrayIterator(['a', 'b', 'c']), 'integer[]'],
-            [new Query(self::getDb()), new ArrayColumn()],
+            [new Query($db), new ArrayColumn()],
             [new JsonLazyArray('[1,2,3]'), new IntegerColumn()],
         ];
     }
@@ -37,7 +36,7 @@ final class ArrayValueTest extends TestCase
     #[DataProvider('constructProvider')]
     public function testConstruct(
         iterable|LazyArrayInterface|QueryInterface|string $value,
-        ColumnInterface|string|null $type = null
+        ColumnInterface|string|null $type = null,
     ): void {
         $arrayValue = new ArrayValue($value, $type);
 

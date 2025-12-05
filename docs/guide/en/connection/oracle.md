@@ -31,7 +31,7 @@ use Yiisoft\Db\Oracle\Dsn;
 
 return [
     'yiisoft/db-oracle' => [
-        'dsn' => (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString(),
+        'dsn' => new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']),
         'username' => 'user',
         'password' => 'password',
     ],
@@ -51,13 +51,13 @@ use Yiisoft\Db\Oracle\Driver;
 use Yiisoft\Db\Oracle\Dsn;
 
 // Dsn.
-$dsn = (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString();
+$dsn = new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']);
 
 // PSR-16 cache implementation.
 $arrayCache = new ArrayCache();
 
 // Schema cache.
-$schemaCache = new SchemaCache($cache);
+$schemaCache = new SchemaCache($arrayCache);
 
 // PDO driver.
 $pdoDriver = new Driver($dsn, 'user', 'password'); 

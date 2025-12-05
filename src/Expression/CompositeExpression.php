@@ -19,6 +19,5 @@ final class CompositeExpression implements ExpressionInterface
     public function __construct(
         public readonly array $expressions,
         public readonly string $separator = ' ',
-    ) {
-    }
+    ) {}
 }

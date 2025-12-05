@@ -26,7 +26,7 @@ interface QueryFunctionsInterface
      *
      * Note: Make sure you quote column names in the expression.
      */
-    public function average(string $sql): int|float|null|string;
+    public function average(string $sql): int|float|string|null;
 
     /**
      * Returns the number of records.
@@ -57,7 +57,7 @@ interface QueryFunctionsInterface
      *
      * Note: Make sure you quote column names in the expression.
      */
-    public function max(string $sql): int|float|null|string;
+    public function max(string $sql): int|float|string|null;
 
     /**
      * Returns the minimum of the specified column values.
@@ -71,7 +71,7 @@ interface QueryFunctionsInterface
      *
      * Note: Make sure you quote column names in the expression.
      */
-    public function min(string $sql): int|float|null|string;
+    public function min(string $sql): int|float|string|null;
 
     /**
      * Returns the sum of the specified column values.
@@ -85,5 +85,5 @@ interface QueryFunctionsInterface
      *
      * Note: Make sure you quote column names in the expression.
      */
-    public function sum(string $sql): int|float|null|string;
+    public function sum(string $sql): int|float|string|null;
 }

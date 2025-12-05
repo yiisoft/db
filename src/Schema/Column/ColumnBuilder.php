@@ -68,7 +68,7 @@ class ColumnBuilder
      *
      * @param int|null $size The number of bits that the column can store.
      */
-    public static function bit(int|null $size = null): ColumnInterface
+    public static function bit(?int $size = null): ColumnInterface
     {
         return new BitColumn(ColumnType::BIT, size: $size);
     }
@@ -76,7 +76,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `tinyint`.
      */
-    public static function tinyint(int|null $size = null): ColumnInterface
+    public static function tinyint(?int $size = null): ColumnInterface
     {
         return new IntegerColumn(ColumnType::TINYINT, size: $size);
     }
@@ -84,7 +84,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `smallint`.
      */
-    public static function smallint(int|null $size = null): ColumnInterface
+    public static function smallint(?int $size = null): ColumnInterface
     {
         return new IntegerColumn(ColumnType::SMALLINT, size: $size);
     }
@@ -92,7 +92,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `integer`.
      */
-    public static function integer(int|null $size = null): ColumnInterface
+    public static function integer(?int $size = null): ColumnInterface
     {
         return new IntegerColumn(ColumnType::INTEGER, size: $size);
     }
@@ -100,15 +100,17 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `bigint`.
      */
-    public static function bigint(int|null $size = null): ColumnInterface
+    public static function bigint(?int $size = null, bool $unsigned = false): ColumnInterface
     {
-        return new IntegerColumn(ColumnType::BIGINT, size: $size);
+        return PHP_INT_SIZE === 4 || $unsigned
+            ? new BigIntColumn(ColumnType::BIGINT, size: $size, unsigned: $unsigned)
+            : new IntegerColumn(ColumnType::BIGINT, size: $size, unsigned: $unsigned);
     }
 
     /**
      * Builds a column with the abstract type `float`.
      */
-    public static function float(int|null $size = null, int|null $scale = null): ColumnInterface
+    public static function float(?int $size = null, ?int $scale = null): ColumnInterface
     {
         return new DoubleColumn(ColumnType::FLOAT, scale: $scale, size: $size);
     }
@@ -116,7 +118,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `double`.
      */
-    public static function double(int|null $size = null, int|null $scale = null): ColumnInterface
+    public static function double(?int $size = null, ?int $scale = null): ColumnInterface
     {
         return new DoubleColumn(ColumnType::DOUBLE, scale: $scale, size: $size);
     }
@@ -124,7 +126,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `decimal`.
      */
-    public static function decimal(int|null $size = 10, int|null $scale = 0): ColumnInterface
+    public static function decimal(?int $size = 10, ?int $scale = 0): ColumnInterface
     {
         return new DoubleColumn(ColumnType::DECIMAL, scale: $scale, size: $size);
     }
@@ -132,7 +134,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `money`.
      */
-    public static function money(int|null $size = 19, int|null $scale = 4): ColumnInterface
+    public static function money(?int $size = 19, ?int $scale = 4): ColumnInterface
     {
         return new DoubleColumn(ColumnType::MONEY, scale: $scale, size: $size);
     }
@@ -140,7 +142,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `char`.
      */
-    public static function char(int|null $size = 1): ColumnInterface
+    public static function char(?int $size = 1): ColumnInterface
     {
         return new StringColumn(ColumnType::CHAR, size: $size);
     }
@@ -148,7 +150,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `string`.
      */
-    public static function string(int|null $size = 255): ColumnInterface
+    public static function string(?int $size = 255): ColumnInterface
     {
         return new StringColumn(ColumnType::STRING, size: $size);
     }
@@ -170,7 +172,7 @@ class ColumnBuilder
      * | MEDIUMTEXT  | 16,777,215    | 5,592,405     | 4,194,303
      * | LONGTEXT    | 4,294,967,295 | 4,294,967,295 | 4,294,967,295
      */
-    public static function text(int|null $size = null): ColumnInterface
+    public static function text(?int $size = null): ColumnInterface
     {
         return new StringColumn(ColumnType::TEXT, size: $size);
     }
@@ -178,7 +180,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `binary`.
      */
-    public static function binary(int|null $size = null): ColumnInterface
+    public static function binary(?int $size = null): ColumnInterface
     {
         return new BinaryColumn(ColumnType::BINARY, size: $size);
     }
@@ -194,7 +196,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `timestamp`.
      */
-    public static function timestamp(int|null $size = 0): ColumnInterface
+    public static function timestamp(?int $size = 0): ColumnInterface
     {
         return new DateTimeColumn(ColumnType::TIMESTAMP, size: $size);
     }
@@ -202,7 +204,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `datetime`.
      */
-    public static function datetime(int|null $size = 0): ColumnInterface
+    public static function datetime(?int $size = 0): ColumnInterface
     {
         return new DateTimeColumn(ColumnType::DATETIME, size: $size);
     }
@@ -210,7 +212,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `datetimetz`.
      */
-    public static function datetimeWithTimezone(int|null $size = 0): ColumnInterface
+    public static function datetimeWithTimezone(?int $size = 0): ColumnInterface
     {
         return new DateTimeColumn(ColumnType::DATETIMETZ, size: $size);
     }
@@ -218,7 +220,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `time`.
      */
-    public static function time(int|null $size = 0): ColumnInterface
+    public static function time(?int $size = 0): ColumnInterface
     {
         return new DateTimeColumn(ColumnType::TIME, size: $size);
     }
@@ -226,7 +228,7 @@ class ColumnBuilder
     /**
      * Builds a column with the abstract type `timetz`.
      */
-    public static function timeWithTimezone(int|null $size = 0): ColumnInterface
+    public static function timeWithTimezone(?int $size = 0): ColumnInterface
     {
         return new DateTimeColumn(ColumnType::TIMETZ, size: $size);
     }
@@ -244,7 +246,7 @@ class ColumnBuilder
      *
      * @param ColumnInterface|null $column The instance of {@see ColumnInterface} of the array elements.
      */
-    public static function array(ColumnInterface|null $column = null): ColumnInterface
+    public static function array(?ColumnInterface $column = null): ColumnInterface
     {
         return new ArrayColumn(ColumnType::ARRAY, column: $column);
     }
@@ -257,7 +259,7 @@ class ColumnBuilder
      *
      * @psalm-param array<string, ColumnInterface> $columns
      */
-    public static function structured(string|null $dbType = null, array $columns = []): ColumnInterface
+    public static function structured(?string $dbType = null, array $columns = []): ColumnInterface
     {
         return new StructuredColumn(ColumnType::STRUCTURED, dbType: $dbType, columns: $columns);
     }
@@ -268,5 +270,16 @@ class ColumnBuilder
     public static function json(): ColumnInterface
     {
         return new JsonColumn(ColumnType::JSON);
+    }
+
+    /**
+     * Builds a column with the abstract type `enum`.
+     *
+     * @param string[]|null $values The list of possible values for the enum column.
+     * @param string|null $dbType The database type of the column. When null, the column will use a CHECK constraint.
+     */
+    public static function enum(?array $values = null, ?string $dbType = null): EnumColumn
+    {
+        return new EnumColumn(dbType: $dbType, values: $values);
     }
 }

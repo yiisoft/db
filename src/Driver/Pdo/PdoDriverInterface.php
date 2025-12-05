@@ -45,13 +45,13 @@ interface PdoDriverInterface extends DriverInterface
      *
      * @param string|null $charset The charset to use for database connection.
      */
-    public function charset(string|null $charset): void;
+    public function charset(?string $charset): void;
 
     /**
      * @return string|null The charset of the pdo instance. If the charset isn't set yet or not
      * supported by the PDO driver, it returns `null`.
      */
-    public function getCharset(): string|null;
+    public function getCharset(): ?string;
 
     /**
      * @return string The DSN string for creating a PDO instance.

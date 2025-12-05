@@ -28,9 +28,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
         protected QuoterInterface $quoter,
-        protected SchemaInterface $schema
-    ) {
-    }
+        protected SchemaInterface $schema,
+    ) {}
 
     public function addCheck(string $table, string $name, string $expression): string
     {
@@ -80,8 +79,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string|null $delete = null,
-        string|null $update = null
+        ?string $delete = null,
+        ?string $update = null,
     ): string {
         $sql = 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
@@ -104,10 +103,10 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     public function addPrimaryKey(string $table, string $name, array|string $columns): string
     {
         if (is_string($columns)) {
+            /** @psalm-var list<string> */
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
 
-        /** @psalm-var string[] $columns */
         foreach ($columns as $i => $col) {
             $columns[$i] = $this->quoter->quoteColumnName($col);
         }
@@ -121,10 +120,10 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     public function addUnique(string $table, string $name, array|string $columns): string
     {
         if (is_string($columns)) {
+            /** @psalm-var list<string> */
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
 
-        /** @psalm-var string[] $columns */
         foreach ($columns as $i => $col) {
             $columns[$i] = $this->quoter->quoteColumnName($col);
         }
@@ -156,7 +155,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         string $name,
         array|string $columns,
         ?string $indexType = null,
-        ?string $indexMethod = null
+        ?string $indexMethod = null,
     ): string {
         return 'CREATE ' . (!empty($indexType) ? $indexType . ' ' : '') . 'INDEX '
             . $this->quoter->quoteTableName($name)

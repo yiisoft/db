@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests;
+namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\Attributes\DataProviderExternal;
-use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Schema\Column\AbstractArrayColumn;
 use Yiisoft\Db\Schema\Column\ArrayLazyColumn;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
@@ -16,13 +14,10 @@ use Yiisoft\Db\Schema\Column\JsonLazyColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
 use Yiisoft\Db\Tests\Provider\ColumnFactoryProvider;
+use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
-abstract class AbstractColumnFactoryTest extends TestCase
+abstract class CommonColumnFactoryTest extends IntegrationTestCase
 {
-    abstract protected function getColumnFactoryClass(): string;
-
-    abstract protected function getConnection(bool $fixture = false): PdoConnectionInterface;
-
     public function testConstructColumnClassMap(): void
     {
         $definitions = [
@@ -42,7 +37,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testConstructTypeMap(): void
     {
         $map = [
-            'json' => function (string $dbType, array &$info): string|null {
+            'json' => function (string $dbType, array &$info): ?string {
                 if (str_ends_with($info['name'], '_ids')) {
                     $info['column'] = new IntegerColumn();
                     return ColumnType::ARRAY;
@@ -53,7 +48,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         ];
 
         $columnFactoryClass = $this->getColumnFactoryClass();
-        $columnFactory = new $columnFactoryClass(map:  $map);
+        $columnFactory = new $columnFactoryClass(map: $map);
 
         $column = $columnFactory->fromDbType('json', ['name' => 'user_ids']);
 
@@ -65,7 +60,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     #[DataProviderExternal(ColumnFactoryProvider::class, 'types')]
     public function testFromDbType(string $dbType, string $expectedType, string $expectedInstanceOf): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromDbType($dbType);
@@ -73,53 +68,45 @@ abstract class AbstractColumnFactoryTest extends TestCase
         $this->assertInstanceOf($expectedInstanceOf, $column);
         $this->assertSame($expectedType, $column->getType());
         $this->assertSame($dbType, $column->getDbType());
-
-        $db->close();
     }
 
     #[DataProviderExternal(ColumnFactoryProvider::class, 'definitions')]
     public function testFromDefinition(string $definition, ColumnInterface $expected): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromDefinition($definition);
 
         $this->assertEquals($expected, $column);
-
-        $db->close();
     }
 
     #[DataProviderExternal(ColumnFactoryProvider::class, 'pseudoTypes')]
     public function testFromPseudoType(string $pseudoType, ColumnInterface $expected): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromPseudoType($pseudoType);
 
         $this->assertEquals($expected, $column);
-
-        $db->close();
     }
 
     #[DataProviderExternal(ColumnFactoryProvider::class, 'types')]
     public function testFromType(string $type, string $expectedType, string $expectedInstanceOf): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromType($type);
 
         $this->assertInstanceOf($expectedInstanceOf, $column);
         $this->assertSame($expectedType, $column->getType());
-
-        $db->close();
     }
 
     public function testFromDefinitionWithExtra(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromDefinition('char(1) INVISIBLE', ['extra' => 'COLLATE utf8mb4']);
@@ -128,14 +115,12 @@ abstract class AbstractColumnFactoryTest extends TestCase
         $this->assertSame('char', $column->getType());
         $this->assertSame(1, $column->getSize());
         $this->assertSame('INVISIBLE COLLATE utf8mb4', $column->getExtra());
-
-        $db->close();
     }
 
     #[DataProviderExternal(ColumnFactoryProvider::class, 'defaultValueRaw')]
-    public function testFromTypeDefaultValueRaw(string $type, string|null $defaultValueRaw, mixed $expected): void
+    public function testFromTypeDefaultValueRaw(string $type, ?string $defaultValueRaw, mixed $expected): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromType($type, ['defaultValueRaw' => $defaultValueRaw]);
@@ -145,13 +130,11 @@ abstract class AbstractColumnFactoryTest extends TestCase
         } else {
             $this->assertEquals($expected, $column->getDefaultValue());
         }
-
-        $db->close();
     }
 
     public function testNullDefaultValueRaw(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getSharedConnection();
         $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromType(ColumnType::INTEGER, ['defaultValueRaw' => '1', 'primaryKey' => true]);
@@ -161,7 +144,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         $column = $columnFactory->fromType(ColumnType::INTEGER, ['defaultValueRaw' => '1', 'computed' => true]);
 
         $this->assertNull($column->getDefaultValue());
-
-        $db->close();
     }
+
+    abstract protected function getColumnFactoryClass(): string;
 }

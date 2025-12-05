@@ -33,7 +33,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  * @extends Iterator<int, array>
  *
  * @psalm-import-type IndexBy from QueryInterface
- * @psalm-type ResultCallback = Closure(non-empty-list<array>):non-empty-array<array|object>
+ * @psalm-import-type ResultCallback from QueryInterface
  */
 interface BatchQueryResultInterface extends Iterator
 {
@@ -99,9 +99,14 @@ interface BatchQueryResultInterface extends Iterator
     public function batchSize(int $value): static;
 
     /**
+     * @psalm-param IndexBy|null $indexBy
+     */
+    public function indexBy(Closure|string|null $indexBy): static;
+
+    /**
      * Sets a callback function to be called for the result of the query.
      *
      * @psalm-param ResultCallback|null $callback
      */
-    public function resultCallback(Closure|null $callback): static;
+    public function resultCallback(?Closure $callback): static;
 }

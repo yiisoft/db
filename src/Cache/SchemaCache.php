@@ -32,7 +32,7 @@ use function strpbrk;
  */
 final class SchemaCache
 {
-    private int|null|DateInterval $duration = 3600;
+    private int|DateInterval|null $duration = 3600;
     private bool $enabled = true;
     private array $exclude = [];
 
@@ -41,9 +41,7 @@ final class SchemaCache
      *
      * @link https://www.php-fig.org/psr/psr-16/
      */
-    public function __construct(private CacheInterface $psrCache)
-    {
-    }
+    public function __construct(private CacheInterface $psrCache) {}
 
     /**
      * Remove a value with the specified key from cache.
@@ -96,7 +94,7 @@ final class SchemaCache
     /**
      * @return DateInterval|int|null The number of seconds that table metadata can remain valid in cache.
      */
-    public function getDuration(): int|null|DateInterval
+    public function getDuration(): int|DateInterval|null
     {
         return $this->duration;
     }
@@ -124,7 +122,7 @@ final class SchemaCache
             return;
         }
 
-        /** @psalm-var string[] $data */
+        /** @var string[] $data */
         $data = $this->psrCache->get($cacheTag, []);
 
         foreach ($data as $key) {
@@ -161,7 +159,7 @@ final class SchemaCache
      *
      * @see setEnabled()
      */
-    public function setDuration(int|null|DateInterval $value): void
+    public function setDuration(int|DateInterval|null $value): void
     {
         $this->duration = $value;
     }
@@ -199,7 +197,7 @@ final class SchemaCache
     private function normalize(mixed $key): string
     {
         if (is_string($key) || is_int($key)) {
-            $key = (string)$key;
+            $key = (string) $key;
             $length = strlen($key);
             return (strpbrk($key, '{}()/\@:') !== false || $length < 1 || $length > 64) ? md5($key) : $key;
         }
@@ -224,7 +222,7 @@ final class SchemaCache
             return;
         }
 
-        /** @psalm-var string[] $data */
+        /** @var string[] $data */
         $data = $this->psrCache->get($cacheTag, []);
         $data[] = $key;
         $this->psrCache->set($cacheTag, $data);

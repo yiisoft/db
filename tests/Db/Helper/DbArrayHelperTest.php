@@ -33,7 +33,7 @@ final class DbArrayHelperTest extends TestCase
         array $expected,
         array $rows,
         Closure|string|null $indexBy = null,
-        Closure|null $resultCallback = null,
+        ?Closure $resultCallback = null,
     ): void {
         $this->assertSame($expected, DbArrayHelper::index($rows, $indexBy, $resultCallback));
     }
@@ -43,7 +43,7 @@ final class DbArrayHelperTest extends TestCase
         array $expected,
         array $rows,
         Closure|string|null $indexBy = null,
-        Closure|null $resultCallback = null,
+        ?Closure $resultCallback = null,
     ): void {
         $rows = json_decode(json_encode($rows));
         $populated = json_decode(json_encode(DbArrayHelper::index($rows, $indexBy, $resultCallback)), true);
@@ -74,7 +74,7 @@ final class DbArrayHelperTest extends TestCase
         array $rows,
         array $arrangeBy = [],
         Closure|string|null $indexBy = null,
-        Closure|null $resultCallback = null
+        ?Closure $resultCallback = null,
     ): void {
         $this->assertSame($expected, DbArrayHelper::arrange($rows, $arrangeBy, $indexBy, $resultCallback));
     }

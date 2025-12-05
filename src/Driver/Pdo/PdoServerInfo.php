@@ -10,11 +10,9 @@ use Yiisoft\Db\Exception\NotSupportedException;
 
 class PdoServerInfo implements ServerInfoInterface
 {
-    protected string|null $version = null;
+    protected ?string $version = null;
 
-    public function __construct(protected PdoConnectionInterface $db)
-    {
-    }
+    public function __construct(protected PdoConnectionInterface $db) {}
 
     public function getTimezone(bool $refresh = false): string
     {

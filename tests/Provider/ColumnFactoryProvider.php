@@ -13,6 +13,7 @@ use Yiisoft\Db\Schema\Column\BinaryColumn;
 use Yiisoft\Db\Schema\Column\BooleanColumn;
 use Yiisoft\Db\Schema\Column\DateTimeColumn;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
+use Yiisoft\Db\Schema\Column\EnumColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\JsonColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
@@ -28,7 +29,7 @@ class ColumnFactoryProvider
             'text' => ['text', new StringColumn(ColumnType::TEXT, dbType: 'text')],
             'text NOT NULL' => ['text NOT NULL', new StringColumn(ColumnType::TEXT, dbType: 'text', notNull: true)],
             'char(1)' => ['char(1)', new StringColumn(ColumnType::CHAR, dbType: 'char', size: 1)],
-            'decimal(10,2)' => ['decimal(10,2)', new DoubleColumn(ColumnType::DECIMAL, dbType: 'decimal', size: 10, scale: 2)],
+            'decimal(10,2)' => ['decimal(10,2)', new StringColumn(ColumnType::DECIMAL, dbType: 'decimal', scale: 2, size: 10)],
             'bigint UNSIGNED' => ['bigint UNSIGNED', new BigIntColumn(dbType: 'bigint', unsigned: true)],
             'integer[]' => ['integer[]', new ArrayColumn(dbType: 'integer', column: new IntegerColumn(dbType: 'integer'))],
             'string(126)[][]' => ['string(126)[][]', new ArrayColumn(size: 126, dimension: 2, column: new StringColumn(size: 126))],
@@ -64,7 +65,7 @@ class ColumnFactoryProvider
             'bigint' => [ColumnType::BIGINT, ColumnType::BIGINT, IntegerColumn::class],
             'float' => [ColumnType::FLOAT, ColumnType::FLOAT, DoubleColumn::class],
             'double' => [ColumnType::DOUBLE, ColumnType::DOUBLE, DoubleColumn::class],
-            'decimal' => [ColumnType::DECIMAL, ColumnType::DECIMAL, DoubleColumn::class],
+            'decimal' => [ColumnType::DECIMAL, ColumnType::DECIMAL, StringColumn::class],
             'money' => [ColumnType::MONEY, ColumnType::MONEY, StringColumn::class],
             'timestamp' => [ColumnType::TIMESTAMP, ColumnType::TIMESTAMP, DateTimeColumn::class],
             'datetime' => [ColumnType::DATETIME, ColumnType::DATETIME, DateTimeColumn::class],
@@ -75,6 +76,7 @@ class ColumnFactoryProvider
             'array' => [ColumnType::ARRAY, ColumnType::ARRAY, ArrayColumn::class],
             'structured' => [ColumnType::STRUCTURED, ColumnType::STRUCTURED, StructuredColumn::class],
             'json' => [ColumnType::JSON, ColumnType::JSON, JsonColumn::class],
+            'enum' => [ColumnType::ENUM, ColumnType::ENUM, EnumColumn::class],
         ];
     }
 

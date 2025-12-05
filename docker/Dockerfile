@@ -64,6 +64,7 @@ RUN echo 'umask 002' >> /root/.bashrc
 RUN docker-php-ext-install \
     pdo_mysql \
     pdo_pgsql \
+    pcntl \
     # For Psalm, to make use of JIT for a 20%+ performance boost.
     opcache
 
