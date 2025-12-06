@@ -2,7 +2,7 @@
 
 ## 2.0.1 under development
 
-- no changes in this release.
+- Bug #1127: Fix `AbstractSchema::hasTable` and `AbstractSchema::hasView` did not support yii-qouted `{{%table}}` and `{{%view}}` names (@batyrmastyr)
 
 ## 2.0.0 December 05, 2025
 
