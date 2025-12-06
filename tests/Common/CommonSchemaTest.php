@@ -283,6 +283,7 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $schema = $db->getSchema();
 
         $tempTableName = 'testTemporaryTable';
+        $db->createCommand()->dropTable($tempTableName, true)->execute();
         $db->createCommand()
             ->createTable(
                 $tempTableName,
@@ -294,7 +295,8 @@ abstract class CommonSchemaTest extends IntegrationTestCase
             ->execute();
 
         $this->assertTrue($schema->hasTable('order'));
-        $this->assertTrue($schema->hasTable($tempTableName));
+        $this->assertTrue($schema->hasTable($tempTableName), 'raw new table name');
+        $this->assertTrue($schema->hasTable('{{%' . $tempTableName . '}}'), 'quoted new table name');
         $this->assertFalse($schema->hasTable('no_such_table'));
 
         $db->createCommand()->dropTable($tempTableName)->execute();
@@ -409,6 +411,7 @@ abstract class CommonSchemaTest extends IntegrationTestCase
 
         $this->assertTrue($schema->hasView('v1'));
         $this->assertTrue($schema->hasView('v2'));
+        $this->assertTrue($schema->hasView('{{%v2}}'), 'quoted view name');
         $this->assertFalse($schema->hasView('v3'));
 
         $db->createCommand()->dropView('v1')->execute();

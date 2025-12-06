@@ -270,8 +270,9 @@ abstract class AbstractSchema implements SchemaInterface
     public function hasTable(string $tableName, string $schema = '', bool $refresh = false): bool
     {
         $tables = $this->getTableNames($schema, $refresh);
+        $rawTableName = $this->db->getQuoter()->getRawTableName($tableName);
 
-        return in_array($tableName, $tables);
+        return in_array($rawTableName, $tables);
     }
 
     public function hasSchema(string $schema, bool $refresh = false): bool
@@ -284,8 +285,9 @@ abstract class AbstractSchema implements SchemaInterface
     public function hasView(string $viewName, string $schema = '', bool $refresh = false): bool
     {
         $views = $this->getViewNames($schema, $refresh);
+        $rawViewName = $this->db->getQuoter()->getRawTableName($viewName);
 
-        return in_array($viewName, $views);
+        return in_array($rawViewName, $views);
     }
 
     /**
