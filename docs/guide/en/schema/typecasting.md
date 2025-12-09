@@ -176,7 +176,7 @@ final class PointColumn extends AbstractColumn
     public function dbTypecast(mixed $value): ExpressionInterface|string|null
     {
         if ($value instanceof Point) {
-            return new Expression('(:x,:y)', ['x' => $value->getX(), 'y' => $value->getY()]);
+            return new Expression('(:x,:y)', ['x' => $value->x, 'y' => $value->y]);
         }
     
         return $value;
@@ -200,20 +200,9 @@ final class PointColumn extends AbstractColumn
 class Point
 {
     public function __construct(
-        private float $x,
-        private float $y,
-    ) {
-    }
-
-    public function getX(): float
-    {
-        return $this->x;
-    }
-
-    public function getY(): float
-    {
-        return $this->y;
-    }
+        public readonly float $x,
+        public readonly float $y,
+    ) {}
 }
 ```
 
@@ -322,7 +311,7 @@ final class MyStructuredColumn extends AbstractStructuredColumn
         }
         
         if ($this->getDbType() === 'file_with_name' && $value instanceof FileWithName) {
-            return new StructuredValue([$value->getPath(), $value->getName()], $this);
+            return new StructuredValue([$value->path, $value->name], $this);
         }
 
         return new StructuredValue($value, $this);
@@ -350,20 +339,9 @@ final class MyStructuredColumn extends AbstractStructuredColumn
 final class CurrencyMoney implements \JsonSerializable, \IteratorAggregate
 {
     public function __construct(
-        private float $value,
-        private string $currencyCode = 'USD',
-    ) {
-    }
-
-    public function getCurrencyCode(): string
-    {
-        return $this->currencyCode;
-    }
-
-    public function getValue(): float
-    {
-        return $this->value;
-    }
+        public readonly float $value,
+        public readonly string $currencyCode = 'USD',
+    ) {}
 
     /**
      * `JsonSerializable` interface is implemented to convert the object to a database representation.
@@ -391,20 +369,9 @@ final class CurrencyMoney implements \JsonSerializable, \IteratorAggregate
 final class FileWithName
 {
     public function __construct(
-        private string $path,
-        private string $name,
-    ) {
-    }
-    
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-    
-    public function getName(): string
-    {
-        return $this->name;
-    }
+        public readonly string $path,
+        public readonly string $name,
+    ) {}
 }
 ```
 
