@@ -159,8 +159,8 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         $pdo = $this->db->getActivePdo();
 
         try {
-            $this->pdoStatement = $pdo->prepare($sql);
             $this->columnMetaCache = [];
+            $this->pdoStatement = $pdo->prepare($sql);
             $this->bindPendingParams();
         } catch (PDOException $e) {
             $message = $e->getMessage() . "\nFailed to prepare SQL: $sql";
@@ -322,12 +322,16 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      */
     private function getResultColumn(int $index): ?ColumnInterface
     {
+        if ($this->pdoStatement === null) {
+            return null;
+        }
+
         // Check if metadata is already cached
         if (array_key_exists($index, $this->columnMetaCache)) {
             $metadata = $this->columnMetaCache[$index];
         } else {
             // Fetch and cache the metadata
-            $metadata = $this->pdoStatement?->getColumnMeta($index);
+            $metadata = $this->pdoStatement->getColumnMeta($index);
             $this->columnMetaCache[$index] = $metadata;
         }
 
