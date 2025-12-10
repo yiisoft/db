@@ -54,12 +54,6 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     protected ?PDOStatement $pdoStatement = null;
 
     /**
-     * @var array<int, array|false> Cached column metadata indexed by column index.
-     * Stores the result of PDOStatement::getColumnMeta() to avoid repeated calls.
-     */
-    private array $columnMetaCache = [];
-
-    /**
      * @param PdoConnectionInterface $db The PDO database connection to use.
      */
     public function __construct(PdoConnectionInterface $db)
@@ -73,7 +67,6 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     public function cancel(): void
     {
         $this->pdoStatement = null;
-        $this->columnMetaCache = [];
     }
 
     public function getPdoStatement(): ?PDOStatement
@@ -159,7 +152,6 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         $pdo = $this->db->getActivePdo();
 
         try {
-            $this->columnMetaCache = [];
             $this->pdoStatement = $pdo->prepare($sql);
             $this->bindPendingParams();
         } catch (PDOException $e) {
@@ -322,18 +314,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      */
     private function getResultColumn(int $index): ?ColumnInterface
     {
-        if ($this->pdoStatement === null) {
-            return null;
-        }
-
-        // Check if metadata is already cached
-        if (array_key_exists($index, $this->columnMetaCache)) {
-            $metadata = $this->columnMetaCache[$index];
-        } else {
-            // Fetch and cache the metadata
-            $metadata = $this->pdoStatement->getColumnMeta($index);
-            $this->columnMetaCache[$index] = $metadata;
-        }
+        $metadata = $this->pdoStatement?->getColumnMeta($index);
 
         if (empty($metadata)) {
             return null;
