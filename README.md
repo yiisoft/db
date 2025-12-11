@@ -28,7 +28,9 @@ Available database drivers:
 Optional packages that provide additional functionality:
 
 - [Yii Active Record](https://github.com/yiisoft/active-record) provides an object-oriented interface for working with database tables, similar to ORM 
-  frameworks such as Doctrine or Hibernate.
+  frameworks such as Doctrine or Hibernate. **Note:** Active Record includes magic property traits that allow accessing table columns as object 
+  properties. These traits are **optional** - you can use Active Record with explicit field definitions, or work directly with Yii DB's query builder 
+  and arrays as shown in the examples above.
 - [Yii DB Migration](https://github.com/yiisoft/db-migration) allows you to manage database schema using migrations.
 
 ## Requirements
@@ -54,6 +56,11 @@ composer require yiisoft/db yiisoft/db-sqlite
 > [cache handlers](https://github.com/yiisoft/cache#cache-handlers).
 
 ## General Usage
+
+> [!NOTE]
+> All examples in this README use **explicit field access** with arrays and the query builder.
+> This is the recommended approach for working with Yii DB. Magic properties (available through optional Active Record traits) 
+> are not required and not used in these examples.
 
 To connect to a database, create an instance of the appropriate driver:
 
