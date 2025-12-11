@@ -283,7 +283,8 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $schema = $db->getSchema();
 
         $tempTableName = 'testTemporaryTable';
-        $db->createCommand()->dropTable($tempTableName, true)->execute();
+        $this->dropTable('testTemporaryTable');
+
         $db->createCommand()
             ->createTable(
                 $tempTableName,
