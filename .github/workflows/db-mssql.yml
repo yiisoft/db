@@ -27,7 +27,7 @@ jobs:
     name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-master
+      COMPOSER_ROOT_VERSION: 2.0.0
       EXTENSIONS: pdo, pdo_sqlsrv
 
     runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
           - 2022-latest
 
         include:
-          - php: 8.4
+          - php: 8.5
             mssql: 2019-latest
 
     services:
@@ -81,12 +81,10 @@ jobs:
         env:
           update: true
 
-      - name: Update composer.
-        run: composer self-update
-
       - name: Install db-mssql.
         uses: yiisoft/actions/install-packages@master
         with:
+          composer-root-version: 2.0.0
           packages: >-
             ['db-mssql']
 
@@ -94,7 +92,7 @@ jobs:
         run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
 
       - name: Upload coverage to Codecov.
-        if: matrix.php == '8.4'
+        if: matrix.php == '8.5'
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

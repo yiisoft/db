@@ -56,9 +56,6 @@ jobs:
           ini-values: date.timezone='UTC', zend.exception_ignore_args=0
           coverage: pcov
 
-      - name: Update composer.
-        run: composer self-update
-
       - name: Install dependencies.
         run: composer install --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
@@ -66,7 +63,7 @@ jobs:
         run: vendor/bin/phpunit --testsuite Db --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
 
       - name: Upload coverage to Codecov.
-        if: matrix.os == 'ubuntu-latest' && matrix.php == '8.4'
+        if: matrix.os == 'ubuntu-latest' && matrix.php == '8.5'
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
