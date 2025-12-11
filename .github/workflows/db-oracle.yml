@@ -27,6 +27,7 @@ jobs:
     name: PHP ${{ matrix.php }}-${{ matrix.oracle }}
 
     env:
+      COMPOSER_ROOT_VERSION: 2.0.0
       EXTENSIONS: pdo, pdo_oci
 
     runs-on: ubuntu-latest

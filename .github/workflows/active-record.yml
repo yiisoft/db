@@ -23,6 +23,7 @@ jobs:
     name: ActiveRecord
 
     env:
+      COMPOSER_ROOT_VERSION: 2.0.0
       PHP_VERSION: 8.5
       EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
 

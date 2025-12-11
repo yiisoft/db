@@ -27,6 +27,7 @@ jobs:
     name: PHP ${{ matrix.php }}-mariadb-${{ matrix.mariadb }}
 
     env:
+      COMPOSER_ROOT_VERSION: 2.0.0
       EXTENSIONS: pdo, pdo_mysql
       YII_MYSQL_TYPE: 'mariadb'
 

@@ -27,6 +27,7 @@ jobs:
     name: PHP ${{ matrix.php }}-mysql-${{ matrix.mysql }}
 
     env:
+      COMPOSER_ROOT_VERSION: 2.0.0
       EXTENSIONS: pdo, pdo_mysql
 
     runs-on: ubuntu-latest

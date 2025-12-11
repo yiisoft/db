@@ -25,6 +25,9 @@ jobs:
   mutation:
     name: PHP 8.5
 
+    env:
+      COMPOSER_ROOT_VERSION: 2.0.0
+
     runs-on: ubuntu-latest
 
     services:
