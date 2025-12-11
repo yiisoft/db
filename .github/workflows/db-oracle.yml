@@ -27,7 +27,7 @@ jobs:
     name: PHP ${{ matrix.php }}-${{ matrix.oracle }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-master
+      COMPOSER_ROOT_VERSION: 2.0.0
       EXTENSIONS: pdo, pdo_oci
 
     runs-on: ubuntu-latest
@@ -81,12 +81,10 @@ jobs:
           ini-values: date.timezone='UTC'
           coverage: pcov
 
-      - name: Update composer.
-        run: composer self-update
-
       - name: Install db-oracle.
         uses: yiisoft/actions/install-packages@master
         with:
+          composer-root-version: 2.0.0
           packages: >-
             ['db-oracle']
 
@@ -94,7 +92,7 @@ jobs:
         run: vendor/bin/phpunit --testsuite Oracle --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
 
       - name: Upload coverage to Codecov.
-        if: matrix.php == '8.4'
+        if: matrix.php == '8.5'
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
