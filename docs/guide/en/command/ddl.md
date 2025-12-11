@@ -28,6 +28,24 @@ $db->createCommand()->createTable(
 )->execute();
 ```
 
+You can pass a description of the column structure as a string
+
+```php
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+$db->createCommand()->createTable(
+    '{{%customer}}',
+     [
+        'id' => 'integer pk',
+        'name' => 'string not null',
+        'email' => 'string not null',
+        'status' => 'integer not null',
+        'created_at' => 'datetime not null',
+     ],
+)->execute();
+```
+
 The library will automatically form and execute SQL suitable for the database used. For example, MSSQL connection
 will execute the following SQL:
 
