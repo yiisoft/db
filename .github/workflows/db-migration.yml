@@ -23,7 +23,6 @@ jobs:
     name: DbMigration
 
     env:
-      COMPOSER_ROOT_VERSION: dev-master
       PHP_VERSION: 8.5
       EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
 
@@ -91,15 +90,13 @@ jobs:
           ini-values: date.timezone='UTC'
           coverage: pcov
 
-      - name: Update composer.
-        run: composer self-update
-
       - name: Install yiisoft/test-support and yiisoft/yii-console
         run: composer require yiisoft/test-support yiisoft/yii-console
 
       - name: Install db-sqlite, db-mysql, db-pgsql, db-mssql, db-oracle and db-migration.
         uses: yiisoft/actions/install-packages@master
         with:
+          composer-root-version: 2.0.0
           packages: >-
             ['db-sqlite', 'db-mysql', 'db-pgsql', 'db-mssql', 'db-oracle', 'db-migration']
 

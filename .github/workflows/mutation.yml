@@ -25,9 +25,6 @@ jobs:
   mutation:
     name: PHP 8.5
 
-    env:
-      COMPOSER_ROOT_VERSION: dev-master
-
     runs-on: ubuntu-latest
 
     services:
@@ -62,6 +59,7 @@ jobs:
       - name: Install PostgreSQL driver
         uses: yiisoft/actions/install-packages@master
         with:
+          composer-root-version: 2.0.0
           packages: >-
             ['db-pgsql']
 
