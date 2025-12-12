@@ -72,8 +72,9 @@ $db->createCommand()->createTable(
 )->execute();
 ```
 
-> Note: String column definitions support abstract types such as `string`, `integer`, `datetime`, etc.,
-> as well as pseudo-types like `pk` (primary key), `bigpk` (big primary key), etc. These abstract types
+> > [!NOTE]
+> String column definitions support [abstract types](https://github.com/yiisoft/db/blob/master/src/Constant/ColumnType.php) such as `string`, `integer`, `datetime`, etc.,
+> as well as [pseudo-types](https://github.com/yiisoft/db/blob/master/src/Constant/PseudoType.php) like `pk` (primary key), `bigpk` (big primary key), etc. These abstract types
 > will be converted to the appropriate database-specific types. You can also use native database column types
 > directly, for example, `varchar(255)` or `int unsigned`.
 
