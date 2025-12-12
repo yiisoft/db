@@ -53,6 +53,31 @@ CREATE TABLE `customer` (
 )
 ```
 
+You can also define column types as strings. This is useful when you need to use a database-specific column type
+or when you need more flexibility in defining the column type:
+
+```php
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+$db->createCommand()->createTable(
+    '{{%customer}}',
+     [
+        'id' => 'pk',
+        'name' => 'string(100) not null',
+        'email' => 'string not null',
+        'status' => 'integer not null',
+        'created_at' => 'datetime not null',
+     ],
+)->execute();
+```
+
+> [!NOTE]
+> String column definitions support [abstract types](https://github.com/yiisoft/db/blob/master/src/Constant/ColumnType.php) such as `string`, `integer`, `datetime`, etc.,
+> as well as [pseudo-types](https://github.com/yiisoft/db/blob/master/src/Constant/PseudoType.php) like `pk` (primary key), `bigpk` (big primary key), etc. These abstract types
+> will be converted to the appropriate database-specific types. You can also use native database column types
+> directly, for example, `varchar(255)` or `int unsigned`.
+
 ### Drop a table
 
 To drop a table with schema declaration and all its data, you can use the
