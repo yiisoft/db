@@ -2800,7 +2800,7 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
             ->createCommand();
 
         $this->assertSame(
-            'SELECT (site_id = :site) FROM [[users]] GROUP BY (site_id = :site_0)',
+            $this->replaceQuotes('SELECT (site_id = :site) FROM [[users]] GROUP BY (site_id = :site_0)'),
             $command->getSql(),
         );
         $this->assertSame(
