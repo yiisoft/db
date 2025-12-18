@@ -2788,6 +2788,30 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $this->assertSame([$expected], $result, 'SQL Query: ' . $query->createCommand()->getRawSql());
     }
 
+    public function testSameExpressionInWhereAndGroupBy(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $expr = new Expression("(site_id = :site)", ['site' => 1]);
+        $command = $db
+            ->select($expr)
+            ->from('users')
+            ->groupBy($expr)
+            ->createCommand();
+
+        $this->assertSame(
+            'SELECT (site_id = :site) FROM "users" GROUP BY (site_id = :site_0)',
+            $command->getSql(),
+        );
+        $this->assertSame(
+            [
+                'site' => 1,
+                'site_0' => 1,
+            ],
+            $command->getParams(),
+        );
+    }
+
     private function createTebleWithColumn(CommandInterface $command, string|ColumnInterface $column)
     {
         try {
