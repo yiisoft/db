@@ -261,8 +261,7 @@ For example, `['array overlaps', 'ids', [1, 2, 3]]` will generate `"ids"::text[]
 
 ### JSON overlaps
 
-Checks if the JSON contains at least one element from the array. Currently supported only by PostgreSQL, MySQL and
-SQLite.
+Checks if the JSON contains at least one element from the array.
 
 Requires two operands:
 
