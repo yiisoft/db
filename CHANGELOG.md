@@ -2,6 +2,8 @@
 
 ## 2.0.1 under development
 
+- Bug #1142: Fix `upsert` to use only the first matching unique constraint instead of merging columns from multiple
+  unique constraints, which caused invalid `ON CONFLICT` clause generation in PostgreSQL (@ordivo-056)
 - Bug #1127: Fix `AbstractSchema::hasTable()` and `AbstractSchema::hasView()` methods to support names quoted with curly
   brackets `{{%table}}` (@batyrmastyr)
 

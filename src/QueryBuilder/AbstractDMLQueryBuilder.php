@@ -537,43 +537,29 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * Returns all column names belonging to constraints enforcing uniqueness (`PRIMARY KEY`, `UNIQUE INDEX`, etc.)
-     * for the named table removing constraints which didn't cover the specified column list.
-     *
-     * The column list will be unique by column names.
+     * Returns column names of the first constraint enforcing uniqueness (`PRIMARY KEY`, `UNIQUE INDEX`, etc.)
+     * for the named table that is covered by the specified column list.
      *
      * @param string $name The table name, may contain schema name if any. Don't quote the table name.
      * @param string[] $columns Source column list.
      * @param Index[] $indexes This parameter optionally receives a matched index list.
      * The constraints will be unique by their column names.
      *
-     * @return string[] The column names.
+     * @return string[] The column names of the first matching constraint.
     */
     private function getTableUniqueColumnNames(string $name, array $columns, array &$indexes = []): array
     {
         $indexes = $this->schema->getTableUniques($name);
-        $columnNames = [];
 
-        // Remove all indexes which don't cover the specified column list.
-        $indexes = array_values(
-            array_filter(
-                $indexes,
-                static function (Index $index) use ($columns, &$columnNames): bool {
-                    $result = empty(array_diff($index->columnNames, $columns));
-
-                    if ($result) {
-                        $columnNames[] = $index->columnNames;
-                    }
-
-                    return $result;
-                },
-            ),
-        );
-
-        if (empty($columnNames)) {
-            return [];
+        // Find the first index that is fully covered by the specified column list.
+        foreach ($indexes as $index) {
+            if (empty(array_diff($index->columnNames, $columns))) {
+                $indexes = [$index];
+                return $index->columnNames;
+            }
         }
 
-        return array_unique(array_merge(...$columnNames));
+        $indexes = [];
+        return [];
     }
 }
