@@ -498,6 +498,7 @@ final class CommandInterfaceProxy implements CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
     ): static {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
@@ -506,6 +507,7 @@ final class CommandInterfaceProxy implements CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
         ?array $returnColumns = null,
     ): array {
         /** @psalm-var array<string, mixed> */
@@ -516,6 +518,7 @@ final class CommandInterfaceProxy implements CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
     ): array {
         /** @var array */
         return $this->decorated->{__FUNCTION__}(...func_get_args());

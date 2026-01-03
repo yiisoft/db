@@ -149,6 +149,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
         array &$params = [],
     ): string {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
@@ -159,6 +160,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
         ?array $returnColumns = null,
         array &$params = [],
     ): string {
@@ -474,6 +476,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * Prepare column names and constraints for "upsert" operation.
      *
      * @param Index[] $constraints
+     * @param string[]|null $constraintColumns The column names to use for the conflict clause. If `null`,
+     * the primary key or the first matching unique constraint will be used.
      *
      * @psalm-param array<string, mixed>|QueryInterface $insertColumns
      *
@@ -485,6 +489,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         array &$constraints = [],
+        ?array $constraintColumns = null,
     ): array {
         if ($insertColumns instanceof QueryInterface) {
             $insertNames = $this->getQueryColumnNames($insertColumns);
@@ -492,7 +497,13 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $insertNames = $this->getNormalizedColumnNames(array_keys($insertColumns));
         }
 
-        $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
+        // Use provided constraint columns or auto-detect from table schema
+        if ($constraintColumns !== null) {
+            $uniqueNames = $this->getNormalizedColumnNames($constraintColumns);
+            $constraints = [];
+        } else {
+            $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
+        }
 
         if ($updateColumns === true) {
             return [$uniqueNames, $insertNames, array_diff($insertNames, $uniqueNames)];

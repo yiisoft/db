@@ -2,8 +2,10 @@
 
 ## 2.0.1 under development
 
-- Bug #1142: Fix `upsert` to use only the first matching unique constraint instead of merging columns from multiple
-  unique constraints, which caused invalid `ON CONFLICT` clause generation in PostgreSQL (@dadansatria)
+- Chg #1142: Add `$constraintColumns` parameter to `upsert()`, `upsertReturning()`, and `upsertReturningPks()` methods
+  to allow explicit specification of columns for the `ON CONFLICT` clause. When `null` (default), the primary key or
+  the first matching unique constraint is used. This fixes invalid `ON CONFLICT` clause generation when a table has
+  multiple separate unique constraints (@dadansatria)
 - Bug #1127: Fix `AbstractSchema::hasTable()` and `AbstractSchema::hasView()` methods to support names quoted with curly
   brackets `{{%table}}` (@batyrmastyr)
 
