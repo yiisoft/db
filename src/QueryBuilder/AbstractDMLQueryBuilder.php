@@ -550,8 +550,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @param string $name The table name, may contain schema name if any. Don't quote the table name.
      * @param string[] $columns Source column list.
-     * @param Index[] $indexes This parameter optionally receives a matched index list.
-     * The constraints will be unique by their column names.
+     * @param Index[] $indexes This parameter optionally receives the first matched index,
+     * or an empty array if no matching index is found.
      *
      * @return string[] The column names of the first matching constraint.
     */
