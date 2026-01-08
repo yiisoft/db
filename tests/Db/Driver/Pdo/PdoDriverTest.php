@@ -8,6 +8,8 @@ use PDO;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\Stub\StubPdoDriver;
+use SensitiveParameterValue;
+use TypeError;
 
 /**
  * @group db
@@ -71,14 +73,14 @@ final class PdoDriverTest extends TestCase
         $dsn = 'sqlite::memory:';
         try {
             new StubPdoDriver($dsn, password: null);
-        } catch (\TypeError $e) {
-            $this->assertTrue($e->getTrace()[0]['args'][2] instanceof \SensitiveParameterValue);
+        } catch (TypeError $e) {
+            $this->assertTrue($e->getTrace()[0]['args'][2] instanceof SensitiveParameterValue);
         }
         $pdoDriver = new StubPdoDriver($dsn);
         try {
             $pdoDriver->password(null);
-        } catch (\TypeError $e) {
-            $this->assertTrue($e->getTrace()[0]['args'][0] instanceof \SensitiveParameterValue);
+        } catch (TypeError $e) {
+            $this->assertTrue($e->getTrace()[0]['args'][0] instanceof SensitiveParameterValue);
         }
     }
 }

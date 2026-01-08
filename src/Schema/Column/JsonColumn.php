@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use JsonException;
+
 use function is_string;
 use function json_decode;
 
@@ -17,7 +19,7 @@ use const JSON_THROW_ON_ERROR;
 final class JsonColumn extends AbstractJsonColumn
 {
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function phpTypecast(mixed $value): mixed
     {

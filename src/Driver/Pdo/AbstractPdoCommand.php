@@ -62,7 +62,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     }
 
     /**
-     * This method mainly sets {@see pdoStatement} to be `null`.
+     * This method mainly sets {@see PDOStatement} to be `null`.
      */
     public function cancel(): void
     {
@@ -165,7 +165,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     /**
      * Binds pending parameters registered via {@see bindValue()} and {@see bindValues()}.
      *
-     * Note that this method requires an active {@see pdoStatement}.
+     * Note that this method requires an active {@see PDOStatement}.
      */
     protected function bindPendingParams(): void
     {

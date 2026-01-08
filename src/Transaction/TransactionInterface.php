@@ -8,6 +8,7 @@ use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Connection\ConnectionInterface;
 
 /**
  * Defines the interface for a database transaction.
@@ -69,7 +70,7 @@ interface TransactionInterface
      *
      * @throws Exception
      * @throws Throwable If DB connection fails or the current transaction is active.
-     * @throws InvalidConfigException If {@see \Yiisoft\Db\Connection\ConnectionInterface} is `null` or invalid.
+     * @throws InvalidConfigException If {@see ConnectionInterface} is `null` or invalid.
      * @throws NotSupportedException If the DBMS doesn't support nested transactions or the transaction is active.
      */
     public function begin(?string $isolationLevel = null): void;

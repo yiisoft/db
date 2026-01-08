@@ -9,6 +9,7 @@ use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 use RuntimeException;
 use Yiisoft\Db\Exception\PsrInvalidArgumentException;
+use Yiisoft\Db\Schema\AbstractSchema;
 
 use function in_array;
 use function is_int;
@@ -22,13 +23,13 @@ use function strpbrk;
 /**
  * Implements a cache for the database schema information.
  *
- * The {@see \Yiisoft\Db\Schema\AbstractSchema} retrieves information about the database schema from the database server
- * and stores it in the cache for faster access. When the {@see \Yiisoft\Db\Schema\AbstractSchema} needs to retrieve
+ * The {@see AbstractSchema} retrieves information about the database schema from the database server
+ * and stores it in the cache for faster access. When the {@see AbstractSchema} needs to retrieve
  * information about the database schema, it first checks the cache using {@see SchemaCache}. If the information is
  * not in the cache, the Schema retrieves it from the database server and stores it in the cache using the
  * {@see SchemaCache}.
  *
- * {@see \Yiisoft\Db\Schema\AbstractSchema} uses this implementation to cache table metadata.
+ * {@see AbstractSchema} uses this implementation to cache table metadata.
  */
 final class SchemaCache
 {

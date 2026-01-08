@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Schema;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Command\AbstractCommand;
+use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 
 use function addcslashes;
 use function array_map;
@@ -27,9 +29,9 @@ use function substr;
  * It provides a set of methods for quoting different types of names, such as table names, column names, and schema
  * names.
  *
- * The Quoter class is used by {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} to quote names.
+ * The Quoter class is used by {@see AbstractQueryBuilder} to quote names.
  *
- * It's also used by {@see \Yiisoft\Db\Command\AbstractCommand} to quote names in SQL statements before passing them to
+ * It's also used by {@see AbstractCommand} to quote names in SQL statements before passing them to
  * database servers.
  */
 class Quoter implements QuoterInterface
