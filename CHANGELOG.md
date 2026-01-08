@@ -4,7 +4,7 @@
 
 - Bug #1127: Fix `AbstractSchema::hasTable()` and `AbstractSchema::hasView()` methods to support names quoted with curly
   brackets `{{%table}}` (@batyrmastyr)
-- Enh #1145: Explicitly import classes, functions, and constants in "use" section (@mspirkov)
+- Enh #1145, #1148: Explicitly import classes, functions, and constants in "use" section (@mspirkov)
 
 ## 2.0.0 December 05, 2025
 
