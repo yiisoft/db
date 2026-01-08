@@ -25,4 +25,4 @@ jobs:
       token: ${{ secrets.YIISOFT_GITHUB_TOKEN }}
     with:
       repository: ${{ github.event.pull_request.head.repo.full_name }}
-      php: '8.5'
+      php: '8.1'
