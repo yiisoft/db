@@ -1890,7 +1890,7 @@ class QueryBuilderProvider
         ];
         yield 'Greatest with 4 operands' => [
             Greatest::class,
-            static fn(Connectioninterface $db) => [1, 1.5, '(1 + 2)', $db->select(10)],
+            static fn(ConnectionInterface $db) => [1, 1.5, '(1 + 2)', $db->select(10)],
             "GREATEST(1, 1.5, (1 + 2), (SELECT 10))",
             10,
         ];
@@ -1908,7 +1908,7 @@ class QueryBuilderProvider
         ];
         yield 'Least with 4 operands' => [
             Least::class,
-            static fn(Connectioninterface $db) => [1, 1.5, '(1 + 2)', $db->select(10)],
+            static fn(ConnectionInterface $db) => [1, 1.5, '(1 + 2)', $db->select(10)],
             "LEAST(1, 1.5, (1 + 2), (SELECT 10))",
             1,
         ];
@@ -1931,7 +1931,7 @@ class QueryBuilderProvider
         ];
         yield 'Longest with 3 operands' => [
             Longest::class,
-            static fn(Connectioninterface $db) => [
+            static fn(ConnectionInterface $db) => [
                 new Value('short'),
                 $db->select(new Expression("'longest'")),
                 new Param('string', DataType::STRING),
@@ -1962,7 +1962,7 @@ class QueryBuilderProvider
         ];
         yield 'Shortest with 3 operands' => [
             Shortest::class,
-            static fn(Connectioninterface $db) => [
+            static fn(ConnectionInterface $db) => [
                 new Value('short'),
                 $db->select(new Expression("'longest'")),
                 new Param('string', DataType::STRING),

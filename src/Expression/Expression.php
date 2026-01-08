@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Expression;
 
 use Stringable;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Query\QueryInterface;
 
 /**
  * Represents a DB expression that doesn't need escaping or quoting.
@@ -22,7 +23,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
  * ```
  *
  * Expression objects are mainly created for passing raw SQL expressions to methods of
- * {@see \Yiisoft\Db\Query\QueryInterface} and related classes.
+ * {@see QueryInterface} and related classes.
  *
  * @psalm-import-type ParamsType from ConnectionInterface
  */

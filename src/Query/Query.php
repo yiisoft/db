@@ -16,6 +16,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 
 use function array_column;
 use function array_combine;
@@ -71,7 +72,7 @@ use function trim;
  * $rows = $command->queryAll();
  * ```
  *
- * Query internally uses the {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} class to generate the SQL statement.
+ * Query internally uses the {@see AbstractQueryBuilder} class to generate the SQL statement.
  *
  * @psalm-import-type SelectValue from QueryPartsInterface
  * @psalm-import-type IndexBy from QueryInterface

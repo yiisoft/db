@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\Tests\Provider\DbArrayHelperProvider;
+use Exception;
 
 /**
  * @group db
@@ -60,7 +61,7 @@ final class DbArrayHelperTest extends TestCase
 
         set_error_handler(static function (int $errno, string $errstr) {
             restore_error_handler();
-            throw new \Exception('E_WARNING: ' . $errstr, $errno);
+            throw new Exception('E_WARNING: ' . $errstr, $errno);
         }, E_WARNING);
 
         $this->expectExceptionMessage('E_WARNING: Undefined array key "non-existing-key"');

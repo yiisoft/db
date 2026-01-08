@@ -6,9 +6,10 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\QueryBuilder\QueryBuilder;
 
 /**
- * Should be implemented by classes that represent a condition in the {@see \Yiisoft\Db\QueryBuilder\QueryBuilder}.
+ * Should be implemented by classes that represent a condition in the {@see QueryBuilder}.
  */
 interface ConditionInterface extends ExpressionInterface
 {

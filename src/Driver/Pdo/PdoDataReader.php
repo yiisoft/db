@@ -13,6 +13,7 @@ use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Command\AbstractCommand;
 
 use function is_string;
 
@@ -21,7 +22,7 @@ use function is_string;
  *
  * A data reader is an object that can be used to read a forward-only stream of rows from a database.
  *
- * It's typically used in combination with a command object, such as a {@see \Yiisoft\Db\Command\AbstractCommand},
+ * It's typically used in combination with a command object, such as a {@see AbstractCommand},
  * to execute a SELECT statement and read the results.
  *
  * The class provides methods for accessing the data returned by the query.
