@@ -52,6 +52,8 @@ use Yiisoft\Db\Tests\Support\TraversableObject;
 
 use function fopen;
 
+use const PREG_SET_ORDER;
+
 class QueryBuilderProvider
 {
     protected static string $likeEscapeCharSql = '';

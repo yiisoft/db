@@ -26,6 +26,8 @@ use function fclose;
 use function fopen;
 use function stream_context_create;
 
+use const SORT_DESC;
+
 /**
  * @group db
  */

@@ -18,6 +18,9 @@ use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
 use function array_keys;
 
+use const SORT_ASC;
+use const SORT_DESC;
+
 abstract class CommonQueryTest extends IntegrationTestCase
 {
     public function testAddGroupByExpression(): void

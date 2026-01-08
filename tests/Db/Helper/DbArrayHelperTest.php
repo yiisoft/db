@@ -11,6 +11,8 @@ use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\Tests\Provider\DbArrayHelperProvider;
 use Exception;
 
+use const E_WARNING;
+
 /**
  * @group db
  */

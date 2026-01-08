@@ -24,6 +24,8 @@ use function ltrim;
 use function strtolower;
 use function count;
 
+use const SORT_STRING;
+
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  */

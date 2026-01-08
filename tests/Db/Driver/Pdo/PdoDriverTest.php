@@ -11,6 +11,8 @@ use Yiisoft\Db\Tests\Support\Stub\StubPdoDriver;
 use SensitiveParameterValue;
 use TypeError;
 
+use const PHP_VERSION_ID;
+
 /**
  * @group db
  *

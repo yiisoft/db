@@ -21,6 +21,7 @@ return (new Config())
         'ordered_class_elements' => true,
         'class_attributes_separation' => ['elements' => ['method' => 'one']],
         'native_function_invocation' => true,
+        'native_constant_invocation' => true,
         'fully_qualified_strict_types' => [
             'import_symbols' => true
         ],

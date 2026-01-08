@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 
+use const PHP_INT_SIZE;
+
 /**
  * Column builder for database {@see ColumnInterface} instances.
  *

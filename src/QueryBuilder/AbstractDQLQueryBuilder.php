@@ -59,6 +59,9 @@ use function reset;
 use function strtoupper;
 use function trim;
 
+use const PREG_SPLIT_NO_EMPTY;
+use const SORT_DESC;
+
 /**
  * It's used to query data from a database.
  *

@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Exception;
 
 use Stringable;
 
+use const PHP_EOL;
+
 /**
  * Represents an exception that's caused by some DB-related operations.
  *
