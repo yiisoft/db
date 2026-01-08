@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Debug;
 
 use Yiisoft\Db\Transaction\TransactionInterface;
 
+use function func_get_args;
+
 final class TransactionInterfaceDecorator implements TransactionInterface
 {
     public function __construct(

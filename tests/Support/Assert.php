@@ -22,6 +22,7 @@ use function json_encode;
 use function ksort;
 use function ltrim;
 use function strtolower;
+use function count;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor

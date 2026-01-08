@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 use function array_key_exists;
+use function is_string;
 
 /**
  * Represents a simple condition like `"column" operator value`.

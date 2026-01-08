@@ -43,6 +43,7 @@ use function is_array;
 use function PHPUnit\Framework\assertEmpty;
 use function PHPUnit\Framework\assertSame;
 use function sort;
+use function in_array;
 
 use const SORT_NATURAL;
 

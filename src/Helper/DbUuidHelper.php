@@ -10,6 +10,7 @@ use function bin2hex;
 use function hex2bin;
 use function preg_match;
 use function str_replace;
+use function strlen;
 
 final class DbUuidHelper
 {

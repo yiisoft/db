@@ -39,6 +39,8 @@ use function is_callable;
 use function is_string;
 use function setlocale;
 use function str_starts_with;
+use function count;
+use function is_resource;
 
 abstract class CommonCommandTest extends IntegrationTestCase
 {

@@ -7,6 +7,8 @@ namespace Yiisoft\Db\Schema\Column;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
+use function is_int;
+
 /**
  * Represents the metadata for a bit column.
  */
