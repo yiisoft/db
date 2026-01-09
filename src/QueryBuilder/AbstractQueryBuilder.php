@@ -575,19 +575,21 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
         array &$params = [],
     ): string {
-        return $this->dmlBuilder->upsert($table, $insertColumns, $updateColumns, $params);
+        return $this->dmlBuilder->upsert($table, $insertColumns, $updateColumns, $constraintColumns, $params);
     }
 
     public function upsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
         ?array $returnColumns = null,
         array &$params = [],
     ): string {
-        return $this->dmlBuilder->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
+        return $this->dmlBuilder->upsertReturning($table, $insertColumns, $updateColumns, $constraintColumns, $returnColumns, $params);
     }
 
     public function withTypecasting(bool $typecasting = true): static
