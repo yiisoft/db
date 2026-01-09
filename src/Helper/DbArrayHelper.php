@@ -23,6 +23,10 @@ use function is_string;
 use function iterator_to_array;
 use function range;
 
+use const PREG_SPLIT_NO_EMPTY;
+use const SORT_ASC;
+use const SORT_NUMERIC;
+
 /**
  * Array manipulation methods.
  *

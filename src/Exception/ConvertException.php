@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Exception;
 
 use PDOException;
 
+use const PHP_EOL;
+
 /**
  * Converts an exception into a more specific one.
  *

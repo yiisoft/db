@@ -16,6 +16,8 @@ use function implode;
 use function is_string;
 use function preg_split;
 
+use const PREG_SPLIT_NO_EMPTY;
+
 /**
  * It's used to create and change the structure of database objects in a database.
  *

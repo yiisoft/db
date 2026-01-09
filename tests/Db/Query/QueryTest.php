@@ -14,6 +14,8 @@ use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
 use function PHPUnit\Framework\assertSame;
 
+use const SORT_DESC;
+
 /**
  * @group db
  */

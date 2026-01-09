@@ -44,6 +44,11 @@ use function strtoupper;
 use function substr;
 use function trim;
 
+use const PHP_INT_MAX;
+use const PREG_SPLIT_NO_EMPTY;
+use const SORT_ASC;
+use const SORT_DESC;
+
 /**
  * Represents a `SELECT` SQL statement in a way that's independent of DBMS.
  *

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Support;
 
 use function strtolower;
+use function is_array;
 
 final class AnyCaseValue extends CompareValue
 {

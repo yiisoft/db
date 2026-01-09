@@ -8,6 +8,8 @@ use Throwable;
 use Yiisoft\Yii\Debug\Collector\CollectorTrait;
 use Yiisoft\Yii\Debug\Collector\SummaryCollectorInterface;
 
+use function count;
+
 final class DatabaseCollector implements SummaryCollectorInterface
 {
     use CollectorTrait;

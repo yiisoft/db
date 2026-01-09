@@ -12,6 +12,9 @@ use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
+use function count;
+use function func_get_args;
+
 final class CommandInterfaceProxy implements CommandInterface
 {
     public function __construct(

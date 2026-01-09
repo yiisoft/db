@@ -16,6 +16,8 @@ use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
 use Yiisoft\Db\Tests\Provider\ColumnFactoryProvider;
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
+use function is_scalar;
+
 abstract class CommonColumnFactoryTest extends IntegrationTestCase
 {
     public function testConstructColumnClassMap(): void

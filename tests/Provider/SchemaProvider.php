@@ -12,6 +12,8 @@ use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Schema\SchemaInterface;
 
+use function sprintf;
+
 class SchemaProvider
 {
     public static function columns(): array

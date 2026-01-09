@@ -8,6 +8,8 @@ use Countable;
 use Exception;
 use Iterator;
 
+use function array_key_exists;
+
 /**
  * TraversableObject
  *

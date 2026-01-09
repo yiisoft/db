@@ -8,6 +8,8 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\ConvertException;
 
+use const PHP_EOL;
+
 /**
  * @group db
  *

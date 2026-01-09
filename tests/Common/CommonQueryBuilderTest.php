@@ -43,8 +43,11 @@ use function is_array;
 use function PHPUnit\Framework\assertEmpty;
 use function PHPUnit\Framework\assertSame;
 use function sort;
+use function in_array;
 
 use const SORT_NATURAL;
+use const SORT_ASC;
+use const SORT_DESC;
 
 abstract class CommonQueryBuilderTest extends IntegrationTestCase
 {
