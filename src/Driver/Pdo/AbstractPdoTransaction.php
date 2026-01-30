@@ -12,7 +12,6 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Transaction\TransactionInterface;
-use Yiisoft\Db\Connection\ConnectionInterface;
 
 /**
  * Represents a DB transaction.
