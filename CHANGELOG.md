@@ -6,6 +6,7 @@
   brackets `{{%table}}` (@batyrmastyr)
 - Enh #1145, #1148: Explicitly import classes, functions, and constants in "use" section (@mspirkov)
 - Enh #1148: Add `declare(strict_types=1)` to `Yiisoft\Db\Constant\ColumnInfoSource` (@mspirkov)
+- Enh #1149: Remove unnecessary files from Composer package (@mspirkov)
 
 ## 2.0.0 December 05, 2025
 
