@@ -42,7 +42,9 @@ final class SchemaCache
      *
      * @link https://www.php-fig.org/psr/psr-16/
      */
-    public function __construct(private CacheInterface $psrCache) {}
+    public function __construct(
+        private readonly CacheInterface $psrCache,
+    ) {}
 
     /**
      * Remove a value with the specified key from cache.
