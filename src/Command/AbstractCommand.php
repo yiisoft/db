@@ -28,7 +28,7 @@ use function stream_get_contents;
 /**
  * Represents an SQL statement to execute in a database.
  *
- * It's usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
+ * It's usually created by calling {@see ConnectionInterface::createCommand()}.
  *
  * You can get the SQL statement it represents via the {@see getSql()} method.
  *
