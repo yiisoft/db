@@ -53,7 +53,10 @@ abstract class AbstractSchema implements SchemaInterface
     /** @var (Check[]|DefaultValue[]|ForeignKey[]|Index|Index[]|TableSchemaInterface|null)[][] */
     private array $tableMetadata = [];
 
-    public function __construct(protected ConnectionInterface $db, private SchemaCache $schemaCache) {}
+    public function __construct(
+        protected ConnectionInterface $db,
+        private readonly SchemaCache $schemaCache,
+    ) {}
 
     public function getDefaultSchema(): string
     {

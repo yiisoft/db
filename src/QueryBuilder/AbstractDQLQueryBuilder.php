@@ -113,7 +113,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
-        private QuoterInterface $quoter,
+        private readonly QuoterInterface $quoter,
     ) {
         $this->expressionBuilders = $this->defaultExpressionBuilders();
         $this->conditionClasses = $this->defaultConditionClasses();

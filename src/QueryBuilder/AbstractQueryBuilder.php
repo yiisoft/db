@@ -77,11 +77,11 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected array $typeMap = [];
 
     public function __construct(
-        private ConnectionInterface $db,
-        private AbstractDDLQueryBuilder $ddlBuilder,
+        private readonly ConnectionInterface $db,
+        private readonly AbstractDDLQueryBuilder $ddlBuilder,
         private AbstractDMLQueryBuilder $dmlBuilder,
-        private AbstractDQLQueryBuilder $dqlBuilder,
-        private AbstractColumnDefinitionBuilder $columnDefinitionBuilder,
+        private readonly AbstractDQLQueryBuilder $dqlBuilder,
+        private readonly AbstractColumnDefinitionBuilder $columnDefinitionBuilder,
     ) {}
 
     public function addCheck(string $table, string $name, string $expression): string

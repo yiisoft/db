@@ -20,7 +20,10 @@ final class ConvertException
     private const MGS_INTEGRITY_EXCEPTION_2 = 'ORA-00001: unique constraint';
     private const MSG_INTEGRITY_EXCEPTION_3 = 'SQLSTATE[HY';
 
-    public function __construct(private \Exception $e, private string $rawSql) {}
+    public function __construct(
+        private readonly \Exception $e,
+        private readonly string $rawSql,
+    ) {}
 
     /**
      * Converts an exception into a more specific one.

@@ -6,7 +6,7 @@
   brackets `{{%table}}` (@batyrmastyr)
 - Enh #1145, #1148: Explicitly import classes, functions, and constants in "use" section (@mspirkov)
 - Enh #1148: Add `declare(strict_types=1)` to `Yiisoft\Db\Constant\ColumnInfoSource` (@mspirkov)
-- Enh #1158: Mark `$psrCache` property in `SchemaCache` as readonly (@vjik)
+- Enh #1158: Explicitly mark readonly properties (@vjik)
 
 ## 2.0.0 December 05, 2025
 

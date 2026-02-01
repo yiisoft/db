@@ -11,10 +11,10 @@ final class CommandContext extends AbstractContext
     private const PARAMS = 'params';
 
     public function __construct(
-        private string $method,
-        private string $logContext,
-        private string $sql,
-        private array $params,
+        private readonly string $method,
+        private readonly string $logContext,
+        private readonly string $sql,
+        private readonly array $params,
     ) {
         parent::__construct($this->method);
     }
