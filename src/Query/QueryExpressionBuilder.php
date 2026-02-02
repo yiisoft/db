@@ -21,7 +21,9 @@ use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
  */
 final class QueryExpressionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder) {}
+    public function __construct(
+        private readonly QueryBuilderInterface $queryBuilder,
+    ) {}
 
     /**
      * @param QueryInterface $expression

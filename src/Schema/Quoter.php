@@ -38,9 +38,9 @@ class Quoter implements QuoterInterface
 {
     public function __construct(
         /** @psalm-var string[]|string */
-        private array|string $columnQuoteCharacter,
+        private readonly array|string $columnQuoteCharacter,
         /** @psalm-var string[]|string */
-        private array|string $tableQuoteCharacter,
+        private readonly array|string $tableQuoteCharacter,
         private string $tablePrefix = '',
     ) {}
 

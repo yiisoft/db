@@ -8,6 +8,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -18,7 +19,7 @@ use Yiisoft\Db\Transaction\TransactionInterface;
  *
  * A transaction is a set of SQL statements that must either all succeed or all fail.
  *
- * It's usually created by calling {@see \Yiisoft\Db\Connection\AbstractConnectionAbstractConnection::beginTransaction()}.
+ * It's usually created by calling {@see ConnectionInterface::beginTransaction()}.
  *
  * The following code is a typical example of using transactions (note that some DBMS may not support transactions):
  *

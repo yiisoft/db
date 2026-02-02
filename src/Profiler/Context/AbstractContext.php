@@ -14,7 +14,9 @@ abstract class AbstractContext implements ContextInterface
 
     private ?Throwable $exception = null;
 
-    public function __construct(private string $method) {}
+    public function __construct(
+        private readonly string $method,
+    ) {}
 
     public function setException(Throwable $e): static
     {
