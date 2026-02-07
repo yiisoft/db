@@ -18,9 +18,9 @@ use function substr;
  */
 abstract class AbstractSqlParser
 {
-    /** @var string Letter symbols, equals to `[_a-zA-Z]` in regular expressions */
+    /** @var string Letter characters, equivalent to `[_a-zA-Z]` in regular expressions */
     protected const LETTER_CHARS = '_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    /** @var string Word symbols, equals to `\w` in regular expressions */
+    /** @var string Word characters, equivalent to `\w` in regular expressions */
     protected const WORD_CHARS = '0123456789' . self::LETTER_CHARS;
 
     /**
@@ -42,18 +42,18 @@ abstract class AbstractSqlParser
     }
 
     /**
-     * Returns the next placeholder from the current position in SQL statement.
+     * Returns the next placeholder from the current position in an SQL statement.
      *
-     * @param int|null $position Position of the placeholder in SQL statement.
+     * @param int|null $position Position of the placeholder in an SQL statement.
      *
      * @return string|null The next placeholder or null if it is not found.
      */
     abstract public function getNextPlaceholder(?int &$position = null): ?string;
 
     /**
-     * Parses and returns word symbols. Equals to `\w+` in regular expressions.
+     * Parses and returns word characters. Equivalent to `\w+` in regular expressions.
      *
-     * @return string Parsed word symbols.
+     * @return string Parsed word characters.
      */
     final protected function parseWord(): string
     {
@@ -65,7 +65,7 @@ abstract class AbstractSqlParser
     }
 
     /**
-     * Parses and returns identifier. Equals to `[_a-zA-Z]\w+` in regular expressions.
+     * Parses and returns identifier. Equivalent to `[_a-zA-Z]\w*` in regular expressions.
      *
      * @return string Parsed identifier.
      */
@@ -126,6 +126,7 @@ abstract class AbstractSqlParser
      */
     final protected function skipToAfterString(string $string): void
     {
+        /** @var int $pos */
         $pos = strpos($this->sql, $string, $this->position);
         $this->position = $pos + strlen($string);
     }
