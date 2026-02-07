@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Syntax;
 
+use function preg_match;
+use function preg_quote;
+use function strcspn;
 use function strlen;
+use function strspn;
 use function substr;
 
 /**
@@ -14,6 +18,11 @@ use function substr;
  */
 abstract class AbstractSqlParser
 {
+    /** @var string Letter symbols, equals to `[_a-zA-Z]` in regular expressions */
+    protected const LETTER_CHARS = '_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    /** @var string Word symbols, equals to `\w` in regular expressions */
+    protected const WORD_CHARS = '0123456789' . self::LETTER_CHARS;
+
     /**
      * @var int Length of SQL statement.
      */
@@ -48,19 +57,9 @@ abstract class AbstractSqlParser
      */
     final protected function parseWord(): string
     {
-        $word = '';
-        $continue = true;
-
-        while ($continue && $this->position < $this->length) {
-            match ($this->sql[$this->position]) {
-                '_', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
-                'v', 'w', 'x', 'y', 'z',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
-                'V', 'W', 'X', 'Y', 'Z' => $word .= $this->sql[$this->position++],
-                default => $continue = false,
-            };
-        }
+        $length = strspn($this->sql, self::WORD_CHARS, $this->position);
+        $word = substr($this->sql, $this->position, $length);
+        $this->position += $length;
 
         return $word;
     }
@@ -72,14 +71,17 @@ abstract class AbstractSqlParser
      */
     protected function parseIdentifier(): string
     {
-        return match ($this->sql[$this->position]) {
-            '_',
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
-            'v', 'w', 'x', 'y', 'z',
-            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
-            'V', 'W', 'X', 'Y', 'Z' => $this->sql[$this->position++] . $this->parseWord(),
-            default => '',
-        };
+        $length = strspn($this->sql, self::LETTER_CHARS, $this->position);
+
+        if ($length === 0) {
+            return '';
+        }
+
+        $length += strspn($this->sql, self::WORD_CHARS, $this->position + $length);
+        $word = substr($this->sql, $this->position, $length);
+        $this->position += $length;
+
+        return $word;
     }
 
     /**
@@ -97,16 +99,8 @@ abstract class AbstractSqlParser
      */
     final protected function skipQuotedWithEscape(string $endChar): void
     {
-        for (; $this->position < $this->length; ++$this->position) {
-            if ($this->sql[$this->position] === $endChar) {
-                ++$this->position;
-                return;
-            }
-
-            if ($this->sql[$this->position] === '\\') {
-                ++$this->position;
-            }
-        }
+        preg_match("/(?>[^$endChar\\\\]+|\\\\.)*/", $this->sql, $matches, 0, $this->position);
+        $this->position += strlen($matches[0]) + 1;
     }
 
     /**
@@ -114,9 +108,8 @@ abstract class AbstractSqlParser
      */
     final protected function skipChars(string $char): void
     {
-        while ($this->position < $this->length && $this->sql[$this->position] === $char) {
-            ++$this->position;
-        }
+        $length = strspn($this->sql, $char, $this->position);
+        $this->position += $length;
     }
 
     /**
@@ -124,12 +117,8 @@ abstract class AbstractSqlParser
      */
     final protected function skipToAfterChar(string $char): void
     {
-        for (; $this->position < $this->length; ++$this->position) {
-            if ($this->sql[$this->position] === $char) {
-                ++$this->position;
-                return;
-            }
-        }
+        $length = strcspn($this->sql, $char, $this->position);
+        $this->position += $length + 1;
     }
 
     /**
@@ -137,17 +126,8 @@ abstract class AbstractSqlParser
      */
     final protected function skipToAfterString(string $string): void
     {
-        $firstChar = $string[0];
-        $subString = substr($string, 1);
-        $length = strlen($subString);
-
-        do {
-            $this->skipToAfterChar($firstChar);
-
-            if (substr($this->sql, $this->position, $length) === $subString) {
-                $this->position += $length;
-                return;
-            }
-        } while ($this->position + $length < $this->length);
+        $quotedString = preg_quote($string, '/');
+        preg_match("/.*?$quotedString/", $this->sql, $matches, 0, $this->position);
+        $this->position += strlen($matches[0]) + 1;
     }
 }
