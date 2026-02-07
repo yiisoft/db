@@ -51,7 +51,7 @@ abstract class AbstractSqlParser
     abstract public function getNextPlaceholder(?int &$position = null): ?string;
 
     /**
-     * Parses and returns word characters. Equivalent to `\w+` in regular expressions.
+     * Parses and returns word characters. Equivalent to `\w*` in regular expressions.
      *
      * @return string Parsed word characters.
      */
