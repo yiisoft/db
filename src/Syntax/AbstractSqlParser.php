@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Syntax;
 
 use function preg_match;
-use function preg_quote;
 use function strcspn;
 use function strlen;
+use function strpos;
 use function strspn;
 use function substr;
 
@@ -126,8 +126,7 @@ abstract class AbstractSqlParser
      */
     final protected function skipToAfterString(string $string): void
     {
-        $quotedString = preg_quote($string, '/');
-        preg_match("/.*?$quotedString/s", $this->sql, $matches, 0, $this->position);
-        $this->position += strlen($matches[0]) + 1;
+        $pos = strpos($this->sql, $string, $this->position);
+        $this->position = $pos + strlen($string);
     }
 }
