@@ -127,7 +127,7 @@ abstract class AbstractSqlParser
     final protected function skipToAfterString(string $string): void
     {
         $quotedString = preg_quote($string, '/');
-        preg_match("/.*?$quotedString/", $this->sql, $matches, 0, $this->position);
+        preg_match("/.*?$quotedString/s", $this->sql, $matches, 0, $this->position);
         $this->position += strlen($matches[0]) + 1;
     }
 }
