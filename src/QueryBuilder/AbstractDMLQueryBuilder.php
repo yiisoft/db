@@ -25,12 +25,9 @@ use Yiisoft\Db\Schema\SchemaInterface;
 use function array_combine;
 use function array_diff;
 use function array_fill_keys;
-use function array_filter;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
-use function array_merge;
-use function array_unique;
 use function array_values;
 use function count;
 use function get_object_vars;
@@ -149,6 +146,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
         array &$params = [],
     ): string {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
@@ -159,6 +157,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
         ?array $returnColumns = null,
         array &$params = [],
     ): string {
@@ -474,6 +473,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * Prepare column names and constraints for "upsert" operation.
      *
      * @param Index[] $constraints
+     * @param string[]|null $constraintColumns The column names to use for the conflict clause. If `null`,
+     * the primary key or the first matching unique constraint will be used.
      *
      * @psalm-param array<string, mixed>|QueryInterface $insertColumns
      *
@@ -485,6 +486,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         array &$constraints = [],
+        ?array $constraintColumns = null,
     ): array {
         if ($insertColumns instanceof QueryInterface) {
             $insertNames = $this->getQueryColumnNames($insertColumns);
@@ -492,7 +494,13 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $insertNames = $this->getNormalizedColumnNames(array_keys($insertColumns));
         }
 
-        $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
+        // Use provided constraint columns or auto-detect from table schema
+        if ($constraintColumns !== null) {
+            $uniqueNames = $this->getNormalizedColumnNames($constraintColumns);
+            $constraints = [];
+        } else {
+            $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
+        }
 
         if ($updateColumns === true) {
             return [$uniqueNames, $insertNames, array_diff($insertNames, $uniqueNames)];
@@ -537,43 +545,29 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * Returns all column names belonging to constraints enforcing uniqueness (`PRIMARY KEY`, `UNIQUE INDEX`, etc.)
-     * for the named table removing constraints which didn't cover the specified column list.
-     *
-     * The column list will be unique by column names.
+     * Returns column names of the first constraint enforcing uniqueness (`PRIMARY KEY`, `UNIQUE INDEX`, etc.)
+     * for the named table that is covered by the specified column list.
      *
      * @param string $name The table name, may contain schema name if any. Don't quote the table name.
      * @param string[] $columns Source column list.
-     * @param Index[] $indexes This parameter optionally receives a matched index list.
-     * The constraints will be unique by their column names.
+     * @param Index[] $indexes This parameter optionally receives the first matched index,
+     * or an empty array if no matching index is found.
      *
-     * @return string[] The column names.
+     * @return string[] The column names of the first matching constraint.
     */
     private function getTableUniqueColumnNames(string $name, array $columns, array &$indexes = []): array
     {
         $indexes = $this->schema->getTableUniques($name);
-        $columnNames = [];
 
-        // Remove all indexes which don't cover the specified column list.
-        $indexes = array_values(
-            array_filter(
-                $indexes,
-                static function (Index $index) use ($columns, &$columnNames): bool {
-                    $result = empty(array_diff($index->columnNames, $columns));
-
-                    if ($result) {
-                        $columnNames[] = $index->columnNames;
-                    }
-
-                    return $result;
-                },
-            ),
-        );
-
-        if (empty($columnNames)) {
-            return [];
+        // Find the first index that is fully covered by the specified column list.
+        foreach ($indexes as $index) {
+            if (empty(array_diff($index->columnNames, $columns))) {
+                $indexes = [$index];
+                return $index->columnNames;
+            }
         }
 
-        return array_unique(array_merge(...$columnNames));
+        $indexes = [];
+        return [];
     }
 }

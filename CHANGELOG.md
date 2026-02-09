@@ -2,6 +2,10 @@
 
 ## 2.0.1 under development
 
+- Chg #1142: Add `$constraintColumns` parameter to `upsert()`, `upsertReturning()`, and `upsertReturningPks()` methods
+  to allow explicit specification of columns for the `ON CONFLICT` clause. When `null` (default), the primary key or
+  the first matching unique constraint is used. This fixes invalid `ON CONFLICT` clause generation when a table has
+  multiple separate unique constraints (@dadansatria)
 - Bug #1127: Fix `AbstractSchema::hasTable()` and `AbstractSchema::hasView()` methods to support names quoted with curly
   brackets `{{%table}}` (@batyrmastyr)
 - Enh #1145, #1148: Explicitly import classes, functions, and constants in "use" section (@mspirkov)
