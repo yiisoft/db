@@ -6,6 +6,7 @@ FROM php:8.3-cli-bookworm
 
 RUN apt-get update && apt-get install -y \
     unzip \
+    libicu-dev \
     # PostgreSQL
     libpq-dev \
     # MSSQL
@@ -65,6 +66,8 @@ RUN docker-php-ext-install \
     pdo_mysql \
     pdo_pgsql \
     pcntl \
+    bcmath \
+    intl \
     # For Psalm, to make use of JIT for a 20%+ performance boost.
     opcache
 
