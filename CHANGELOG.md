@@ -8,6 +8,7 @@
 - Enh #1148: Add `declare(strict_types=1)` to `Yiisoft\Db\Constant\ColumnInfoSource` (@mspirkov)
 - Enh #1158: Explicitly mark readonly properties (@vjik)
 - Enh #1156: Remove unnecessary files from Composer package (@mspirkov)
+- Enh #1159: Improve performance of `AbstractSqlParser` class methods (@Tigrov)
 
 ## 2.0.0 December 05, 2025
 
