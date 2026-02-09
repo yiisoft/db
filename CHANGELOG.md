@@ -1,14 +1,14 @@
 # Yii Database Change Log
 
-## 2.0.1 under development
+## 2.0.1 February 09, 2026
 
-- Bug #1127: Fix `AbstractSchema::hasTable()` and `AbstractSchema::hasView()` methods to support names quoted with curly
-  brackets `{{%table}}` (@batyrmastyr)
 - Enh #1145, #1148: Explicitly import classes, functions, and constants in "use" section (@mspirkov)
 - Enh #1148: Add `declare(strict_types=1)` to `Yiisoft\Db\Constant\ColumnInfoSource` (@mspirkov)
-- Enh #1158: Explicitly mark readonly properties (@vjik)
 - Enh #1156: Remove unnecessary files from Composer package (@mspirkov)
+- Enh #1158: Explicitly mark readonly properties (@vjik)
 - Enh #1159: Improve performance of `AbstractSqlParser` class methods (@Tigrov)
+- Bug #1127: Fix `AbstractSchema::hasTable()` and `AbstractSchema::hasView()` methods to support names quoted with curly
+  brackets `{{%table}}` (@batyrmastyr)
 
 ## 2.0.0 December 05, 2025
 
