@@ -36,7 +36,7 @@ use Yiisoft\Db\Transaction\TransactionInterface;
 interface ConnectionInterface
 {
     /**
-     * Starts a transaction.
+     * Creates, starts, and returns a new transaction.
      *
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      *
@@ -47,16 +47,16 @@ interface ConnectionInterface
      * @throws NotSupportedException
      * @throws Throwable
      *
-     * @return TransactionInterface The transaction initiated.
+     * @return TransactionInterface The transaction.
      */
     public function beginTransaction(?string $isolationLevel = null): TransactionInterface;
 
     /**
-     * Create a batch query result instance.
+     * Creates a batch query result.
      *
      * @param QueryInterface $query The query to execute.
      *
-     * @return BatchQueryResultInterface The batch query result instance.
+     * @return BatchQueryResultInterface The batch query result.
      */
     public function createBatchQueryResult(QueryInterface $query): BatchQueryResultInterface;
 
@@ -69,23 +69,23 @@ interface ConnectionInterface
      * @throws Exception
      * @throws InvalidConfigException
      *
-     * @return CommandInterface The database command instance.
+     * @return CommandInterface The database command.
      *
      * @psalm-param ParamsType $params
      */
     public function createCommand(?string $sql = null, array $params = []): CommandInterface;
 
     /**
-     * Creates a query instance.
+     * Creates a query.
      *
-     * @return QueryInterface The query instance.
+     * @return QueryInterface The query.
      */
     public function createQuery(): QueryInterface;
 
     /**
-     * Create a transaction instance.
+     * Creates a transaction.
      *
-     * @return TransactionInterface The transaction instance.
+     * @return TransactionInterface The transaction.
      */
     public function createTransaction(): TransactionInterface;
 
@@ -118,7 +118,7 @@ interface ConnectionInterface
     public function getDriverName(): string;
 
     /**
-     * Returns the ID of the last inserted row or sequence value.
+     * Returns the ID of the last inserted row or a sequence value.
      *
      * @param string|null $sequenceName The name of the sequence object (required by some DBMS).
      *
@@ -137,7 +137,7 @@ interface ConnectionInterface
     public function getQueryBuilder(): QueryBuilderInterface;
 
     /**
-     * Return quoter helper for current DB connection.
+     * Returns quoter helper for current DB connection.
      *
      * @return QuoterInterface The quoter helper for the current DB connection.
      */
@@ -156,7 +156,7 @@ interface ConnectionInterface
     public function getServerInfo(): ServerInfoInterface;
 
     /**
-     * Return table prefix for current DB connection.
+     * Returns table prefix for current DB connection.
      *
      * @return string The table prefix for the current DB connection.
      */
@@ -176,19 +176,21 @@ interface ConnectionInterface
     /**
      * Returns the currently active transaction.
      *
-     * @return TransactionInterface|null The currently active transaction. Null if no active transaction.
+     * @return TransactionInterface|null The currently active transaction. Null if there is no active transaction.
      */
     public function getTransaction(): ?TransactionInterface;
 
     /**
-     * Returns a value indicating whether the DB connection is active.
+     * Whether the DB connection is active.
      *
      * @return bool Whether the DB connection is active.
      */
     public function isActive(): bool;
 
     /**
-     * @return bool Whether this DBMS supports [savepoint](https://en.wikipedia.org/wiki/Savepoint).
+     * Whether this DBMS supports [savepoint](https://en.wikipedia.org/wiki/Savepoint).
+     *
+     * @return bool Whether this DBMS supports savepoint.
      */
     public function isSavepointEnabled(): bool;
 
@@ -246,7 +248,7 @@ interface ConnectionInterface
     ): QueryInterface;
 
     /**
-     * The common prefix or suffix for table names.
+     * Sets the common prefix or suffix for table names.
      * If a table name is `{{%TableName}}`, then the percentage
      * character `%` will be replaced with this property value.
      * For example, `{{%post}}` becomes `{{tbl_post}}`.
