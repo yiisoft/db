@@ -36,7 +36,7 @@ use Yiisoft\Db\Transaction\TransactionInterface;
 interface ConnectionInterface
 {
     /**
-     * Creates, starts, and returns a new transaction.
+     * Starts a transaction and returns it, creating a new transaction object only if none is currently active.
      *
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      *
