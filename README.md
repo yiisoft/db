@@ -38,7 +38,7 @@ Optional packages that provide additional functionality:
 
 ## Installation
 
-To install `yiisoft/db` you must install a database driver:
+To install `yiisoft/db` you must install at least one database driver:
 - [`yiisoft/db-mysql`](https://github.com/yiisoft/db-mysql);
 - [`yiisoft/db-pgsql`](https://github.com/yiisoft/db-pgsql);
 - [`yiisoft/db-sqlite`](https://github.com/yiisoft/db-sqlite);
