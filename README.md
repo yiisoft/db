@@ -38,19 +38,14 @@ Optional packages that provide additional functionality:
 
 ## Installation
 
-The package could be installed with [Composer](https://getcomposer.org).
-
-```shell
-composer require yiisoft/db-sqlite
-```
+To install `yiisoft/db` you must install a database driver:
+- [`yiisoft/db-mysql`](https://github.com/yiisoft/db-mysql);
+- [`yiisoft/db-pgsql`](https://github.com/yiisoft/db-pgsql);
+- [`yiisoft/db-sqlite`](https://github.com/yiisoft/db-sqlite);
+- [`yiisoft/db-mssql`](https://github.com/yiisoft/db-mssql);
+- [`yiisoft/db-oracle`](https://github.com/yiisoft/db-oracle).
 
 > [!IMPORTANT]
-> To install `yiisoft/db` you must install a database driver ([`yiisoft/db-mysql`](https://github.com/yiisoft/db-mysql),
-> [`yiisoft/db-pgsql`](https://github.com/yiisoft/db-pgsql),
-> [`yiisoft/db-sqlite`](https://github.com/yiisoft/db-sqlite),
-> [`yiisoft/db-mssql`](https://github.com/yiisoft/db-mssql),
-> or [`yiisoft/db-oracle`](https://github.com/yiisoft/db-oracle)) to actually connect to a database.
->
 > It also depends on [PSR-16: Common Interface for Caching Libraries](https://www.php-fig.org/psr/psr-16/) and requires
 > the installation of [PSR-16 implementation](https://packagist.org/providers/psr/simple-cache-implementation).
 > For example, [yiisoft/cache](https://github.com/yiisoft/cache) or one of the other
