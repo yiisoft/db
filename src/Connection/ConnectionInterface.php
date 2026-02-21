@@ -52,7 +52,7 @@ interface ConnectionInterface
     public function beginTransaction(?string $isolationLevel = null): TransactionInterface;
 
     /**
-     * Creates a batch query result.
+     * Creates {@see BatchQueryResultInterface} instance.
      *
      * @param QueryInterface $query The query to execute.
      *
