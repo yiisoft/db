@@ -83,7 +83,7 @@ interface ConnectionInterface
     public function createQuery(): QueryInterface;
 
     /**
-     * Creates a transaction.
+     * Creates {@see TransactionInterface} instance.
      *
      * @return TransactionInterface The transaction.
      */
