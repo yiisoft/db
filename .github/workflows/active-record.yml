@@ -23,7 +23,7 @@ jobs:
     name: ActiveRecord
 
     env:
-      COMPOSER_ROOT_VERSION: 2.*
+      COMPOSER_ROOT_VERSION: 2
       PHP_VERSION: 8.5
       EXTENSIONS: pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
 
@@ -102,14 +102,14 @@ jobs:
       - name: Install db-sqlite, db-mysql, db-pgsql, db-mssql and db-oracle.
         uses: yiisoft/actions/install-packages@master
         with:
-          composer-root-version: 2.*
+          composer-root-version: 2
           packages: >-
             ['db-sqlite', 'db-mysql', 'db-pgsql', 'db-mssql', 'db-oracle']
 
       - name: Install active-record.
         uses: yiisoft/actions/install-packages@master
         with:
-          composer-root-version: 1.*
+          composer-root-version: 1
           packages: >-
             ['active-record']
 
