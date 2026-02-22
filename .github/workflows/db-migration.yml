@@ -23,7 +23,7 @@ jobs:
     name: DbMigration
 
     env:
-      COMPOSER_ROOT_VERSION: 2
+      COMPOSER_ROOT_VERSION: ^2.0
       PHP_VERSION: 8.5
       EXTENSIONS: pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
 
@@ -99,7 +99,7 @@ jobs:
       - name: Install db-sqlite, db-mysql, db-pgsql, db-mssql, db-oracle and db-migration.
         uses: yiisoft/actions/install-packages@master
         with:
-          composer-root-version: 2
+          composer-root-version: ^2.0
           packages: >-
             ['db-sqlite', 'db-mysql', 'db-pgsql', 'db-mssql', 'db-oracle', 'db-migration']
 

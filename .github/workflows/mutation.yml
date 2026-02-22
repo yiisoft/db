@@ -26,7 +26,7 @@ jobs:
     name: PHP 8.5
 
     env:
-      COMPOSER_ROOT_VERSION: 2
+      COMPOSER_ROOT_VERSION: ^2.0
 
     runs-on: ubuntu-latest
 
@@ -62,7 +62,7 @@ jobs:
       - name: Install PostgreSQL driver
         uses: yiisoft/actions/install-packages@master
         with:
-          composer-root-version: 2
+          composer-root-version: ^2.0
           packages: >-
             ['db-pgsql']
 
