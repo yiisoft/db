@@ -27,7 +27,7 @@ jobs:
     name: PHP ${{ matrix.php }}-pgsql-${{ matrix.pgsql }}
 
     env:
-      COMPOSER_ROOT_VERSION: ^2.0
+      COMPOSER_ROOT_VERSION: 2.0.1
       EXTENSIONS: pdo_pgsql
 
     runs-on: ubuntu-latest
@@ -85,7 +85,7 @@ jobs:
       - name: Install db-pgsql.
         uses: yiisoft/actions/install-packages@master
         with:
-          composer-root-version: ^2.0
+          composer-root-version: 2.0.1
           packages: >-
             ['db-pgsql']
 
