@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<roave-bc-check
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/roave/backward-compatibility-check/Resources/schema.xsd">
+    <baseline>
+        <ignored-regex>#\[BC\] SKIPPED: Roave\\BetterReflection\\Reflection\\ReflectionClass "Yiisoft\\Yii\\Debug\\#</ignored-regex>
+    </baseline>
+</roave-bc-check>
