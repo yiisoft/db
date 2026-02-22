@@ -27,9 +27,9 @@ jobs:
     name: MSSQL 2017 (Windows)
 
     env:
-      COMPOSER_ROOT_VERSION: 2.0.0
+      COMPOSER_ROOT_VERSION: 2.*
       PHP_VERSION: 8.5
-      EXTENSIONS: pdo, pdo_sqlsrv
+      EXTENSIONS: pdo_sqlsrv
 
     runs-on: windows-latest
 
@@ -56,7 +56,7 @@ jobs:
       - name: Install db-mssql.
         uses: yiisoft/actions/install-packages@master
         with:
-          composer-root-version: 2.0.0
+          composer-root-version: 2.*
           packages: >-
             ['db-mssql']
 
