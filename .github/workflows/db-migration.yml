@@ -96,12 +96,12 @@ jobs:
       - name: Install yiisoft/test-support and yiisoft/yii-console
         run: composer require yiisoft/test-support yiisoft/yii-console
 
-      - name: Install db-sqlite, db-mysql, db-mssql and db-oracle.
+      - name: Install db-sqlite, db-mysql, db-mssql and db-oracle and db-migration.
         uses: yiisoft/actions/install-packages@master
         with:
           composer-root-version: 2.0.0
           packages: >-
-            ['db-sqlite', 'db-mysql', 'db-mssql', 'db-oracle']
+            ['db-sqlite', 'db-mysql', 'db-mssql', 'db-oracle', 'db-migration']
 
       - name: Install db-pgsql.
         uses: yiisoft/actions/install-packages@master
