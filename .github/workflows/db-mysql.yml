@@ -45,4 +45,5 @@ jobs:
     with:
       install-db: false
       mysql: ${{ matrix.mysql }}
-      php: ${{ matrix.php }}
+      php: >-
+        [${{ matrix.php }}]
