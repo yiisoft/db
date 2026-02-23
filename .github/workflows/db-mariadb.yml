@@ -54,3 +54,4 @@ jobs:
       mariadb: ${{ matrix.mariadb }}
       php: >-
         [${{ matrix.php }}]
+
