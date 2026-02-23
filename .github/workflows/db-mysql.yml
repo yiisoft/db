@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   tests:
-    name: PHP-${{ matrix.php }} MySQL-${{ matrix.mysql }}
+    name: MySQL ${{ matrix.mysql }}
 
     strategy:
       matrix:
