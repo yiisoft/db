@@ -29,7 +29,7 @@ jobs:
     env:
       COMPOSER_ROOT_VERSION: 2.0.0
       PHP_VERSION: 8.5
-      EXTENSIONS: pdo, pdo_sqlsrv
+      EXTENSIONS: pdo_sqlsrv
 
     runs-on: windows-latest
 

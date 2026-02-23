@@ -28,7 +28,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: 2.0.0
-      EXTENSIONS: pdo, pdo_sqlite
+      EXTENSIONS: pdo_sqlite
 
     runs-on: ${{ matrix.os }}
 

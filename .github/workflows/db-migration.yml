@@ -23,9 +23,9 @@ jobs:
     name: DbMigration
 
     env:
-      COMPOSER_ROOT_VERSION: 2.0.0
+      COMPOSER_ROOT_VERSION: 2.0.1
       PHP_VERSION: 8.5
-      EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
+      EXTENSIONS: pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
 
     runs-on: ubuntu-latest
 
@@ -53,7 +53,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
       postgres:
-        image: postgres:16
+        image: postgres:18
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: root
@@ -75,6 +75,8 @@ jobs:
       - name: Install ODBC driver.
         run: |
           sudo curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+          sudo apt-get clean
+          sudo apt-get update
           sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
       - name: Create MS SQL Database.
@@ -94,12 +96,19 @@ jobs:
       - name: Install yiisoft/test-support and yiisoft/yii-console
         run: composer require yiisoft/test-support yiisoft/yii-console
 
-      - name: Install db-sqlite, db-mysql, db-pgsql, db-mssql, db-oracle and db-migration.
+      - name: Install db-sqlite, db-mysql, db-mssql and db-oracle and db-migration.
         uses: yiisoft/actions/install-packages@master
         with:
           composer-root-version: 2.0.0
           packages: >-
-            ['db-sqlite', 'db-mysql', 'db-pgsql', 'db-mssql', 'db-oracle', 'db-migration']
+            ['db-sqlite', 'db-mysql', 'db-mssql', 'db-oracle', 'db-migration']
+
+      - name: Install db-pgsql.
+        uses: yiisoft/actions/install-packages@master
+        with:
+          composer-root-version: 2.0.1
+          packages: >-
+            ['db-pgsql']
 
       - name: Run tests with phpunit with code coverage.
         run: vendor/bin/phpunit --testsuite=DbMigration --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations

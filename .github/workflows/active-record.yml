@@ -23,9 +23,9 @@ jobs:
     name: ActiveRecord
 
     env:
-      COMPOSER_ROOT_VERSION: 2.0.0
+      COMPOSER_ROOT_VERSION: 2.0.1
       PHP_VERSION: 8.5
-      EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
+      EXTENSIONS: pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
 
     runs-on: ubuntu-latest
 
@@ -78,6 +78,8 @@ jobs:
       - name: Install ODBC driver.
         run: |
           sudo curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+          sudo apt-get clean
+          sudo apt-get update
           sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
       - name: Create MS SQL Database.
@@ -97,12 +99,19 @@ jobs:
       - name: Install AR dependencies
         run: composer require yiisoft/cache yiisoft/factory yiisoft/middleware-dispatcher yiisoft/test-support
 
-      - name: Install db-sqlite, db-mysql, db-pgsql, db-mssql and db-oracle.
+      - name: Install db-sqlite, db-mysql, db-mssql and db-oracle.
         uses: yiisoft/actions/install-packages@master
         with:
           composer-root-version: 2.0.0
           packages: >-
-            ['db-sqlite', 'db-mysql', 'db-pgsql', 'db-mssql', 'db-oracle']
+            ['db-sqlite', 'db-mysql', 'db-mssql', 'db-oracle']
+
+      - name: Install db-pgsql.
+        uses: yiisoft/actions/install-packages@master
+        with:
+          composer-root-version: 2.0.1
+          packages: >-
+            ['db-pgsql']
 
       - name: Install active-record.
         uses: yiisoft/actions/install-packages@master

@@ -28,7 +28,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: 2.0.0
-      EXTENSIONS: pdo, pdo_mysql
+      EXTENSIONS: pdo_mysql
       YII_MYSQL_TYPE: 'mariadb'
 
     runs-on: ubuntu-latest
