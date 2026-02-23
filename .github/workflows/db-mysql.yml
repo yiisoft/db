@@ -47,3 +47,4 @@ jobs:
       mysql: ${{ matrix.mysql }}
       php: >-
         [${{ matrix.php }}]
+
