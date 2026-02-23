@@ -1,6 +1,6 @@
 on:
   pull_request:
-    paths:
+    paths: &paths
       - 'src/**'
       - 'tests/**'
       - '.github/workflows/db-mysql.yml'
@@ -9,14 +9,12 @@ on:
 
   push:
     branches: ['master']
-    paths:
-      - 'src/**'
-      - 'tests/**'
-      - '.github/workflows/db-mysql.yml'
-      - 'composer.json'
-      - 'phpunit.xml.dist'
+    paths: *paths
 
 name: db-mysql
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -24,69 +22,26 @@ concurrency:
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-mysql-${{ matrix.mysql }}
-
-    env:
-      COMPOSER_ROOT_VERSION: 2.0.0
-      EXTENSIONS: pdo_mysql
-
-    runs-on: ubuntu-latest
+    name: PHP-${{ matrix.php }} MySQL-${{ matrix.mysql }}
 
     strategy:
       matrix:
         php:
           - 8.5
-
         mysql:
-          - mysql:5.7
-          - mysql:latest
-
+          - 5.7
+          - latest
         include:
           - php: 8.1
-            mysql: mysql:latest
+            mysql: latest
           - php: 8.2
-            mysql: mysql:latest
+            mysql: latest
           - php: 8.3
-            mysql: mysql:latest
+            mysql: latest
           - php: 8.4
-            mysql: mysql:latest
+            mysql: latest
 
-    services:
-      mysql:
-        image: ${{ matrix.mysql }}
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
-          MYSQL_PASSWORD: ''
-          MYSQL_DATABASE: yiitest
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-
-    steps:
-      - name: Checkout.
-        uses: actions/checkout@v4
-
-      - name: Install PHP with extensions.
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: ${{ env.EXTENSIONS }}
-          ini-values: date.timezone='UTC'
-          coverage: pcov
-
-      - name: Install db-mysql.
-        uses: yiisoft/actions/install-packages@master
-        with:
-          composer-root-version: 2.0.0
-          packages: >-
-            ['db-mysql']
-
-      - name: Run Mysql tests with phpunit and code coverage.
-        run: vendor/bin/phpunit --testsuite Mysql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
-
-      - name: Upload coverage to Codecov.
-        if: matrix.php == '8.5'
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+    uses: yiisoft/actions/.github/workflows/db-mysql.yml@add-db-mysql
+    with:
+      php: ${{ matrix.php }}
+      mysql: ${{ matrix.mysql }}
