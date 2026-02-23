@@ -1,6 +1,6 @@
 on:
   pull_request:
-    paths:
+    paths: &paths
       - 'src/**'
       - 'tests/**'
       - '.github/workflows/db-mssql-2017.yml'
@@ -9,14 +9,12 @@ on:
 
   push:
     branches: ['master']
-    paths:
-      - 'src/**'
-      - 'tests/**'
-      - '.github/workflows/db-mssql-2017.yml'
-      - 'composer.json'
-      - 'phpunit.xml.dist'
+    paths: *paths
 
 name: db-mssql-2017
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,40 +24,7 @@ jobs:
   tests:
     name: MSSQL 2017 (Windows)
 
-    env:
-      COMPOSER_ROOT_VERSION: 2.0.0
-      PHP_VERSION: 8.5
-      EXTENSIONS: pdo_sqlsrv
-
-    runs-on: windows-latest
-
-    steps:
-      - name: Install SQL Server on Windows.
-        run: choco install sql-server-express --version=2017.20190916 -y --no-progress --ia="'/Q /SUPPRESSPRIVACYSTATEMENTNOTICE /IACCEPTSQLSERVERLICENSETERMS /ACTION=install /INSTANCEID=MSSQLSERVER /INSTANCENAME=MSSQLSERVER /UPDATEENABLED=FALSE /SECURITYMODE=SQL /TCPENABLED=1 /SAPWD=YourStrong!Passw0rd'"
-
-      - name: Create database.
-        run: sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
-
-      - name: Checkout.
-        uses: actions/checkout@v4
-
-      - name: Install PHP with extensions.
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: ${{ env.EXTENSIONS }}
-          ini-values: date.timezone='UTC'
-          coverage: pcov
-        env:
-          update: true
-
-      - name: Install db-mssql.
-        uses: yiisoft/actions/install-packages@master
-        with:
-          composer-root-version: 2.0.0
-          packages: >-
-            ['db-mssql']
-
-      - name: Run mssql tests with phpunit and code coverage.
-        run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
+    uses: yiisoft/actions/.github/workflows/db-mssql.yml@add-db-mysql
+    with:
+      install-db: false
 
