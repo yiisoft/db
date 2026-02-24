@@ -51,7 +51,7 @@ jobs:
           - php: 8.4
             pgsql: 18
 
-    uses: yiisoft/actions/.github/workflows/db-pgsql.yml@add-db-mysql
+    uses: yiisoft/actions/.github/workflows/db-pgsql.yml@master
     with:
       pgsql: ${{ matrix.pgsql }}
       php: >-

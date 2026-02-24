@@ -43,7 +43,7 @@ jobs:
           - php: 8.4
             oracle: 21
 
-    uses: yiisoft/actions/.github/workflows/db-oracle.yml@add-db-mysql
+    uses: yiisoft/actions/.github/workflows/db-oracle.yml@master
     with:
       oracle: ${{ matrix.oracle }}
       php: >-

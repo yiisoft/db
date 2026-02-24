@@ -48,7 +48,7 @@ jobs:
           - php: 8.4
             mariadb: latest
 
-    uses: yiisoft/actions/.github/workflows/db-mariadb.yml@add-db-mysql
+    uses: yiisoft/actions/.github/workflows/db-mariadb.yml@master
     with:
       mariadb: ${{ matrix.mariadb }}
       php: >-

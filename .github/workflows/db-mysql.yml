@@ -41,7 +41,7 @@ jobs:
           - php: 8.4
             mysql: latest
 
-    uses: yiisoft/actions/.github/workflows/db-mysql.yml@add-db-mysql
+    uses: yiisoft/actions/.github/workflows/db-mysql.yml@master
     with:
       mysql: ${{ matrix.mysql }}
       php: >-

@@ -40,7 +40,7 @@ jobs:
           - php: 8.5
             mssql: 2019-latest
 
-    uses: yiisoft/actions/.github/workflows/db-mssql.yml@add-db-mysql
+    uses: yiisoft/actions/.github/workflows/db-mssql.yml@master
     with:
       mssql: ${{ matrix.mssql }}
       php: >-

@@ -24,4 +24,4 @@ jobs:
   tests:
     name: SQLite latest
 
-    uses: yiisoft/actions/.github/workflows/db-sqlite.yml@add-db-mysql
+    uses: yiisoft/actions/.github/workflows/db-sqlite.yml@master
