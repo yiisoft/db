@@ -1,6 +1,6 @@
 on:
   pull_request:
-    paths:
+    paths: &paths
       - 'src/**'
       - 'tests/**'
       - '.github/workflows/db-sqlite.yml'
@@ -9,14 +9,12 @@ on:
 
   push:
     branches: ['master']
-    paths:
-      - 'src/**'
-      - 'tests/**'
-      - '.github/workflows/db-sqlite.yml'
-      - 'composer.json'
-      - 'phpunit.xml.dist'
+    paths: *paths
 
 name: db-sqlite
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -24,52 +22,6 @@ concurrency:
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-sqlite-${{ matrix.os }}
+    name: SQLite latest
 
-    env:
-      COMPOSER_ROOT_VERSION: 2.0.0
-      EXTENSIONS: pdo_sqlite
-
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-
-        php:
-          - 8.1
-          - 8.2
-          - 8.3
-          - 8.4
-          - 8.5
-
-    steps:
-      - name: Checkout.
-        uses: actions/checkout@v4
-
-      - name: Install PHP with extensions.
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: ${{ env.EXTENSIONS }}
-          ini-values: date.timezone='UTC'
-          coverage: pcov
-
-      - name: Install db-sqlite.
-        uses: yiisoft/actions/install-packages@master
-        with:
-          composer-root-version: 2.0.0
-          packages: >-
-            ['db-sqlite']
-
-      - name: Run sqlite tests with phpunit and code coverage.
-        run: vendor/bin/phpunit --testsuite Sqlite --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
-
-      - name: Upload coverage to Codecov.
-        if: matrix.os == 'ubuntu-latest' && matrix.php == '8.5'
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+    uses: yiisoft/actions/.github/workflows/db-sqlite.yml@master
