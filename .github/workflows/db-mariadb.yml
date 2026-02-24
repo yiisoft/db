@@ -50,7 +50,6 @@ jobs:
 
     uses: yiisoft/actions/.github/workflows/db-mariadb.yml@add-db-mysql
     with:
-      install-db: false
       mariadb: ${{ matrix.mariadb }}
       php: >-
         [${{ matrix.php }}]

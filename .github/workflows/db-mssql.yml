@@ -42,7 +42,6 @@ jobs:
 
     uses: yiisoft/actions/.github/workflows/db-mssql.yml@add-db-mysql
     with:
-      install-db: false
       mssql: ${{ matrix.mssql }}
       php: >-
         [${{ matrix.php }}]

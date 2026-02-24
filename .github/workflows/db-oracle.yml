@@ -45,7 +45,6 @@ jobs:
 
     uses: yiisoft/actions/.github/workflows/db-oracle.yml@add-db-mysql
     with:
-      install-db: false
       oracle: ${{ matrix.oracle }}
       php: >-
         [${{ matrix.php }}]

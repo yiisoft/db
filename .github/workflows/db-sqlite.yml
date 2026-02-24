@@ -25,5 +25,3 @@ jobs:
     name: SQLite latest
 
     uses: yiisoft/actions/.github/workflows/db-sqlite.yml@add-db-mysql
-    with:
-      install-db: false
