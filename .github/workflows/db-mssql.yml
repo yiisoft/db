@@ -1,6 +1,6 @@
 on:
   pull_request:
-    paths:
+    paths: &paths
       - 'src/**'
       - 'tests/**'
       - '.github/workflows/db-mssql.yml'
@@ -9,14 +9,12 @@ on:
 
   push:
     branches: ['master']
-    paths:
-      - 'src/**'
-      - 'tests/**'
-      - '.github/workflows/db-mssql.yml'
-      - 'composer.json'
-      - 'phpunit.xml.dist'
+    paths: *paths
 
 name: db-mssql
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -24,13 +22,7 @@ concurrency:
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql }}
-
-    env:
-      COMPOSER_ROOT_VERSION: 2.0.0
-      EXTENSIONS: pdo_sqlsrv
-
-    runs-on: ubuntu-latest
+    name: MSSQL ${{ matrix.mssql }}
 
     strategy:
       matrix:
@@ -48,54 +40,8 @@ jobs:
           - php: 8.5
             mssql: 2019-latest
 
-    services:
-      mssql:
-          image: mcr.microsoft.com/mssql/server:${{ matrix.mssql }}
-          env:
-              SA_PASSWORD: YourStrong!Passw0rd
-              ACCEPT_EULA: Y
-              MSSQL_PID: Developer
-          ports:
-              - 1433:1433
-          options: --name=mssql --health-cmd="/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
-
-    steps:
-      - name: Install ODBC driver.
-        run: |
-          sudo curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
-          sudo apt-get clean
-          sudo apt-get update
-          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
-
-      - name: Create database.
-        run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
-
-      - name: Checkout.
-        uses: actions/checkout@v4
-
-      - name: Install PHP with extensions.
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: ${{ env.EXTENSIONS }}
-          ini-values: date.timezone='UTC'
-          coverage: pcov
-        env:
-          update: true
-
-      - name: Install db-mssql.
-        uses: yiisoft/actions/install-packages@master
-        with:
-          composer-root-version: 2.0.0
-          packages: >-
-            ['db-mssql']
-
-      - name: Run mssql tests with phpunit and code coverage.
-        run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
-
-      - name: Upload coverage to Codecov.
-        if: matrix.php == '8.5'
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+    uses: yiisoft/actions/.github/workflows/db-mssql.yml@master
+    with:
+      mssql: ${{ matrix.mssql }}
+      php: >-
+        [${{ matrix.php }}]

@@ -1,6 +1,6 @@
 on:
   pull_request:
-    paths:
+    paths: &paths
       - 'src/**'
       - 'tests/**'
       - '.github/workflows/db-oracle.yml'
@@ -9,14 +9,12 @@ on:
 
   push:
     branches: ['master']
-    paths:
-      - 'src/**'
-      - 'tests/**'
-      - '.github/workflows/db-oracle.yml'
-      - 'composer.json'
-      - 'phpunit.xml.dist'
+    paths: *paths
 
 name: db-oracle
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -24,13 +22,7 @@ concurrency:
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-${{ matrix.oracle }}
-
-    env:
-      COMPOSER_ROOT_VERSION: 2.0.0
-      EXTENSIONS: pdo_oci
-
-    runs-on: ubuntu-latest
+    name: Oracle ${{ matrix.oracle }}
 
     strategy:
       matrix:
@@ -51,49 +43,8 @@ jobs:
           - php: 8.4
             oracle: 21
 
-    services:
-      oci:
-        image: gvenzl/oracle-xe:${{ matrix.oracle }}
-        ports:
-          - 1521:1521
-        env:
-          ORACLE_DATABASE : yiitest
-          ORACLE_PASSWORD : root
-        options: >-
-          --name=oci
-          --health-cmd healthcheck.sh
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-
-    steps:
-      - name: Configure Database.
-        run: docker exec -i oci bash -c "sqlplus -s system/root@XE <<< 'ALTER USER system DEFAULT TABLESPACE USERS;'"
-
-      - name: Checkout.
-        uses: actions/checkout@v4
-
-      - name: Install PHP with extensions.
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: ${{ env.EXTENSIONS }}
-          ini-values: date.timezone='UTC'
-          coverage: pcov
-
-      - name: Install db-oracle.
-        uses: yiisoft/actions/install-packages@master
-        with:
-          composer-root-version: 2.0.0
-          packages: >-
-            ['db-oracle']
-
-      - name: Run oracle tests with phpunit and code coverage.
-        run: vendor/bin/phpunit --testsuite Oracle --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
-
-      - name: Upload coverage to Codecov.
-        if: matrix.php == '8.5'
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+    uses: yiisoft/actions/.github/workflows/db-oracle.yml@master
+    with:
+      oracle: ${{ matrix.oracle }}
+      php: >-
+        [${{ matrix.php }}]

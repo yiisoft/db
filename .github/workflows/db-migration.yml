@@ -23,7 +23,6 @@ jobs:
     name: DbMigration
 
     env:
-      COMPOSER_ROOT_VERSION: 2.0.1
       PHP_VERSION: 8.5
       EXTENSIONS: pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
 
@@ -83,7 +82,7 @@ jobs:
         run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
 
       - name: Checkout.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
@@ -96,19 +95,11 @@ jobs:
       - name: Install yiisoft/test-support and yiisoft/yii-console
         run: composer require yiisoft/test-support yiisoft/yii-console
 
-      - name: Install db-sqlite, db-mysql, db-mssql and db-oracle and db-migration.
+      - name: Install db-sqlite, db-mysql, db-pgsql, db-mssql and db-oracle and db-migration.
         uses: yiisoft/actions/install-packages@master
         with:
-          composer-root-version: 2.0.0
           packages: >-
-            ['db-sqlite', 'db-mysql', 'db-mssql', 'db-oracle', 'db-migration']
-
-      - name: Install db-pgsql.
-        uses: yiisoft/actions/install-packages@master
-        with:
-          composer-root-version: 2.0.1
-          packages: >-
-            ['db-pgsql']
+            ['db-sqlite', 'db-mysql', 'db-pgsql', 'db-mssql', 'db-oracle', 'db-migration']
 
       - name: Run tests with phpunit with code coverage.
         run: vendor/bin/phpunit --testsuite=DbMigration --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations

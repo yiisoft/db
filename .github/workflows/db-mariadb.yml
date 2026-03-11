@@ -1,6 +1,6 @@
 on:
   pull_request:
-    paths:
+    paths: &paths
       - 'src/**'
       - 'tests/**'
       - '.github/workflows/db-mariadb.yml'
@@ -9,14 +9,12 @@ on:
 
   push:
     branches: ['master']
-    paths:
-      - 'src/**'
-      - 'tests/**'
-      - '.github/workflows/db-mariadb.yml'
-      - 'composer.json'
-      - 'phpunit.xml.dist'
+    paths: *paths
 
 name: db-mariadb
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -24,14 +22,7 @@ concurrency:
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-mariadb-${{ matrix.mariadb }}
-
-    env:
-      COMPOSER_ROOT_VERSION: 2.0.0
-      EXTENSIONS: pdo_mysql
-      YII_MYSQL_TYPE: 'mariadb'
-
-    runs-on: ubuntu-latest
+    name: MariaDB ${{ matrix.mariadb }}
 
     strategy:
       matrix:
@@ -39,60 +30,27 @@ jobs:
           - 8.5
 
         mariadb:
-          - mariadb:10.4
-          - mariadb:10.5
-          - mariadb:10.6
-          - mariadb:10.7
-          - mariadb:10.8
-          - mariadb:10.9
-          - mariadb:latest
+          - 10.4
+          - 10.5
+          - 10.6
+          - 10.7
+          - 10.8
+          - 10.9
+          - latest
 
         include:
           - php: 8.1
-            mariadb: mariadb:latest
+            mariadb: latest
           - php: 8.2
-            mariadb: mariadb:latest
+            mariadb: latest
           - php: 8.3
-            mariadb: mariadb:latest
+            mariadb: latest
           - php: 8.4
-            mariadb: mariadb:latest
+            mariadb: latest
 
-    services:
-      mysql:
-        image: ${{ matrix.mariadb }}
-        env:
-          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: true
-          MARIADB_ROOT_PASSWORD: ''
-          MARIADB_DATABASE: yiitest
-        ports:
-          - 3306:3306
-        options: --health-cmd="mariadb-admin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    uses: yiisoft/actions/.github/workflows/db-mariadb.yml@master
+    with:
+      mariadb: ${{ matrix.mariadb }}
+      php: >-
+        [${{ matrix.php }}]
 
-    steps:
-      - name: Checkout.
-        uses: actions/checkout@v4
-
-      - name: Install PHP with extensions.
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: ${{ env.EXTENSIONS }}
-          ini-values: date.timezone='UTC'
-          coverage: pcov
-
-      - name: Install db-mysql.
-        uses: yiisoft/actions/install-packages@master
-        with:
-          composer-root-version: 2.0.0
-          packages: >-
-            ['db-mysql']
-
-      - name: Run Mysql tests with phpunit and code coverage.
-        run: vendor/bin/phpunit --testsuite Mysql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
-
-      - name: Upload coverage to Codecov.
-        if: matrix.php == '8.5'
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
