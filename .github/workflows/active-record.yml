@@ -1,16 +1,13 @@
 on:
   pull_request:
-    paths:
+    paths: &paths
       - 'src/**'
       - '.github/workflows/active-record.yml'
       - 'composer.json'
 
   push:
     branches: ['master']
-    paths:
-      - 'src/**'
-      - '.github/workflows/active-record.yml'
-      - 'composer.json'
+    paths: *paths
 
 name: active-record
 
@@ -23,7 +20,6 @@ jobs:
     name: ActiveRecord
 
     env:
-      COMPOSER_ROOT_VERSION: 2.0.1
       PHP_VERSION: 8.5
       EXTENSIONS: pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
 
@@ -86,7 +82,7 @@ jobs:
         run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE [ar-test]'
 
       - name: Checkout.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
@@ -99,26 +95,11 @@ jobs:
       - name: Install AR dependencies
         run: composer require yiisoft/cache yiisoft/factory yiisoft/middleware-dispatcher yiisoft/test-support
 
-      - name: Install db-sqlite, db-mysql, db-mssql and db-oracle.
+      - name: Install db-sqlite, db-mysql, db-pgsql, db-mssql, db-oracle and active-record.
         uses: yiisoft/actions/install-packages@master
         with:
-          composer-root-version: 2.0.0
           packages: >-
-            ['db-sqlite', 'db-mysql', 'db-mssql', 'db-oracle']
-
-      - name: Install db-pgsql.
-        uses: yiisoft/actions/install-packages@master
-        with:
-          composer-root-version: 2.0.1
-          packages: >-
-            ['db-pgsql']
-
-      - name: Install active-record.
-        uses: yiisoft/actions/install-packages@master
-        with:
-          composer-root-version: 1.0.0
-          packages: >-
-            ['active-record']
+            ['db-sqlite', 'db-mysql', 'db-pgsql', 'db-mssql', 'db-oracle', 'active-record']
 
       - name: Run tests with phpunit with code coverage.
         run: vendor/bin/phpunit --testsuite ActiveRecord --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
