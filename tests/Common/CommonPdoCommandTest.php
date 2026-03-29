@@ -253,6 +253,23 @@ abstract class CommonPdoCommandTest extends IntegrationTestCase
         );
     }
 
+    public function testInternalExecuteKeepsOracleMigrationExceptionAsIntegrityException(): void
+    {
+        $e = $this->executeCommandThrowingPdoException(
+            'DROP TABLE test',
+            'ORA-00942: table or view does not exist',
+        );
+
+        $this->assertInstanceOf(IntegrityException::class, $e);
+        $this->assertInstanceOf(PDOException::class, $e->getPrevious());
+        $this->assertSame(
+            'ORA-00942: table or view does not exist'
+            . PHP_EOL
+            . 'The SQL being executed was: DROP TABLE test',
+            $e->getMessage(),
+        );
+    }
+
     public function testInternalExecuteKeepsMysqlReconnectExceptionAsIntegrityException(): void
     {
         $e = $this->executeCommandThrowingPdoException(

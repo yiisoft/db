@@ -71,7 +71,6 @@ final class ConvertExceptionTest extends TestCase
     {
         return [
             'general error' => ['SQLSTATE[HY000]: General error: 7 no connection to the server'],
-            'oracle table does not exist' => ['ORA-00942: table or view does not exist'],
         ];
     }
 
@@ -89,6 +88,7 @@ final class ConvertExceptionTest extends TestCase
             'oracle check constraint' => ['ORA-02290: check constraint (SYS.CK_PROFILE_DESCRIPTION) violated'],
             'oracle parent key not found' => ['ORA-02291: integrity constraint (SYS.FK_PROFILE_CUSTOMER) violated - parent key not found'],
             'oracle child record found' => ['ORA-02292: integrity constraint (SYS.FK_PROFILE_CUSTOMER) violated - child record found'],
+            'oracle table does not exist for migration compatibility' => ['ORA-00942: table or view does not exist'],
         ];
     }
 }

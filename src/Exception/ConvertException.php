@@ -22,6 +22,9 @@ final class ConvertException
         'SQLSTATE[HY000]: General error: 2006 ',
         'SQLSTATE[HY000]: General error: 4031 ',
     ];
+    private const ORACLE_COMPATIBILITY_EXCEPTIONS = [
+        'ORA-00942:',
+    ];
     private const ORACLE_INTEGRITY_EXCEPTIONS = [
         'ORA-00001:',
         'ORA-01400:',
@@ -50,6 +53,7 @@ final class ConvertException
         if (
             str_contains($message, self::MSG_INTEGRITY_EXCEPTION)
             || $this->isMysqlReconnectException($message)
+            || $this->isOracleCompatibilityException($message)
             || $this->isOracleIntegrityException($message)
         ) {
             return new IntegrityException($message, $errorInfo, $this->e);
@@ -66,6 +70,17 @@ final class ConvertException
     {
         foreach (self::MYSQL_RECONNECT_EXCEPTIONS as $mysqlReconnectException) {
             if (str_contains($message, $mysqlReconnectException)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isOracleCompatibilityException(string $message): bool
+    {
+        foreach (self::ORACLE_COMPATIBILITY_EXCEPTIONS as $oracleCompatibilityException) {
+            if (str_contains($message, $oracleCompatibilityException)) {
                 return true;
             }
         }
