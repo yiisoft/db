@@ -243,27 +243,6 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     }
 
     /**
-     * Checks if the exception represents a connection error.
-     *
-     * Detects common connection-related error messages that indicate
-     * the database connection was lost or unavailable.
-     *
-     * @param Exception $e The exception to check
-     * @return bool True if the exception indicates a connection error
-     */
-    private function isConnectionError(Exception $e): bool
-    {
-        $message = $e->getMessage();
-
-        return strpos($message, 'no connection') !== false
-            || strpos($message, 'General error: 7') !== false
-            || strpos($message, 'gone away') !== false
-            || strpos($message, 'Connection refused') !== false
-            || strpos($message, 'server has gone away') !== false
-            || strpos($message, 'Lost connection') !== false;
-    }
-
-    /**
      * Executes a prepared statement.
      *
      * @throws PDOException
@@ -356,6 +335,27 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         $this->profiler?->end($rawSql, $queryContext);
 
         return $result;
+    }
+
+    /**
+     * Checks if the exception represents a connection error.
+     *
+     * Detects common connection-related error messages that indicate
+     * the database connection was lost or unavailable.
+     *
+     * @param Exception $e The exception to check
+     * @return bool True if the exception indicates a connection error
+     */
+    private function isConnectionError(Exception $e): bool
+    {
+        $message = $e->getMessage();
+
+        return str_contains($message, 'no connection')
+            || str_contains($message, 'General error: 7')
+            || str_contains($message, 'gone away')
+            || str_contains($message, 'Connection refused')
+            || str_contains($message, 'server has gone away')
+            || str_contains($message, 'Lost connection');
     }
 
     /**
