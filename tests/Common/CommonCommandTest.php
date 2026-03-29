@@ -1626,6 +1626,37 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $db->close();
     }
 
+    public function testIntegrityViolationOnForeignKey(): void
+    {
+        $db = $this->getSharedConnection();
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{test_int_child}}') !== null) {
+            $command->dropTable('{{test_int_child}}')->execute();
+        }
+        if ($schema->getTableSchema('{{test_int_parent}}') !== null) {
+            $command->dropTable('{{test_int_parent}}')->execute();
+        }
+
+        $command->createTable('{{test_int_parent}}', ['id' => 'integer not null unique'])->execute();
+        $command->createTable(
+            '{{test_int_child}}',
+            ['id' => 'integer not null unique', 'parent_id' => 'integer not null'],
+        )->execute();
+        $command->addForeignKey(
+            '{{test_int_child}}',
+            '{{test_int_fk}}',
+            'parent_id',
+            '{{test_int_parent}}',
+            'id',
+        )->execute();
+
+        $this->expectException(IntegrityException::class);
+
+        $command->insert('{{test_int_child}}', ['id' => 1, 'parent_id' => 999])->execute();
+    }
+
     public function testNoTablenameReplacement(): void
     {
         $db = $this->getSharedConnection();
