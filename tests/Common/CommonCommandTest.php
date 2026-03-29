@@ -1628,9 +1628,13 @@ abstract class CommonCommandTest extends IntegrationTestCase
 
     public function testIntegrityViolationOnForeignKey(): void
     {
-        $db = $this->getSharedConnection();
+        $db = $this->createConnection();
         $command = $db->createCommand();
         $schema = $db->getSchema();
+
+        if ($db->getDriverName() === 'sqlite') {
+            $db->createCommand('PRAGMA foreign_keys = ON')->execute();
+        }
 
         if ($schema->getTableSchema('{{test_int_child}}') !== null) {
             $command->dropTable('{{test_int_child}}')->execute();

@@ -18,6 +18,10 @@ final class ConvertException
 {
     private const MSG_CONNECTION_EXCEPTION = 'SQLSTATE[08';
     private const MSG_INTEGRITY_EXCEPTION = 'SQLSTATE[23';
+    private const MYSQL_RECONNECT_EXCEPTIONS = [
+        'SQLSTATE[HY000]: General error: 2006 ',
+        'SQLSTATE[HY000]: General error: 4031 ',
+    ];
     private const ORACLE_INTEGRITY_EXCEPTIONS = [
         'ORA-00001:',
         'ORA-01400:',
@@ -45,6 +49,7 @@ final class ConvertException
 
         if (
             str_contains($message, self::MSG_INTEGRITY_EXCEPTION)
+            || $this->isMysqlReconnectException($message)
             || $this->isOracleIntegrityException($message)
         ) {
             return new IntegrityException($message, $errorInfo, $this->e);
@@ -55,6 +60,17 @@ final class ConvertException
         }
 
         return new Exception($message, $errorInfo, $this->e);
+    }
+
+    private function isMysqlReconnectException(string $message): bool
+    {
+        foreach (self::MYSQL_RECONNECT_EXCEPTIONS as $mysqlReconnectException) {
+            if (str_contains($message, $mysqlReconnectException)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function isOracleIntegrityException(string $message): bool

@@ -78,6 +78,10 @@ final class ConvertExceptionTest extends TestCase
     public static function integrityExceptionMessages(): array
     {
         return [
+            'mysql server has gone away' => ['SQLSTATE[HY000]: General error: 2006 MySQL server has gone away'],
+            'mysql server disconnected inactive client' => [
+                'SQLSTATE[HY000]: General error: 4031 The client was disconnected by the server because of inactivity.',
+            ],
             'sqlstate class 23' => ['SQLSTATE[23000]: Integrity constraint violation: 19 UNIQUE constraint failed'],
             'oracle unique constraint' => ['ORA-00001: unique constraint (SYS.PK_ID) violated'],
             'oracle cannot insert null' => ['ORA-01400: cannot insert NULL into ("SYS"."PROFILE"."DESCRIPTION")'],

@@ -253,6 +253,23 @@ abstract class CommonPdoCommandTest extends IntegrationTestCase
         );
     }
 
+    public function testInternalExecuteKeepsMysqlReconnectExceptionAsIntegrityException(): void
+    {
+        $e = $this->executeCommandThrowingPdoException(
+            'SELECT 1',
+            'SQLSTATE[HY000]: General error: 2006 MySQL server has gone away',
+        );
+
+        $this->assertInstanceOf(IntegrityException::class, $e);
+        $this->assertInstanceOf(PDOException::class, $e->getPrevious());
+        $this->assertSame(
+            'SQLSTATE[HY000]: General error: 2006 MySQL server has gone away'
+            . PHP_EOL
+            . 'The SQL being executed was: SELECT 1',
+            $e->getMessage(),
+        );
+    }
+
     protected function createQueryLogger(string $sql, array $params = []): LoggerInterface
     {
         $logger = $this->createMock(LoggerInterface::class);
