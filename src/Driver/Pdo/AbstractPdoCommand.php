@@ -207,7 +207,8 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
                 $rawSql ??= $this->getRawSql();
                 $e = (new ConvertException($e, $rawSql))->run();
 
-                if ($this->retryHandler === null || !($this->retryHandler)($e, $attempt)) {
+                // ✨ Pass $this (CommandInterface) to retry handler
+                if ($this->retryHandler === null || !($this->retryHandler)($e, $attempt, $this)) {
                     throw $e;
                 }
             }

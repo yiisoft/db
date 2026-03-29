@@ -472,6 +472,30 @@ abstract class AbstractCommand implements CommandInterface
         return $this;
     }
 
+    /**
+     * Sets a closure (anonymous function) which called when a database exception is thrown when executing the command.
+     *
+     * The signature of the closure should be:
+     *
+     * ```php
+     * use Yiisoft\Db\Exception\Exception;
+     * use Yiisoft\Db\Command\CommandInterface;
+     *
+     * function (Exception $e, int $attempt, CommandInterface $command): bool
+     * {
+     *     // return true or false (whether to retry the command or throw $e)
+     * }
+     * ```
+     *
+     * The closure will receive an {@see Exception} converted from the thrown database exception,
+     * the current attempt to execute the command (starting from `0`), and the {@see CommandInterface}
+     * instance to allow access to connection and parameters.
+     *
+     * If the closure returns `true`, the command will be retried. If the closure returns `false`,
+     * the {@see Exception} will be thrown.
+     *
+     * @param Closure|null $handler A PHP callback to handle database exceptions.
+     */
     public function setRetryHandler(?Closure $handler): static
     {
         $this->retryHandler = $handler;
