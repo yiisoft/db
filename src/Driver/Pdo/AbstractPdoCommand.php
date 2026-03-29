@@ -195,6 +195,9 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     /**
      * A wrapper around {@see pdoStatementExecute()} to support transactions and retry handlers.
      *
+     * Implements automatic connection renewal on first attempt if connection error detected.
+     * Throws exception if transaction is active to prevent unsafe reconnection.
+     *
      * @throws Exception
      */
     protected function internalExecute(): void
@@ -207,12 +210,57 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
                 $rawSql ??= $this->getRawSql();
                 $e = (new ConvertException($e, $rawSql))->run();
 
-                // ✨ Pass $this (CommandInterface) to retry handler
-                if ($this->retryHandler === null || !($this->retryHandler)($e, $attempt, $this)) {
-                    throw $e;
+                // Custom retry handler takes precedence
+                if ($this->retryHandler !== null) {
+                    if (!($this->retryHandler)($e, $attempt, $this)) {
+                        throw $e;
+                    }
+                    continue;
                 }
+
+                // Default behavior: attempt to renew connection on first failure
+                if ($attempt === 0 && $this->isConnectionError($e)) {
+                    // Prevent reconnection during active transaction
+                    if ($this->db->getTransaction() !== null) {
+                        throw $e;
+                    }
+
+                    // Try to renew connection
+                    try {
+                        $this->db->close();
+                        $this->db->open();
+                        $this->pdoStatement = null; // Reset statement for re-preparation
+                        continue; // Retry the command
+                    } catch (Throwable) {
+                        // If reconnection fails, throw original error
+                        throw $e;
+                    }
+                }
+
+                throw $e;
             }
         }
+    }
+
+    /**
+     * Checks if the exception represents a connection error.
+     *
+     * Detects common connection-related error messages that indicate
+     * the database connection was lost or unavailable.
+     *
+     * @param Exception $e The exception to check
+     * @return bool True if the exception indicates a connection error
+     */
+    private function isConnectionError(Exception $e): bool
+    {
+        $message = $e->getMessage();
+
+        return strpos($message, 'no connection') !== false
+            || strpos($message, 'General error: 7') !== false
+            || strpos($message, 'gone away') !== false
+            || strpos($message, 'Connection refused') !== false
+            || strpos($message, 'server has gone away') !== false
+            || strpos($message, 'Lost connection') !== false;
     }
 
     /**
