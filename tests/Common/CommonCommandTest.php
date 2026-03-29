@@ -1642,14 +1642,11 @@ abstract class CommonCommandTest extends IntegrationTestCase
         $command->createTable('{{test_int_parent}}', ['id' => 'integer not null unique'])->execute();
         $command->createTable(
             '{{test_int_child}}',
-            ['id' => 'integer not null unique', 'parent_id' => 'integer not null'],
-        )->execute();
-        $command->addForeignKey(
-            '{{test_int_child}}',
-            '{{test_int_fk}}',
-            'parent_id',
-            '{{test_int_parent}}',
-            'id',
+            [
+                'id' => 'integer not null unique',
+                'parent_id' => 'integer not null',
+                'CONSTRAINT [[test_int_fk]] FOREIGN KEY ([[parent_id]]) REFERENCES {{test_int_parent}} ([[id]])',
+            ],
         )->execute();
 
         $this->expectException(IntegrityException::class);
