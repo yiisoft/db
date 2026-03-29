@@ -5,15 +5,21 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use PDO;
+use PDOException;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Yiisoft\Db\Exception\ConnectionException;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Expression\Value\Param;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Provider\CommandPdoProvider;
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
+
+use const PHP_EOL;
 
 abstract class CommonPdoCommandTest extends IntegrationTestCase
 {
@@ -213,6 +219,40 @@ abstract class CommonPdoCommandTest extends IntegrationTestCase
         $command->testExecute();
     }
 
+    public function testInternalExecuteConvertsConnectionException(): void
+    {
+        $e = $this->executeCommandThrowingPdoException(
+            'SELECT 1',
+            'SQLSTATE[08006]: Connection failure: 7 no connection to the server',
+        );
+
+        $this->assertInstanceOf(ConnectionException::class, $e);
+        $this->assertInstanceOf(PDOException::class, $e->getPrevious());
+        $this->assertSame(
+            'SQLSTATE[08006]: Connection failure: 7 no connection to the server'
+            . PHP_EOL
+            . 'The SQL being executed was: SELECT 1',
+            $e->getMessage(),
+        );
+    }
+
+    public function testInternalExecuteConvertsOracleIntegrityException(): void
+    {
+        $e = $this->executeCommandThrowingPdoException(
+            'INSERT INTO test',
+            'ORA-02291: integrity constraint (SYS.FK_PROFILE_CUSTOMER) violated - parent key not found',
+        );
+
+        $this->assertInstanceOf(IntegrityException::class, $e);
+        $this->assertInstanceOf(PDOException::class, $e->getPrevious());
+        $this->assertSame(
+            'ORA-02291: integrity constraint (SYS.FK_PROFILE_CUSTOMER) violated - parent key not found'
+            . PHP_EOL
+            . 'The SQL being executed was: INSERT INTO test',
+            $e->getMessage(),
+        );
+    }
+
     protected function createQueryLogger(string $sql, array $params = []): LoggerInterface
     {
         $logger = $this->createMock(LoggerInterface::class);
@@ -225,5 +265,35 @@ abstract class CommonPdoCommandTest extends IntegrationTestCase
                 $params + ['type' => 'query'],
             );
         return $logger;
+    }
+
+    private function executeCommandThrowingPdoException(string $sql, string $message): Exception
+    {
+        $command = new class ($this->getSharedConnection(), $message) extends AbstractPdoCommand {
+            public function __construct($db, private string $message)
+            {
+                parent::__construct($db);
+            }
+
+            public function testExecute(): void
+            {
+                $this->internalExecute();
+            }
+
+            protected function pdoStatementExecute(): void
+            {
+                throw new PDOException($this->message);
+            }
+        };
+
+        $command->setSql($sql);
+
+        try {
+            $command->testExecute();
+        } catch (Exception $e) {
+            return $e;
+        }
+
+        $this->fail();
     }
 }
