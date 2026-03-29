@@ -275,6 +275,11 @@ abstract class CommonPdoCommandTest extends IntegrationTestCase
                 parent::__construct($db);
             }
 
+            public function showDatabases(): array
+            {
+                return $this->showDatabases();
+            }
+
             public function testExecute(): void
             {
                 $this->internalExecute();
