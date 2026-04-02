@@ -1,6 +1,467 @@
-// Updated implementation in AbstractPdoCommand.php to support retries with bindParam storage.
+<?php
 
-// Your existing PHP code goes here, modify as needed to integrate the bindParam storage logic
+declare(strict_types=1);
 
-// Example:
-// $this->bindParam(...) // some implementation related to retries
+namespace Yiisoft\Db\Driver\Pdo;
+
+use InvalidArgumentException;
+use PDO;
+use PDOException;
+use PDOStatement;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LogLevel;
+use Throwable;
+use Yiisoft\Db\Command\AbstractCommand;
+use Yiisoft\Db\Expression\Value\Param;
+use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Exception\ConvertException;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Profiler\Context\CommandContext;
+use Yiisoft\Db\Profiler\ProfilerAwareInterface;
+use Yiisoft\Db\Profiler\ProfilerAwareTrait;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
+
+use function array_keys;
+use function array_map;
+
+/**
+ * Represents a database command that can be executed using a PDO (PHP Data Object) database connection.
+ *
+ * It's an abstract class that provides a common interface for building and executing various types of statements
+ * such as {@see cancel()}, {@see execute()}, {@see insert()}, {@see update()}, {@see delete()}, etc., using a PDO
+ * connection.
+ *
+ * It also provides methods for binding parameter values and retrieving query results.
+ */
+abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandInterface, LoggerAwareInterface, ProfilerAwareInterface
+{
+    use LoggerAwareTrait;
+    use ProfilerAwareTrait;
+
+    /**
+     * @var PdoConnectionInterface
+     */
+    protected readonly ConnectionInterface $db;
+
+    /**
+     * @var PDOStatement|null Represents a prepared statement and, after the statement is executed, an associated
+     * result set.
+     *
+     * @link https://www.php.net/manual/en/class.pdostatement.php
+     */
+    protected ?PDOStatement $pdoStatement = null;
+
+    /**
+     * @var array<int|string, array{value: mixed, type: int, length: int|null, driverOptions: mixed}>
+     * Parameters bound via {@see bindParam()} stored by reference for re-binding after statement re-preparation
+     * (e.g., on reconnect).
+     */
+    protected array $pendingBoundParams = [];
+
+    /**
+     * @param PdoConnectionInterface $db The PDO database connection to use.
+     */
+    public function __construct(PdoConnectionInterface $db)
+    {
+        parent::__construct($db);
+    }
+
+    /**
+     * This method mainly sets {@see PDOStatement} to be `null`.
+     */
+    public function cancel(): void
+    {
+        $this->pdoStatement = null;
+    }
+
+    public function getPdoStatement(): ?PDOStatement
+    {
+        return $this->pdoStatement;
+    }
+
+    public function bindParam(
+        int|string $name,
+        mixed &$value,
+        ?int $dataType = null,
+        ?int $length = null,
+        mixed $driverOptions = null,
+    ): static {
+        $this->prepare();
+
+        if ($dataType === null) {
+            $dataType = $this->db->getSchema()->getDataType($value);
+        }
+
+        // Save the binding by reference so it can be re-applied after statement re-preparation (e.g., on reconnect).
+        $entry = ['type' => $dataType, 'length' => $length, 'driverOptions' => $driverOptions, 'value' => null];
+        $entry['value'] = &$value;
+        $this->pendingBoundParams[$name] = $entry;
+
+        if ($length === null) {
+            $this->pdoStatement?->bindParam($name, $value, $dataType);
+        } elseif ($driverOptions === null) {
+            $this->pdoStatement?->bindParam($name, $value, $dataType, $length);
+        } else {
+            $this->pdoStatement?->bindParam($name, $value, $dataType, $length, $driverOptions);
+        }
+
+        return $this;
+    }
+
+    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static
+    {
+        if ($dataType === null) {
+            $dataType = $this->db->getSchema()->getDataType($value);
+        }
+
+        $this->params[$name] = new Param($value, $dataType);
+
+        return $this;
+    }
+
+    public function bindValues(array $values): static
+    {
+        if (empty($values)) {
+            return $this;
+        }
+
+        /**
+         * @psalm-var array<string, int>|Param|int $value
+         */
+        foreach ($values as $name => $value) {
+            if ($value instanceof Param) {
+                $this->params[$name] = $value;
+            } else {
+                $type = $this->db->getSchema()->getDataType($value);
+                $this->params[$name] = new Param($value, $type);
+            }
+        }
+
+        return $this;
+    }
+
+    public function prepare(?bool $forRead = null): void
+    {
+        if (isset($this->pdoStatement)) {
+            $this->bindPendingParams();
+
+            return;
+        }
+
+        $sql = $this->getSql();
+
+        /**
+         * If SQL is empty, there will be {@see \ValueError} on prepare pdoStatement.
+         *
+         * @link https://php.watch/versions/8.0/ValueError
+         */
+        if ($sql === '') {
+            return;
+        }
+
+        $pdo = $this->db->getActivePdo();
+
+        try {
+            $this->pdoStatement = $pdo->prepare($sql);
+            $this->bindPendingParams();
+            $this->rebindBoundParams();
+        } catch (PDOException $e) {
+            $message = $e->getMessage() . "\nFailed to prepare SQL: $sql";
+            $errorInfo = $e->errorInfo ?? null;
+
+            throw new Exception($message, $errorInfo, $e);
+        }
+    }
+
+    /**
+     * Binds pending parameters registered via {@see bindValue()} and {@see bindValues()}.
+     *
+     * Note that this method requires an active {@see PDOStatement}.
+     */
+    protected function bindPendingParams(): void
+    {
+        foreach ($this->params as $name => $value) {
+            $this->pdoStatement?->bindValue($name, $value->value, $value->type);
+        }
+    }
+
+    /**
+     * Re-binds parameters registered via {@see bindParam()} to the current {@see PDOStatement}.
+     *
+     * Called after statement re-preparation (e.g., after reconnect) to restore by-reference bindings.
+     */
+    protected function rebindBoundParams(): void
+    {
+        foreach ($this->pendingBoundParams as $name => &$entry) {
+            $value = &$entry['value'];
+
+            if ($entry['length'] === null) {
+                $this->pdoStatement?->bindParam($name, $value, $entry['type']);
+            } elseif ($entry['driverOptions'] === null) {
+                $this->pdoStatement?->bindParam($name, $value, $entry['type'], $entry['length']);
+            } else {
+                $this->pdoStatement?->bindParam($name, $value, $entry['type'], $entry['length'], $entry['driverOptions']);
+            }
+
+            unset($value);
+        }
+        unset($entry);
+    }
+
+    protected function reset(): void
+    {
+        parent::reset();
+        $this->pendingBoundParams = [];
+    }
+
+    protected function getQueryBuilder(): QueryBuilderInterface
+    {
+        return $this->db->getQueryBuilder()->withTypecasting($this->dbTypecasting);
+    }
+
+    protected function getQueryMode(int $queryMode): string
+    {
+        return match ($queryMode) {
+            self::QUERY_MODE_EXECUTE => 'execute',
+            self::QUERY_MODE_ROW => 'queryOne',
+            self::QUERY_MODE_ALL => 'queryAll',
+            self::QUERY_MODE_COLUMN => 'queryColumn',
+            self::QUERY_MODE_CURSOR => 'query',
+            self::QUERY_MODE_SCALAR => 'queryScalar',
+            self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE => 'insertReturningPks',
+        };
+    }
+
+    /**
+     * A wrapper around {@see pdoStatementExecute()} to support transactions and retry handlers.
+     *
+     * Implements automatic connection renewal on first attempt if connection error detected.
+     * Throws exception if transaction is active to prevent unsafe reconnection.
+     *
+     * @throws Exception
+     */
+    protected function internalExecute(): void
+    {
+        for ($attempt = 0; ; ++$attempt) {
+            try {
+                $this->pdoStatementExecute();
+                break;
+            } catch (PDOException $e) {
+                $rawSql ??= $this->getRawSql();
+                $e = (new ConvertException($e, $rawSql))->run();
+
+                // Custom retry handler takes precedence
+                if ($this->retryHandler !== null) {
+                    if (!($this->retryHandler)($e, $attempt, $this)) {
+                        throw $e;
+                    }
+                    continue;
+                }
+
+                // Default behavior: attempt to renew connection on first failure
+                if ($attempt === 0 && $this->isConnectionError($e)) {
+                    // Prevent reconnection during active transaction
+                    if ($this->db->getTransaction() !== null) {
+                        throw $e;
+                    }
+
+                    // Try to renew connection
+                    try {
+                        $this->db->close();
+                        $this->db->open();
+                        $this->pdoStatement = null;
+                    } catch (Throwable) {
+                        // If reconnection fails, throw original error
+                        throw $e;
+                    }
+
+                    // Re-prepare the statement against the new connection, restoring all parameter bindings.
+                    $this->prepare();
+                    continue; // Retry the command
+                }
+
+                throw $e;
+            }
+        }
+    }
+
+    /**
+     * Executes a prepared statement.
+     *
+     * @throws PDOException
+     */
+    protected function pdoStatementExecute(): void
+    {
+        $this->pdoStatement?->execute();
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    protected function internalGetQueryResult(int $queryMode): mixed
+    {
+        if ($queryMode === self::QUERY_MODE_CURSOR) {
+            /** @psalm-suppress PossiblyNullArgument */
+            $dataReader = new PdoDataReader($this->pdoStatement);
+
+            if ($this->phpTypecasting && ($row = $dataReader->current()) !== false) {
+                /** @psalm-var array<string,mixed> $row */
+                $dataReader->typecastColumns($this->getResultColumns(array_keys($row)));
+            }
+
+            return $dataReader;
+        }
+
+        if ($queryMode === self::QUERY_MODE_EXECUTE) {
+            return $this->pdoStatement?->rowCount() ?? 0;
+        }
+
+        if ($this->is($queryMode, self::QUERY_MODE_ROW)) {
+            /** @psalm-var array<string,mixed>|false $result */
+            $result = $this->pdoStatement?->fetch(PDO::FETCH_ASSOC);
+
+            if ($this->phpTypecasting && $result !== false) {
+                $result = $this->phpTypecastRows([$result])[0];
+            }
+        } elseif ($this->is($queryMode, self::QUERY_MODE_SCALAR)) {
+            $result = $this->pdoStatement?->fetchColumn();
+
+            if (
+                $this->phpTypecasting
+                && $result !== false
+                && ($column = $this->getResultColumn(0)) !== null
+            ) {
+                $result = $column->phpTypecast($result);
+            }
+        } elseif ($this->is($queryMode, self::QUERY_MODE_COLUMN)) {
+            $result = $this->pdoStatement?->fetchAll(PDO::FETCH_COLUMN);
+
+            if (
+                $this->phpTypecasting
+                && !empty($result)
+                && ($column = $this->getResultColumn(0)) !== null
+            ) {
+                $result = array_map($column->phpTypecast(...), $result);
+            }
+        } elseif ($this->is($queryMode, self::QUERY_MODE_ALL)) {
+            $result = $this->pdoStatement?->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($this->phpTypecasting && !empty($result)) {
+                $result = $this->phpTypecastRows($result);
+            }
+        } else {
+            throw new InvalidArgumentException("Unknown query mode '$queryMode'");
+        }
+
+        $this->pdoStatement?->closeCursor();
+
+        return $result;
+    }
+
+    protected function queryInternal(int $queryMode): mixed
+    {
+        $logCategory = self::class . '::' . $this->getQueryMode($queryMode);
+
+        $this->logger?->log(LogLevel::INFO, $rawSql = $this->getRawSql(), [$logCategory, 'type' => LogType::QUERY]);
+
+        $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
+
+        /** @var string|null $rawSql */
+        $this->profiler?->begin($rawSql ??= $this->getRawSql(), $queryContext);
+        /** @var string $rawSql */
+        try {
+            $result = parent::queryInternal($queryMode);
+        } catch (Throwable $e) {
+            $this->profiler?->end($rawSql, $queryContext->setException($e));
+            throw $e;
+        }
+        $this->profiler?->end($rawSql, $queryContext);
+
+        return $result;
+    }
+
+    /**
+     * Checks if the exception represents a connection error.
+     *
+     * Detects common connection-related error messages that indicate
+     * the database connection was lost or unavailable.
+     *
+     * @param Exception $e The exception to check
+     * @return bool True if the exception indicates a connection error
+     */
+    private function isConnectionError(Exception $e): bool
+    {
+        $message = $e->getMessage();
+
+        return str_contains($message, 'no connection')
+            || str_contains($message, 'General error: 7')
+            || str_contains($message, 'gone away')
+            || str_contains($message, 'Connection refused')
+            || str_contains($message, 'server has gone away')
+            || str_contains($message, 'Lost connection');
+    }
+
+    /**
+     * Returns the column instance from the query result by the index, or `null` if the column type cannot be determined.
+     */
+    private function getResultColumn(int $index): ?ColumnInterface
+    {
+        $metadata = $this->pdoStatement?->getColumnMeta($index);
+
+        if (empty($metadata)) {
+            return null;
+        }
+
+        return $this->db->getSchema()->getResultColumn($metadata);
+    }
+
+    /**
+     * Returns column instances with keys from the query result.
+     *
+     * @return ColumnInterface[]
+     *
+     * @psalm-param list<string> $keys
+     * @psalm-return array<string, ColumnInterface>
+     */
+    private function getResultColumns(array $keys): array
+    {
+        $columns = [];
+
+        foreach ($keys as $i => $key) {
+            $column = $this->getResultColumn($i);
+
+            if ($column !== null) {
+                $columns[$key] = $column;
+            }
+        }
+
+        return $columns;
+    }
+
+    /**
+     * Typecasts rows from the query result to PHP types according to the column types.
+     *
+     * @param array[] $rows
+     *
+     * @psalm-param array<array<string,mixed>> $rows
+     */
+    private function phpTypecastRows(array $rows): array
+    {
+        $keys = array_keys($rows[0]);
+        $columns = $this->getResultColumns($keys);
+
+        if (empty($columns)) {
+            return $rows;
+        }
+
+        foreach ($rows as &$row) {
+            foreach ($columns as $key => $column) {
+                $row[$key] = $column->phpTypecast($row[$key]);
+            }
+        }
+
+        return $rows;
+    }
+}

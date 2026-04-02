@@ -453,6 +453,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql);
     }
 
+
     public function setRawSql(string $sql): static
     {
         if ($sql !== $this->sql) {
@@ -473,7 +474,7 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Sets a closure (anonymous function) which is called when a database exception is thrown when executing the command.
+     * Sets a closure (anonymous function) that is called when a database exception is thrown when executing the command.
      *
      * The signature of the closure should be:
      *
@@ -489,7 +490,7 @@ abstract class AbstractCommand implements CommandInterface
      *
      * The closure will receive an {@see Exception} converted from the thrown database exception,
      * the current attempt to execute the command (starting from `0`), and the {@see CommandInterface}
-     * instance to allow access to the command's parameters and other state exposed by the interface.
+     * instance.
      *
      * If the closure returns `true`, the command will be retried. If the closure returns `false`,
      * the {@see Exception} will be thrown.
