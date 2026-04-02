@@ -18,7 +18,6 @@ final class ConvertException
 {
     private const MSG_INTEGRITY_EXCEPTION_1 = 'SQLSTATE[23';
     private const MGS_INTEGRITY_EXCEPTION_2 = 'ORA-00001: unique constraint';
-    private const MSG_INTEGRITY_EXCEPTION_3 = 'SQLSTATE[HY';
 
     public function __construct(
         private readonly \Exception $e,
@@ -36,13 +35,31 @@ final class ConvertException
 
         $errorInfo = $this->e instanceof PDOException ? $this->e->errorInfo : null;
 
-        return match (
-            str_contains($message, self::MSG_INTEGRITY_EXCEPTION_1)
+        $isIntegrity = str_contains($message, self::MSG_INTEGRITY_EXCEPTION_1)
             || str_contains($message, self::MGS_INTEGRITY_EXCEPTION_2)
-            || str_contains($message, self::MSG_INTEGRITY_EXCEPTION_3)
-        ) {
+            || $this->isIntegrityConstraintViolation($errorInfo);
+
+        return match ($isIntegrity) {
             true => new IntegrityException($message, $errorInfo, $this->e),
             default => new Exception($message, $errorInfo, $this->e),
         };
+    }
+
+    /**
+     * Checks if the error is an integrity constraint violation using SQLSTATE code.
+     *
+     * SQLSTATE class 23 covers all integrity constraint violations across DBMS.
+     * The previous SQLSTATE[HY match was too broad (HY = CLI-specific condition class)
+     * and could cause false positives.
+     *
+     * @param array|null $errorInfo PDO error info array [SQLSTATE, driver code, message]
+     */
+    private function isIntegrityConstraintViolation(?array $errorInfo): bool
+    {
+        if ($errorInfo === null || !isset($errorInfo[0])) {
+            return false;
+        }
+
+        return str_starts_with((string) $errorInfo[0], '23');
     }
 }
