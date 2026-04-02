@@ -553,7 +553,6 @@ interface CommandInterface
      */
     public function getParams(bool $asValues = true): array;
 
-
     /**
      * Returns the raw SQL by inserting parameter values into the corresponding placeholders in {@see getSql()}.
      *

@@ -13,21 +13,10 @@ use Yiisoft\Db\Tests\Support\Stub\StubConnection;
 use Yiisoft\Db\Tests\Support\Stub\StubPdoDriver;
 use Yiisoft\Test\Support\SimpleCache\MemorySimpleCache;
 
+use function is_callable;
+
 class AbstractPdoCommandRetryHandlerTest extends TestCase
 {
-    private function createConnectionWithTable(): StubConnection
-    {
-        $db = new StubConnection(
-            new StubPdoDriver('sqlite::memory:'),
-            new SchemaCache(new MemorySimpleCache()),
-        );
-        $db->open();
-        $pdo = $db->getActivePdo();
-        $pdo->exec('CREATE TABLE test (id INTEGER PRIMARY KEY)');
-
-        return $db;
-    }
-
     /**
      * Test that custom retry handler receives CommandInterface parameter.
      */
@@ -125,5 +114,18 @@ class AbstractPdoCommandRetryHandlerTest extends TestCase
         $this->assertArrayHasKey(':name', $params);
         $this->assertEquals(42, $params[':id']);
         $this->assertEquals('test', $params[':name']);
+    }
+
+    private function createConnectionWithTable(): StubConnection
+    {
+        $db = new StubConnection(
+            new StubPdoDriver('sqlite::memory:'),
+            new SchemaCache(new MemorySimpleCache()),
+        );
+        $db->open();
+        $pdo = $db->getActivePdo();
+        $pdo->exec('CREATE TABLE test (id INTEGER PRIMARY KEY)');
+
+        return $db;
     }
 }
