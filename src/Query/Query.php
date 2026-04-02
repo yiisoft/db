@@ -833,24 +833,13 @@ class Query implements QueryInterface
             && empty($this->having)
             && empty($this->union)
         ) {
-            $select = $this->select;
-            $order = $this->orderBy;
-            $limit = $this->limit;
-            $offset = $this->offset;
+            $query = clone $this;
+            $query->select = [$selectExpression];
+            $query->orderBy = [];
+            $query->limit = null;
+            $query->offset = null;
 
-            $this->select = [$selectExpression];
-            $this->orderBy = [];
-            $this->limit = null;
-            $this->offset = null;
-
-            $command = $this->createCommand();
-
-            $this->select = $select;
-            $this->orderBy = $order;
-            $this->limit = $limit;
-            $this->offset = $offset;
-
-            return $command->queryScalar();
+            return $query->createCommand()->queryScalar();
         }
 
         $query = (new self($this->db))->select($selectExpression)->from(['c' => $this]);
