@@ -793,6 +793,7 @@ interface CommandInterface
      * the {@see Exception} will be thrown.
      *
      * @param Closure|null $handler A PHP callback to handle database exceptions.
+     * @psalm-param Closure(Exception, int, CommandInterface): bool|null $handler
      */
     public function setRetryHandler(?Closure $handler): static;
 
