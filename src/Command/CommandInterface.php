@@ -787,7 +787,7 @@ interface CommandInterface
      *
      * The closure will receive an {@see Exception} converted from the thrown database exception,
      * the current attempt to execute the command (starting from `0`), and the {@see CommandInterface}
-     * instance.
+     * instance to allow access to the command and its parameters for custom retry logic.
      *
      * If the closure returns `true`, the command will be retried. If the closure returns `false`,
      * the {@see Exception} will be thrown.
