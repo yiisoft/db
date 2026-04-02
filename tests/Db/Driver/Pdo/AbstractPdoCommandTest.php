@@ -21,32 +21,6 @@ use Yiisoft\Test\Support\SimpleCache\MemorySimpleCache;
  */
 final class AbstractPdoCommandTest extends TestCase
 {
-    private function createConnection(): StubConnection
-    {
-        return new StubConnection(
-            new StubPdoDriver('sqlite::memory:'),
-            new SchemaCache(new MemorySimpleCache()),
-        );
-    }
-
-    private function createConnectionWithTable(): StubConnection
-    {
-        $db = $this->createConnection();
-        $db->open();
-        $pdo = $db->getActivePdo();
-        $pdo->exec('CREATE TABLE test (id INTEGER PRIMARY KEY, name TEXT)');
-        $pdo->exec("INSERT INTO test VALUES (1, 'Alice')");
-        $pdo->exec("INSERT INTO test VALUES (2, 'Bob')");
-
-        return $db;
-    }
-
-    private function makeCommand(StubConnection $db, int $failuresBeforeSuccess = 0): ExecutingCommand
-    {
-        return new ExecutingCommand($db, $failuresBeforeSuccess);
-    }
-
-
     // -- bindParam: saving and re-binding after cancel() ------------------
 
     public function testBindParamSurvivesCancel(): void
@@ -167,7 +141,6 @@ final class AbstractPdoCommandTest extends TestCase
         }
     }
 
-
     public function testCustomRetryHandlerRetriesAndSucceeds(): void
     {
         $db = $this->createConnectionWithTable();
@@ -215,5 +188,29 @@ final class AbstractPdoCommandTest extends TestCase
             $this->assertTrue($hitHandler, 'Legacy 2-arg handler should have been invoked');
         }
     }
-}
 
+    private function createConnection(): StubConnection
+    {
+        return new StubConnection(
+            new StubPdoDriver('sqlite::memory:'),
+            new SchemaCache(new MemorySimpleCache()),
+        );
+    }
+
+    private function createConnectionWithTable(): StubConnection
+    {
+        $db = $this->createConnection();
+        $db->open();
+        $pdo = $db->getActivePdo();
+        $pdo->exec('CREATE TABLE test (id INTEGER PRIMARY KEY, name TEXT)');
+        $pdo->exec("INSERT INTO test VALUES (1, 'Alice')");
+        $pdo->exec("INSERT INTO test VALUES (2, 'Bob')");
+
+        return $db;
+    }
+
+    private function makeCommand(StubConnection $db, int $failuresBeforeSuccess = 0): ExecutingCommand
+    {
+        return new ExecutingCommand($db, $failuresBeforeSuccess);
+    }
+}

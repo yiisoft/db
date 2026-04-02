@@ -453,7 +453,6 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql);
     }
 
-
     public function setRawSql(string $sql): static
     {
         if ($sql !== $this->sql) {
