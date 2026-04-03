@@ -166,7 +166,6 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         try {
             $this->pdoStatement = $pdo->prepare($sql);
             $this->bindPendingParams();
-            $this->rebindBoundParams();
         } catch (PDOException $e) {
             $message = $e->getMessage() . "\nFailed to prepare SQL: $sql";
             $errorInfo = $e->errorInfo ?? null;
@@ -176,7 +175,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     }
 
     /**
-     * Binds pending parameters registered via {@see bindValue()} and {@see bindValues()}.
+     * Binds pending parameters registered via {@see bindValue()}, {@see bindValues()} and {@see bindParam()}.
      *
      * Note that this method requires an active {@see PDOStatement}.
      */
@@ -185,15 +184,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         foreach ($this->params as $name => $value) {
             $this->pdoStatement?->bindValue($name, $value->value, $value->type);
         }
-    }
 
-    /**
-     * Re-binds parameters registered via {@see bindParam()} to the current {@see PDOStatement}.
-     *
-     * Called after statement re-preparation (e.g., after reconnect) to restore by-reference bindings.
-     */
-    protected function rebindBoundParams(): void
-    {
         foreach ($this->pendingBoundParams as $name => &$entry) {
             $value = &$entry['value'];
 
