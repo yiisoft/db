@@ -53,6 +53,44 @@ final class AbstractPdoCommandTest extends TestCase
         $this->assertSame('Bob', $command->queryScalar());
     }
 
+    /**
+     * pendingBoundParams must NOT be cleared after execution —
+     * the reference binding must survive repeated calls without explicit cancel().
+     */
+    public function testBindParamReferenceTrackedAcrossExecutionsWithoutCancel(): void
+    {
+        $db = $this->createConnectionWithTable();
+        $command = $this->makeCommand($db);
+
+        $id = 1;
+        $command->setSql('SELECT name FROM test WHERE id = :id');
+        $command->bindParam(':id', $id);
+
+        $this->assertSame('Alice', $command->queryScalar()); // first execution
+
+        $id = 2;
+        $this->assertSame('Bob', $command->queryScalar()); // second execution, no cancel()
+    }
+
+    /**
+     * After a reconnect, pendingBoundParams must be re-applied to the fresh PDOStatement.
+     * Uses "SELECT :val" which works on any empty SQLite connection (no test table required).
+     */
+    public function testBindParamBindingRestoredAfterReconnect(): void
+    {
+        $db = $this->createConnectionWithTable();
+        $command = $this->makeCommand($db, failuresBeforeSuccess: 1);
+
+        $val = 42;
+        $command->setSql('SELECT :val');
+        $command->bindParam(':val', $val, PDO::PARAM_INT);
+
+        $result = $command->queryScalar();
+
+        $this->assertSame('42', (string) $result);
+        $this->assertSame(2, $command->getExecuteCallCount());
+    }
+
     public function testBindParamWithLengthSurvivesCancel(): void
     {
         $db = $this->createConnectionWithTable();
