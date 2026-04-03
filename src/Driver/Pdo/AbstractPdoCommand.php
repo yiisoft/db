@@ -349,27 +349,6 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     }
 
     /**
-     * Checks if the exception represents a connection error.
-     *
-     * Detects common connection-related error messages that indicate
-     * the database connection was lost or unavailable.
-     *
-     * @param Exception $e The exception to check
-     * @return bool True if the exception indicates a connection error
-     */
-    private function isConnectionError(Exception $e): bool
-    {
-        $message = $e->getMessage();
-
-        return str_contains($message, 'no connection')
-            || str_contains($message, 'General error: 7')
-            || str_contains($message, 'gone away')
-            || str_contains($message, 'Connection refused')
-            || str_contains($message, 'server has gone away')
-            || str_contains($message, 'Lost connection');
-    }
-
-    /**
      * Returns the column instance from the query result by the index, or `null` if the column type cannot be determined.
      */
     private function getResultColumn(int $index): ?ColumnInterface
