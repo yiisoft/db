@@ -96,8 +96,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         }
 
         // Save the binding by reference so it can be re-applied after statement re-preparation (e.g., on reconnect).
-        $entry = ['type' => $dataType, 'length' => $length, 'driverOptions' => $driverOptions, 'value' => null];
-        $entry['value'] = &$value;
+        $entry = ['value' => &$value, 'dataType' => $dataType, 'length' => $length, 'driverOptions' => $driverOptions];
         $this->pendingBoundParams[$name] = $entry;
 
         if ($length === null) {
