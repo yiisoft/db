@@ -66,6 +66,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     public function __construct(PdoConnectionInterface $db)
     {
         parent::__construct($db);
+        $this->retryHandler = (new ConnectionRecoveryHandler($db))->asClosure();
     }
 
     /**
@@ -228,8 +229,8 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     /**
      * A wrapper around {@see pdoStatementExecute()} to support transactions and retry handlers.
      *
-     * Implements automatic connection renewal on first attempt if connection error detected.
-     * Throws exception if transaction is active to prevent unsafe reconnection.
+     * By default uses {@see ConnectionRecoveryHandler} to automatically recover from connection errors on the first
+     * attempt. Override via {@see setRetryHandler()} to customize retry behavior.
      *
      * @throws Exception
      */
@@ -243,35 +244,10 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
                 $rawSql ??= $this->getRawSql();
                 $e = (new ConvertException($e, $rawSql))->run();
 
-                // Custom retry handler takes precedence
-                if ($this->retryHandler !== null) {
-                    if (!($this->retryHandler)($e, $attempt, $this)) {
-                        throw $e;
-                    }
+                if ($this->retryHandler !== null && ($this->retryHandler)($e, $attempt, $this)) {
                     continue;
                 }
 
-                // Default behavior: attempt to renew connection on first failure
-                if ($attempt === 0 && $this->isConnectionError($e)) {
-                    // Prevent reconnection during active transaction
-                    if ($this->db->getTransaction() !== null) {
-                        throw $e;
-                    }
-
-                    // Try to renew connection
-                    try {
-                        $this->db->close();
-                        $this->db->open();
-                        $this->pdoStatement = null;
-                    } catch (Throwable) {
-                        // If reconnection fails, throw original error
-                        throw $e;
-                    }
-
-                    // Re-prepare the statement against the new connection, restoring all parameter bindings.
-                    $this->prepare();
-                    continue; // Retry the command
-                }
 
                 throw $e;
             }
