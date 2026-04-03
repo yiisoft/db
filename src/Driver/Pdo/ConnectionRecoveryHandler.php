@@ -29,14 +29,6 @@ final class ConnectionRecoveryHandler
 {
     public function __construct(private readonly PdoConnectionInterface $db) {}
 
-    /**
-     * @psalm-return RetryHandlerClosure
-     */
-    public function asClosure(): Closure
-    {
-        return $this->__invoke(...);
-    }
-
     public function __invoke(Exception $e, int $attempt, CommandInterface $command): bool
     {
         // Only attempt recovery on the first failure.
@@ -62,5 +54,13 @@ final class ConnectionRecoveryHandler
         $command->prepare();
 
         return true;
+    }
+
+    /**
+     * @psalm-return RetryHandlerClosure
+     */
+    public function asClosure(): Closure
+    {
+        return $this->__invoke(...);
     }
 }
