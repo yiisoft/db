@@ -89,23 +89,16 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         ?int $length = null,
         mixed $driverOptions = null,
     ): static {
-        $this->prepare();
-
         if ($dataType === null) {
             $dataType = $this->db->getSchema()->getDataType($value);
         }
 
-        // Save the binding by reference so it can be re-applied after statement re-preparation (e.g., on reconnect).
-        $entry = ['value' => &$value, 'dataType' => $dataType, 'length' => $length, 'driverOptions' => $driverOptions];
-        $this->pendingBoundParams[$name] = $entry;
-
-        if ($length === null) {
-            $this->pdoStatement?->bindParam($name, $value, $dataType);
-        } elseif ($driverOptions === null) {
-            $this->pdoStatement?->bindParam($name, $value, $dataType, $length);
-        } else {
-            $this->pdoStatement?->bindParam($name, $value, $dataType, $length, $driverOptions);
-        }
+        $this->pendingBoundParams[$name] = [
+            'type' => $dataType,
+            'length' => $length,
+            'driverOptions' => $driverOptions,
+            'value' => &$value,
+        ];
 
         return $this;
     }
