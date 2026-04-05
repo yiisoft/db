@@ -49,6 +49,8 @@ jobs:
             mariadb: latest
 
     uses: yiisoft/actions/.github/workflows/db-mariadb.yml@master
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:
       mariadb: ${{ matrix.mariadb }}
       php: >-

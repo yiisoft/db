@@ -25,3 +25,5 @@ jobs:
     name: SQLite latest
 
     uses: yiisoft/actions/.github/workflows/db-sqlite.yml@master
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

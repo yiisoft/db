@@ -52,6 +52,8 @@ jobs:
             pgsql: 18
 
     uses: yiisoft/actions/.github/workflows/db-pgsql.yml@master
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:
       pgsql: ${{ matrix.pgsql }}
       php: >-

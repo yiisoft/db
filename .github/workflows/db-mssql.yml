@@ -41,6 +41,8 @@ jobs:
             mssql: 2019-latest
 
     uses: yiisoft/actions/.github/workflows/db-mssql.yml@master
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:
       mssql: ${{ matrix.mssql }}
       php: >-

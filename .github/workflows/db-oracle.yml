@@ -44,6 +44,8 @@ jobs:
             oracle: 21
 
     uses: yiisoft/actions/.github/workflows/db-oracle.yml@master
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:
       oracle: ${{ matrix.oracle }}
       php: >-

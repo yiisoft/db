@@ -42,6 +42,8 @@ jobs:
             mysql: latest
 
     uses: yiisoft/actions/.github/workflows/db-mysql.yml@master
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:
       mysql: ${{ matrix.mysql }}
       php: >-
