@@ -54,11 +54,19 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     protected ?PDOStatement $pdoStatement = null;
 
     /**
+     * @var array<int|string, array{value: mixed, type: int, length: int|null, driverOptions: mixed}>
+     * Parameters bound via {@see bindParam()} stored by reference for re-binding after statement re-preparation
+     * (e.g., on reconnect).
+     */
+    protected array $pendingBoundParams = [];
+
+    /**
      * @param PdoConnectionInterface $db The PDO database connection to use.
      */
     public function __construct(PdoConnectionInterface $db)
     {
         parent::__construct($db);
+        $this->retryHandler = (new ConnectionRecoveryHandler($db))->asClosure();
     }
 
     /**
@@ -81,19 +89,16 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         ?int $length = null,
         mixed $driverOptions = null,
     ): static {
-        $this->prepare();
-
         if ($dataType === null) {
             $dataType = $this->db->getSchema()->getDataType($value);
         }
 
-        if ($length === null) {
-            $this->pdoStatement?->bindParam($name, $value, $dataType);
-        } elseif ($driverOptions === null) {
-            $this->pdoStatement?->bindParam($name, $value, $dataType, $length);
-        } else {
-            $this->pdoStatement?->bindParam($name, $value, $dataType, $length, $driverOptions);
-        }
+        $this->pendingBoundParams[$name] = [
+            'type' => $dataType,
+            'length' => $length,
+            'driverOptions' => $driverOptions,
+            'value' => &$value,
+        ];
 
         return $this;
     }
@@ -163,7 +168,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     }
 
     /**
-     * Binds pending parameters registered via {@see bindValue()} and {@see bindValues()}.
+     * Binds pending parameters registered via {@see bindValue()}, {@see bindValues()} and {@see bindParam()}.
      *
      * Note that this method requires an active {@see PDOStatement}.
      */
@@ -172,6 +177,27 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         foreach ($this->params as $name => $value) {
             $this->pdoStatement?->bindValue($name, $value->value, $value->type);
         }
+
+        foreach ($this->pendingBoundParams as $name => &$entry) {
+            $value = &$entry['value'];
+
+            if ($entry['length'] === null) {
+                $this->pdoStatement?->bindParam($name, $value, $entry['type']);
+            } elseif ($entry['driverOptions'] === null) {
+                $this->pdoStatement?->bindParam($name, $value, $entry['type'], $entry['length']);
+            } else {
+                $this->pdoStatement?->bindParam($name, $value, $entry['type'], $entry['length'], $entry['driverOptions']);
+            }
+
+            unset($value);
+        }
+        unset($entry);
+    }
+
+    protected function reset(): void
+    {
+        parent::reset();
+        $this->pendingBoundParams = [];
     }
 
     protected function getQueryBuilder(): QueryBuilderInterface
@@ -195,6 +221,9 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     /**
      * A wrapper around {@see pdoStatementExecute()} to support transactions and retry handlers.
      *
+     * By default uses {@see ConnectionRecoveryHandler} to automatically recover from connection errors on the first
+     * attempt. Override via {@see setRetryHandler()} to customize retry behavior.
+     *
      * @throws Exception
      */
     protected function internalExecute(): void
@@ -207,9 +236,12 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
                 $rawSql ??= $this->getRawSql();
                 $e = (new ConvertException($e, $rawSql))->run();
 
-                if ($this->retryHandler === null || !($this->retryHandler)($e, $attempt)) {
-                    throw $e;
+                if ($this->retryHandler !== null && ($this->retryHandler)($e, $attempt, $this)) {
+                    continue;
                 }
+
+
+                throw $e;
             }
         }
     }

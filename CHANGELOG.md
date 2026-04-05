@@ -2,7 +2,9 @@
 
 ## 2.0.2 under development
 
-- no changes in this release.
+- New #1170: Add `ConnectionException` class for connection-related errors; `ConvertException` now returns it instead of plain `Exception` for lost/refused connections (@your-username)
+- New #1171: Add `ConnectionRecoveryHandler` class; automatic reconnect on first connection error is now the default retry handler; pass `CommandInterface` as third argument to retry handler callback (@your-username)
+- Enh #1171: Merge `rebindBoundParams()` into `bindPendingParams()`; `bindParam()` bindings are now restored after reconnect (@your-username)
 
 ## 2.0.1 February 09, 2026
 

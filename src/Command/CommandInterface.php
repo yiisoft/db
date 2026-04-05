@@ -770,26 +770,29 @@ interface CommandInterface
     public function setRawSql(string $sql): static;
 
     /**
-     * Sets a closure (anonymous function) which called when a database exception is thrown when executing the command.
+     * Sets a closure (anonymous function) that is called when a database exception is thrown when executing the command.
      *
      * The signature of the closure should be:
      *
      * ```php
      * use Yiisoft\Db\Exception\Exception;
+     * use Yiisoft\Db\Command\CommandInterface;
      *
-     * function (Exception $e, int $attempt): bool
+     * function (Exception $e, int $attempt, CommandInterface $command): bool
      * {
      *     // return true or false (whether to retry the command or throw $e)
      * }
      * ```
      *
-     * The closure will receive an {@see Exception} converted from the thrown database exception and the current attempt
-     * to execute the command, starting from `1`.
+     * The closure will receive an {@see Exception} converted from the thrown database exception,
+     * the current attempt to execute the command (starting from `0`), and the {@see CommandInterface}
+     * instance to allow access to the command and its parameters for custom retry logic.
      *
-     * If the closure returns `true`, the command will be retried. If the closure returns `false`, the {@see Exception}
-     * will be thrown.
+     * If the closure returns `true`, the command will be retried. If the closure returns `false`,
+     * the {@see Exception} will be thrown.
      *
      * @param Closure|null $handler A PHP callback to handle database exceptions.
+     * @psalm-param Closure(Exception, int, CommandInterface): bool|null $handler
      */
     public function setRetryHandler(?Closure $handler): static;
 
