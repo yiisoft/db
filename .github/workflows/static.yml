@@ -1,6 +1,6 @@
 on:
   pull_request:
-    paths:
+    paths: &paths
       - 'src/**'
       - 'config/**'
       - '.github/workflows/static.yml'
@@ -9,12 +9,7 @@ on:
 
   push:
     branches: ['master']
-    paths:
-      - 'src/**'
-      - 'config/**'
-      - '.github/workflows/static.yml'
-      - 'psalm*.xml'
-      - 'composer.json'
+    paths: *paths
 
 name: Static analysis
 
