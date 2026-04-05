@@ -2,7 +2,8 @@
 
 ## 2.0.2 under development
 
-- no changes in this release.
+- Bug #1170: Fix `ConvertException` incorrectly detecting `SQLSTATE[HY000]` errors as `IntegrityException` (@WarLikeLaux)
+- Enh #1170: Add `ConnectionException` for `SQLSTATE[08xxx]` errors and Oracle integrity error detection (@WarLikeLaux)
 
 ## 2.0.1 February 09, 2026
 
