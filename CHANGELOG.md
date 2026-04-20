@@ -2,7 +2,7 @@
 
 ## 2.0.2 under development
 
-- no changes in this release.
+- Enh #1172: Refactor `Query::queryScalar()` to use a cloned `Query` object (@darkspock)
 
 ## 2.0.1 February 09, 2026
 
