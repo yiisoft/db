@@ -160,9 +160,9 @@ interface DQLQueryBuilderInterface
     public function buildJoin(array $joins, array &$params): string;
 
     /**
-     * @param ExpressionInterface|int|null $limit The limit number.
+     * @param ExpressionInterface|int|null $limit The limit number. For ​​`null`, no limit clause is built.
      * @see Query::limit() For more details.
-     * @param ExpressionInterface|int|null $offset The offset number.
+     * @param ExpressionInterface|int|null $offset The offset number. For ​​`null` or `0`, no offset clause is built.
      * @see Query::offset() For more details.
      *
      * @throws NotSupportedException
