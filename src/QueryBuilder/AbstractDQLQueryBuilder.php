@@ -300,7 +300,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                 . ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string) $limit);
         }
 
-        if ($offset !== null) {
+        if (!empty($offset)) {
             $sql .= ' OFFSET '
                 . ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string) $offset);
         }
