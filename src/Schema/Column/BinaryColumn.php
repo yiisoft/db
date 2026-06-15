@@ -12,6 +12,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Schema\Data\StringableStream;
+use UnitEnum;
 
 use function gettype;
 use function is_resource;
@@ -37,6 +38,7 @@ class BinaryColumn extends AbstractColumn
                 $value instanceof ExpressionInterface => $value,
                 $value instanceof Stringable => new Param((string) $value, PDO::PARAM_LOB),
                 $value instanceof BackedEnum => new Param((string) $value->value, PDO::PARAM_LOB),
+                $value instanceof UnitEnum => new Param($value->name, PDO::PARAM_LOB),
                 default => $this->throwWrongTypeException($value::class),
             },
             default => $this->throwWrongTypeException(gettype($value)),

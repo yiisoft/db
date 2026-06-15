@@ -46,6 +46,7 @@ use Yiisoft\Db\Schema\Data\StringableStream;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\IntEnum;
 use Yiisoft\Db\Tests\Support\JsonSerializableObject;
+use Yiisoft\Db\Tests\Support\NamedEnum;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\StringEnum;
 use Yiisoft\Db\Tests\Support\TraversableObject;
@@ -1679,6 +1680,7 @@ class QueryBuilderProvider
             'expression with params' => ['(1 + 2)', new Expression('(:a + :b)', [':a' => 1, 'b' => 2]), DataType::STRING],
             'Stringable' => ["'string'", new Stringable('string'), DataType::STRING],
             'StringEnum' => ["'one'", StringEnum::ONE, DataType::STRING],
+            'NamedEnum' => ["'one'", NamedEnum::one, DataType::STRING],
             'IntEnum' => ['1', IntEnum::ONE, DataType::STRING],
         ];
     }
@@ -1702,6 +1704,7 @@ class QueryBuilderProvider
             'ResourceStream' => ['0x737472696e67', new StringableStream(fopen(__DIR__ . '/../Support/string.txt', 'rb'))],
             'Stringable' => ["'string'", new Stringable('string')],
             'StringEnum' => ["'one'", StringEnum::ONE],
+            'NamedEnum' => ["'one'", NamedEnum::one],
             'IntEnum' => ['1', IntEnum::ONE],
             'array' => ['\'["a","b","c"]\'', ['a', 'b', 'c']],
             'json' => ['\'{"a":1,"b":2}\'', ['a' => 1, 'b' => 2]],
@@ -1765,6 +1768,11 @@ class QueryBuilderProvider
             ],
             'StringEnum' => [
                 StringEnum::ONE,
+                ':qp0',
+                [':qp0' => new Param('one', DataType::STRING)],
+            ],
+            'NamedEnum' => [
+                NamedEnum::one,
                 ':qp0',
                 [':qp0' => new Param('one', DataType::STRING)],
             ],

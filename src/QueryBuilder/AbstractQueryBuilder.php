@@ -9,6 +9,7 @@ use Iterator;
 use JsonSerializable;
 use Stringable;
 use Traversable;
+use UnitEnum;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\Value\Param;
@@ -272,6 +273,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                 $value instanceof BackedEnum => is_string($value->value)
                     ? $this->bindParam(new Param($value->value, DataType::STRING), $params)
                     : (string) $value->value,
+                $value instanceof UnitEnum => $this->bindParam(new Param($value->name, DataType::STRING), $params),
                 $value instanceof Iterator && $value->key() === 0 => $this->buildExpression(new ArrayValue($value), $params),
                 $value instanceof Traversable => $this->buildExpression(new JsonValue($value), $params),
                 $value instanceof JsonSerializable => $this->buildExpression(new JsonValue($value), $params),
@@ -468,6 +470,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                 $value instanceof BackedEnum => is_string($value->value)
                     ? $this->db->getQuoter()->quoteValue($value->value)
                     : (string) $value->value,
+                $value instanceof UnitEnum => $this->db->getQuoter()->quoteValue($value->name),
                 $value instanceof Iterator && $value->key() === 0 => $this->replacePlaceholders(
                     $this->buildExpression(new ArrayValue($value), $params),
                     array_map($this->prepareValue(...), $params),
