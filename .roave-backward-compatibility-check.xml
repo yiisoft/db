@@ -4,5 +4,6 @@
     xsi:noNamespaceSchemaLocation="vendor/roave/backward-compatibility-check/Resources/schema.xsd">
     <baseline>
         <ignored-regex>#\[BC\] SKIPPED: Roave\\BetterReflection\\Reflection\\ReflectionClass "Yiisoft\\Yii\\Debug\\#</ignored-regex>
+        <ignored-regex>#\[BC\] SKIPPED: An enum expression Yiisoft\\Db\\QueryBuilder\\Condition\\Like#</ignored-regex>
     </baseline>
 </roave-bc-check>
