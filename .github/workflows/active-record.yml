@@ -93,7 +93,7 @@ jobs:
           coverage: pcov
 
       - name: Install AR dependencies
-        run: composer require yiisoft/cache yiisoft/factory yiisoft/middleware-dispatcher yiisoft/test-support
+        run: composer require yiisoft/cache yiisoft/factory yiisoft/middleware-dispatcher yiisoft/test-support yiisoft/yii-runner
 
       - name: Install db-sqlite, db-mysql, db-pgsql, db-mssql, db-oracle and active-record.
         uses: yiisoft/actions/install-packages@master
