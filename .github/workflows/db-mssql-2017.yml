@@ -24,4 +24,4 @@ jobs:
   tests:
     name: MSSQL 2017 (Windows)
 
-    uses: yiisoft/actions/.github/workflows/db-mssql-2017.yml@master
+    uses: yiisoft/actions/.github/workflows/db-mssql-2017.yml@ab62d6b3b0e0cff6c9724ec5a395bedb41c639a2

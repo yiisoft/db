@@ -40,15 +40,15 @@ jobs:
 
         include:
           - php: 8.1
-            mariadb: latest
+            mariadb: 12
           - php: 8.2
-            mariadb: latest
+            mariadb: 12
           - php: 8.3
-            mariadb: latest
+            mariadb: 12
           - php: 8.4
-            mariadb: latest
+            mariadb: 12
 
-    uses: yiisoft/actions/.github/workflows/db-mariadb.yml@master
+    uses: yiisoft/actions/.github/workflows/db-mariadb.yml@ab62d6b3b0e0cff6c9724ec5a395bedb41c639a2
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:
