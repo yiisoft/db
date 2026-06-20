@@ -22,4 +22,4 @@ concurrency:
 
 jobs:
   tests:
-    uses: yiisoft/actions/.github/workflows/db-mutation.yml@ab62d6b3b0e0cff6c9724ec5a395bedb41c639a2
+    uses: yiisoft/actions/.github/workflows/db-mutation.yml@master

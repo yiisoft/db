@@ -21,7 +21,7 @@ permissions:
   contents: read
 jobs:
   psalm:
-    uses: yiisoft/actions/.github/workflows/psalm.yml@ab62d6b3b0e0cff6c9724ec5a395bedb41c639a2
+    uses: yiisoft/actions/.github/workflows/psalm.yml@master
     with:
       php: >-
         ['8.2', '8.3', '8.4']

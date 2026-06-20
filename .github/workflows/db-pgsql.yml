@@ -51,7 +51,7 @@ jobs:
           - php: 8.4
             pgsql: 18
 
-    uses: yiisoft/actions/.github/workflows/db-pgsql.yml@ab62d6b3b0e0cff6c9724ec5a395bedb41c639a2
+    uses: yiisoft/actions/.github/workflows/db-pgsql.yml@master
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:
