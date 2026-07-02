@@ -40,13 +40,13 @@ jobs:
 
         include:
           - php: 8.1
-            mariadb: latest
+            mariadb: 12
           - php: 8.2
-            mariadb: latest
+            mariadb: 12
           - php: 8.3
-            mariadb: latest
+            mariadb: 12
           - php: 8.4
-            mariadb: latest
+            mariadb: 12
 
     uses: yiisoft/actions/.github/workflows/db-mariadb.yml@master
     secrets:

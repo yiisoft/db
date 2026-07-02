@@ -33,13 +33,13 @@ jobs:
           - latest
         include:
           - php: 8.1
-            mysql: latest
+            mysql: 9
           - php: 8.2
-            mysql: latest
+            mysql: 9
           - php: 8.3
-            mysql: latest
+            mysql: 9
           - php: 8.4
-            mysql: latest
+            mysql: 9
 
     uses: yiisoft/actions/.github/workflows/db-mysql.yml@master
     secrets:
