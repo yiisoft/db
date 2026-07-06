@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Schema\Column;
 
 use BackedEnum;
 use Stringable;
+use UnitEnum;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\GettypeResult;
@@ -42,6 +43,7 @@ class StringColumn extends AbstractColumn implements CollatableColumnInterface
             GettypeResult::OBJECT => match (true) {
                 $value instanceof ExpressionInterface => $value,
                 $value instanceof BackedEnum => (string) $value->value,
+                $value instanceof UnitEnum => $value->name,
                 $value instanceof Stringable => (string) $value,
                 default => $this->throwWrongTypeException($value::class),
             },

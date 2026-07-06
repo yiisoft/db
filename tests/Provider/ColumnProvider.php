@@ -37,6 +37,7 @@ use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Schema\Data\StringableStream;
 use Yiisoft\Db\Schema\Data\StructuredLazyArray;
 use Yiisoft\Db\Tests\Support\IntEnum;
+use Yiisoft\Db\Tests\Support\NamedEnum;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\StringEnum;
 
@@ -135,6 +136,7 @@ class ColumnProvider
                     ['1', IntEnum::ONE],
                     ['', StringEnum::EMPTY],
                     ['one', StringEnum::ONE],
+                    ['one', NamedEnum::one],
                     ['', new Stringable('')],
                     ['string', new Stringable('string')],
                     [$resource = fopen('php://memory', 'rb'), $resource],
@@ -151,6 +153,7 @@ class ColumnProvider
                     [new Param("\x10\x11\x12", PDO::PARAM_LOB), "\x10\x11\x12"],
                     [new Param('1', PDO::PARAM_LOB), IntEnum::ONE],
                     [new Param('one', PDO::PARAM_LOB), StringEnum::ONE],
+                    [new Param('one', PDO::PARAM_LOB), NamedEnum::one],
                     [new Param('string', PDO::PARAM_LOB), new Stringable('string')],
                     [$resource = fopen('php://memory', 'rb'), $resource],
                     [new Param($resource = fopen('php://memory', 'rb'), PDO::PARAM_LOB), new StringableStream($resource)],
@@ -482,6 +485,7 @@ class ColumnProvider
                     ['1.2', 1.2],
                     ['', StringEnum::EMPTY],
                     ['one', StringEnum::ONE],
+                    ['one', NamedEnum::one],
                     ['1', IntEnum::ONE],
                     ['1', true],
                     ['0', false],

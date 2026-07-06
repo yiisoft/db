@@ -3,6 +3,7 @@
 ## 2.0.2 under development
 
 - Enh #1172: Refactor `Query::queryScalar()` to use a cloned `Query` object (@darkspock)
+- New #1178: Support `UnitEnum` enums as column values (@Tigrov)
 
 ## 2.0.1 February 09, 2026
 
