@@ -82,6 +82,8 @@ You can create a database connection instance using a [DI container](https://git
 > When you create a DB connection instance, the actual connection to the database isn't established until
 > you execute the first SQL or call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.
 
+[Initialize ConnectionProvider](connection/connection-provider.md) if needed.
+
 ### Table prefix
 
 A connection uses no table prefix by default. If your tables share a prefix, set it after creating the connection:
@@ -101,8 +103,6 @@ $users = $db->createCommand('SELECT * FROM {{%user}}')->queryAll();
 
 In this example, `{{%user}}` resolves to the `app_user` table. The configured prefix isn't applied to table names that
 don't contain `%`.
-
-[Initialize ConnectionProvider](connection/connection-provider.md) if needed.
 
 ### Logger and profiler
 
