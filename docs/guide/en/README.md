@@ -84,6 +84,26 @@ You can create a database connection instance using a [DI container](https://git
 
 [Initialize ConnectionProvider](connection/connection-provider.md) if needed.
 
+### Table prefix
+
+A connection uses no table prefix by default. If your tables share a prefix, set it after creating the connection:
+
+```php
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+$db->setTablePrefix('app_');
+```
+
+Use `%` inside the [special table quoting syntax](#quote-table-and-column-names) to substitute the prefix:
+
+```php
+$users = $db->createCommand('SELECT * FROM {{%user}}')->queryAll();
+```
+
+In this example, `{{%user}}` resolves to the `app_user` table. The configured prefix isn't applied to table names that
+don't contain `%`.
+
 ### Logger and profiler
 
 Logger and profiler are optional. You can use them if you need to log and profile your queries.
