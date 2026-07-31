@@ -1,3 +1,5 @@
+name: db-mysql
+
 on:
   pull_request:
     paths: &paths
@@ -10,8 +12,6 @@ on:
   push:
     branches: ['master']
     paths: *paths
-
-name: db-mysql
 
 permissions:
   contents: read

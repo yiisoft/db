@@ -1,7 +1,10 @@
+name: build
+
 on:
   pull_request:
     paths: &paths
       - 'src/**'
+      - 'config/**'
       - 'tests/**'
       - '.github/workflows/build.yml'
       - 'composer.json'
@@ -11,14 +14,13 @@ on:
     branches: ['master']
     paths: *paths
 
-name: build
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
 jobs:
   tests:
     name: PHP ${{ matrix.php }}-${{ matrix.os }}-db

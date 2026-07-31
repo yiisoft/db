@@ -1,7 +1,10 @@
+name: backwards compatibility
+
 on:
   pull_request:
     paths: &paths
       - 'src/**'
+      - 'config/**'
       - '.github/workflows/bc.yml'
       - '.roave-backward-compatibility-check.xml'
       - 'composer.json'
@@ -9,14 +12,13 @@ on:
     branches: ['master']
     paths: *paths
 
-name: backwards compatibility
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
 jobs:
   roave_bc_check:
     uses: yiisoft/actions/.github/workflows/bc.yml@master

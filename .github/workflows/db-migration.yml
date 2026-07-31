@@ -1,25 +1,23 @@
+name: db-migration
+
 on:
   pull_request:
-    paths:
+    paths: &paths
       - 'src/**'
       - '.github/workflows/db-migration.yml'
       - 'composer.json'
 
   push:
     branches: ['master']
-    paths:
-      - 'src/**'
-      - '.github/workflows/db-migration.yml'
-      - 'composer.json'
+    paths: *paths
 
-name: db-migration
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
 jobs:
   tests:
     name: DbMigration

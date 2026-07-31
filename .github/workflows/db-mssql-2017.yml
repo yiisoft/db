@@ -1,3 +1,5 @@
+name: db-mssql-2017
+
 on:
   pull_request:
     paths: &paths
@@ -10,8 +12,6 @@ on:
   push:
     branches: ['master']
     paths: *paths
-
-name: db-mssql-2017
 
 permissions:
   contents: read

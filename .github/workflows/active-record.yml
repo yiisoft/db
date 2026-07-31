@@ -1,3 +1,5 @@
+name: active-record
+
 on:
   pull_request:
     paths: &paths
@@ -9,14 +11,13 @@ on:
     branches: ['master']
     paths: *paths
 
-name: active-record
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
 jobs:
   tests:
     name: ActiveRecord

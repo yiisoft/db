@@ -1,17 +1,19 @@
+name: mutation
+
 on:
   pull_request:
     paths: &paths
       - 'src/**'
+      - 'config/**'
       - 'tests/**'
       - '.github/workflows/mutation.yml'
       - 'composer.json'
+      - 'phpunit.xml.dist'
       - 'infection.json.dist'
 
   push:
     branches: ['master']
     paths: *paths
-
-name: mutation
 
 permissions:
   contents: read
