@@ -248,12 +248,12 @@ interface ConnectionInterface
     ): QueryInterface;
 
     /**
-     * Sets the common prefix or suffix for table names.
+     * Sets the common prefix for table names.
      * If a table name is `{{%TableName}}`, then the percentage
      * character `%` will be replaced with this property value.
      * For example, `{{%post}}` becomes `{{tbl_post}}`.
      *
-     * @param string $value The common prefix or suffix for table names.
+     * @param string $value The common prefix for table names.
      */
     public function setTablePrefix(string $value): void;
 
