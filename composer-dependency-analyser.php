@@ -5,7 +5,7 @@ declare(strict_types=1);
 use ShipMonk\ComposerDependencyAnalyser\Config\Configuration;
 use ShipMonk\ComposerDependencyAnalyser\Config\ErrorType;
 
-return (new Configuration())
+$config = (new Configuration())
     ->disableComposerAutoloadPathScan()
     ->setFileExtensions(['php'])
     ->addPathToScan(__DIR__ . '/config', isDev: false)
@@ -17,3 +17,10 @@ return (new Configuration())
         ['psr/simple-cache-implementation', 'yiisoft/db-implementation'],
         [ErrorType::UNUSED_DEPENDENCY],
     );
+
+// PHP core classes introduced in PHP 8.2 are not available in older PHP versions.
+if (\PHP_VERSION_ID < 80200) {
+    $config->ignoreUnknownClasses(['SensitiveParameter', 'SensitiveParameterValue']);
+}
+
+return $config;
