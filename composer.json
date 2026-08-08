@@ -39,10 +39,11 @@
     },
     "require-dev": {
         "bamarni/composer-bin-plugin": "^1.8.3",
+        "ext-mbstring": "*",
         "friendsofphp/php-cs-fixer": "^3.89.1",
-        "maglnet/composer-require-checker": "^4.7.1",
         "phpunit/phpunit": "^10.5.45",
         "rector/rector": "^2.0.10",
+        "shipmonk/composer-dependency-analyser": "^1.8",
         "spatie/phpunit-watcher": "^1.24",
         "yiisoft/aliases": "^3.0",
         "yiisoft/di": "^1.3",
@@ -82,7 +83,10 @@
             "Yiisoft\\Db\\Migration\\Tests\\Support\\MigrationsExtra\\": [
                 "vendor/yiisoft/db-migration/tests/Support/MigrationsExtra",
                 "vendor/yiisoft/db-migration/tests/Support/MigrationsExtra2"
-            ]
+            ],
+            "Yiisoft\\Db\\Migration\\Tests\\Support\\Boundary\\": "vendor/yiisoft/db-migration/tests/Support/Boundary",
+            "Yiisoft\\Db\\Migration\\Tests\\Support\\BoundaryDb\\": "vendor/yiisoft/db-migration/tests/Support/BoundaryDb",
+            "": "vendor/yiisoft/db-migration/tests/Support/FallbackRoot"
         }
     },
     "extra": {
@@ -108,6 +112,7 @@
         }
     },
     "scripts": {
+        "dependency-analyser": "composer-dependency-analyser",
         "test": "phpunit --testdox --no-interaction",
         "test-watch": "phpunit-watcher watch"
     }
