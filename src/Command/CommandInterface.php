@@ -894,6 +894,8 @@ interface CommandInterface
      * @param array|bool $updateColumns The column data (name => value) to update if it already exists.
      * If `true` is passed, the column data will be updated to match the insert column data.
      * If `false` is passed, no update will be performed if the column data already exist.
+     * @param string[]|null $constraintColumns The column names to use for the `ON CONFLICT` clause. If `null`,
+     * the primary key or the first matching unique constraint will be used.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -910,6 +912,7 @@ interface CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
     ): static;
 
     /**
@@ -924,6 +927,8 @@ interface CommandInterface
      * @param array|bool $updateColumns The column data (name => value) to update if it already exists.
      * If `true` is passed, the column data will be updated to match the insert column data.
      * If `false` is passed, no update will be performed if the column data already exist.
+     * @param string[]|null $constraintColumns The column names to use for the `ON CONFLICT` clause. If `null`,
+     * the primary key or the first matching unique constraint will be used.
      * @param string[]|null $returnColumns The column names to return values from. `null` means all columns.
      *
      * @throws Exception
@@ -941,6 +946,7 @@ interface CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
         ?array $returnColumns = null,
     ): array;
 
@@ -956,6 +962,8 @@ interface CommandInterface
      * @param array|bool $updateColumns The column data (name => value) to update if it already exists.
      * If `true` is passed, the column data will be updated to match the insert column data.
      * If `false` is passed, no update will be performed if the column data already exist.
+     * @param string[]|null $constraintColumns The column names to use for the `ON CONFLICT` clause. If `null`,
+     * the primary key or the first matching unique constraint will be used.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -971,6 +979,7 @@ interface CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
     ): array;
 
     /**

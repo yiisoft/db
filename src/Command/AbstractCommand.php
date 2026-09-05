@@ -499,9 +499,10 @@ abstract class AbstractCommand implements CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
     ): static {
         $params = [];
-        $sql = $this->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
+        $sql = $this->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $constraintColumns, $params);
         return $this->setSql($sql)->bindValues($params);
     }
 
@@ -509,16 +510,17 @@ abstract class AbstractCommand implements CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
         ?array $returnColumns = null,
     ): array {
         if ($returnColumns === []) {
-            $this->upsert($table, $insertColumns, $updateColumns)->execute();
+            $this->upsert($table, $insertColumns, $updateColumns, $constraintColumns)->execute();
             return [];
         }
 
         $params = [];
         $sql = $this->getQueryBuilder()
-            ->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
+            ->upsertReturning($table, $insertColumns, $updateColumns, $constraintColumns, $returnColumns, $params);
 
         $this->setSql($sql)->bindValues($params);
 
@@ -530,9 +532,10 @@ abstract class AbstractCommand implements CommandInterface
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        ?array $constraintColumns = null,
     ): array {
         $primaryKeys = $this->db->getSchema()->getTableSchema($table)?->getPrimaryKey() ?? [];
-        return $this->upsertReturning($table, $insertColumns, $updateColumns, $primaryKeys);
+        return $this->upsertReturning($table, $insertColumns, $updateColumns, $constraintColumns, $primaryKeys);
     }
 
     public function withDbTypecasting(bool $dbTypecasting = true): static
