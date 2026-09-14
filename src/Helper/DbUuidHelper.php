@@ -25,7 +25,9 @@ final class DbUuidHelper
         } elseif (strlen($blobString) === 32 && self::isValidHexUuid($blobString)) {
             $hex = $blobString;
         } else {
-            throw new InvalidArgumentException('Length of source data is should be 16 or 32 bytes.');
+            throw new InvalidArgumentException(
+                'Value is not a valid UUID. Expected the canonical form, 32 hexadecimal characters or 16 raw bytes.',
+            );
         }
 
         return

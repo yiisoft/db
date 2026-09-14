@@ -9,6 +9,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Expression\Value\UuidValue;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
@@ -524,6 +525,26 @@ final class CommandTest extends IntegrationTestCase
                 ':qp0' => 't1@example.com',
                 ':qp1' => 'test',
                 ':qp2' => 'test address',
+            ],
+            $command->getParams(),
+        );
+    }
+
+    public function testInsertUuid(): void
+    {
+        $db = TestHelper::createSqliteMemoryConnection();
+
+        $command = $db->createCommand();
+        $command->insert('page', ['id' => new UuidValue('738146be-87b1-49f2-9913-36142fb6fcbe'), 'title' => 'test']);
+
+        $this->assertSame(
+            'INSERT INTO [page] ([id], [title]) VALUES (:qp0, :qp1)',
+            $command->getSql(),
+        );
+        $this->assertSame(
+            [
+                ':qp0' => '738146be-87b1-49f2-9913-36142fb6fcbe',
+                ':qp1' => 'test',
             ],
             $command->getParams(),
         );
