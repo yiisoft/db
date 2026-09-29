@@ -41,7 +41,7 @@
         "ext-mbstring": "*",
         "friendsofphp/php-cs-fixer": "^3.89.1",
         "phpunit/phpunit": "^10.5.45",
-        "rector/rector": "^2.0.10",
+        "rector/rector": "^2.6.7",
         "shipmonk/composer-dependency-analyser": "^1.8",
         "spatie/phpunit-watcher": "^1.24",
         "yiisoft/aliases": "^3.0",

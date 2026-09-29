@@ -10,7 +10,6 @@ use Rector\Php80\Rector\Class_\StringableForToStringRector;
 use Rector\Php80\Rector\Ternary\GetDebugTypeRector;
 use Rector\Php81\Rector\Property\ReadOnlyPropertyRector;
 use Rector\Php81\Rector\FuncCall\NullToStrictStringFuncCallArgRector;
-use Rector\Php81\Rector\ClassMethod\NewInInitializerRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -34,9 +33,6 @@ return RectorConfig::configure()
         GetDebugTypeRector::class => [
             __DIR__ . '/tests/Common/CommonColumnTest.php',
             __DIR__ . '/tests/Db/Schema/Column/ColumnTest.php',
-        ],
-        NewInInitializerRector::class => [
-            __DIR__ . '/src/Cache/SchemaCache.php',
         ],
         ReadOnlyPropertyRector::class,
         NullToStrictStringFuncCallArgRector::class,
