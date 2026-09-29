@@ -12,6 +12,9 @@
 - New #1152: Add `UuidValue` expression that represents a UUID value independently of DBMS (@KalimeroMK)
 - Enh #1152: Improve the exception message of `DbUuidHelper::toUuid()` when the value isn't a valid UUID
   (@KalimeroMK)
+- Enh #1201: Make `$psrCache` parameter of `SchemaCache` constructor and `$schemaCache` parameter of
+  `AbstractSchema` and `AbstractPdoConnection` constructors optional, remove `psr/simple-cache-implementation` from
+  `require` in `composer.json` (@vjik)
 
 ## 2.0.1 February 09, 2026
 

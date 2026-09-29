@@ -55,7 +55,7 @@ abstract class AbstractSchema implements SchemaInterface
 
     public function __construct(
         protected ConnectionInterface $db,
-        private readonly SchemaCache $schemaCache,
+        private readonly SchemaCache $schemaCache = new SchemaCache(),
     ) {}
 
     public function getDefaultSchema(): string

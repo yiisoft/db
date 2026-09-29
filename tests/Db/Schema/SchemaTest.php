@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema;
 
-use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Constraint\Check;
 use Yiisoft\Db\Constraint\DefaultValue;
 use Yiisoft\Db\Constraint\ForeignKey;
@@ -17,7 +16,6 @@ use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\TestHelper;
-use Yiisoft\Test\Support\SimpleCache\MemorySimpleCache;
 
 use function count;
 
@@ -208,13 +206,9 @@ final class SchemaTest extends IntegrationTestCase
     {
         $db = $this->getSharedConnection();
 
-        $schemaCache = new SchemaCache(
-            new MemorySimpleCache(),
-        );
-
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableSchema'])
-            ->setConstructorArgs([$db, $schemaCache])
+            ->setConstructorArgs([$db])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
         $schemaMock->expects($this->once())->method('loadTableSchema')->willReturn($this->createTableSchemaStub());

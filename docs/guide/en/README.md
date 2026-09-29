@@ -59,10 +59,11 @@ For [SQLite](https://github.com/yiisoft/db-sqlite):
 composer require yiisoft/db-sqlite
 ```
 
-> [!IMPORTANT]
-> It also depends on [PSR-16: Common Interface for Caching Libraries](https://www.php-fig.org/psr/psr-16/) and requires
-> the installation of [PSR-16 implementation](https://packagist.org/providers/psr/simple-cache-implementation).
+> [!TIP]
+> To cache database schema information, install
+> [PSR-16 implementation](https://packagist.org/providers/psr/simple-cache-implementation).
 > For example, [yiisoft/cache](https://github.com/yiisoft/cache) or one of the other [cache handlers](https://github.com/yiisoft/cache#cache-handlers).
+> It's strongly recommended for production.
 
 ## Configure schema cache
 
