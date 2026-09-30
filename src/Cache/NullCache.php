@@ -38,11 +38,7 @@ final class NullCache implements CacheInterface
 
     public function getMultiple(iterable $keys, mixed $default = null): iterable
     {
-        $result = [];
-        foreach ($keys as $key) {
-            $result[$key] = $default;
-        }
-        return $result;
+        return array_fill_keys($keys, $default);
     }
 
     public function setMultiple(iterable $values, int|DateInterval|null $ttl = null): bool
