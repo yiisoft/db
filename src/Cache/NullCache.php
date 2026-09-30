@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Cache;
 
 use DateInterval;
 use Psr\SimpleCache\CacheInterface;
+use Traversable;
 
 /**
  * PSR-16 cache implementation that doesn't store anything.
@@ -38,7 +39,10 @@ final class NullCache implements CacheInterface
 
     public function getMultiple(iterable $keys, mixed $default = null): iterable
     {
-        return array_fill_keys($keys, $default);
+        return array_fill_keys(
+            $keys instanceof Traversable ? iterator_to_array($keys) : $keys,
+            $default,
+        );
     }
 
     public function setMultiple(iterable $values, int|DateInterval|null $ttl = null): bool
