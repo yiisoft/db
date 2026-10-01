@@ -53,7 +53,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
 
     public function __construct(
         protected PdoDriverInterface $driver,
-        protected SchemaCache $schemaCache,
+        protected SchemaCache $schemaCache = new SchemaCache(),
         protected ?ColumnFactoryInterface $columnFactory = null,
     ) {}
 
