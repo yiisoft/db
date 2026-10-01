@@ -117,6 +117,7 @@ class ColumnDefinitionParser
         $extra = $this->parseBoolValue($extra, '/\s*\bNOT\s+NULL\b/i', 'notNull', $info);
 
         // String defaults are always quoted in a column definition, so an unquoted `NULL` can only be SQL `NULL`
+        /** @psalm-var ExtraInfo $info */
         if (isset($info['defaultValueRaw']) && strcasecmp($info['defaultValueRaw'], 'NULL') === 0) {
             $info['defaultValueRaw'] = null;
         }
