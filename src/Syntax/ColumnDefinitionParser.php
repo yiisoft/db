@@ -9,6 +9,7 @@ use function preg_match;
 use function preg_match_all;
 use function preg_replace;
 use function str_replace;
+use function strcasecmp;
 use function strlen;
 use function strtolower;
 use function substr;
@@ -22,7 +23,7 @@ use function trim;
  *     check?: string,
  *     collation?: string,
  *     comment?: string,
- *     defaultValueRaw?: string,
+ *     defaultValueRaw?: string|null,
  *     extra?: string,
  *     notNull?: bool,
  *     unique?: bool,
@@ -42,7 +43,7 @@ class ColumnDefinitionParser
      *     check?: string,
      *     collation?: string,
      *     comment?: string,
-     *     defaultValueRaw?: string,
+     *     defaultValueRaw?: string|null,
      *     dimension?: positive-int,
      *     extra?: string,
      *     notNull?: bool,
@@ -114,6 +115,11 @@ class ColumnDefinitionParser
         $extra = $this->parseBoolValue($extra, '/\s*\bUNSIGNED\b/i', 'unsigned', $info);
         $extra = $this->parseBoolValue($extra, '/\s*\bUNIQUE\b/i', 'unique', $info);
         $extra = $this->parseBoolValue($extra, '/\s*\bNOT\s+NULL\b/i', 'notNull', $info);
+
+        // String defaults are always quoted in a column definition, so an unquoted `NULL` can only be SQL `NULL`
+        if (isset($info['defaultValueRaw']) && strcasecmp($info['defaultValueRaw'], 'NULL') === 0) {
+            $info['defaultValueRaw'] = null;
+        }
 
         if (empty($info['notNull'])) {
             $extra = $this->parseBoolValue($extra, '/\s*\bNULL\b/i', 'notNull', $info);

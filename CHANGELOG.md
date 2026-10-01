@@ -15,6 +15,8 @@
 - Enh #1201: Make `$psrCache` parameter of `SchemaCache` constructor and `$schemaCache` parameter of
   `AbstractSchema` and `AbstractPdoConnection` constructors optional, remove `psr/simple-cache-implementation` from
   `require` in `composer.json` (@vjik)
+- Bug #1202: Fix `ColumnDefinitionParser` to parse an unquoted `DEFAULT NULL` as SQL `NULL` instead of the string
+  `'NULL'`, which MySQL typecast to `DEFAULT 0` for integer columns (@Lugat)
 
 ## 2.0.1 February 09, 2026
 
