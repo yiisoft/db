@@ -189,8 +189,7 @@ abstract class CommonQueryTest extends IntegrationTestCase
         $db->createCommand("INSERT INTO $table ($column) VALUES ('b')")->execute();
         $db->createCommand("INSERT INTO $table ($column) VALUES ('c')")->execute();
 
-        $values = (new Query($db))
-            ->select(['value' => new Identifier(['identifier_test', $columnName])])
+        $values = $db->select(['value' => new Identifier(['identifier_test', $columnName])])
             ->from('identifier_test')
             ->where(['<>', new Identifier([$columnName]), 'c'])
             ->orderBy([new CompositeExpression([new Identifier([$columnName]), 'DESC'])])
