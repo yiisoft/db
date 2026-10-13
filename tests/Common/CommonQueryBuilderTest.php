@@ -737,7 +737,7 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
-        $query = (new Query($db))->select([
+        $query = $db->select([
             new Identifier('customer.name'),
             'alias' => new Identifier(['customer', 'id']),
         ]);
