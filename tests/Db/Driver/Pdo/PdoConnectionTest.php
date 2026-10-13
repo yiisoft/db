@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Driver\Pdo;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Tests\Support\Stub\StubConnection;
 use Yiisoft\Db\Tests\Support\Stub\StubPdoDriver;
-use Yiisoft\Test\Support\SimpleCache\MemorySimpleCache;
 
 /**
  * @group db
@@ -50,9 +48,6 @@ final class PdoConnectionTest extends TestCase
     {
         return new StubConnection(
             new StubPdoDriver($dsn),
-            new SchemaCache(
-                new MemorySimpleCache(),
-            ),
         );
     }
 }

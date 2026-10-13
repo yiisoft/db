@@ -10,6 +10,11 @@ schema information in [SchemaCache](https://github.com/yiisoft/db/blob/master/sr
 When the [Schema](https://github.com/yiisoft/db/blob/master/src/Schema/AbstractSchema.php) needs
 retrieve information about the database schema, it first checks the cache.
 
+> [!TIP]
+> Configuring schema cache with a real [PSR-16 cache implementation](https://packagist.org/providers/psr/simple-cache-implementation)
+> is strongly recommended for production. Without it, schema information is retrieved from the database server on
+> every request.
+
 You can configure [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php) to use
 [PSR-16 cache implementation](https://github.com/php-fig/simple-cache) in two ways:
 
@@ -41,7 +46,8 @@ return [
 ];
 ```
 
-The `SchemaCache` requires `CacheInterface` and DI container will automatically resolve it.
+The `SchemaCache` accepts `CacheInterface` and DI container will automatically resolve it. If `CacheInterface` isn't
+configured, `SchemaCache` uses a cache that doesn't store anything, so schema information isn't cached.
 
 ## Manual cache configuration
 

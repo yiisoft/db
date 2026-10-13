@@ -125,9 +125,7 @@ final class DbArrayHelper
             foreach ($arrangeBy as $group) {
                 $value = (string) $element[$group];
 
-                if (!isset($lastArray[$value])) {
-                    $lastArray[$value] = [];
-                }
+                $lastArray[$value] ??= [];
 
                 $lastArray = &$lastArray[$value];
             }

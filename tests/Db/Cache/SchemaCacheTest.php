@@ -87,6 +87,15 @@ final class SchemaCacheTest extends TestCase
         $schemaCache->set('key', 'test');
     }
 
+    public function testWithoutPsrCache(): void
+    {
+        $schemaCache = new SchemaCache();
+
+        $schemaCache->set('key', 'value', 'tag');
+
+        $this->assertNull($schemaCache->get('key'));
+    }
+
     public function testInvalidCacheKey(): void
     {
         $resource = fopen('php://memory', 'r');

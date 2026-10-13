@@ -83,9 +83,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     ): static {
         $this->prepare();
 
-        if ($dataType === null) {
-            $dataType = $this->db->getSchema()->getDataType($value);
-        }
+        $dataType ??= $this->db->getSchema()->getDataType($value);
 
         if ($length === null) {
             $this->pdoStatement?->bindParam($name, $value, $dataType);
@@ -100,9 +98,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
 
     public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static
     {
-        if ($dataType === null) {
-            $dataType = $this->db->getSchema()->getDataType($value);
-        }
+        $dataType ??= $this->db->getSchema()->getDataType($value);
 
         $this->params[$name] = new Param($value, $dataType);
 

@@ -14,7 +14,7 @@ $config = (new Configuration())
     ->ignoreErrorsOnPackages(['yiisoft/yii-debug'], [ErrorType::DEV_DEPENDENCY_IN_PROD])
     // Virtual packages that are not directly used in the code.
     ->ignoreErrorsOnPackages(
-        ['psr/simple-cache-implementation', 'yiisoft/db-implementation'],
+        ['yiisoft/db-implementation'],
         [ErrorType::UNUSED_DEPENDENCY],
     );
 

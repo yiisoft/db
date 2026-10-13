@@ -49,7 +49,9 @@ final class DbUuidHelperTest extends TestCase
     public function testToUuidFailed($blobUuid, $expected): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Length of source data is should be 16 or 32 bytes.');
+        $this->expectExceptionMessage(
+            'Value is not a valid UUID. Expected the canonical form, 32 hexadecimal characters or 16 raw bytes.',
+        );
 
         $uuid = DbUuidHelper::toUuid($blobUuid);
         $this->assertEquals($expected, $uuid);

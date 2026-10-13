@@ -33,18 +33,21 @@ use function strpbrk;
  */
 final class SchemaCache
 {
+    private readonly CacheInterface $psrCache;
     private int|DateInterval|null $duration = 3600;
     private bool $enabled = true;
     private array $exclude = [];
 
     /**
-     * @param CacheInterface $psrCache PSR-16 cache implementation to use.
+     * @param CacheInterface|null $psrCache PSR-16 cache implementation to use. If `null`, a cache that doesn't store
+     * anything is used.
      *
      * @link https://www.php-fig.org/psr/psr-16/
      */
-    public function __construct(
-        private readonly CacheInterface $psrCache,
-    ) {}
+    public function __construct(?CacheInterface $psrCache = null)
+    {
+        $this->psrCache = $psrCache ?? new NullCache();
+    }
 
     /**
      * Remove a value with the specified key from cache.

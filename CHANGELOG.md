@@ -7,11 +7,19 @@
 
 ## 2.0.2 under development
 
+- New #868: Add `SerializationFailureException` that is thrown when a transaction fails with SQLSTATE code 40001
+  (@KalimeroMK)
 - Enh #1172: Refactor `Query::queryScalar()` to use a cloned `Query` object (@darkspock)
 - New #1178: Support `UnitEnum` enums as column values (@Tigrov)
 - Bug #1176: Index the result of `AbstractSchema::getSchemaMetadata()` by table name, so `getSchemaChecks()`,
   `getSchemaDefaultValues()`, `getSchemaForeignKeys()`, `getSchemaIndexes()`, `getSchemaPrimaryKeys()`,
   `getSchemaUniques()` and `getTableSchemas()` expose the table each item belongs to (@KalimeroMK)
+- New #1152: Add `UuidValue` expression that represents a UUID value independently of DBMS (@KalimeroMK)
+- Enh #1152: Improve the exception message of `DbUuidHelper::toUuid()` when the value isn't a valid UUID
+  (@KalimeroMK)
+- Enh #1201: Make `$psrCache` parameter of `SchemaCache` constructor and `$schemaCache` parameter of
+  `AbstractSchema` and `AbstractPdoConnection` constructors optional, remove `psr/simple-cache-implementation` from
+  `require` in `composer.json` (@vjik)
 
 ## 2.0.1 February 09, 2026
 

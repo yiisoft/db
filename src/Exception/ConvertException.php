@@ -12,7 +12,8 @@ use const PHP_EOL;
  * Converts an exception into a more specific one.
  *
  * For example, if an exception is caused by a violation of a unique key constraint, it will be converted into an
- * {@see IntegrityException} exception.
+ * {@see IntegrityException} exception, and a serialization failure (SQLSTATE 40001) into a
+ * {@see SerializationFailureException} exception.
  */
 final class ConvertException
 {
@@ -35,6 +36,10 @@ final class ConvertException
         $message = $this->e->getMessage() . PHP_EOL . 'The SQL being executed was: ' . $this->rawSql;
 
         $errorInfo = $this->e instanceof PDOException ? $this->e->errorInfo : null;
+
+        if (($errorInfo[0] ?? null) === '40001') {
+            return new SerializationFailureException($message, $errorInfo, $this->e);
+        }
 
         return match (
             str_contains($message, self::MSG_INTEGRITY_EXCEPTION_1)
