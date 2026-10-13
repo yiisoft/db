@@ -155,8 +155,7 @@ abstract class CommonQueryTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
         $this->loadFixture();
 
-        $names = (new Query($db))
-            ->select(['name' => new Identifier('customer.name')])
+        $names = $db->select(['name' => new Identifier('customer.name')])
             ->from('customer')
             ->where(['=', new Identifier(['customer', 'status']), 1])
             ->orderBy([new CompositeExpression([new Identifier('customer.id'), 'DESC'])])
