@@ -20,6 +20,13 @@ final class IdentifierTest extends TestCase
         yield 'array' => [['t', 'name'], ['t', 'name']];
         yield 'array with dot' => [['t', 'na.me'], ['t', 'na.me']];
         yield 'array with single part' => [['na.me'], ['na.me']];
+        yield 'empty string' => ['', ['']];
+        yield 'double dot' => ['a..b', ['a', '', 'b']];
+        yield 'leading dot' => ['.a', ['', 'a']];
+        yield 'trailing dot' => ['a.', ['a', '']];
+        yield 'dot only' => ['.', ['', '']];
+        yield 'array with empty part' => [['t', ''], ['t', '']];
+        yield 'array with empty string' => [[''], ['']];
     }
 
     #[DataProvider('dataParts')]
@@ -30,37 +37,11 @@ final class IdentifierTest extends TestCase
         $this->assertSame($expected, $identifier->parts);
     }
 
-    public static function dataEmpty(): iterable
-    {
-        yield 'empty string' => [''];
-        yield 'empty array' => [[]];
-    }
-
-    #[DataProvider('dataEmpty')]
-    public function testEmpty(string|array $name): void
+    public function testEmptyArray(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Identifier must not be empty.');
+        $this->expectExceptionMessage('Identifier must have at least one part.');
 
-        new Identifier($name);
-    }
-
-    public static function dataEmptyPart(): iterable
-    {
-        yield 'double dot' => ['a..b'];
-        yield 'leading dot' => ['.a'];
-        yield 'trailing dot' => ['a.'];
-        yield 'dot only' => ['.'];
-        yield 'empty array part' => [['t', '']];
-        yield 'array with empty string' => [['']];
-    }
-
-    #[DataProvider('dataEmptyPart')]
-    public function testEmptyPart(string|array $name): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Identifier parts must not be empty.');
-
-        new Identifier($name);
+        new Identifier([]);
     }
 }

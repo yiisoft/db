@@ -38,7 +38,7 @@ final class Identifier implements ExpressionInterface
 {
     /**
      * @var string[] The identifier parts, for example, schema, table and column names.
-     * @psalm-var non-empty-list<non-empty-string>
+     * @psalm-var non-empty-list<string>
      */
     public readonly array $parts;
 
@@ -47,25 +47,18 @@ final class Identifier implements ExpressionInterface
      * - a string, which is split into parts by dots, for example, `schema.table.column`, `table.column` or `column`;
      * - an array of parts, which are used as is, for example, `['table', 'column.with.dots']`.
      *
+     * Empty name parts are allowed, since some DBMS (for example, SQLite) support empty identifiers.
+     *
      * @psalm-param string|list<string> $name
      *
-     * @throws InvalidArgumentException If the identifier or any of its parts is empty.
+     * @throws InvalidArgumentException If an empty array is passed.
      */
     public function __construct(string|array $name)
     {
-        if ($name === '' || $name === []) {
-            throw new InvalidArgumentException('Identifier must not be empty.');
+        if ($name === []) {
+            throw new InvalidArgumentException('Identifier must have at least one part.');
         }
 
-        $parts = is_string($name) ? explode('.', $name) : $name;
-
-        foreach ($parts as $part) {
-            if ($part === '') {
-                throw new InvalidArgumentException('Identifier parts must not be empty.');
-            }
-        }
-
-        /** @psalm-var non-empty-list<non-empty-string> $parts */
-        $this->parts = $parts;
+        $this->parts = is_string($name) ? explode('.', $name) : $name;
     }
 }

@@ -100,6 +100,8 @@ final class QuoterTest extends TestCase
     public static function dataQuoteIdentifier(): iterable
     {
         yield 'double quotes, column' => ['"', ['name'], '"name"'];
+        yield 'double quotes, empty' => ['"', [''], '""'];
+        yield 'double quotes, empty part' => ['"', ['t', ''], '"t".""'];
         yield 'double quotes, table and column' => ['"', ['t', 'name'], '"t"."name"'];
         yield 'double quotes, schema, table and column' => ['"', ['s', 't', 'name'], '"s"."t"."name"'];
         yield 'double quotes, part with dot' => ['"', ['t', 'na.me'], '"t"."na.me"'];

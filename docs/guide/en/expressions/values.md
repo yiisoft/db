@@ -72,7 +72,8 @@ new Identifier('a"b'); // "a""b"
 The examples show the quoting for PostgreSQL. MySQL and MariaDB use backticks (`` `a``b` ``), MSSQL uses square
 brackets (`[a]]b]`).
 
-An empty identifier or an empty name part (`''`, `[]`, `'a..b'`, `'.a'`, `'a.'`) causes `InvalidArgumentException`.
+Empty name parts are allowed, since some DBMS (for example, SQLite) support empty identifiers: `new Identifier('')`
+renders `""`. An empty array causes `InvalidArgumentException`.
 
 ## JsonValue
 
