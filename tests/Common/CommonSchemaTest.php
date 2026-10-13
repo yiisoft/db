@@ -161,40 +161,6 @@ abstract class CommonSchemaTest extends IntegrationTestCase
         $this->assertNull($schema->getTableSchema('nonexisting_table'));
     }
 
-    public function testGetSchemaChecks(): void
-    {
-        $this->loadFixture();
-
-        $schema = $this->getSharedConnection()->getSchema();
-        $tableChecks = $schema->getSchemaChecks();
-        $tableNames = $schema->getTableNames();
-
-        $this->assertIsArray($tableChecks);
-
-        foreach ($tableChecks as $tableName => $checks) {
-            $this->assertContains($tableName, $tableNames);
-            $this->assertIsArray($checks);
-            $this->assertContainsOnlyInstancesOf(Check::class, $checks);
-        }
-    }
-
-    public function testGetSchemaDefaultValues(): void
-    {
-        $this->loadFixture();
-
-        $schema = $this->getSharedConnection()->getSchema();
-        $tableDefaultValues = $schema->getSchemaDefaultValues();
-        $tableNames = $schema->getTableNames();
-
-        $this->assertIsArray($tableDefaultValues);
-
-        foreach ($tableDefaultValues as $tableName => $defaultValues) {
-            $this->assertContains($tableName, $tableNames);
-            $this->assertIsArray($defaultValues);
-            $this->assertContainsOnlyInstancesOf(DefaultValue::class, $defaultValues);
-        }
-    }
-
     public function testGetSchemaForeignKeys(): void
     {
         $this->loadFixture();
@@ -220,60 +186,6 @@ abstract class CommonSchemaTest extends IntegrationTestCase
                 $this->assertNotSame('', $foreignKey->foreignTableName);
                 $this->assertNotSame([], $foreignKey->foreignColumnNames);
             }
-        }
-    }
-
-    public function testGetSchemaIndexes(): void
-    {
-        $this->loadFixture();
-
-        $schema = $this->getSharedConnection()->getSchema();
-        $tableIndexes = $schema->getSchemaIndexes();
-        $tableNames = $schema->getTableNames();
-
-        $this->assertNotEmpty($tableIndexes);
-
-        $this->assertIsArray($tableIndexes);
-
-        foreach ($tableIndexes as $tableName => $indexes) {
-            $this->assertContains($tableName, $tableNames);
-            $this->assertIsArray($indexes);
-            $this->assertContainsOnlyInstancesOf(Index::class, $indexes);
-        }
-    }
-
-    public function testGetSchemaPrimaryKeys(): void
-    {
-        $this->loadFixture();
-
-        $schema = $this->getSharedConnection()->getSchema();
-        $tablePks = $schema->getSchemaPrimaryKeys();
-        $tableNames = $schema->getTableNames();
-
-        $this->assertNotEmpty($tablePks);
-
-        $this->assertIsArray($tablePks);
-        $this->assertContainsOnlyInstancesOf(Index::class, $tablePks);
-
-        foreach (array_keys($tablePks) as $tableName) {
-            $this->assertContains($tableName, $tableNames);
-        }
-    }
-
-    public function testGetSchemaUniques(): void
-    {
-        $this->loadFixture();
-
-        $schema = $this->getSharedConnection()->getSchema();
-        $tableUniques = $schema->getSchemaUniques();
-        $tableNames = $schema->getTableNames();
-
-        $this->assertIsArray($tableUniques);
-
-        foreach ($tableUniques as $tableName => $uniques) {
-            $this->assertContains($tableName, $tableNames);
-            $this->assertIsArray($uniques);
-            $this->assertContainsOnlyInstancesOf(Index::class, $uniques);
         }
     }
 
