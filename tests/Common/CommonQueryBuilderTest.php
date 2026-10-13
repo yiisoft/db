@@ -664,7 +664,7 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         $db = $this->getSharedConnection();
 
         $qb = $db->getQueryBuilder();
-        $query = (new Query($db))
+        $query = $db->createQuery()
             ->from('customer')
             ->orderBy([
                 new Identifier('customer.name'),
