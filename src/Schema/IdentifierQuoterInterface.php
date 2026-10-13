@@ -26,9 +26,10 @@ interface IdentifierQuoterInterface
      *
      * For example, `quoteIdentifier('t', 'a"b')` returns `"t"."a""b"` for DBMS that use double quotes.
      *
-     * @param string ...$parts The identifier parts to quote.
+     * @param string $part The first identifier part to quote.
+     * @param string ...$parts The rest identifier parts to quote.
      *
      * @return string The quoted identifier.
      */
-    public function quoteIdentifier(string ...$parts): string;
+    public function quoteIdentifier(string $part, string ...$parts): string;
 }

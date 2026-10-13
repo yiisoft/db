@@ -38,7 +38,7 @@ final class Identifier implements ExpressionInterface
 {
     /**
      * @var string[] The identifier parts, for example, schema, table and column names.
-     * @psalm-var list<non-empty-string>
+     * @psalm-var non-empty-list<non-empty-string>
      */
     public readonly array $parts;
 
@@ -65,7 +65,7 @@ final class Identifier implements ExpressionInterface
             }
         }
 
-        /** @psalm-var list<non-empty-string> $parts */
+        /** @psalm-var non-empty-list<non-empty-string> $parts */
         $this->parts = $parts;
     }
 }

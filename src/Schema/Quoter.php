@@ -153,7 +153,7 @@ class Quoter implements QuoterInterface, IdentifierQuoterInterface
         return $prefix . $this->quoteSimpleColumnName($name);
     }
 
-    public function quoteIdentifier(string ...$parts): string
+    public function quoteIdentifier(string $part, string ...$parts): string
     {
         if (is_string($this->columnQuoteCharacter)) {
             $startingCharacter = $endingCharacter = $this->columnQuoteCharacter;
@@ -166,10 +166,10 @@ class Quoter implements QuoterInterface, IdentifierQuoterInterface
         return implode(
             '.',
             array_map(
-                static fn(string $part): string => $startingCharacter
-                    . str_replace($endingCharacter, $escapedEndingCharacter, $part)
+                static fn(string $name): string => $startingCharacter
+                    . str_replace($endingCharacter, $escapedEndingCharacter, $name)
                     . $endingCharacter,
-                $parts,
+                [$part, ...$parts],
             ),
         );
     }
