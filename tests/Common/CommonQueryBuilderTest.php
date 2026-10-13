@@ -16,6 +16,7 @@ use stdClass;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\CompositeExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\Value\Param;
@@ -25,6 +26,7 @@ use Yiisoft\Db\Expression\Statement\CaseX;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Length;
 use Yiisoft\Db\Expression\Value\DateTimeValue;
+use Yiisoft\Db\Expression\Value\Identifier;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\AndX;
@@ -657,6 +659,31 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
         );
     }
 
+    public function testBuildOrderByWithIdentifier(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $qb = $db->getQueryBuilder();
+        $query = (new Query($db))
+            ->from('customer')
+            ->orderBy([
+                new Identifier('customer.name'),
+                new CompositeExpression([new Identifier(['customer', 'id']), 'DESC']),
+                new Identifier('LOWER(email)'),
+            ]);
+        $params = [];
+
+        $this->assertSame(
+            $this->replaceQuotes(
+                <<<SQL
+                ORDER BY [[customer]].[[name]], [[customer]].[[id]] DESC, [[LOWER(email)]]
+                SQL,
+            ),
+            $qb->buildOrderBy($query->getOrderBy(), $params),
+        );
+        $this->assertSame([], $params);
+    }
+
     public function testBuildOrderByAndLimit(): void
     {
         $db = $this->getSharedConnection();
@@ -703,6 +730,53 @@ abstract class CommonQueryBuilderTest extends IntegrationTestCase
             ),
             $qb->buildSelect($query->getSelect(), $params),
         );
+    }
+
+    public function testBuildSelectWithIdentifier(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $qb = $db->getQueryBuilder();
+        $query = (new Query($db))->select([
+            new Identifier('customer.name'),
+            'alias' => new Identifier(['customer', 'id']),
+        ]);
+        $params = [];
+
+        $this->assertSame(
+            $this->replaceQuotes(
+                <<<SQL
+                SELECT [[customer]].[[name]], [[customer]].[[id]] AS [[alias]]
+                SQL,
+            ),
+            $qb->buildSelect($query->getSelect(), $params),
+        );
+        $this->assertSame([], $params);
+    }
+
+    public function testBuildWhereWithIdentifier(): void
+    {
+        $db = $this->getSharedConnection();
+
+        $qb = $db->getQueryBuilder();
+        $params = [];
+
+        $this->assertSame(
+            $this->replaceQuotes(
+                <<<SQL
+                WHERE ([[customer]].[[name]] = [[customer]].[[email]]) AND ([[customer]].[[id]] = 1)
+                SQL,
+            ),
+            $qb->buildWhere(
+                [
+                    'and',
+                    ['=', new Identifier('customer.name'), new Identifier('customer.email')],
+                    ['=', new Identifier('customer.id'), 1],
+                ],
+                $params,
+            ),
+        );
+        $this->assertSame([], $params);
     }
 
     public function testBuildSelectWithAlias(): void

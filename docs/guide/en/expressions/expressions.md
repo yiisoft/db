@@ -13,5 +13,5 @@ of the `Yiisoft\Db\Query\QueryInterface` and the `insert()`, `update()`, `upsert
 - [CompositeExpression](composite-expression.md) for combining multiple expressions into a single expression;
 - [Function expressions](functions.md) `ArrayMerge`, `Greatest`, `Least`, `Length`, `Longest`, `Shortest`;
 - [Statement expressions](statements.md) `CaseX`;
-- [Value expressions](values.md) `ArrayValue`, `ColumnName`, `DateTimeValue`, `JsonValue`, `Param`, `StructuredValue`,
-  `Value`.
+- [Value expressions](values.md) `ArrayValue`, `ColumnName`, `DateTimeValue`, `Identifier`, `JsonValue`, `Param`,
+  `StructuredValue`, `Value`.

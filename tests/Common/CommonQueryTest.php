@@ -7,12 +7,15 @@ namespace Yiisoft\Db\Tests\Common;
 use Closure;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
+use Yiisoft\Db\Expression\CompositeExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\Value\Identifier;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Query\WithQuery;
 use Yiisoft\Db\QueryBuilder\Condition\LikeConjunction;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Provider\QueryProvider;
 use Yiisoft\Db\Tests\Support\IntegrationTestCase;
 
@@ -145,6 +148,58 @@ abstract class CommonQueryTest extends IntegrationTestCase
         $count = (new Query($db))->from('customer')->orderBy('id')->limit(1)->count();
 
         $this->assertEquals(3, $count);
+    }
+
+    public function testIdentifier(): void
+    {
+        $db = $this->getSharedConnection();
+        $this->loadFixture();
+
+        $names = (new Query($db))
+            ->select(['name' => new Identifier('customer.name')])
+            ->from('customer')
+            ->where(['=', new Identifier(['customer', 'status']), 1])
+            ->orderBy([new CompositeExpression([new Identifier('customer.id'), 'DESC'])])
+            ->column();
+
+        $this->assertSame(['user2', 'user1'], $names);
+    }
+
+    public static function dataIdentifierColumnName(): iterable
+    {
+        yield 'function call' => ['LOWER(name)'];
+        yield 'dot' => ['na.me'];
+        yield 'asterisk' => ['*'];
+        yield 'statement' => ['x; DROP TABLE t'];
+    }
+
+    #[DataProvider('dataIdentifierColumnName')]
+    public function testIdentifierColumnName(string $columnName): void
+    {
+        $db = $this->getSharedConnection();
+        $quoter = $db->getQuoter();
+        $table = $quoter->quoteIdentifier('identifier_test');
+        $column = $quoter->quoteIdentifier($columnName);
+
+        $this->dropTable('identifier_test');
+        $db->createCommand(
+            "CREATE TABLE $table ($column "
+            . $db->getQueryBuilder()->buildColumnDefinition(ColumnBuilder::string(10)) . ')',
+        )->execute();
+        $db->createCommand("INSERT INTO $table ($column) VALUES ('a')")->execute();
+        $db->createCommand("INSERT INTO $table ($column) VALUES ('b')")->execute();
+        $db->createCommand("INSERT INTO $table ($column) VALUES ('c')")->execute();
+
+        $values = (new Query($db))
+            ->select(['value' => new Identifier(['identifier_test', $columnName])])
+            ->from('identifier_test')
+            ->where(['<>', new Identifier([$columnName]), 'c'])
+            ->orderBy([new CompositeExpression([new Identifier([$columnName]), 'DESC'])])
+            ->column();
+
+        $this->assertSame(['b', 'a'], $values);
+
+        $this->dropTable('identifier_test');
     }
 
     public function testEmulateExecution(): void

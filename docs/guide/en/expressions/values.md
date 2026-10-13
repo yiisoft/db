@@ -7,6 +7,7 @@ The following expression classes are available:
 - [ArrayValue](#arrayvalue)
 - [ColumnName](#columnname)
 - [DateTimeValue](#datetimevalue)
+- [Identifier](#identifier)
 - [JsonValue](#jsonvalue)
 - [Param](#param)
 - [StructuredValue](#structuredvalue)
@@ -32,6 +33,10 @@ new ColumnName('column_name');
 new ColumnName('table_name.column_name'); // with table name
 ```
 
+The column name is quoted heuristically: names containing `(`, `[[` or `{{`, or already quoted names are kept as is.
+So `ColumnName` can contain an SQL fragment, for example `new ColumnName('LOWER(name)')`. Don't use it for names taken
+from untrusted input, use [Identifier](#identifier) instead.
+
 ## DateTimeValue
 
 The [DateTimeValue](../../../../src/Expression/Value/DateTimeValue.php) expression allows to represent a date-time value
@@ -44,6 +49,30 @@ new DateTimeValue(1672567200); // Unix timestamp
 new DateTimeValue('2023-01-01 12:00:00');
 new DateTimeValue(new DateTime('2023-01-01 12:00:00'));
 ```
+
+## Identifier
+
+The [Identifier](../../../../src/Expression/Value/Identifier.php) expression allows to represent an identifier, such as
+a column name optionally prefixed with table and schema names, that is always quoted strictly. Unlike
+[ColumnName](#columnname), it never renders an SQL fragment: each name part is enclosed in quote characters of the DBMS,
+quote characters inside the part are escaped, and special sequences (`(`, `*`, `[[...]]`, `{{...}}`, `%`) are quoted
+literally. So it's safe to use with names taken from untrusted input, for example, sorting or filtering field names.
+
+A string name is split into parts by dots. To use a name part that contains a dot, pass the parts as an array.
+
+```php
+new Identifier('name'); // "name"
+new Identifier('t.name'); // "t"."name"
+new Identifier('s.t.name'); // "s"."t"."name"
+new Identifier(['t', 'na.me']); // "t"."na.me"
+new Identifier('LOWER(name)'); // "LOWER(name)"
+new Identifier('a"b'); // "a""b"
+```
+
+The examples show the quoting for PostgreSQL. MySQL and MariaDB use backticks (`` `a``b` ``), MSSQL uses square
+brackets (`[a]]b]`).
+
+An empty identifier or an empty name part (`''`, `[]`, `'a..b'`, `'.a'`, `'a.'`) causes `InvalidArgumentException`.
 
 ## JsonValue
 
