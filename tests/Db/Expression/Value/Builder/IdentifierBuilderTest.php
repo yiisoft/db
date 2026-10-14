@@ -78,7 +78,7 @@ final class IdentifierBuilderTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            'Identifier "' . $expected . '" must not contain sequences processed by '
+            'Identifier ' . $expected . ' must not contain sequences processed by '
             . '"Yiisoft\Db\Schema\QuoterInterface::quoteSql()", such as "[[...]]" or "{{...}}".',
         );
         $builder->build($identifier);

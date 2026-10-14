@@ -66,7 +66,7 @@ final class IdentifierBuilder implements ExpressionBuilderInterface
         if ($quoter->quoteSql($sql) !== $sql) {
             throw new InvalidArgumentException(
                 sprintf(
-                    'Identifier "%s" must not contain sequences processed by "%s::quoteSql()", such as "[[...]]" or "{{...}}".',
+                    'Identifier %s must not contain sequences processed by "%s::quoteSql()", such as "[[...]]" or "{{...}}".',
                     $sql,
                     QuoterInterface::class,
                 ),
