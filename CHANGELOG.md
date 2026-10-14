@@ -10,6 +10,8 @@
   `getSchemaDefaultValues()`, `getSchemaForeignKeys()`, `getSchemaIndexes()`, `getSchemaPrimaryKeys()`,
   `getSchemaUniques()` and `getTableSchemas()` expose the table each item belongs to (@KalimeroMK)
 - New #1152: Add `UuidValue` expression that represents a UUID value independently of DBMS (@KalimeroMK)
+- New #1204: Add `Identifier` expression for strict identifier quoting (@vjik)
+- New #1204: Add `IdentifierQuoterInterface` and implement it in `Quoter` (@vjik)
 - Enh #1152: Improve the exception message of `DbUuidHelper::toUuid()` when the value isn't a valid UUID
   (@KalimeroMK)
 - Enh #1201: Make `$psrCache` parameter of `SchemaCache` constructor and `$schemaCache` parameter of

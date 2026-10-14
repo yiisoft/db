@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Schema;
 
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Quoter;
@@ -94,5 +95,80 @@ final class QuoterTest extends TestCase
         $name = '(SELECT * FROM table) alias';
 
         $this->assertSame($name, $quoter->quoteTableName($name));
+    }
+
+    public static function dataQuoteIdentifier(): iterable
+    {
+        yield 'double quotes, column' => ['"', ['name'], '"name"'];
+        yield 'double quotes, empty' => ['"', [''], '""'];
+        yield 'double quotes, empty part' => ['"', ['t', ''], '"t".""'];
+        yield 'double quotes, table and column' => ['"', ['t', 'name'], '"t"."name"'];
+        yield 'double quotes, schema, table and column' => ['"', ['s', 't', 'name'], '"s"."t"."name"'];
+        yield 'double quotes, part with dot' => ['"', ['t', 'na.me'], '"t"."na.me"'];
+        yield 'double quotes, function call' => ['"', ['LOWER(name)'], '"LOWER(name)"'];
+        yield 'double quotes, square brackets' => ['"', ['[[name]]'], '"[[name]]"'];
+        yield 'double quotes, curly brackets with prefix' => ['"', ['{{%t}}', 'name'], '"{{%t}}"."name"'];
+        yield 'double quotes, asterisk' => ['"', ['*'], '"*"'];
+        yield 'double quotes, array index' => ['"', ['arr[1]'], '"arr[1]"'];
+        yield 'double quotes, quote inside' => ['"', ['a"b'], '"a""b"'];
+        yield 'double quotes, leading quote' => ['"', ['"name"'], '"""name"""'];
+        yield 'double quotes, injection' => [
+            '"',
+            ['"a" DESC; DROP TABLE t; --'],
+            '"""a"" DESC; DROP TABLE t; --"',
+        ];
+
+        yield 'backticks, column' => ['`', ['name'], '`name`'];
+        yield 'backticks, table and column' => ['`', ['t', 'name'], '`t`.`name`'];
+        yield 'backticks, schema, table and column' => ['`', ['s', 't', 'name'], '`s`.`t`.`name`'];
+        yield 'backticks, part with dot' => ['`', ['t', 'na.me'], '`t`.`na.me`'];
+        yield 'backticks, function call' => ['`', ['LOWER(name)'], '`LOWER(name)`'];
+        yield 'backticks, square brackets' => ['`', ['[[name]]'], '`[[name]]`'];
+        yield 'backticks, curly brackets with prefix' => ['`', ['{{%t}}', 'name'], '`{{%t}}`.`name`'];
+        yield 'backticks, asterisk' => ['`', ['*'], '`*`'];
+        yield 'backticks, array index' => ['`', ['arr[1]'], '`arr[1]`'];
+        yield 'backticks, quote inside' => ['`', ['a`b'], '`a``b`'];
+        yield 'backticks, leading quote' => ['`', ['`name`'], '```name```'];
+        yield 'backticks, injection' => ['`', ['`a` DESC; DROP TABLE t; --'], '```a`` DESC; DROP TABLE t; --`'];
+
+        yield 'square brackets, column' => [['[', ']'], ['name'], '[name]'];
+        yield 'square brackets, table and column' => [['[', ']'], ['t', 'name'], '[t].[name]'];
+        yield 'square brackets, schema, table and column' => [['[', ']'], ['s', 't', 'name'], '[s].[t].[name]'];
+        yield 'square brackets, part with dot' => [['[', ']'], ['t', 'na.me'], '[t].[na.me]'];
+        yield 'square brackets, function call' => [['[', ']'], ['LOWER(name)'], '[LOWER(name)]'];
+        yield 'square brackets, square brackets' => [['[', ']'], ['[[name]]'], '[[[name]]]]]'];
+        yield 'square brackets, curly brackets with prefix' => [['[', ']'], ['{{%t}}', 'name'], '[{{%t}}].[name]'];
+        yield 'square brackets, asterisk' => [['[', ']'], ['*'], '[*]'];
+        yield 'square brackets, array index' => [['[', ']'], ['arr[1]'], '[arr[1]]]'];
+        yield 'square brackets, closing quote inside' => [['[', ']'], ['a]b'], '[a]]b]'];
+        yield 'square brackets, opening quote inside' => [['[', ']'], ['a[b'], '[a[b]'];
+        yield 'square brackets, leading quote' => [['[', ']'], ['[name]'], '[[name]]]'];
+        yield 'square brackets, injection' => [
+            ['[', ']'],
+            ['[a] DESC; DROP TABLE t; --'],
+            '[[a]] DESC; DROP TABLE t; --]',
+        ];
+    }
+
+    #[DataProvider('dataQuoteIdentifier')]
+    public function testQuoteIdentifier(string|array $quoteCharacter, array $parts, string $expected): void
+    {
+        $quoter = new Quoter($quoteCharacter, $quoteCharacter);
+
+        $this->assertSame($expected, $quoter->quoteIdentifier(...$parts));
+    }
+
+    public function testQuoteIdentifierUsesColumnQuoteCharacter(): void
+    {
+        $quoter = new Quoter('`', '"');
+
+        $this->assertSame('`t`.`name`', $quoter->quoteIdentifier('t', 'name'));
+    }
+
+    public function testQuoteIdentifierIgnoresTablePrefix(): void
+    {
+        $quoter = new Quoter('"', '"', 'pre_');
+
+        $this->assertSame('"{{%t}}"."name"', $quoter->quoteIdentifier('{{%t}}', 'name'));
     }
 }
