@@ -14,6 +14,8 @@ use Yiisoft\Db\Expression\Value\ArrayValue;
 use Yiisoft\Db\Expression\Value\Builder\ArrayValueBuilder;
 use Yiisoft\Db\Expression\Value\ColumnName;
 use Yiisoft\Db\Expression\Value\Builder\ColumnNameBuilder;
+use Yiisoft\Db\Expression\Value\Identifier;
+use Yiisoft\Db\Expression\Value\Builder\IdentifierBuilder;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilder;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
@@ -591,6 +593,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             StructuredValue::class => StructuredValueBuilder::class,
             CaseX::class => CaseXBuilder::class,
             ColumnName::class => ColumnNameBuilder::class,
+            Identifier::class => IdentifierBuilder::class,
             Value::class => ValueBuilder::class,
             DateTimeValue::class => DateTimeValueBuilder::class,
             UuidValue::class => UuidValueBuilder::class,

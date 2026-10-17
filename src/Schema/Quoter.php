@@ -34,7 +34,7 @@ use function substr;
  * It's also used by {@see AbstractCommand} to quote names in SQL statements before passing them to
  * database servers.
  */
-class Quoter implements QuoterInterface
+class Quoter implements QuoterInterface, IdentifierQuoterInterface
 {
     public function __construct(
         /** @psalm-var string[]|string */
@@ -151,6 +151,27 @@ class Quoter implements QuoterInterface
         }
 
         return $prefix . $this->quoteSimpleColumnName($name);
+    }
+
+    public function quoteIdentifier(string $part, string ...$parts): string
+    {
+        if (is_string($this->columnQuoteCharacter)) {
+            $startingCharacter = $endingCharacter = $this->columnQuoteCharacter;
+        } else {
+            [$startingCharacter, $endingCharacter] = $this->columnQuoteCharacter;
+        }
+
+        $escapedEndingCharacter = $endingCharacter . $endingCharacter;
+
+        return implode(
+            '.',
+            array_map(
+                static fn(string $name): string => $startingCharacter
+                    . str_replace($endingCharacter, $escapedEndingCharacter, $name)
+                    . $endingCharacter,
+                [$part, ...$parts],
+            ),
+        );
     }
 
     public function quoteSimpleColumnName(string $name): string
