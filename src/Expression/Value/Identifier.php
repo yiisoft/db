@@ -17,8 +17,7 @@ use function is_string;
  * Unlike {@see ColumnName}, which uses heuristic quoting and keeps names containing `(`, `[[`, `{{` or starting
  * with a quote character as is, this expression always renders a properly quoted identifier and never an SQL fragment.
  * Each name part is enclosed in quote characters of the DBMS, quote characters inside the part are escaped, and special
- * sequences (`(`, `*`, `[[...]]`, `{{...}}`, `%`) are quoted literally. So it's safe to use with names taken from
- * untrusted input:
+ * characters (`(`, `*`, `%`) are quoted literally. So it's safe to use with names taken from untrusted input:
  *
  * ```php
  * new Identifier('name'); // "name"
@@ -33,6 +32,15 @@ use function is_string;
  * ```php
  * new Identifier(['t', 'na.me']); // "t"."na.me"
  * ```
+ *
+ * The following can't be used in name parts and cause `InvalidArgumentException` when building SQL:
+ *
+ * - `[[...]]`, for example, `[[name]]`;
+ * - `{{...}}`, for example, `{{table}}` or `{{%table}}`;
+ * - for MSSQL, `[[...]`, for example, `[[name]`;
+ * - for MSSQL, `[...]` at the beginning of a part, for example, `[name]`.
+ *
+ * Here `...` is a sequence of letters, digits, underscores, hyphens, dots and spaces.
  */
 final class Identifier implements ExpressionInterface
 {

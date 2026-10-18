@@ -55,8 +55,8 @@ new DateTimeValue(new DateTime('2023-01-01 12:00:00'));
 The [Identifier](../../../../src/Expression/Value/Identifier.php) expression allows to represent an identifier, such as
 a column name optionally prefixed with table and schema names, that is always quoted strictly. Unlike
 [ColumnName](#columnname), it never renders an SQL fragment: each name part is enclosed in quote characters of the DBMS,
-quote characters inside the part are escaped, and special sequences (`(`, `*`, `[[...]]`, `{{...}}`, `%`) are quoted
-literally. So it's safe to use with names taken from untrusted input, for example, sorting or filtering field names.
+quote characters inside the part are escaped, and special characters (`(`, `*`, `%`) are quoted literally. So it's safe
+to use with names taken from untrusted input, for example, sorting or filtering field names.
 
 A string name is split into parts by dots. To use a name part that contains a dot, pass the parts as an array.
 
@@ -74,6 +74,15 @@ brackets (`[a]]b]`).
 
 Empty name parts are allowed, since some DBMS (for example, SQLite) support empty identifiers: `new Identifier('')`
 renders `""`. An empty array causes `InvalidArgumentException`.
+
+The following can't be used in name parts and cause `InvalidArgumentException` when building SQL:
+
+- `[[...]]`, for example, `[[name]]`;
+- `{{...}}`, for example, `{{table}}` or `{{%table}}`;
+- for MSSQL, `[[...]`, for example, `[[name]`;
+- for MSSQL, `[...]` at the beginning of a part, for example, `[name]`.
+
+Here `...` is a sequence of letters, digits, underscores, hyphens, dots and spaces.
 
 ## JsonValue
 
