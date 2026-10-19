@@ -16,34 +16,6 @@ namespace Yiisoft\Db\Constraint;
 interface ConstraintSchemaInterface
 {
     /**
-     * Returns check constraints for all tables in the database.
-     *
-     * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
-     * name.
-     * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
-     * returned if available.
-     *
-     * @return Check[][] The check constraints for all tables in the database, indexed by table name.
-     *
-     * @psalm-return array<string, Check[]>
-     */
-    public function getSchemaChecks(string $schema = '', bool $refresh = false): array;
-
-    /**
-     * Returns default value constraints for all tables in the database.
-     *
-     * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
-     * name.
-     * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
-     * returned if available.
-     *
-     * @return DefaultValue[][] The default value constraints for all tables in the database, indexed by table name.
-     *
-     * @psalm-return array<string, DefaultValue[]>
-     */
-    public function getSchemaDefaultValues(string $schema = '', bool $refresh = false): array;
-
-    /**
      * Returns foreign keys for all tables in the database.
      *
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
@@ -57,49 +29,6 @@ interface ConstraintSchemaInterface
      * @psalm-return array<string, ForeignKey[]>
      */
     public function getSchemaForeignKeys(string $schema = '', bool $refresh = false): array;
-
-    /**
-     * Returns indexes for all tables in the database.
-     *
-     * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
-     * name.
-     * @param bool $refresh Whether to fetch the latest available table schemas. If this is false, cached data may be
-     * returned if available.
-     *
-     * @return Index[][] The indexes for all tables in the database, indexed by table name.
-     *
-     * @psalm-return array<string, Index[]>
-     */
-    public function getSchemaIndexes(string $schema = '', bool $refresh = false): array;
-
-    /**
-     * Returns primary keys for all tables in the database.
-     *
-     * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
-     * name.
-     * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
-     * returned if available.
-     *
-     * @return Index[] The primary keys for all tables in the database, indexed by table name. Tables without a primary
-     * key are omitted.
-     *
-     * @psalm-return array<string, Index>
-     */
-    public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array;
-
-    /**
-     * Returns unique constraints for all tables in the database.
-     *
-     * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
-     * name.
-     * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
-     * returned if available.
-     *
-     * @return Index[][] The unique constraints for all tables in the database, indexed by table name.
-     *
-     * @psalm-return array<string, Index[]>
-     */
-    public function getSchemaUniques(string $schema = '', bool $refresh = false): array;
 
     /**
      * Obtains the check constraints' information for the named table.
