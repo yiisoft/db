@@ -1,5 +1,9 @@
 # Yii Database Change Log
 
+## 2.1.1 under development
+
+- no changes in this release.
+
 ## 2.1.0 October 20, 2026
 
 - New #1152: Add `UuidValue` expression that represents a UUID value independently of DBMS (@KalimeroMK)
