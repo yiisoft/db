@@ -1,22 +1,21 @@
 # Yii Database Change Log
 
-## 2.0.2 under development
+## 2.1.0 October 20, 2026
 
-- New #868: Add `SerializationFailureException` that is thrown when a transaction fails with SQLSTATE code 40001
-  (@KalimeroMK)
-- Enh #1172: Refactor `Query::queryScalar()` to use a cloned `Query` object (@darkspock)
-- New #1178: Support `UnitEnum` enums as column values (@Tigrov)
-- Bug #1176: Index the result of `AbstractSchema::getSchemaMetadata()` by table name, so `getSchemaChecks()`,
-  `getSchemaDefaultValues()`, `getSchemaForeignKeys()`, `getSchemaIndexes()`, `getSchemaPrimaryKeys()`,
-  `getSchemaUniques()` and `getTableSchemas()` expose the table each item belongs to (@KalimeroMK)
 - New #1152: Add `UuidValue` expression that represents a UUID value independently of DBMS (@KalimeroMK)
+- New #1178: Support `UnitEnum` enums as column values (@Tigrov)
 - New #1204, #1207: Add `Identifier` expression for strict identifier quoting (@vjik)
 - New #1204: Add `IdentifierQuoterInterface` and implement it in `Quoter` (@vjik)
-- Enh #1152: Improve the exception message of `DbUuidHelper::toUuid()` when the value isn't a valid UUID
+- New #868: Add `SerializationFailureException` that is thrown when a transaction fails with SQLSTATE code 40001
   (@KalimeroMK)
+- Enh #1152: Improve the exception message of `DbUuidHelper::toUuid()` when the value isn't a valid UUID (@KalimeroMK)
+- Enh #1172: Refactor `Query::queryScalar()` to use a cloned `Query` object (@darkspock)
 - Enh #1201: Make `$psrCache` parameter of `SchemaCache` constructor and `$schemaCache` parameter of
   `AbstractSchema` and `AbstractPdoConnection` constructors optional, remove `psr/simple-cache-implementation` from
   `require` in `composer.json` (@vjik)
+- Bug #1176: Index the result of `AbstractSchema::getSchemaMetadata()` by table name, so `getSchemaChecks()`,
+  `getSchemaDefaultValues()`, `getSchemaForeignKeys()`, `getSchemaIndexes()`, `getSchemaPrimaryKeys()`,
+  `getSchemaUniques()` and `getTableSchemas()` expose the table each item belongs to (@KalimeroMK)
 - Bug #1202: Fix `ColumnDefinitionParser` to parse an unquoted `DEFAULT NULL` as SQL `NULL` instead of the string
   `'NULL'` (@Lugat)
 
