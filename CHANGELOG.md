@@ -3,7 +3,7 @@
 ## 2.1.1 under development
 
 - Bug #1210: Replace every occurrence of named placeholders in `AbstractCommand::getRawSql()` and
-  `AbstractQueryBuilder::replacePlaceholders()` (@samdark)
+  `AbstractQueryBuilder::replacePlaceholders()`, including SQL with unterminated trailing comments (@samdark)
 
 ## 2.1.0 October 20, 2026
 

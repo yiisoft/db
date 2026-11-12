@@ -122,12 +122,11 @@ abstract class AbstractSqlParser
     }
 
     /**
-     * Skips to the character after the specified string.
+     * Skips past the specified string, or to the end of the SQL statement if it is not found.
      */
     final protected function skipToAfterString(string $string): void
     {
-        /** @var int $pos */
-        $pos = strpos($this->sql, $string, $this->position);
-        $this->position = $pos + strlen($string);
+        $position = strpos($this->sql, $string, $this->position);
+        $this->position = $position === false ? $this->length : $position + strlen($string);
     }
 }
