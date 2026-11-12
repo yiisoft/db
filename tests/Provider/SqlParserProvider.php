@@ -104,6 +104,16 @@ class SqlParserProvider
     public static function getAllPlaceholders(): array
     {
         return [
+            'unterminated comment' => [
+                '/* :hidden',
+                [],
+                [],
+            ],
+            'repeated placeholders before unterminated comment' => [
+                'SELECT :x, :x /* :hidden',
+                [':x', ':x'],
+                [7, 11],
+            ],
             [
                 'SELECT * FROM {{customer}} WHERE name = :name',
                 [':name'],
