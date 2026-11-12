@@ -33,6 +33,27 @@ use const SORT_DESC;
  */
 final class QueryBuilderTest extends IntegrationTestCase
 {
+    public function testReplaceRepeatedPlaceholdersWithoutReplacingLiteralsOrComments(): void
+    {
+        $queryBuilder = $this->getSharedConnection()->getQueryBuilder();
+        $sql = "SELECT :id, ':id', :id_long, :id /* :id */, :unknown -- :id\n, :id";
+
+        $this->assertSame(
+            "SELECT 'value:id', ':id', 20, 'value:id' /* :id */, :unknown -- :id\n, 'value:id'",
+            $queryBuilder->replacePlaceholders($sql, ['id' => "'value:id'", ':id_long' => '20']),
+        );
+    }
+
+    public function testReplaceRepeatedPlaceholdersWithAnotherPlaceholder(): void
+    {
+        $queryBuilder = $this->getSharedConnection()->getQueryBuilder();
+
+        $this->assertSame(
+            'SELECT :renamed, :renamed',
+            $queryBuilder->replacePlaceholders('SELECT :id, :id', ['id' => ':renamed']),
+        );
+    }
+
     public function testBase(): void
     {
         $db = $this->getSharedConnection();

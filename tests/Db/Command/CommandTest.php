@@ -23,6 +23,14 @@ use Yiisoft\Db\Tests\Support\TestHelper;
  */
 final class CommandTest extends IntegrationTestCase
 {
+    public function testGetRawSqlReplacesRepeatedNamedPlaceholders(): void
+    {
+        $db = TestHelper::createSqliteMemoryConnection();
+        $command = $db->createCommand('SELECT :x, :x, :y, :x', ['x' => 1, 'y' => 2]);
+
+        $this->assertSame('SELECT 1, 1, 2, 1', $command->getRawSql());
+    }
+
     public function testAddCheck(): void
     {
         $db = TestHelper::createSqliteMemoryConnection();
