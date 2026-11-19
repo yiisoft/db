@@ -522,12 +522,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                 /** @var int $position */
                 $sql = substr_replace($sql, $replacement, $position + $offset, strlen($placeholder));
 
-                if (count($replacements) === 1) {
-                    break;
-                }
-
                 $offset += strlen($replacement) - strlen($placeholder);
-                unset($replacements[$placeholder]);
             }
         }
 

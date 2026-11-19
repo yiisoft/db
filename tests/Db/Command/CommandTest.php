@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Command;
 
+use PDO;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
@@ -23,6 +24,27 @@ use Yiisoft\Db\Tests\Support\TestHelper;
  */
 final class CommandTest extends IntegrationTestCase
 {
+    public function testGetRawSqlReplacesRepeatedNamedPlaceholders(): void
+    {
+        $db = TestHelper::createSqliteMemoryConnection();
+        $command = $db->createCommand('SELECT :x, :x, :y, :x', ['x' => 1, 'y' => 2]);
+
+        $this->assertSame('SELECT 1, 1, 2, 1', $command->getRawSql());
+    }
+
+    public function testGetRawSqlWithUnterminatedComment(): void
+    {
+        $db = TestHelper::createSqliteMemoryConnection();
+        $sql = 'SELECT :x + :x /* :x';
+        $statement = $db->getActivePdo()->prepare($sql);
+        $statement->bindValue(':x', 7, PDO::PARAM_INT);
+        $statement->execute();
+        $command = $db->createCommand($sql, ['x' => 7]);
+
+        $this->assertSame('14', (string) $statement->fetchColumn());
+        $this->assertSame('SELECT 7 + 7 /* :x', $command->getRawSql());
+    }
+
     public function testAddCheck(): void
     {
         $db = TestHelper::createSqliteMemoryConnection();
